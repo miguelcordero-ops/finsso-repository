@@ -50,7 +50,7 @@
 ,IF0049,DM CARS NON-SPECIALIZED WHOLESALE TRADING(Former as DM QUALITY USED CARS),Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,45870,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0050,UGEAGI CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,0,0,0,0,0,,,,,Open,,,,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0051,HATCHBACK-MONSTER CAR DISPLAY CENTER,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,,,,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
-,IF0052,AUTO-NEXUS CAR TRADING,Albert Dalupang,Marlon Llamas,0,0,0,0,0,0,0,0,,,,,Open,,,,46224.68424,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
+,IF0052,AUTO-NEXUS CAR TRADING,Albert Dalupang,Marlon Llamas,0,0,0,0,0,0,0,0,,,,,Open,,,,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0053,TRIPLE R VEHICLE TRADING,Albert Dalupang,Marlon Llamas,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,45901,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0054,SHV AUTOBASE,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Open,,,,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0055,R ZABLAN AUTO TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,,,,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
@@ -284,7 +284,7 @@
 ,IF0283,CRISJANE CAR TRADING,Albert Dalupang,Rexcell Juegos,0,0,0,0,0,0,0,0,,,,,Hold,Pending CLA Signature,,46189.60625,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0284,PAWNAGE CAR TRADING,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46189.60903,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0285,RB AUTO BODY REPAIR SERVICE,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,46193,Open,,,,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
-,IF0286,RLP TRADING INC,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,46241.64257,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
+,IF0286,RLP TRADING INC,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0287,BOSS CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Blacklisted,Locked by Timestamp,46190.65122,,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No,,,,46190.65122
 ,IF0288,PWESTO VEHICULO AUTO TRADING,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46189.74792,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0289,LMK-KJM TRADING,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,46058,Open,Finsso: Open | Netbank: Pending CLA Signature,,46184.44931,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
@@ -379,7 +379,7 @@
 ,IF0378,CARMAX SALES AND SERVICE INC.,Albert Dalupang,Marlon Llamas,0,0,0,0,0,0,0,0,,,,,Hold,Pending CLA Signature,,46191.61458,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0379,J AND J CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46175.44583,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0380,R&A COUSIN CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46164.43194,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
-,IF0381,CARATE AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,0,0,0,0,0,,,,46129,Open,,,,46266.55925,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
+,IF0381,CARATE AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,0,0,0,0,0,,,,46129,Open,,,,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0382,C.B AUTOWORKS VEHICLE TRADING,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,46129,Open,,,,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0383,BIGBOY CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,46175,Open,,,,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
 ,IF0384,R.C CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46175.45833,,0,0,0,#DIV/0! (Function DIVIDE parameter 2 cannot be zero.),0,0,,0,0,0,0,No
