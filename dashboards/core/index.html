@@ -23,28 +23,75 @@
   --gap:16px;
   --rcard:16px;
   --rctrl:8px;
+
+  --surface-a:rgba(255,255,255,0.72);
+  --surface-b:rgba(255,255,255,0.65);
+  --surface-c:rgba(255,255,255,0.55);
+  --surface-d:rgba(255,255,255,0.80);
+  --surface-hi:rgba(255,255,255,0.95);
+  --chip-hover:rgba(255,255,255,0.9);
+  --overlay-tint:rgba(240,244,253,0.82);
+  --lock-tint:rgba(220,230,255,0.60);
+  --lock-card-bg:rgba(255,255,255,0.82);
+  --spinner-track:rgba(0,0,0,0.08);
+  --grad-1:#FFE8D6;
+  --grad-2:#DDE8FF;
+  --grad-3:#F5F0FF;
+  --tr-hover:rgba(255,248,245,0.7);
+}
+:root[data-theme="dark"]{
+  --bg:#0B0F1A;
+  --surface:rgba(30,35,50,0.65);
+  --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.10);
+  --text:#E5E7EB;
+  --text2:#9CA3AF;
+  --text3:#6B7280;
+  --tbl-hdr:rgba(255,255,255,0.04);
+  --tbl-bdr:rgba(255,255,255,0.06);
+  --tbl-bdr2:rgba(255,255,255,0.10);
+  --total-bg:rgba(232,70,30,0.16);
+
+  --surface-a:rgba(24,28,40,0.78);
+  --surface-b:rgba(24,28,40,0.65);
+  --surface-c:rgba(24,28,40,0.55);
+  --surface-d:rgba(24,28,40,0.82);
+  --surface-hi:rgba(255,255,255,0.06);
+  --chip-hover:rgba(255,255,255,0.10);
+  --overlay-tint:rgba(11,15,26,0.88);
+  --lock-tint:rgba(11,15,26,0.78);
+  --lock-card-bg:rgba(24,28,40,0.88);
+  --spinner-track:rgba(255,255,255,0.10);
+  --grad-1:#3A2A1E;
+  --grad-2:#1B2438;
+  --grad-3:#241E33;
+  --tr-hover:rgba(255,255,255,0.05);
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:light dark}
+html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="light"]{color-scheme:light}
 body{
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   background:
-    radial-gradient(ellipse at 15% 10%, #FFE8D6 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 90%, #DDE8FF 0%, transparent 55%),
-    radial-gradient(ellipse at 50% 50%, #F5F0FF 0%, transparent 80%),
-    #F0F4FD;
+    radial-gradient(ellipse at 15% 10%, var(--grad-1) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 90%, var(--grad-2) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, var(--grad-3) 0%, transparent 80%),
+    var(--bg);
   background-attachment:fixed;
   color:var(--text);
   font-size:13px;
   line-height:1.5;
   -webkit-font-smoothing:antialiased;
+  transition:background-color 0.2s, color 0.2s;
 }
 a{color:inherit;text-decoration:none}
 
 .topbar{
-  background:rgba(255,255,255,0.72);
+  background:var(--surface-a);
   border-bottom:1px solid var(--border2);
-  border-top:1px solid rgba(255,255,255,0.97);
-  box-shadow:0 8px 32px rgba(99,102,241,0.08),0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.95);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 8px 32px rgba(99,102,241,0.08),0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
   backdrop-filter:blur(28px) saturate(180%);
   -webkit-backdrop-filter:blur(28px) saturate(180%);
   padding:14px var(--pad);
@@ -60,15 +107,22 @@ a{color:inherit;text-decoration:none}
 .date-control input[type=date]{
   font-size:12px;padding:4px 8px;
   border:1px solid var(--border2);border-radius:var(--rctrl);
-  background:rgba(255,255,255,0.80);color:var(--text);cursor:pointer;
+  background:var(--surface-d);color:var(--text);cursor:pointer;
   backdrop-filter:blur(8px);
+  color-scheme:light dark;
 }
+.theme-toggle{
+  font-size:12px;padding:5px 10px;border-radius:var(--rctrl);
+  border:1px solid var(--border2);background:var(--surface-d);
+  color:var(--text2);cursor:pointer;transition:all 0.15s;
+}
+.theme-toggle:hover{background:var(--chip-hover)}
 .date-control input[type=date]:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(232,70,30,0.10)}
 
 .tab-nav{
-  background:rgba(255,255,255,0.65);
+  background:var(--surface-b);
   border-bottom:1px solid var(--border2);
-  box-shadow:0 4px 16px rgba(99,102,241,0.06),inset 0 1px 0 rgba(255,255,255,0.90);
+  box-shadow:0 4px 16px rgba(99,102,241,0.06),inset 0 1px 0 var(--surface-hi);
   backdrop-filter:blur(28px) saturate(180%);
   -webkit-backdrop-filter:blur(28px) saturate(180%);
   padding:0 var(--pad);display:flex;gap:0;overflow-x:auto;
@@ -92,10 +146,10 @@ a{color:inherit;text-decoration:none}
 
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);margin-bottom:var(--gap)}
 .card{
-  background:rgba(255,255,255,0.65);
+  background:var(--surface-b);
   border:1px solid var(--border);
-  border-top:1px solid rgba(255,255,255,0.92);
-  box-shadow:0 8px 32px rgba(99,102,241,0.08),0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.95);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 8px 32px rgba(99,102,241,0.08),0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
   backdrop-filter:blur(16px) saturate(150%);
   -webkit-backdrop-filter:blur(16px) saturate(150%);
   border-radius:var(--rcard);padding:16px;overflow-x:auto;
@@ -117,26 +171,37 @@ tr:last-child td{border-bottom:none}
 tr.sub td{color:var(--text3);padding-left:20px}
 tr.bold td{font-weight:600;color:var(--text)}
 tr.bold:last-child td{background:var(--total-bg)}
-tr:hover td{background:rgba(255,248,245,0.7)}
+tr:hover td{background:var(--tr-hover)}
 
 .exrate{font-size:11px;color:var(--text3);text-align:right;margin-top:8px}
 
+.tracker-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.tracker-controls input[type=text],.tracker-controls select{
+  font-size:12px;padding:6px 10px;
+  border:1px solid var(--border2);border-radius:var(--rctrl);
+  background:var(--surface-d);color:var(--text);
+}
+.tracker-controls input[type=text]{flex:1;min-width:200px}
+.tracker-checkbox{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);white-space:nowrap;cursor:pointer}
+.tracker-count{font-size:11px;color:var(--text3);margin-left:auto;white-space:nowrap}
+.tracker-loadmore-wrap{display:flex;justify-content:center;padding-top:12px}
+
 .loading-overlay{
   position:fixed;inset:0;
-  background:rgba(240,244,253,0.82);
+  background:var(--overlay-tint);
   backdrop-filter:blur(32px) saturate(180%);
   -webkit-backdrop-filter:blur(32px) saturate(180%);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   z-index:999;gap:14px;
 }
 .loading-overlay.hidden{display:none}
-.spinner{width:36px;height:36px;border:3px solid rgba(0,0,0,0.08);border-top-color:var(--primary);border-radius:50%;animation:spin 0.7s linear infinite}
+.spinner{width:36px;height:36px;border:3px solid var(--spinner-track);border-top-color:var(--primary);border-radius:50%;animation:spin 0.7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:13px;color:var(--text2)}
 .error-box{
-  background:rgba(255,255,255,0.80);
-  border:1px solid rgba(255,255,255,0.75);
-  border-top:1px solid rgba(255,255,255,0.97);
+  background:var(--surface-d);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
   box-shadow:0 8px 32px rgba(99,102,241,0.10),0 2px 8px rgba(0,0,0,0.06);
   backdrop-filter:blur(32px);
   border-radius:var(--rcard);padding:20px 28px;text-align:center;max-width:380px;
@@ -149,7 +214,7 @@ tr:hover td{background:rgba(255,248,245,0.7)}
 .data-status.stale{color:#c8860a}
 
 .filter-bar{
-  background:rgba(255,255,255,0.55);
+  background:var(--surface-c);
   border-bottom:1px solid var(--border2);
   backdrop-filter:blur(20px) saturate(160%);
   -webkit-backdrop-filter:blur(20px) saturate(160%);
@@ -161,16 +226,16 @@ tr:hover td{background:rgba(255,248,245,0.7)}
 .filter-group-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;margin-right:2px}
 .filter-chip{
   font-size:11px;padding:4px 10px;border-radius:9999px;
-  border:1px solid var(--border2);background:rgba(255,255,255,0.65);
+  border:1px solid var(--border2);background:var(--surface-b);
   color:var(--text2);cursor:pointer;transition:all 0.15s;white-space:nowrap;
 }
-.filter-chip:hover{background:rgba(255,255,255,0.9)}
+.filter-chip:hover{background:var(--chip-hover)}
 .filter-chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 .filter-reset{font-size:11px;color:var(--primary);cursor:pointer;text-decoration:underline;margin-left:auto;white-space:nowrap}
 
 .lock-overlay{
   position:fixed;inset:0;
-  background:rgba(220,230,255,0.60);
+  background:var(--lock-tint);
   backdrop-filter:blur(48px) saturate(200%);
   -webkit-backdrop-filter:blur(48px) saturate(200%);
   display:flex;align-items:center;justify-content:center;
@@ -180,10 +245,10 @@ tr:hover td{background:rgba(255,248,245,0.7)}
 .lock-overlay.unlocking{opacity:0;pointer-events:none}
 .lock-overlay.hidden{display:none}
 .lock-card{
-  background:rgba(255,255,255,0.82);
-  border:1px solid rgba(255,255,255,0.75);
-  border-top:1px solid rgba(255,255,255,0.97);
-  box-shadow:0 80px 120px rgba(99,102,241,0.18),0 8px 32px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.95);
+  background:var(--lock-card-bg);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 80px 120px rgba(99,102,241,0.18),0 8px 32px rgba(0,0,0,0.08),inset 0 1px 0 var(--surface-hi);
   backdrop-filter:blur(32px) saturate(200%);
   -webkit-backdrop-filter:blur(32px) saturate(200%);
   border-radius:28px;
@@ -253,6 +318,7 @@ tr:hover td{background:rgba(255,248,245,0.7)}
     </div>
     <div class="header-right">
       <div class="date-control">
+        <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
         <label for="rpt-date-input">Report date</label>
         <input type="date" id="rpt-date-input" onchange="onDateChange(this.value)">
       </div>
@@ -263,7 +329,7 @@ tr:hover td{background:rgba(255,248,245,0.7)}
 <div class="tab-nav">
   <button class="tab-btn active" onclick="showTab('txn',this)">Transaction &amp; Dealer Metrics</button>
   <button class="tab-btn" disabled title="Coming soon">Financier Portfolio</button>
-  <button class="tab-btn" disabled title="Coming soon">Loan Tracker</button>
+  <button class="tab-btn" onclick="showTab('tracker',this)">Loan Tracker</button>
 </div>
 
 <div class="filter-bar" id="filter-bar">
@@ -283,14 +349,14 @@ tr:hover td{background:rgba(255,248,245,0.7)}
           <thead><tr><th>Metric</th><th class="r">MTD</th><th class="r">LMTD</th><th class="r">LM</th></tr></thead>
           <tbody>
             <tr class="bold"><td>Number of Disbursements</td><td class="r" id="txn-disbn-mtd">–</td><td class="r" id="txn-disbn-lmtd">–</td><td class="r" id="txn-disbn-lm">–</td></tr>
-            <tr><td>Disbursed Amount <span class="card-unit unit-fx" data-php="₱ Mio" data-usd="$ Mio">(₱ Mio)</span></td><td class="r" id="txn-disbsum-mtd">–</td><td class="r" id="txn-disbsum-lmtd">–</td><td class="r" id="txn-disbsum-lm">–</td></tr>
-            <tr class="bold"><td>DIF AUM <span class="card-unit unit-fx" data-php="₱ Mio, current" data-usd="$ Mio, current">(₱ Mio, current)</span></td><td class="r" id="txn-aum-mtd">–</td><td class="r" id="txn-aum-lmtd">–</td><td class="r" id="txn-aum-lm">–</td></tr>
+            <tr><td>Disbursed Amount <span class="card-unit unit-fx" data-php="₱ M" data-usd="$ M">(₱ M)</span></td><td class="r" id="txn-disbsum-mtd">–</td><td class="r" id="txn-disbsum-lmtd">–</td><td class="r" id="txn-disbsum-lm">–</td></tr>
+            <tr class="bold"><td>DIF AUM <span class="card-unit unit-fx" data-php="₱ M, current" data-usd="$ M, current">(₱ M, current)</span></td><td class="r" id="txn-aum-mtd">–</td><td class="r" id="txn-aum-lmtd">–</td><td class="r" id="txn-aum-lm">–</td></tr>
             <tr class="sub"><td>Netbank</td><td class="r" id="txn-nb-mtd">–</td><td class="r" id="txn-nb-lmtd">–</td><td class="r" id="txn-nb-lm">–</td></tr>
             <tr class="sub"><td>Finsso</td><td class="r" id="txn-fs-mtd">–</td><td class="r" id="txn-fs-lmtd">–</td><td class="r" id="txn-fs-lm">–</td></tr>
-            <tr><td>Repossession AUM <span class="card-unit unit-fx" data-php="₱ Mio, current" data-usd="$ Mio, current">(₱ Mio, current)</span></td><td class="r" id="txn-repo-mtd">–</td><td class="r" id="txn-repo-lmtd">–</td><td class="r" id="txn-repo-lm">–</td></tr>
-            <tr><td>Net Repossession AUM <span class="card-unit unit-fx" data-php="₱ Mio, current" data-usd="$ Mio, current">(₱ Mio, current)</span></td><td class="r" id="txn-netrepo-mtd">–</td><td class="r" id="txn-netrepo-lmtd">–</td><td class="r" id="txn-netrepo-lm">–</td></tr>
+            <tr><td>Repossession AUM <span class="card-unit unit-fx" data-php="₱ M, current" data-usd="$ M, current">(₱ M, current)</span></td><td class="r" id="txn-repo-mtd">–</td><td class="r" id="txn-repo-lmtd">–</td><td class="r" id="txn-repo-lm">–</td></tr>
+            <tr><td>Net Repossession AUM <span class="card-unit unit-fx" data-php="₱ M, current" data-usd="$ M, current">(₱ M, current)</span></td><td class="r" id="txn-netrepo-mtd">–</td><td class="r" id="txn-netrepo-lmtd">–</td><td class="r" id="txn-netrepo-lm">–</td></tr>
             <tr><td>Number of Loans Repaid</td><td class="r" id="txn-closedn-mtd">–</td><td class="r" id="txn-closedn-lmtd">–</td><td class="r" id="txn-closedn-lm">–</td></tr>
-            <tr><td>Amount of Loans Repaid <span class="card-unit unit-fx" data-php="₱ Mio" data-usd="$ Mio">(₱ Mio)</span></td><td class="r" id="txn-repaid-mtd">–</td><td class="r" id="txn-repaid-lmtd">–</td><td class="r" id="txn-repaid-lm">–</td></tr>
+            <tr><td>Amount of Loans Repaid <span class="card-unit unit-fx" data-php="₱ M" data-usd="$ M">(₱ M)</span></td><td class="r" id="txn-repaid-mtd">–</td><td class="r" id="txn-repaid-lmtd">–</td><td class="r" id="txn-repaid-lm">–</td></tr>
           </tbody>
         </table>
       </div>
@@ -299,8 +365,8 @@ tr:hover td{background:rgba(255,248,245,0.7)}
         <table>
           <thead><tr><th>Metric</th><th class="r">MTD</th><th class="r">LM</th></tr></thead>
           <tbody>
-            <tr><td>GMV Active Dealers <span class="card-unit">(dealers with disb. that month)</span></td><td class="r" id="dm-act-mtd">–</td><td class="r" id="dm-act-lm">–</td></tr>
-            <tr><td>AUM Active Dealers <span class="card-unit">(dealers with AUM that month)</span></td><td class="r" id="dm-aumact-mtd">–</td><td class="r" id="dm-aumact-lm">–</td></tr>
+            <tr><td>GMV Active Dealers</td><td class="r" id="dm-act-mtd">–</td><td class="r" id="dm-act-lm">–</td></tr>
+            <tr><td>AUM Active Dealers</td><td class="r" id="dm-aumact-mtd">–</td><td class="r" id="dm-aumact-lm">–</td></tr>
             <tr><td>Fresh Disb. / Active Dealers</td><td class="r" id="dm-ratio-mtd">–</td><td class="r" id="dm-ratio-lm">–</td></tr>
             <tr><td>Total Onboarded Dealers</td><td class="r" id="dm-tot-mtd">–</td><td class="r" id="dm-tot-lm">–</td></tr>
             <tr><td>Newly Onboarded Dealers</td><td class="r" id="dm-new-mtd">–</td><td class="r" id="dm-new-lm">–</td></tr>
@@ -309,6 +375,37 @@ tr:hover td{background:rgba(255,248,245,0.7)}
       </div>
     </div>
     <div class="exrate">DIF AUM, Repossession AUM, and AUM Active Dealers are reconstructed as of each window's end date (Original Principal minus dated repayments) — not a live-only field.</div>
+  </div>
+
+  <div class="section" id="tab-tracker">
+    <div class="section-title">Loan Tracker</div>
+    <div class="section-sub">Search individual loans — outstanding balance as of <span class="rpt-date-inline">–</span></div>
+    <div class="card" style="margin-bottom:var(--gap)">
+      <div class="tracker-controls">
+        <input type="text" id="tracker-search" placeholder="Search Drawdown ID or Dealer ID…" oninput="onTrackerSearch()">
+        <select id="tracker-status" onchange="onTrackerSearch()">
+          <option value="">All statuses</option>
+          <option value="Active">Active</option>
+          <option value="Closed">Closed</option>
+        </select>
+        <label class="tracker-checkbox"><input type="checkbox" id="tracker-repo-only" onchange="onTrackerSearch()"> Repossessed only</label>
+        <span class="tracker-count" id="tracker-count"></span>
+      </div>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr>
+          <th>Drawdown ID</th><th>Dealer ID</th><th>Financier</th><th>Credit Date</th>
+          <th class="r">Original Principal <span class="card-unit unit-fx" data-php="₱" data-usd="$">(₱)</span></th>
+          <th class="r">Outstanding <span class="card-unit unit-fx" data-php="₱" data-usd="$">(₱)</span></th>
+          <th>Status</th><th>Full Settlement Date</th><th>Repossessed</th>
+        </tr></thead>
+        <tbody id="tracker-tbody"></tbody>
+      </table>
+      <div class="tracker-loadmore-wrap" id="tracker-loadmore-wrap" style="display:none">
+        <button class="theme-toggle" onclick="trackerShowMore()">Show more</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -334,6 +431,24 @@ let selectedDate = null;
 let dataLoadedAt = null;
 let minDataDate = null;
 let currencyMode = 'PHP'; // 'PHP' | 'USD'
+
+// ── THEME ────────────────────────────────────────────────────
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('theme-toggle-btn');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  try { localStorage.setItem('finsso-theme', theme); } catch (e) {}
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+(function initTheme() {
+  let stored = null;
+  try { stored = localStorage.getItem('finsso-theme'); } catch (e) {}
+  const preferred = stored || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(preferred);
+})();
 
 const filterState = { financier: new Set() };
 
@@ -443,7 +558,18 @@ function fmtNum(v, decimals=0) {
 }
 function fmtMio(v) {
   const converted = currencyMode === 'USD' ? v / FX_PHP_PER_USD : v;
-  return fmtNum(converted / 1e6, 1);
+  return fmtNum(converted / 1e6, 2);
+}
+// Full (non-abbreviated) currency value — used for loan-level figures in the
+// Loan Tracker, where individual amounts are too small to read well as "M".
+function fmtCurrency(v) {
+  const converted = currencyMode === 'USD' ? v / FX_PHP_PER_USD : v;
+  return fmtNum(converted, currencyMode === 'USD' ? 2 : 0);
+}
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -692,7 +818,68 @@ function renderAll(asOf) {
   const stale = dataLoadedAt ? '' : ' (no data)';
   document.getElementById('data-status-global').textContent =
     dataLoadedAt ? 'Data as of ' + dataLoadedAt.toLocaleString('en-PH', {dateStyle:'medium', timeStyle:'short'}) : 'Loading…' + stale;
+
+  // Keep the Loan Tracker in sync with the report date / financier filter /
+  // currency toggle, whether or not that tab is currently visible.
+  renderTracker();
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LOAN TRACKER
+// ═══════════════════════════════════════════════════════════════════════════
+let trackerPageLimit = 100;
+
+function getFilteredTrackerLoans() {
+  const search = (document.getElementById('tracker-search')?.value || '').trim().toLowerCase();
+  const status = document.getElementById('tracker-status')?.value || '';
+  const repoOnly = document.getElementById('tracker-repo-only')?.checked || false;
+
+  return drawdownRows.filter(loan => {
+    if (!matchLoan(loan)) return false; // respects the global Financier filter
+    if (status && loan.loanStatus !== status) return false;
+    if (repoOnly && !loan.repossessed) return false;
+    if (search) {
+      const hay = (loan.id + ' ' + loan.dealerId).toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    return true;
+  }).sort((a, b) => (b.creditDate ? b.creditDate.getTime() : 0) - (a.creditDate ? a.creditDate.getTime() : 0));
+}
+
+function renderTracker() {
+  const tbody = document.getElementById('tracker-tbody');
+  if (!tbody) return; // not on this page build / not yet in DOM
+
+  const asOf = selectedDate || new Date();
+  const all = getFilteredTrackerLoans();
+  const shown = all.slice(0, trackerPageLimit);
+
+  tbody.innerHTML = shown.map(loan => {
+    const out = outstandingAsOf(loan, asOf);
+    return '<tr>'
+      + '<td>' + escapeHtml(loan.id) + '</td>'
+      + '<td>' + escapeHtml(loan.dealerId) + '</td>'
+      + '<td>' + escapeHtml(loan.financier) + '</td>'
+      + '<td>' + (loan.creditDate ? toKey(loan.creditDate) : '—') + '</td>'
+      + '<td class="r">' + fmtCurrency(loan.originalPrincipal) + '</td>'
+      + '<td class="r">' + fmtCurrency(out) + '</td>'
+      + '<td>' + escapeHtml(loan.loanStatus) + '</td>'
+      + '<td>' + (loan.fullSettlementDate ? toKey(loan.fullSettlementDate) : '—') + '</td>'
+      + '<td>' + (loan.repossessed ? 'Yes' : 'No') + '</td>'
+      + '</tr>';
+  }).join('');
+
+  const countEl = document.getElementById('tracker-count');
+  if (countEl) {
+    countEl.textContent = all.length
+      ? 'Showing ' + shown.length.toLocaleString() + ' of ' + all.length.toLocaleString() + ' loans'
+      : 'No loans match';
+  }
+  const moreWrap = document.getElementById('tracker-loadmore-wrap');
+  if (moreWrap) moreWrap.style.display = all.length > shown.length ? 'flex' : 'none';
+}
+function onTrackerSearch() { trackerPageLimit = 100; renderTracker(); }
+function trackerShowMore() { trackerPageLimit += 100; renderTracker(); }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // FILTER UI
@@ -747,7 +934,10 @@ function resetFilters() {
 function showTab(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  // only one real tab exists in this v1 build
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('tab-' + name);
+  if (target) target.classList.add('active');
+  if (name === 'tracker') renderTracker();
 }
 function onDateChange(v) {
   const d = parseSheetDate(v.replace(/-/g,'/')) || new Date(v);
