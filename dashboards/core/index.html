@@ -385,7 +385,7 @@ tr:hover td{background:var(--tr-hover)}
         </table>
       </div>
     </div>
-    <div class="exrate">Ageing = days since Credit Date, as of the report date above. Tenure = days from Credit Date to Full Settlement Date, for loans closed within each window.</div>
+    <div class="exrate">Open = Loan Status (col AJ) ≠ Closed when viewing today (Overdue counts as open); for a past report date, open = reconstructed balance &gt; 0. Ageing = days since Credit Date, as of the report date above. Tenure = days from Credit Date to Full Settlement Date, for loans closed within each window.</div>
   </div>
 </div>
 
@@ -815,15 +815,39 @@ function bucketIndex(value, bounds) {
   return bounds.length - 1;
 }
 
+function isToday(d) {
+  const t = new Date();
+  return d.getFullYear() === t.getFullYear() && d.getMonth() === t.getMonth() && d.getDate() === t.getDate();
+}
+
 // Open Loans — by Ageing Bucket: every loan still open as of `asOf`, bucketed
 // by days since Credit Date, with its reconstructed outstanding balance.
+//
+// "Open" itself is determined two different ways depending on the report
+// date, since Loan Status (column AJ) only ever reflects the loan's CURRENT
+// state — it carries no history of when a loan's status changed:
+//   - Report date = today: read Loan Status directly off the sheet. Anything
+//     that isn't literally "Closed" counts as open — this includes
+//     "Overdue" loans, which are open (just late), not closed.
+//   - Report date = any other (past) date: Loan Status can't tell us what
+//     the loan's status WAS on that past date, so fall back to the balance
+//     reconstruction — a loan is open if its reconstructed outstanding
+//     balance (Original Principal minus repayments applied by that date) is
+//     still greater than zero. An overdue loan still has a balance > 0, so
+//     it's naturally counted as open here too.
 function computeOpenAgeing(asOf) {
   const ageN = AGE_BUCKETS.map(() => 0);
   const ageSum = AGE_BUCKETS.map(() => 0);
+  const useStatusField = isToday(asOf);
   drawdownRows.forEach(loan => {
     if (!matchLoan(loan)) return;
+    if (!loan.creditDate || loan.creditDate > asOf) return; // not yet disbursed as of this date
     const out = outstandingAsOf(loan, asOf);
-    if (out <= 0) return; // not open (not yet disbursed, or fully settled) as of this date
+    if (useStatusField) {
+      if (loan.loanStatus === 'Closed') return;
+    } else {
+      if (out <= 0) return;
+    }
     const ageDays = Math.round((asOf - loan.creditDate) / DAY_MS) + 1;
     const ai = bucketIndex(ageDays, AGE_BOUNDS);
     ageN[ai] += 1;
