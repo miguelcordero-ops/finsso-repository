@@ -385,7 +385,7 @@ tr:hover td{background:var(--tr-hover)}
         </table>
       </div>
     </div>
-    <div class="exrate">Open = Loan Status (col AJ) ≠ Closed when viewing today (Overdue counts as open); for a past report date, open = reconstructed balance &gt; 0. Ageing = days since Credit Date, as of the report date above. Tenure = days from Credit Date to Full Settlement Date, for loans closed within each window.</div>
+    <div class="exrate">Cancelled loans are never open. Otherwise, open = Loan Status (col AJ) ≠ Closed when viewing today (Overdue counts as open); for a past report date, open = reconstructed balance &gt; 0. Ageing = days since Credit Date, as of the report date above. Tenure = days from Credit Date to Full Settlement Date, for loans closed within each window.</div>
   </div>
 </div>
 
@@ -809,6 +809,12 @@ function renderAll(asOf) {
 // ═══════════════════════════════════════════════════════════════════════════
 const AGE_BUCKETS = ['1–7 Days','8–15 Days','16–30 Days','31–45 Days','46–60 Days','61–90 Days','91–120 Days','121–150 Days','150–180 Days','180–360 Days','>360 Days'];
 const AGE_BOUNDS  = [7,15,30,45,60,90,120,150,180,360,Infinity];
+// Some loans carry a Loan Status of "Open" with no Credit Date recorded at
+// all (confirmed live: ABA186, ATC19, CARA9, and others — approved/open but
+// not yet showing a disbursal date in the sheet). They can't be aged, but
+// they're still genuinely open, so they get their own bucket rather than
+// being silently dropped from the count entirely.
+const AGE_BUCKETS_OPEN = AGE_BUCKETS.concat(['No Credit Date']);
 
 function bucketIndex(value, bounds) {
   for (let i = 0; i < bounds.length; i++) { if (value <= bounds[i]) return i; }
@@ -823,35 +829,49 @@ function isToday(d) {
 // Open Loans — by Ageing Bucket: every loan still open as of `asOf`, bucketed
 // by days since Credit Date, with its reconstructed outstanding balance.
 //
-// "Open" itself is determined two different ways depending on the report
+// "Cancelled" loans are excluded from Open on every report date — a
+// cancelled loan never actually funded/settled in the normal sense, so it
+// shouldn't appear as open regardless of which date-based rule below applies.
+//
+// Otherwise, "Open" is determined two different ways depending on the report
 // date, since Loan Status (column AJ) only ever reflects the loan's CURRENT
 // state — it carries no history of when a loan's status changed:
 //   - Report date = today: read Loan Status directly off the sheet. Anything
-//     that isn't literally "Closed" counts as open — this includes
+//     that isn't "Closed" or "Cancelled" counts as open — this includes
 //     "Overdue" loans, which are open (just late), not closed.
 //   - Report date = any other (past) date: Loan Status can't tell us what
 //     the loan's status WAS on that past date, so fall back to the balance
 //     reconstruction — a loan is open if its reconstructed outstanding
 //     balance (Original Principal minus repayments applied by that date) is
 //     still greater than zero. An overdue loan still has a balance > 0, so
-//     it's naturally counted as open here too.
+//     it's naturally counted as open here too. A loan with no Credit Date
+//     has no reconstructable balance at all, so it can't be evaluated for a
+//     past date and is excluded on that path only (not on "today").
 function computeOpenAgeing(asOf) {
-  const ageN = AGE_BUCKETS.map(() => 0);
-  const ageSum = AGE_BUCKETS.map(() => 0);
+  const ageN = AGE_BUCKETS_OPEN.map(() => 0);
+  const ageSum = AGE_BUCKETS_OPEN.map(() => 0);
+  const noDateIdx = AGE_BUCKETS_OPEN.length - 1;
   const useStatusField = isToday(asOf);
   drawdownRows.forEach(loan => {
     if (!matchLoan(loan)) return;
-    if (!loan.creditDate || loan.creditDate > asOf) return; // not yet disbursed as of this date
-    const out = outstandingAsOf(loan, asOf);
+    if (loan.loanStatus === 'Cancelled') return; // never open, on any report date
+    if (loan.creditDate && loan.creditDate > asOf) return; // not yet disbursed as of this date
+    if (!useStatusField && !loan.creditDate) return; // can't reconstruct a balance for a past date without one
+    const out = outstandingAsOf(loan, asOf); // 0 when Credit Date is missing
     if (useStatusField) {
       if (loan.loanStatus === 'Closed') return;
     } else {
       if (out <= 0) return;
     }
-    const ageDays = Math.round((asOf - loan.creditDate) / DAY_MS) + 1;
-    const ai = bucketIndex(ageDays, AGE_BOUNDS);
-    ageN[ai] += 1;
-    ageSum[ai] += out;
+    if (loan.creditDate) {
+      const ageDays = Math.round((asOf - loan.creditDate) / DAY_MS) + 1;
+      const ai = bucketIndex(ageDays, AGE_BOUNDS);
+      ageN[ai] += 1;
+      ageSum[ai] += out;
+    } else {
+      ageN[noDateIdx] += 1;
+      ageSum[noDateIdx] += out;
+    }
   });
   return { ageN, ageSum };
 }
@@ -887,7 +907,7 @@ function renderTracker() {
   const { ageN: openN, ageSum: openSum } = computeOpenAgeing(asOf);
   const totOpenN = openN.reduce((a, b) => a + b, 0);
   const totOpenAUM = openSum.reduce((a, b) => a + b, 0);
-  openBody.innerHTML = AGE_BUCKETS.map((bk, i) => {
+  openBody.innerHTML = AGE_BUCKETS_OPEN.map((bk, i) => {
     const n = openN[i], a = openSum[i];
     return '<tr><td>' + bk + '</td>'
       + '<td class="r">' + fmtNum(n) + '</td>'
