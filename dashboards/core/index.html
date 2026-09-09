@@ -175,17 +175,6 @@ tr:hover td{background:var(--tr-hover)}
 
 .exrate{font-size:11px;color:var(--text3);text-align:right;margin-top:8px}
 
-.tracker-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
-.tracker-controls input[type=text],.tracker-controls select{
-  font-size:12px;padding:6px 10px;
-  border:1px solid var(--border2);border-radius:var(--rctrl);
-  background:var(--surface-d);color:var(--text);
-}
-.tracker-controls input[type=text]{flex:1;min-width:200px}
-.tracker-checkbox{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);white-space:nowrap;cursor:pointer}
-.tracker-count{font-size:11px;color:var(--text3);margin-left:auto;white-space:nowrap}
-.tracker-loadmore-wrap{display:flex;justify-content:center;padding-top:12px}
-
 .loading-overlay{
   position:fixed;inset:0;
   background:var(--overlay-tint);
@@ -379,33 +368,24 @@ tr:hover td{background:var(--tr-hover)}
 
   <div class="section" id="tab-tracker">
     <div class="section-title">Loan Tracker</div>
-    <div class="section-sub">Search individual loans — outstanding balance as of <span class="rpt-date-inline">–</span></div>
-    <div class="card" style="margin-bottom:var(--gap)">
-      <div class="tracker-controls">
-        <input type="text" id="tracker-search" placeholder="Search Drawdown ID or Dealer ID…" oninput="onTrackerSearch()">
-        <select id="tracker-status" onchange="onTrackerSearch()">
-          <option value="">All statuses</option>
-          <option value="Active">Active</option>
-          <option value="Closed">Closed</option>
-        </select>
-        <label class="tracker-checkbox"><input type="checkbox" id="tracker-repo-only" onchange="onTrackerSearch()"> Repossessed only</label>
-        <span class="tracker-count" id="tracker-count"></span>
+    <div class="section-sub">MTD vs LMTD as of <span class="rpt-date-inline">–</span></div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">Open Loans — by Ageing Bucket</div>
+        <table>
+          <thead><tr><th>Bucket</th><th class="r"># Loans</th><th class="r">%</th><th class="r">AUM <span class="card-unit unit-fx" data-php="₱ M" data-usd="$ M">(₱ M)</span></th><th class="r">%</th></tr></thead>
+          <tbody id="open-age-body"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">Closed Loans — by Tenure Bucket</div>
+        <table>
+          <thead><tr><th>Bucket</th><th class="r">MTD #</th><th class="r">%</th><th class="r">LMTD #</th><th class="r">%</th><th class="r">LM #</th><th class="r">%</th></tr></thead>
+          <tbody id="closed-age-body"></tbody>
+        </table>
       </div>
     </div>
-    <div class="card">
-      <table>
-        <thead><tr>
-          <th>Drawdown ID</th><th>Dealer ID</th><th>Financier</th><th>Credit Date</th>
-          <th class="r">Original Principal <span class="card-unit unit-fx" data-php="₱" data-usd="$">(₱)</span></th>
-          <th class="r">Outstanding <span class="card-unit unit-fx" data-php="₱" data-usd="$">(₱)</span></th>
-          <th>Status</th><th>Full Settlement Date</th><th>Repossessed</th>
-        </tr></thead>
-        <tbody id="tracker-tbody"></tbody>
-      </table>
-      <div class="tracker-loadmore-wrap" id="tracker-loadmore-wrap" style="display:none">
-        <button class="theme-toggle" onclick="trackerShowMore()">Show more</button>
-      </div>
-    </div>
+    <div class="exrate">Ageing = days since Credit Date, as of the report date above. Tenure = days from Credit Date to Full Settlement Date, for loans closed within each window.</div>
   </div>
 </div>
 
@@ -825,61 +805,93 @@ function renderAll(asOf) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// LOAN TRACKER
+// LOAN TRACKER — Open Loans by Ageing Bucket, Closed Loans by Tenure Bucket
 // ═══════════════════════════════════════════════════════════════════════════
-let trackerPageLimit = 100;
+const AGE_BUCKETS = ['1–7 Days','8–15 Days','16–30 Days','31–45 Days','46–60 Days','61–90 Days','91–120 Days','121–150 Days','150–180 Days','180–360 Days','>360 Days'];
+const AGE_BOUNDS  = [7,15,30,45,60,90,120,150,180,360,Infinity];
 
-function getFilteredTrackerLoans() {
-  const search = (document.getElementById('tracker-search')?.value || '').trim().toLowerCase();
-  const status = document.getElementById('tracker-status')?.value || '';
-  const repoOnly = document.getElementById('tracker-repo-only')?.checked || false;
+function bucketIndex(value, bounds) {
+  for (let i = 0; i < bounds.length; i++) { if (value <= bounds[i]) return i; }
+  return bounds.length - 1;
+}
 
-  return drawdownRows.filter(loan => {
-    if (!matchLoan(loan)) return false; // respects the global Financier filter
-    if (status && loan.loanStatus !== status) return false;
-    if (repoOnly && !loan.repossessed) return false;
-    if (search) {
-      const hay = (loan.id + ' ' + loan.dealerId).toLowerCase();
-      if (!hay.includes(search)) return false;
-    }
-    return true;
-  }).sort((a, b) => (b.creditDate ? b.creditDate.getTime() : 0) - (a.creditDate ? a.creditDate.getTime() : 0));
+// Open Loans — by Ageing Bucket: every loan still open as of `asOf`, bucketed
+// by days since Credit Date, with its reconstructed outstanding balance.
+function computeOpenAgeing(asOf) {
+  const ageN = AGE_BUCKETS.map(() => 0);
+  const ageSum = AGE_BUCKETS.map(() => 0);
+  drawdownRows.forEach(loan => {
+    if (!matchLoan(loan)) return;
+    const out = outstandingAsOf(loan, asOf);
+    if (out <= 0) return; // not open (not yet disbursed, or fully settled) as of this date
+    const ageDays = Math.round((asOf - loan.creditDate) / DAY_MS) + 1;
+    const ai = bucketIndex(ageDays, AGE_BOUNDS);
+    ageN[ai] += 1;
+    ageSum[ai] += out;
+  });
+  return { ageN, ageSum };
+}
+
+// Closed Loans — by Tenure Bucket: loans whose Full Settlement Date falls
+// within [from, to], bucketed by days from Credit Date to Full Settlement
+// Date (i.e. how long the loan was open before closing).
+function computeClosedTenure(from, to) {
+  const ageN = AGE_BUCKETS.map(() => 0);
+  drawdownRows.forEach(loan => {
+    if (!matchLoan(loan)) return;
+    if (loan.loanStatus !== 'Closed' || !loan.fullSettlementDate) return;
+    if (!(loan.fullSettlementDate > from && loan.fullSettlementDate <= to)) return;
+    if (!loan.creditDate) return;
+    const tenureDays = Math.round((loan.fullSettlementDate - loan.creditDate) / DAY_MS) + 1;
+    const ai = bucketIndex(tenureDays, AGE_BOUNDS);
+    ageN[ai] += 1;
+  });
+  return ageN;
 }
 
 function renderTracker() {
-  const tbody = document.getElementById('tracker-tbody');
-  if (!tbody) return; // not on this page build / not yet in DOM
+  const openBody = document.getElementById('open-age-body');
+  const closedBody = document.getElementById('closed-age-body');
+  if (!openBody || !closedBody) return; // not on this page build / not yet in DOM
 
   const asOf = selectedDate || new Date();
-  const all = getFilteredTrackerLoans();
-  const shown = all.slice(0, trackerPageLimit);
+  const lastDayPrev = lastDayPrevMonth(asOf);
+  const prevPrev = new Date(lastDayPrev.getFullYear(), lastDayPrev.getMonth(), 0);
+  const lmtdEnd = lmtdDate(asOf);
 
-  tbody.innerHTML = shown.map(loan => {
-    const out = outstandingAsOf(loan, asOf);
-    return '<tr>'
-      + '<td>' + escapeHtml(loan.id) + '</td>'
-      + '<td>' + escapeHtml(loan.dealerId) + '</td>'
-      + '<td>' + escapeHtml(loan.financier) + '</td>'
-      + '<td>' + (loan.creditDate ? toKey(loan.creditDate) : '—') + '</td>'
-      + '<td class="r">' + fmtCurrency(loan.originalPrincipal) + '</td>'
-      + '<td class="r">' + fmtCurrency(out) + '</td>'
-      + '<td>' + escapeHtml(loan.loanStatus) + '</td>'
-      + '<td>' + (loan.fullSettlementDate ? toKey(loan.fullSettlementDate) : '—') + '</td>'
-      + '<td>' + (loan.repossessed ? 'Yes' : 'No') + '</td>'
-      + '</tr>';
-  }).join('');
+  // Open Loans — Ageing
+  const { ageN: openN, ageSum: openSum } = computeOpenAgeing(asOf);
+  const totOpenN = openN.reduce((a, b) => a + b, 0);
+  const totOpenAUM = openSum.reduce((a, b) => a + b, 0);
+  openBody.innerHTML = AGE_BUCKETS.map((bk, i) => {
+    const n = openN[i], a = openSum[i];
+    return '<tr><td>' + bk + '</td>'
+      + '<td class="r">' + fmtNum(n) + '</td>'
+      + '<td class="r">' + (totOpenN ? fmtNum(n / totOpenN * 100, 1) + '%' : '—') + '</td>'
+      + '<td class="r">' + fmtMio(a) + '</td>'
+      + '<td class="r">' + (totOpenAUM ? fmtNum(a / totOpenAUM * 100, 1) + '%' : '—') + '</td></tr>';
+  }).join('') + '<tr class="bold"><td>Total</td>'
+    + '<td class="r">' + fmtNum(totOpenN) + '</td><td class="r">100%</td>'
+    + '<td class="r">' + fmtMio(totOpenAUM) + '</td><td class="r">100%</td></tr>';
 
-  const countEl = document.getElementById('tracker-count');
-  if (countEl) {
-    countEl.textContent = all.length
-      ? 'Showing ' + shown.length.toLocaleString() + ' of ' + all.length.toLocaleString() + ' loans'
-      : 'No loans match';
-  }
-  const moreWrap = document.getElementById('tracker-loadmore-wrap');
-  if (moreWrap) moreWrap.style.display = all.length > shown.length ? 'flex' : 'none';
+  // Closed Loans — Tenure (MTD / LMTD / LM windows, same as Transaction Metrics)
+  const closedMTD = computeClosedTenure(lastDayPrev, asOf);
+  const closedLMTD = computeClosedTenure(prevPrev, lmtdEnd);
+  const closedLM = computeClosedTenure(prevPrev, lastDayPrev);
+  const totCM = closedMTD.reduce((a, b) => a + b, 0);
+  const totCL = closedLMTD.reduce((a, b) => a + b, 0);
+  const totClm = closedLM.reduce((a, b) => a + b, 0);
+  closedBody.innerHTML = AGE_BUCKETS.map((bk, i) => {
+    const cm = closedMTD[i], cl = closedLMTD[i], clm = closedLM[i];
+    return '<tr><td>' + bk + '</td>'
+      + '<td class="r">' + fmtNum(cm) + '</td><td class="r">' + (totCM ? fmtNum(cm / totCM * 100, 1) + '%' : '—') + '</td>'
+      + '<td class="r">' + fmtNum(cl) + '</td><td class="r">' + (totCL ? fmtNum(cl / totCL * 100, 1) + '%' : '—') + '</td>'
+      + '<td class="r">' + fmtNum(clm) + '</td><td class="r">' + (totClm ? fmtNum(clm / totClm * 100, 1) + '%' : '—') + '</td></tr>';
+  }).join('') + '<tr class="bold"><td>Total</td>'
+    + '<td class="r">' + fmtNum(totCM) + '</td><td class="r">100%</td>'
+    + '<td class="r">' + fmtNum(totCL) + '</td><td class="r">100%</td>'
+    + '<td class="r">' + fmtNum(totClm) + '</td><td class="r">100%</td></tr>';
 }
-function onTrackerSearch() { trackerPageLimit = 100; renderTracker(); }
-function trackerShowMore() { trackerPageLimit += 100; renderTracker(); }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // FILTER UI
