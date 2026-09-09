@@ -268,6 +268,7 @@ tr:hover td{background:rgba(255,248,245,0.7)}
 
 <div class="filter-bar" id="filter-bar">
   <div class="filter-group" id="filter-financier"><span class="filter-group-label">Financier</span></div>
+  <div class="filter-group" id="filter-currency"><span class="filter-group-label">Currency</span></div>
   <span class="filter-reset" id="filter-reset" onclick="resetFilters()">Reset filters</span>
 </div>
 
@@ -282,14 +283,14 @@ tr:hover td{background:rgba(255,248,245,0.7)}
           <thead><tr><th>Metric</th><th class="r">MTD</th><th class="r">LMTD</th><th class="r">LM</th></tr></thead>
           <tbody>
             <tr class="bold"><td>Number of Disbursements</td><td class="r" id="txn-disbn-mtd">–</td><td class="r" id="txn-disbn-lmtd">–</td><td class="r" id="txn-disbn-lm">–</td></tr>
-            <tr><td>Disbursed Amount <span class="card-unit">(₱ Mio)</span></td><td class="r" id="txn-disbsum-mtd">–</td><td class="r" id="txn-disbsum-lmtd">–</td><td class="r" id="txn-disbsum-lm">–</td></tr>
-            <tr class="bold"><td>DIF AUM <span class="card-unit">(₱ Mio, current)</span></td><td class="r" id="txn-aum-mtd">–</td><td class="r" id="txn-aum-lmtd">–</td><td class="r" id="txn-aum-lm">–</td></tr>
+            <tr><td>Disbursed Amount <span class="card-unit unit-fx" data-php="₱ Mio" data-usd="$ Mio">(₱ Mio)</span></td><td class="r" id="txn-disbsum-mtd">–</td><td class="r" id="txn-disbsum-lmtd">–</td><td class="r" id="txn-disbsum-lm">–</td></tr>
+            <tr class="bold"><td>DIF AUM <span class="card-unit unit-fx" data-php="₱ Mio, current" data-usd="$ Mio, current">(₱ Mio, current)</span></td><td class="r" id="txn-aum-mtd">–</td><td class="r" id="txn-aum-lmtd">–</td><td class="r" id="txn-aum-lm">–</td></tr>
             <tr class="sub"><td>Netbank</td><td class="r" id="txn-nb-mtd">–</td><td class="r" id="txn-nb-lmtd">–</td><td class="r" id="txn-nb-lm">–</td></tr>
             <tr class="sub"><td>Finsso</td><td class="r" id="txn-fs-mtd">–</td><td class="r" id="txn-fs-lmtd">–</td><td class="r" id="txn-fs-lm">–</td></tr>
-            <tr><td>Repossession AUM <span class="card-unit">(₱ Mio, current)</span></td><td class="r" id="txn-repo-mtd">–</td><td class="r" id="txn-repo-lmtd">–</td><td class="r" id="txn-repo-lm">–</td></tr>
-            <tr><td>Net Repossession AUM <span class="card-unit">(₱ Mio, current)</span></td><td class="r" id="txn-netrepo-mtd">–</td><td class="r" id="txn-netrepo-lmtd">–</td><td class="r" id="txn-netrepo-lm">–</td></tr>
+            <tr><td>Repossession AUM <span class="card-unit unit-fx" data-php="₱ Mio, current" data-usd="$ Mio, current">(₱ Mio, current)</span></td><td class="r" id="txn-repo-mtd">–</td><td class="r" id="txn-repo-lmtd">–</td><td class="r" id="txn-repo-lm">–</td></tr>
+            <tr><td>Net Repossession AUM <span class="card-unit unit-fx" data-php="₱ Mio, current" data-usd="$ Mio, current">(₱ Mio, current)</span></td><td class="r" id="txn-netrepo-mtd">–</td><td class="r" id="txn-netrepo-lmtd">–</td><td class="r" id="txn-netrepo-lm">–</td></tr>
             <tr><td>Number of Loans Repaid</td><td class="r" id="txn-closedn-mtd">–</td><td class="r" id="txn-closedn-lmtd">–</td><td class="r" id="txn-closedn-lm">–</td></tr>
-            <tr><td>Amount of Loans Repaid <span class="card-unit">(₱ Mio)</span></td><td class="r" id="txn-repaid-mtd">–</td><td class="r" id="txn-repaid-lmtd">–</td><td class="r" id="txn-repaid-lm">–</td></tr>
+            <tr><td>Amount of Loans Repaid <span class="card-unit unit-fx" data-php="₱ Mio" data-usd="$ Mio">(₱ Mio)</span></td><td class="r" id="txn-repaid-mtd">–</td><td class="r" id="txn-repaid-lmtd">–</td><td class="r" id="txn-repaid-lm">–</td></tr>
           </tbody>
         </table>
       </div>
@@ -298,7 +299,8 @@ tr:hover td{background:rgba(255,248,245,0.7)}
         <table>
           <thead><tr><th>Metric</th><th class="r">MTD</th><th class="r">LM</th></tr></thead>
           <tbody>
-            <tr><td>Active Dealers (Fresh Disb.)</td><td class="r" id="dm-act-mtd">–</td><td class="r" id="dm-act-lm">–</td></tr>
+            <tr><td>GMV Active Dealers <span class="card-unit">(dealers with disb. that month)</span></td><td class="r" id="dm-act-mtd">–</td><td class="r" id="dm-act-lm">–</td></tr>
+            <tr><td>AUM Active Dealers <span class="card-unit">(dealers with AUM that month)</span></td><td class="r" id="dm-aumact-mtd">–</td><td class="r" id="dm-aumact-lm">–</td></tr>
             <tr><td>Fresh Disb. / Active Dealers</td><td class="r" id="dm-ratio-mtd">–</td><td class="r" id="dm-ratio-lm">–</td></tr>
             <tr><td>Total Onboarded Dealers</td><td class="r" id="dm-tot-mtd">–</td><td class="r" id="dm-tot-lm">–</td></tr>
             <tr><td>Newly Onboarded Dealers</td><td class="r" id="dm-new-mtd">–</td><td class="r" id="dm-new-lm">–</td></tr>
@@ -306,7 +308,7 @@ tr:hover td{background:rgba(255,248,245,0.7)}
         </table>
       </div>
     </div>
-    <div class="exrate">DIF AUM and Repossession AUM reflect current live balances, not historical reconstruction — see note below.</div>
+    <div class="exrate">DIF AUM, Repossession AUM, and AUM Active Dealers are reconstructed as of each window's end date (Original Principal minus dated repayments) — not a live-only field.</div>
   </div>
 </div>
 
@@ -323,6 +325,7 @@ tr:hover td{background:rgba(255,248,245,0.7)}
 const DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-repository/main/data/';
 const FINANCIERS = ['Netbank', 'Finsso'];
 const DAY_MS = 86400000;
+const FX_PHP_PER_USD = 60; // fixed conversion rate for the currency toggle
 
 let drawdownRows = [];   // one row per loan
 let repaymentRows = [];  // one row per repayment transaction
@@ -330,6 +333,7 @@ let onboardMap = {};     // dealerId -> earliest "credit line issued" date
 let selectedDate = null;
 let dataLoadedAt = null;
 let minDataDate = null;
+let currencyMode = 'PHP'; // 'PHP' | 'USD'
 
 const filterState = { financier: new Set() };
 
@@ -437,7 +441,10 @@ function fmtNum(v, decimals=0) {
   if (v === null || v === undefined || isNaN(v)) return '—';
   return v.toLocaleString('en-US', {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
 }
-function fmtMio(v) { return fmtNum(v / 1e6, 1); }
+function fmtMio(v) {
+  const converted = currencyMode === 'USD' ? v / FX_PHP_PER_USD : v;
+  return fmtNum(converted / 1e6, 1);
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // LOAD DATA
@@ -561,6 +568,7 @@ function computeSnapshot(asOf) {
     repoAUM: 0,
     repaidN: 0, repaidSum: 0,
     activeDealers: new Set(),
+    aumActiveDealers: new Set(),
   };
 
   drawdownRows.forEach(loan => {
@@ -571,6 +579,7 @@ function computeSnapshot(asOf) {
       s.aum += out;
       if (loan.financier === 'Netbank') s.aumByFin.Netbank += out;
       else if (loan.financier === 'Finsso') s.aumByFin.Finsso += out;
+      if (loan.dealerId) s.aumActiveDealers.add(loan.dealerId);
       if (loan.repossessed && loan.repoDate && loan.repoDate <= asOf) {
         s.repoAUM += loan.outstandingAtRepo || out;
       }
@@ -644,29 +653,35 @@ function renderAll(asOf) {
   setText('txn-repaid-lmtd', fmtMio(lmtd.repaidSum));
   setText('txn-repaid-lm', fmtMio(lm.repaidSum));
 
-  // AUM / Repossession — current live snapshot only (see note in UI)
+  // AUM / Repossession — reconstructed as-of each window's end date, using
+  // the same Original Principal minus dated-repayments methodology as the
+  // live snapshot (outstandingAsOf works for any date, not just today).
   const snap = computeSnapshot(asOf);
+  const lmtdSnap = computeSnapshot(lmtdEnd);
+  const lmSnap = computeSnapshot(lastDayPrev);
   setText('txn-aum-mtd', fmtMio(snap.aum));
-  setText('txn-aum-lmtd', '—');
-  setText('txn-aum-lm', '—');
+  setText('txn-aum-lmtd', fmtMio(lmtdSnap.aum));
+  setText('txn-aum-lm', fmtMio(lmSnap.aum));
   setText('txn-nb-mtd', fmtMio(snap.aumByFin.Netbank));
-  setText('txn-nb-lmtd', '—');
-  setText('txn-nb-lm', '—');
+  setText('txn-nb-lmtd', fmtMio(lmtdSnap.aumByFin.Netbank));
+  setText('txn-nb-lm', fmtMio(lmSnap.aumByFin.Netbank));
   setText('txn-fs-mtd', fmtMio(snap.aumByFin.Finsso));
-  setText('txn-fs-lmtd', '—');
-  setText('txn-fs-lm', '—');
+  setText('txn-fs-lmtd', fmtMio(lmtdSnap.aumByFin.Finsso));
+  setText('txn-fs-lm', fmtMio(lmSnap.aumByFin.Finsso));
   setText('txn-repo-mtd', fmtMio(snap.repoAUM));
-  setText('txn-repo-lmtd', '—');
-  setText('txn-repo-lm', '—');
+  setText('txn-repo-lmtd', fmtMio(lmtdSnap.repoAUM));
+  setText('txn-repo-lm', fmtMio(lmSnap.repoAUM));
   setText('txn-netrepo-mtd', fmtMio(snap.aum - snap.repoAUM));
-  setText('txn-netrepo-lmtd', '—');
-  setText('txn-netrepo-lm', '—');
+  setText('txn-netrepo-lmtd', fmtMio(lmtdSnap.aum - lmtdSnap.repoAUM));
+  setText('txn-netrepo-lm', fmtMio(lmSnap.aum - lmSnap.repoAUM));
 
   // Dealer Metrics
   const onbMTD = countOnboarded(asOf, lastDayPrev);
   const onbLM = countOnboarded(lastDayPrev, prevPrev);
   setText('dm-act-mtd', fmtNum(mtd.activeDealers.size));
   setText('dm-act-lm', fmtNum(lm.activeDealers.size));
+  setText('dm-aumact-mtd', fmtNum(snap.aumActiveDealers.size));
+  setText('dm-aumact-lm', fmtNum(lmSnap.aumActiveDealers.size));
   setText('dm-ratio-mtd', mtd.activeDealers.size ? fmtNum(mtd.disbN / mtd.activeDealers.size, 2) : '—');
   setText('dm-ratio-lm', lm.activeDealers.size ? fmtNum(lm.disbN / lm.activeDealers.size, 2) : '—');
   setText('dm-tot-mtd', fmtNum(onbMTD.total));
@@ -695,6 +710,34 @@ function makeChip(label, value, stateSet, containerId) {
 }
 function buildStaticFilterUI() {
   FINANCIERS.forEach(f => makeChip(f, f, filterState.financier, 'filter-financier'));
+  buildCurrencyToggle();
+}
+
+// Currency toggle — PHP (native) vs USD (converted at a fixed FX_PHP_PER_USD
+// rate). Exclusive selection between the two chips, unlike the multi-select
+// financier chips above.
+function buildCurrencyToggle() {
+  const container = document.getElementById('filter-currency');
+  const modes = ['PHP', 'USD'];
+  modes.forEach(mode => {
+    const el = document.createElement('span');
+    el.className = 'filter-chip' + (mode === currencyMode ? ' active' : '');
+    el.textContent = mode;
+    el.onclick = () => {
+      if (currencyMode === mode) return;
+      currencyMode = mode;
+      container.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      updateCurrencyLabels();
+      renderAll(selectedDate);
+    };
+    container.appendChild(el);
+  });
+}
+function updateCurrencyLabels() {
+  document.querySelectorAll('.unit-fx').forEach(el => {
+    el.textContent = '(' + el.dataset[currencyMode === 'USD' ? 'usd' : 'php'] + ')';
+  });
 }
 function resetFilters() {
   filterState.financier.clear();
