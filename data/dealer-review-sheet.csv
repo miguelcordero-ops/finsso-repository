@@ -246,7 +246,7 @@
 ,IF0245,VL AUTO TRADING,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46184.60625,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0246,JHELO CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,1,0,0,0,0,0,0,1,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46184.61597,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0247,4CS AUTO CARE CENTER,Marah Luriely A. Villaruz,Rhoyland Alagon,0,2,1,0,261000,261000,261000,0,42.33333333,,7,,Open,,,,,0,0,0,0.0008960540066,0,0,,0,0,0,0,No
-,IF0248,MANILA A DEAL CAR TRADING,Albert Dalupang,Marlon Llamas,0,17,0,6,6679000,6679000,0,6679000,84.39130435,,21.1875,46223,Blacklisted,15 DPD,46223,,,69,40,29,0.02293005636,51,37,46266,42,34,8,0,No,,,,46238.04096
+,IF0248,MANILA A DEAL CAR TRADING,Albert Dalupang,Marlon Llamas,0,17,0,6,6679000,6679000,0,6679000,84.39130435,,21.1875,46223,Blacklisted,15 DPD,46223,,,70,41,29,0.02293005636,51,37,46274,43,35,8,0,No,,,,46238.04096
 ,IF0249,POLLY'S CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46184.64792,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0250,RAS CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,9,0,0,0,0,0,0,75.88888889,,6,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46170.66736,,8,2,6,0,0,0,,0,0,0,2,No
 ,IF0251,TREV AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,7,1,0,160380,160380,160380,0,52.25,,5,,Open,,,,,8,4,4,0.0005506097379,0,0,46213,1,1,0,1,No
@@ -265,7 +265,7 @@
 ,IF0264,ROSMEL AUTO TRADING,Albert Dalupang,Ricmar Magboo,0,4,2,0,480000,480000,480000,0,37.33333333,,,,Open,,,,,1,1,0,0.001647915414,0,0,,0,0,0,0,No
 ,IF0265,ELLA BELLA CAR TRADING,Malou Alfonso,Rose Batacan,0,3,0,0,0,0,0,0,29.33333333,,,,Open,,,,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0266,AIRCONDITION TRADING WIL-AIR,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46189.74514,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0267,CJ FLOW OPC,Marah Luriely A. Villaruz,Rhoyland Alagon,0,16,3,0,1069953.6,1069953.6,1069953.6,0,26.68421053,,7,,Open,,,,,1,1,0,0.003673318813,0,0,,0,0,0,0,No
+,IF0267,CJ FLOW OPC,Marah Luriely A. Villaruz,Rhoyland Alagon,0,16,3,0,1069953.6,1069953.6,1069953.6,0,26.68421053,,7,,Open,,,,,4,4,0,0.003673318813,0,0,46274,3,3,0,0,No
 ,IF0268,ANARY'S GENERAL MERCHANDISE,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46189.54861,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0269,HEBRIO AUTO TRADING,Malou Alfonso,Rose Batacan,0,1,0,0,0,0,0,0,98,,8,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46189.55417,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0270,DRYVE CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,1,27,2,0,1136700,1136700,1136700,0,50.51724138,,14,,Blacklisted,Locked by Timestamp,46251.62432,,,30,19,11,0.003902469691,0,0,46268,3,1,2,3,No,,,,46251.62432
@@ -391,7 +391,7 @@
 ,IF0390,BOMBAWORX MOTOR VEHICLE SHOP,Marah Luriely A. Villaruz,Rhoyland Alagon,0,1,0,1,161908.25,161908.25,0,161908.25,73,,28,46246,Blacklisted,15 DPD,46246,,,3,2,1,0.0005558564602,28,28,46244,3,2,1,0,No,,,,46200.04094
 ,IF0391,FERCASIO CAR TRADING,Malou Alfonso,Candyce Aguete,0,0,0,0,0,0,0,0,,,,,Open,,,,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0392,AYNS CARPRO AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,2,1,0,340200,340200,340200,0,43.33333333,,,,Open,,,,,2,2,0,0.00116796005,0,0,46226,1,1,0,0,No
-,IF0393,AJYL CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,1,1,1,1000000,1000000,519175,480825,85.66666667,,26.33333333,46241,Blacklisted,15 DPD,46241,,,6,4,2,0.003433157113,33,33,46244,3,2,1,0,No,,,46213,46212
+,IF0393,AJYL CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,1,1,1,1000000,1000000,519175,480825,85.66666667,,26.33333333,46241,Blacklisted,15 DPD,46241,,,8,4,4,0.003433157113,33,33,46274,5,2,3,0,No,,,46213,46212
 ,IF0394,GLS-MNL CAR COVER AND MOTOR COVER TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46175.46458,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0395,FINESTCARS AUTO TRADING,Malou Alfonso,Candyce Aguete,0,1,2,0,900000,900000,900000,0,59.66666667,,,,Open,,,,,1,0,1,0.003089841402,0,0,,0,0,0,0,No
 ,IF0396,JAYC AUTO CARE CENTER,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Hold,Pending CLA Signature,,46175.46806,,0,0,0,0,0,0,,0,0,0,0,No
