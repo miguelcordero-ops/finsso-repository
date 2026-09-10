@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PH DPD Aging Dashboard</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+/* ── CSS Variables ─────────────────────────────────────────── */
+:root{
+  --primary:#E8461E;
+  --accent:#F97316;
+  --bg:#F0F4FD;
+  --surface:rgba(255,255,255,0.68);
+  --border:rgba(255,255,255,0.75);
+  --border2:rgba(0,0,0,0.08);
+  --text:#111827;
+  --text2:#4B5563;
+  --text3:#9CA3AF;
+  --tbl-hdr:rgba(255,255,255,0.50);
+  --tbl-bdr:rgba(0,0,0,0.05);
+  --tbl-bdr2:rgba(0,0,0,0.09);
+  --total-bg:rgba(232,70,30,0.07);
+  --pad:24px;
+  --gap:16px;
+  --rcard:16px;
+  --rctrl:8px;
+
+  --surface-a:rgba(255,255,255,0.72);
+  --surface-b:rgba(255,255,255,0.65);
+  --surface-c:rgba(255,255,255,0.55);
+  --surface-d:rgba(255,255,255,0.80);
+  --surface-hi:rgba(255,255,255,0.95);
+  --chip-hover:rgba(255,255,255,0.9);
+  --overlay-tint:rgba(240,244,253,0.82);
+  --lock-tint:rgba(220,230,255,0.60);
+  --lock-card-bg:rgba(255,255,255,0.82);
+  --spinner-track:rgba(0,0,0,0.08);
+  --grad-1:#FFE8D6;
+  --grad-2:#DDE8FF;
+  --grad-3:#F5F0FF;
+  --tr-hover:rgba(255,248,245,0.7);
+}
+:root[data-theme="dark"]{
+  --bg:#0B0F1A;
+  --surface:rgba(30,35,50,0.65);
+  --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.10);
+  --text:#E5E7EB;
+  --text2:#9CA3AF;
+  --text3:#6B7280;
+  --tbl-hdr:rgba(255,255,255,0.04);
+  --tbl-bdr:rgba(255,255,255,0.06);
+  --tbl-bdr2:rgba(255,255,255,0.10);
+  --total-bg:rgba(232,70,30,0.16);
+
+  --surface-a:rgba(24,28,40,0.78);
+  --surface-b:rgba(24,28,40,0.65);
+  --surface-c:rgba(24,28,40,0.55);
+  --surface-d:rgba(24,28,40,0.82);
+  --surface-hi:rgba(255,255,255,0.06);
+  --chip-hover:rgba(255,255,255,0.10);
+  --overlay-tint:rgba(11,15,26,0.88);
+  --lock-tint:rgba(11,15,26,0.78);
+  --lock-card-bg:rgba(24,28,40,0.88);
+  --spinner-track:rgba(255,255,255,0.10);
+  --grad-1:#3A2A1E;
+  --grad-2:#1B2438;
+  --grad-3:#241E33;
+  --tr-hover:rgba(255,255,255,0.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:light dark}
+html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="light"]{color-scheme:light}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:
+    radial-gradient(ellipse at 15% 10%, var(--grad-1) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 90%, var(--grad-2) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, var(--grad-3) 0%, transparent 80%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--text);
+  font-size:13px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  transition:background-color 0.2s, color 0.2s;
+}
+a{color:inherit;text-decoration:none}
+
+.topbar{
+  background:var(--surface-a);
+  border-bottom:1px solid var(--border2);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 8px 32px rgba(99,102,241,0.08),0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
+  backdrop-filter:blur(28px) saturate(180%);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);
+  padding:14px var(--pad);
+  display:flex;flex-direction:column;gap:0;
+  position:sticky;top:0;z-index:300;
+}
+.report-title{font-size:20px;font-weight:600;color:var(--primary);letter-spacing:-0.3px}
+.report-subtitle{font-size:12px;color:var(--text3);margin-top:3px}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.topbar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
+
+.date-control{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3)}
+.date-control input[type=date]{
+  font-size:12px;padding:4px 8px;
+  border:1px solid var(--border2);border-radius:var(--rctrl);
+  background:var(--surface-d);color:var(--text);cursor:pointer;
+  backdrop-filter:blur(8px);
+  color-scheme:light dark;
+}
+.theme-toggle{
+  font-size:12px;padding:5px 10px;border-radius:var(--rctrl);
+  border:1px solid var(--border2);background:var(--surface-d);
+  color:var(--text2);cursor:pointer;transition:all 0.15s;
+}
+.theme-toggle:hover{background:var(--chip-hover)}
+.date-control input[type=date]:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(232,70,30,0.10)}
+
+.main{padding:20px var(--pad);max-width:1200px;margin:0 auto}
+.section-title{font-size:16px;font-weight:600;color:var(--primary);text-align:center;margin-bottom:4px}
+.section-sub{font-size:11px;color:var(--text3);text-align:center;margin-bottom:20px}
+
+.card{
+  background:var(--surface-b);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 8px 32px rgba(99,102,241,0.08),0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
+  backdrop-filter:blur(16px) saturate(150%);
+  -webkit-backdrop-filter:blur(16px) saturate(150%);
+  border-radius:var(--rcard);padding:16px;overflow-x:auto;
+  margin-bottom:var(--gap);
+}
+.card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px}
+.card-unit{font-size:10px;color:var(--text3);font-weight:400;margin-left:4px}
+
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+  text-align:left;padding:6px 8px;
+  color:var(--text3);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;
+  background:var(--tbl-hdr);
+  border-bottom:1px solid var(--tbl-bdr2);
+  white-space:nowrap;
+}
+th.r,td.r{text-align:right}
+td{padding:6px 8px;color:var(--text2);border-bottom:1px solid var(--tbl-bdr);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr.bold td{font-weight:600;color:var(--text)}
+tr.bold:last-child td{background:var(--total-bg)}
+tr:hover td{background:var(--tr-hover)}
+td.dealer-name{white-space:normal;max-width:220px}
+
+.filter-bar{
+  background:var(--surface-c);
+  border-bottom:1px solid var(--border2);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  padding:10px var(--pad);
+  display:flex;flex-wrap:wrap;align-items:center;gap:14px;
+  position:sticky;top:54px;z-index:250;
+}
+.filter-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.filter-group-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;margin-right:2px}
+.filter-chip{
+  font-size:11px;padding:4px 10px;border-radius:9999px;
+  border:1px solid var(--border2);background:var(--surface-b);
+  color:var(--text2);cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.filter-chip:hover{background:var(--chip-hover)}
+.filter-chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.filter-reset{font-size:11px;color:var(--primary);cursor:pointer;text-decoration:underline;margin-left:auto;white-space:nowrap}
+
+.loading-overlay{
+  position:fixed;inset:0;
+  background:var(--overlay-tint);
+  backdrop-filter:blur(32px) saturate(180%);
+  -webkit-backdrop-filter:blur(32px) saturate(180%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:999;gap:14px;
+}
+.loading-overlay.hidden{display:none}
+.spinner{width:36px;height:36px;border:3px solid var(--spinner-track);border-top-color:var(--primary);border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--text2)}
+.error-box{
+  background:var(--surface-d);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 8px 32px rgba(99,102,241,0.10),0 2px 8px rgba(0,0,0,0.06);
+  backdrop-filter:blur(32px);
+  border-radius:var(--rcard);padding:20px 28px;text-align:center;max-width:380px;
+}
+.error-box h3{color:#A32D2D;margin-bottom:8px;font-size:14px}
+.error-box p{color:var(--text2);font-size:12px;line-height:1.6}
+.error-box button{margin-top:12px;padding:8px 18px;background:var(--primary);color:#fff;border:none;border-radius:var(--rctrl);cursor:pointer;font-size:13px}
+
+.data-status{font-size:11px;color:var(--text3);text-align:right;margin-top:4px}
+
+.lock-overlay{
+  position:fixed;inset:0;
+  background:var(--lock-tint);
+  backdrop-filter:blur(48px) saturate(200%);
+  -webkit-backdrop-filter:blur(48px) saturate(200%);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;
+  transition:opacity 0.35s ease;
+}
+.lock-overlay.unlocking{opacity:0;pointer-events:none}
+.lock-overlay.hidden{display:none}
+.lock-card{
+  background:var(--lock-card-bg);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 80px 120px rgba(99,102,241,0.18),0 8px 32px rgba(0,0,0,0.08),inset 0 1px 0 var(--surface-hi);
+  backdrop-filter:blur(32px) saturate(200%);
+  -webkit-backdrop-filter:blur(32px) saturate(200%);
+  border-radius:28px;
+  padding:36px 32px 28px;
+  width:360px;max-width:90vw;
+  display:flex;flex-direction:column;align-items:center;
+}
+.lock-icon-box{
+  width:62px;height:62px;border-radius:18px;
+  background:linear-gradient(135deg,var(--accent),var(--primary));
+  border:1px solid rgba(232,70,30,0.35);
+  box-shadow:0 4px 16px rgba(232,70,30,0.30);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;
+}
+.lock-icon-box svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lock-title{font-size:17px;font-weight:600;color:var(--text);letter-spacing:-0.3px;margin-bottom:6px;text-align:center}
+.lock-sub{font-size:12px;color:var(--text3);margin-bottom:22px;text-align:center;line-height:1.6}
+.lock-signin{min-height:44px;display:flex;justify-content:center}
+.lock-error-msg{font-size:11px;color:#DC2626;margin-top:10px;min-height:16px;text-align:center}
+.lock-footer{font-size:10px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.06em;text-align:center;margin-top:20px}
+.lock-contact{font-size:11px;color:var(--text3);text-align:center;margin-top:6px}
+.lock-contact a{color:var(--primary);text-decoration:underline}
+
+@media(max-width:600px){
+  body{font-size:12px}
+  .topbar{padding:10px 14px}
+  .main{padding:12px 14px}
+  .report-title{font-size:15px}
+  .filter-bar{top:89px;padding:8px 14px;gap:10px}
+  .card{padding:12px}
+  table{font-size:9px}
+  th{padding:4px 4px;font-size:8px}
+  td{padding:4px 4px;font-size:9px}
+}
+</style>
+</head>
+<body>
+
+<!-- Login gate -->
+<div class="lock-overlay" id="lock-overlay">
+  <div class="lock-card">
+    <div class="lock-icon-box">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    </div>
+    <div class="lock-title">PH DPD Aging Dashboard</div>
+    <div class="lock-sub">Sign in with your Finsso account<br>to access this dashboard</div>
+    <div id="g-signin" class="lock-signin"></div>
+    <div class="lock-error-msg" id="lock-err"></div>
+    <div class="lock-footer">Restricted access</div>
+    <div class="lock-contact">Need access? Contact <a href="mailto:miguel.cordero@finsso.com">miguel.cordero@finsso.com</a></div>
+  </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay hidden" id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text">Loading data…</div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-top">
+    <div style="flex:1">
+      <div class="report-title">PH DPD Aging Dashboard</div>
+      <div class="report-subtitle">Open loans by Days Past Due, as of <span id="rpt-date-display">–</span></div>
+      <div class="data-status" id="data-status-global" style="text-align:left">Loading…</div>
+    </div>
+    <div class="header-right">
+      <div class="date-control">
+        <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+        <label for="rpt-date-input">Report date</label>
+        <input type="date" id="rpt-date-input" onchange="onDateChange(this.value)">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="filter-bar" id="filter-bar">
+  <div class="filter-group" id="filter-financier"><span class="filter-group-label">Financier</span></div>
+  <div class="filter-group" id="filter-dpd-def"><span class="filter-group-label">DPD Definition</span></div>
+  <div class="filter-group" id="filter-currency"><span class="filter-group-label">Currency</span></div>
+  <span class="filter-reset" id="filter-reset" onclick="resetFilters()">Reset filters</span>
+</div>
+
+<div class="main">
+  <div class="section-title">DPD Aging</div>
+  <div class="section-sub">as of <span class="rpt-date-inline">–</span></div>
+
+  <div class="card">
+    <div class="card-title">Open Loans — by DPD Bucket</div>
+    <table>
+      <thead><tr><th>Bucket</th><th class="r"># Loans</th><th class="r">%</th><th class="r">AUM <span class="card-unit unit-fx" data-php="₱ M" data-usd="$ M">(₱ M)</span></th><th class="r">%</th></tr></thead>
+      <tbody id="dpd-portfolio-body"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Per-Dealer DPD Breakdown</div>
+    <table id="dpd-dealer-table">
+      <thead id="dpd-dealer-head"></thead>
+      <tbody id="dpd-dealer-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="error-box" id="error-box" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9998">
+  <h3>Couldn't load data</h3>
+  <p id="error-msg">Something went wrong fetching the dashboard data.</p>
+  <button onclick="location.reload()">Retry</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// DATA SOURCES — public repo, raw CSV, refreshed hourly by Apps Script
+// ═══════════════════════════════════════════════════════════════════════════
+const DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-repository/main/data/';
+const FINANCIERS = ['Netbank', 'Finsso'];
+const DAY_MS = 86400000;
+const FX_PHP_PER_USD = 60;
+
+// Classic DPD buckets. Index 0 = "Current" (not past due at all); the rest
+// are upper day-bounds (inclusive) for how many days past the earliest
+// unpaid due date the loan is.
+const DPD_BUCKETS = ['Current', '1–30', '31–60', '61–90', '91–120', '121–180', '>180'];
+const DPD_BOUNDS  = [30, 60, 90, 120, 180, Infinity]; // applies to buckets[1..]
+
+let drawdownRows = [];
+let repaymentRows = [];
+let selectedDate = null;
+let dataLoadedAt = null;
+let minDataDate = null;
+let currencyMode = 'PHP'; // 'PHP' | 'USD'
+let dpdDefinition = 'any'; // 'any' (Renewal 1 / Renewal 2 / Maturity, in order) | 'maturity' (Final Maturity only)
+
+const filterState = { financier: new Set() };
+
+// ── THEME ────────────────────────────────────────────────────
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('theme-toggle-btn');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  try { localStorage.setItem('finsso-theme', theme); } catch (e) {}
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+(function initTheme() {
+  let stored = null;
+  try { stored = localStorage.getItem('finsso-theme'); } catch (e) {}
+  const preferred = stored || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(preferred);
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DATE / NUMBER UTILS
+// ═══════════════════════════════════════════════════════════════════════════
+function parseSheetDate(v) {
+  if (v === null || v === undefined) return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  if (/^\d+(\.\d+)?$/.test(s)) {
+    // Google Sheets serial date (days since 1899-12-30). Sheets stores the
+    // fractional part as a naive local time-of-day with no timezone info.
+    // Floor it off entirely — we only ever need the calendar day; a stray
+    // time-of-day fraction, treated as UTC, can shift the date across a
+    // day boundary once displayed in the viewer's local timezone. Floor
+    // first, then build the Date from UTC calendar components so the
+    // result never depends on local timezone.
+    const serial = Math.floor(parseFloat(s));
+    if (serial < 20000 || serial > 60000) return null;
+    const utcMs = Math.round((serial - 25569) * DAY_MS);
+    const utcDate = new Date(utcMs);
+    return new Date(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate());
+  }
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[1]-1, +m[2]);
+  const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+function toKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function toDateStr(d) {
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+function parseNum(v) {
+  if (v === null || v === undefined || v === '') return 0;
+  const s = String(v).replace(/[,₱%]/g,'').trim();
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+function fmtNum(v, decimals=0) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  return v.toLocaleString('en-US', {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+}
+function fmtMio(v) {
+  const converted = currencyMode === 'USD' ? v / FX_PHP_PER_USD : v;
+  return fmtNum(converted / 1e6, 2);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CSV PARSING — same RFC4180-ish parser used across every Finsso dashboard
+// ═══════════════════════════════════════════════════════════════════════════
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i+1] === '"') { field += '"'; i++; }
+      else if (ch === '"') inQ = false;
+      else field += ch;
+    } else {
+      if (ch === '"') inQ = true;
+      else if (ch === ',') { row.push(field); field = ''; }
+      else if (ch === '\r') { /* skip */ }
+      else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else field += ch;
+    }
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
+}
+function buildColumnMap(headerRow) {
+  const idx = {};
+  headerRow.forEach((h, i) => { const key = String(h).trim(); if (key && !(key in idx)) idx[key] = i; });
+  return function (name) { return idx[name] !== undefined ? idx[name] : -1; };
+}
+function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
+
+async function fetchCSV(name) {
+  const url = DATA_BASE + name + '?_=' + Date.now();
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('Failed to load ' + name + ' (HTTP ' + r.status + ')');
+  return parseCSV(await r.text());
+}
+
+async function loadData() {
+  const loadingEl = document.getElementById('loading-overlay');
+  const errEl = document.getElementById('error-box');
+  loadingEl.classList.remove('hidden');
+  try {
+    const [ddGrid, rpGrid] = await Promise.all([
+      fetchCSV('drawdown.csv'),
+      fetchCSV('repayment.csv'),
+    ]);
+
+    // ── Drawdown (one row per loan) ──
+    const ddCol = buildColumnMap(ddGrid[0]);
+    drawdownRows = [];
+    let earliestDisb = null;
+    for (let i = 1; i < ddGrid.length; i++) {
+      const r = ddGrid[i];
+      const id = get(r, ddCol('Drawdown ID')).trim();
+      if (!id) continue;
+      const creditDate = parseSheetDate(get(r, ddCol('Credit Date to Dealer Bank Account')));
+      const loan = {
+        id,
+        dealerId: get(r, ddCol('Dealer ID')).trim(),
+        dealerName: (get(r, ddCol('Dealership Name')).trim() || get(r, ddCol('Dealer Name')).trim() || '(unnamed)'),
+        creditDate,
+        originalPrincipal: parseNum(get(r, ddCol('Original Principal'))),
+        loanStatus: get(r, ddCol('Loan Status')).trim(),
+        financier: get(r, ddCol('Financier')).trim(),
+        fullSettlementDate: parseSheetDate(get(r, ddCol('Full Settlement Date'))),
+        renewal1Due: parseSheetDate(get(r, ddCol('Renewal 1 Due Date'))),
+        renewal1PaidDate: parseSheetDate(get(r, ddCol('Payment Date for Renewal 1'))),
+        renewal2Due: parseSheetDate(get(r, ddCol('Renewal 2 Due Date'))),
+        renewal2PaidDate: parseSheetDate(get(r, ddCol('Payment Date for Renewal 2'))),
+        maturityDue: parseSheetDate(get(r, ddCol('Final Maturity Date'))),
+      };
+      drawdownRows.push(loan);
+      if (creditDate && (!earliestDisb || creditDate < earliestDisb)) earliestDisb = creditDate;
+    }
+
+    // ── Repayment (one row per repayment transaction, linked by Drawdown ID) ──
+    const rpCol = buildColumnMap(rpGrid[0]);
+    repaymentRows = [];
+    for (let i = 1; i < rpGrid.length; i++) {
+      const r = rpGrid[i];
+      const drawdownId = get(r, rpCol('Drawdown ID')).trim();
+      if (!drawdownId) continue;
+      repaymentRows.push({
+        drawdownId,
+        paymentDate: parseSheetDate(get(r, rpCol('Dealer Payment Date'))),
+        paidPrincipal: parseNum(get(r, rpCol('Dealer Paid Principal'))),
+      });
+    }
+
+    minDataDate = earliestDisb;
+    dataLoadedAt = new Date();
+    loadingEl.classList.add('hidden');
+    return true;
+  } catch (e) {
+    loadingEl.classList.add('hidden');
+    errEl.style.display = 'block';
+    document.getElementById('error-msg').textContent = e.message || 'Something went wrong fetching the dashboard data.';
+    return false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// OUTSTANDING BALANCE — reconstructed as Original Principal minus repayments
+// applied to principal, for any past date. Same methodology as the other
+// Finsso dashboards, so AUM figures tie out across all of them.
+// ═══════════════════════════════════════════════════════════════════════════
+let repaymentsByLoan = null;
+function getRepaymentsByLoan() {
+  if (repaymentsByLoan) return repaymentsByLoan;
+  repaymentsByLoan = {};
+  repaymentRows.forEach(rp => {
+    (repaymentsByLoan[rp.drawdownId] = repaymentsByLoan[rp.drawdownId] || []).push(rp);
+  });
+  return repaymentsByLoan;
+}
+function outstandingAsOf(loan, asOf) {
+  if (!loan.creditDate || loan.creditDate > asOf) return 0;
+  const repayments = getRepaymentsByLoan()[loan.id] || [];
+  let paid = 0;
+  repayments.forEach(rp => { if (rp.paymentDate && rp.paymentDate <= asOf) paid += rp.paidPrincipal; });
+  return Math.max(0, loan.originalPrincipal - paid);
+}
+function matchLoan(loan) {
+  if (filterState.financier.size && !filterState.financier.has(loan.financier)) return false;
+  return true;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DPD LOGIC
+// ═══════════════════════════════════════════════════════════════════════════
+// A loan is open as of `asOf` if it's been disbursed, hasn't been marked
+// Cancelled, and hasn't fully settled yet as of that date. This is purely
+// date-driven (no reliance on a "current status" text field), so it's
+// correct for any report date — past or today — unlike a live-only status
+// column would be.
+function isOpenAsOf(loan, asOf) {
+  if (!loan.creditDate || loan.creditDate > asOf) return false;
+  if (loan.loanStatus === 'Cancelled') return false;
+  if (loan.fullSettlementDate && loan.fullSettlementDate <= asOf) return false;
+  return true;
+}
+
+// Finds the earliest unpaid due-date checkpoint as of `asOf`, per the
+// selected definition:
+//   'any'      — walks Renewal 1 → Renewal 2 → Final Maturity in order.
+//                The first checkpoint whose due date has passed AND whose
+//                own payment date is still blank (or dated after asOf)
+//                is the one driving DPD.
+//   'maturity' — only Final Maturity Date / Full Settlement Date matter;
+//                Renewal 1/2 are ignored entirely.
+// A checkpoint is "unpaid as of asOf" when its payment-date field is blank
+// or falls after asOf — purely date-driven, so this works correctly for
+// any report date, not just today.
+function unpaidDueDate(loan, asOf, definition) {
+  if (definition === 'maturity') {
+    if (!loan.maturityDue || loan.maturityDue > asOf) return null;
+    const paid = loan.fullSettlementDate && loan.fullSettlementDate <= asOf;
+    return paid ? null : loan.maturityDue;
+  }
+  const checkpoints = [
+    { due: loan.renewal1Due, paid: loan.renewal1PaidDate },
+    { due: loan.renewal2Due, paid: loan.renewal2PaidDate },
+    { due: loan.maturityDue, paid: loan.fullSettlementDate },
+  ];
+  for (const cp of checkpoints) {
+    if (!cp.due || cp.due > asOf) continue;
+    const isPaid = cp.paid && cp.paid <= asOf;
+    if (!isPaid) return cp.due;
+  }
+  return null;
+}
+function bucketForDPD(dpd) {
+  if (dpd <= 0) return 0; // Current
+  for (let i = 0; i < DPD_BOUNDS.length; i++) { if (dpd <= DPD_BOUNDS[i]) return i + 1; }
+  return DPD_BOUNDS.length;
+}
+
+function computeDPD(asOf) {
+  const n = DPD_BUCKETS.length;
+  const bucketN = new Array(n).fill(0);
+  const bucketSum = new Array(n).fill(0);
+  const byDealer = {}; // dealerId -> { name, n:[...], sum:[...] }
+
+  drawdownRows.forEach(loan => {
+    if (!matchLoan(loan)) return;
+    if (!isOpenAsOf(loan, asOf)) return;
+    const dueDate = unpaidDueDate(loan, asOf, dpdDefinition);
+    const dpd = dueDate ? Math.round((asOf - dueDate) / DAY_MS) : 0;
+    const bi = bucketForDPD(dpd);
+    const out = outstandingAsOf(loan, asOf);
+
+    bucketN[bi] += 1;
+    bucketSum[bi] += out;
+
+    const key = loan.dealerId || '(no dealer id)';
+    if (!byDealer[key]) byDealer[key] = { name: loan.dealerName, n: new Array(n).fill(0), sum: new Array(n).fill(0) };
+    byDealer[key].n[bi] += 1;
+    byDealer[key].sum[bi] += out;
+  });
+
+  return { bucketN, bucketSum, byDealer };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════════════
+function setText(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
+function updateCurrencyLabels() {
+  document.querySelectorAll('.unit-fx').forEach(el => {
+    el.textContent = '(' + el.dataset[currencyMode === 'USD' ? 'usd' : 'php'] + ')';
+  });
+}
+
+function renderAll(asOf) {
+  document.getElementById('rpt-date-display').textContent = toDateStr(asOf);
+  document.querySelectorAll('.rpt-date-inline').forEach(el => el.textContent = toDateStr(asOf));
+
+  const { bucketN, bucketSum, byDealer } = computeDPD(asOf);
+
+  // Portfolio summary
+  const totN = bucketN.reduce((a, b) => a + b, 0);
+  const totSum = bucketSum.reduce((a, b) => a + b, 0);
+  const portfolioBody = document.getElementById('dpd-portfolio-body');
+  portfolioBody.innerHTML = DPD_BUCKETS.map((bk, i) => {
+    const n = bucketN[i], a = bucketSum[i];
+    return '<tr><td>' + bk + '</td>'
+      + '<td class="r">' + fmtNum(n) + '</td>'
+      + '<td class="r">' + (totN ? fmtNum(n / totN * 100, 1) + '%' : '—') + '</td>'
+      + '<td class="r">' + fmtMio(a) + '</td>'
+      + '<td class="r">' + (totSum ? fmtNum(a / totSum * 100, 1) + '%' : '—') + '</td></tr>';
+  }).join('') + '<tr class="bold"><td>Total</td>'
+    + '<td class="r">' + fmtNum(totN) + '</td><td class="r">100%</td>'
+    + '<td class="r">' + fmtMio(totSum) + '</td><td class="r">100%</td></tr>';
+
+  // Per-dealer breakdown — header built dynamically so bucket labels/unit
+  // stay in sync with DPD_BUCKETS and the currency toggle.
+  const head = document.getElementById('dpd-dealer-head');
+  const unitSpan = '<span class="card-unit unit-fx" data-php="₱ M" data-usd="$ M">(₱ M)</span>';
+  head.innerHTML = '<tr><th>Dealer</th>' + DPD_BUCKETS.map(bk =>
+    '<th class="r"># ' + bk + '</th><th class="r">AUM ' + bk + ' ' + unitSpan + '</th>'
+  ).join('') + '<th class="r">Total Open AUM ' + unitSpan + '</th></tr>';
+
+  const dealerRows = Object.entries(byDealer).map(([dealerId, d]) => {
+    const totalOpenAUM = d.sum.reduce((a, b) => a + b, 0);
+    const overdueAUM = d.sum.slice(1).reduce((a, b) => a + b, 0); // excludes "Current"
+    const totalOpenN = d.n.reduce((a, b) => a + b, 0);
+    return { dealerId, name: d.name, n: d.n, sum: d.sum, totalOpenAUM, overdueAUM, totalOpenN };
+  }).filter(row => row.totalOpenN > 0)
+    .sort((a, b) => b.overdueAUM - a.overdueAUM || b.totalOpenAUM - a.totalOpenAUM);
+
+  const dealerBody = document.getElementById('dpd-dealer-body');
+  dealerBody.innerHTML = dealerRows.map(row => {
+    const cells = DPD_BUCKETS.map((bk, i) =>
+      '<td class="r">' + fmtNum(row.n[i]) + '</td><td class="r">' + fmtMio(row.sum[i]) + '</td>'
+    ).join('');
+    return '<tr><td class="dealer-name">' + row.dealerId + ' — ' + row.name + '</td>'
+      + cells + '<td class="r">' + fmtMio(row.totalOpenAUM) + '</td></tr>';
+  }).join('');
+
+  updateCurrencyLabels();
+
+  const stale = dataLoadedAt ? '' : ' (no data)';
+  document.getElementById('data-status-global').textContent =
+    dataLoadedAt ? 'Data as of ' + dataLoadedAt.toLocaleString('en-PH', {dateStyle:'medium', timeStyle:'short'}) : 'Loading…' + stale;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FILTER UI
+// ═══════════════════════════════════════════════════════════════════════════
+function makeChip(label, value, stateSet, containerId) {
+  const el = document.createElement('span');
+  el.className = 'filter-chip';
+  el.textContent = label;
+  el.onclick = () => {
+    if (stateSet.has(value)) { stateSet.delete(value); el.classList.remove('active'); }
+    else { stateSet.add(value); el.classList.add('active'); }
+    renderAll(selectedDate);
+  };
+  document.getElementById(containerId).appendChild(el);
+}
+function buildStaticFilterUI() {
+  FINANCIERS.forEach(f => makeChip(f, f, filterState.financier, 'filter-financier'));
+  buildDpdDefinitionToggle();
+  buildCurrencyToggle();
+}
+function buildDpdDefinitionToggle() {
+  const container = document.getElementById('filter-dpd-def');
+  const options = [
+    { value: 'any', label: 'Any Unpaid Due Date' },
+    { value: 'maturity', label: 'Maturity Only' },
+  ];
+  options.forEach(opt => {
+    const el = document.createElement('span');
+    el.className = 'filter-chip' + (opt.value === dpdDefinition ? ' active' : '');
+    el.textContent = opt.label;
+    el.onclick = () => {
+      if (dpdDefinition === opt.value) return;
+      dpdDefinition = opt.value;
+      container.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      renderAll(selectedDate);
+    };
+    container.appendChild(el);
+  });
+}
+function buildCurrencyToggle() {
+  const container = document.getElementById('filter-currency');
+  const modes = ['PHP', 'USD'];
+  modes.forEach(mode => {
+    const el = document.createElement('span');
+    el.className = 'filter-chip' + (mode === currencyMode ? ' active' : '');
+    el.textContent = mode;
+    el.onclick = () => {
+      if (currencyMode === mode) return;
+      currencyMode = mode;
+      container.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      renderAll(selectedDate);
+    };
+    container.appendChild(el);
+  });
+}
+function resetFilters() {
+  filterState.financier.clear();
+  document.querySelectorAll('#filter-financier .filter-chip').forEach(el => el.classList.remove('active'));
+  renderAll(selectedDate);
+}
+function onDateChange(v) {
+  const d = parseSheetDate(v.replace(/-/g,'/')) || new Date(v);
+  selectedDate = d;
+  renderAll(d);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════
+async function init() {
+  buildStaticFilterUI();
+  const ok = await loadData();
+  if (!ok) return;
+
+  const input = document.getElementById('rpt-date-input');
+  const today = new Date();
+  const minStr = minDataDate ? toKey(minDataDate) : '2023-01-01';
+  input.min = minStr;
+  input.max = toKey(today);
+
+  selectedDate = today;
+  input.value = toKey(today);
+  renderAll(today);
+}
+
+init();
+
+/* ══════════════════════════════════════════════════
+   GOOGLE SIGN-IN + ALLOWLIST GATE
+   Requires HTTPS (won't work from file://). Uses the same
+   Access Control sheet/service as every other Finsso dashboard.
+══════════════════════════════════════════════════ */
+var GOOGLE_CLIENT_ID = '263530903165-4nv0iueb5ftb5hjevr14mqug3rlraav5.apps.googleusercontent.com';
+var ALLOWLIST_API = 'https://script.google.com/a/macros/finsso.com/s/AKfycbznI2kQ8a0ApTS9xbDjY4oLoya5KQlqJ-xHm4X75BwkgIby4Cfqtz2xCupYOeFMBFik/exec';
+var ALLOWLIST_TAB = 'DPD';
+var ALLOWLIST = null;
+var _allowlistLoading = null;
+
+async function _loadAllowlist() {
+  if (ALLOWLIST !== null) return ALLOWLIST;
+  if (_allowlistLoading) return _allowlistLoading;
+  _allowlistLoading = (async function () {
+    for (var attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) await new Promise(function (res) { setTimeout(res, attempt * 500); });
+      try {
+        var url = ALLOWLIST_API + (ALLOWLIST_API.indexOf('?') >= 0 ? '&' : '?') + 'action=allowlist&tab=' + encodeURIComponent(ALLOWLIST_TAB) + '&_=' + Date.now();
+        var r = await fetch(url);
+        var j = await r.json();
+        var list = (j.emails || []).map(function (s) { return String(s).toLowerCase().trim(); }).filter(Boolean);
+        ALLOWLIST = list;
+        return list;
+      } catch (e) { /* retry */ }
+    }
+    return null;
+  })();
+  try { return await _allowlistLoading; }
+  finally { _allowlistLoading = null; }
+}
+async function _isAllowed(email) {
+  var list = await _loadAllowlist();
+  if (!list) return { ok: false, reason: 'load-failed' };
+  email = String(email).toLowerCase().trim();
+  if (list.indexOf(email) >= 0) return { ok: true };
+  var at = email.indexOf('@'), dom = at >= 0 ? email.slice(at) : '';
+  if (dom && list.indexOf(dom) >= 0) return { ok: true };
+  return { ok: false, reason: 'not-listed' };
+}
+function _decodeJwt(t) {
+  try {
+    var p = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(decodeURIComponent(escape(atob(p))));
+  } catch (e) { return null; }
+}
+function _authError(msg) { var e = document.getElementById('lock-err'); if (e) e.textContent = msg; }
+function _logAccess(email) {
+  try {
+    var url = ALLOWLIST_API + (ALLOWLIST_API.indexOf('?') >= 0 ? '&' : '?') + 'action=log&tab=' + encodeURIComponent(ALLOWLIST_TAB)
+      + '&email=' + encodeURIComponent(email) + '&ua=' + encodeURIComponent(navigator.userAgent)
+      + '&dashboard=' + encodeURIComponent(location.origin + location.pathname);
+    fetch(url, { mode: 'no-cors' }).catch(function () {});
+  } catch (e) {}
+}
+function _grantAccess(profile) {
+  var s = document.getElementById('lock-overlay');
+  if (s) { s.classList.add('unlocking'); setTimeout(function () { s.classList.add('hidden'); }, 400); }
+  _logAccess(profile.email);
+}
+async function _onGoogleCredential(resp) {
+  _authError('');
+  var data = _decodeJwt(resp && resp.credential);
+  if (!data || !data.email) { _authError('Could not read your Google account. Try again.'); return; }
+  if (data.email_verified === false) { _authError('Your Google email is not verified.'); return; }
+  var result = await _isAllowed(data.email);
+  if (result.ok) {
+    _grantAccess({ email: String(data.email).toLowerCase(), name: data.name || '' });
+  } else if (result.reason === 'load-failed') {
+    _authError('Could not verify access right now — check your connection and try again.');
+  } else {
+    if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
+    _authError(data.email + ' is not on the access list. Ask the admin to add you.');
+  }
+}
+function _initGoogleAuth() {
+  if (!window.google || !google.accounts || !google.accounts.id) { return setTimeout(_initGoogleAuth, 200); }
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: _onGoogleCredential, auto_select: true, cancel_on_tap_outside: false });
+  google.accounts.id.renderButton(document.getElementById('g-signin'), { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'signin_with', logo_alignment: 'center', width: 260 });
+  google.accounts.id.prompt();
+}
+_loadAllowlist();
+if (document.readyState !== 'loading') _initGoogleAuth();
+else document.addEventListener('DOMContentLoaded', _initGoogleAuth);
+</script>
+</body></html>
