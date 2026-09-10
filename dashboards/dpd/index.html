@@ -138,19 +138,28 @@ a{color:inherit;text-decoration:none}
 
 table{width:100%;border-collapse:collapse;font-size:11px}
 th{
-  text-align:left;padding:6px 8px;
+  text-align:left;padding:6px 10px;
   color:var(--text3);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;
   background:var(--tbl-hdr);
   border-bottom:1px solid var(--tbl-bdr2);
   white-space:nowrap;
 }
 th.r,td.r{text-align:right}
-td{padding:6px 8px;color:var(--text2);border-bottom:1px solid var(--tbl-bdr);white-space:nowrap}
+td{padding:6px 10px;color:var(--text2);border-bottom:1px solid var(--tbl-bdr);white-space:nowrap}
 tr:last-child td{border-bottom:none}
 tr.bold td{font-weight:600;color:var(--text)}
-tr.bold:last-child td{background:var(--total-bg)}
+tr.total-row td{font-weight:700;color:var(--text);background:var(--total-bg)}
+tr.subtotal-row td{font-weight:600;color:var(--text);background:var(--tbl-hdr)}
 tr:hover td{background:var(--tr-hover)}
 td.dealer-name{white-space:normal;max-width:220px}
+td.bucket-label.indent{padding-left:26px;font-weight:400;color:var(--text2)}
+td.bucket-label{color:var(--text)}
+th.month-col,td.month-col{min-width:78px}
+th.sticky-col,td.sticky-col{position:sticky;left:0;z-index:2;background:var(--surface-b);box-shadow:1px 0 0 var(--tbl-bdr2)}
+tr.subtotal-row td.sticky-col{background:var(--tbl-hdr)}
+tr.total-row td.sticky-col{background:var(--total-bg)}
+th.sticky-col{z-index:3;background:var(--tbl-hdr)}
+.month-sub{font-size:9px;color:var(--text3);text-transform:none;letter-spacing:0;display:block;margin-top:1px}
 
 .filter-bar{
   background:var(--surface-c);
@@ -246,8 +255,8 @@ td.dealer-name{white-space:normal;max-width:220px}
   .filter-bar{top:89px;padding:8px 14px;gap:10px}
   .card{padding:12px}
   table{font-size:9px}
-  th{padding:4px 4px;font-size:8px}
-  td{padding:4px 4px;font-size:9px}
+  th{padding:4px 6px;font-size:8px}
+  td{padding:4px 6px;font-size:9px}
 }
 </style>
 </head>
@@ -278,13 +287,13 @@ td.dealer-name{white-space:normal;max-width:220px}
   <div class="topbar-top">
     <div style="flex:1">
       <div class="report-title">PH DPD Aging Dashboard</div>
-      <div class="report-subtitle">Open loans by Days Past Due, as of <span id="rpt-date-display">–</span></div>
+      <div class="report-subtitle">Open loans by Days Past Due — month-on-month, current month as of <span id="rpt-date-display">–</span></div>
       <div class="data-status" id="data-status-global" style="text-align:left">Loading…</div>
     </div>
     <div class="header-right">
       <div class="date-control">
         <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
-        <label for="rpt-date-input">Report date</label>
+        <label for="rpt-date-input">Current month as of</label>
         <input type="date" id="rpt-date-input" onchange="onDateChange(this.value)">
       </div>
     </div>
@@ -294,27 +303,20 @@ td.dealer-name{white-space:normal;max-width:220px}
 <div class="filter-bar" id="filter-bar">
   <div class="filter-group" id="filter-financier"><span class="filter-group-label">Financier</span></div>
   <div class="filter-group" id="filter-dpd-def"><span class="filter-group-label">DPD Definition</span></div>
+  <div class="filter-group" id="filter-view"><span class="filter-group-label">View</span></div>
   <div class="filter-group" id="filter-currency"><span class="filter-group-label">Currency</span></div>
   <span class="filter-reset" id="filter-reset" onclick="resetFilters()">Reset filters</span>
 </div>
 
 <div class="main">
-  <div class="section-title">DPD Aging</div>
-  <div class="section-sub">as of <span class="rpt-date-inline">–</span></div>
+  <div class="section-title">DPD Aging — Month-on-Month</div>
+  <div class="section-sub">each month reconstructed as of its own month-end · current month as of <span class="rpt-date-inline">–</span></div>
 
   <div class="card">
-    <div class="card-title">Open Loans — by DPD Bucket</div>
-    <table>
-      <thead><tr><th>Bucket</th><th class="r"># Loans</th><th class="r">%</th><th class="r">AUM <span class="card-unit unit-fx" data-php="₱ M" data-usd="$ M">(₱ M)</span></th><th class="r">%</th></tr></thead>
-      <tbody id="dpd-portfolio-body"></tbody>
-    </table>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Per-Dealer DPD Breakdown</div>
-    <table id="dpd-dealer-table">
-      <thead id="dpd-dealer-head"></thead>
-      <tbody id="dpd-dealer-body"></tbody>
+    <div class="card-title">Open Loans by DPD Bucket <span class="card-unit" id="view-unit-label"></span></div>
+    <table id="dpd-matrix-table">
+      <thead id="dpd-matrix-head"></thead>
+      <tbody id="dpd-matrix-body"></tbody>
     </table>
   </div>
 </div>
@@ -333,12 +335,30 @@ const DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-re
 const FINANCIERS = ['Netbank', 'Finsso'];
 const DAY_MS = 86400000;
 const FX_PHP_PER_USD = 60;
+const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-// Classic DPD buckets. Index 0 = "Current" (not past due at all); the rest
-// are upper day-bounds (inclusive) for how many days past the earliest
-// unpaid due date the loan is.
-const DPD_BUCKETS = ['Current', '1–30', '31–60', '61–90', '91–120', '121–180', '>180'];
-const DPD_BOUNDS  = [30, 60, 90, 120, 180, Infinity]; // applies to buckets[1..]
+// Fine-grained DPD buckets used to build the hierarchy below. Index 0 =
+// "Current" (not past due at all); the rest are upper day-bounds (inclusive)
+// for how many days past the earliest unpaid due date the loan is.
+const DPD_FINE_LABELS = ['Current','1–30','31–60','61–90','91–120','121–150','151–180','181–365','>365'];
+const DPD_FINE_BOUNDS = [30, 60, 90, 120, 150, 180, 365, Infinity]; // applies to indices 1..8
+
+// Row hierarchy for the matrix — "Standard/Current" and "Total" are
+// standalone rows; "DPD 1 – 90" and "DPD Above 90" are bold subtotal
+// headers whose indented children are the fine buckets they roll up.
+const MATRIX_ROWS = [
+  { label: 'Standard / Current', type: 'leaf', idx: 0 },
+  { label: 'DPD 1 – 90', type: 'subtotal', idxs: [1, 2, 3] },
+  { label: '1 ≥ 30', type: 'leaf', idx: 1, indent: true },
+  { label: '31 ≥ 60', type: 'leaf', idx: 2, indent: true },
+  { label: '61 ≥ 90', type: 'leaf', idx: 3, indent: true },
+  { label: 'DPD Above 90', type: 'subtotal', idxs: [4, 5, 6, 7, 8] },
+  { label: '91 ≥ 120', type: 'leaf', idx: 4, indent: true },
+  { label: '121 ≥ 150', type: 'leaf', idx: 5, indent: true },
+  { label: '151 ≥ 180', type: 'leaf', idx: 6, indent: true },
+  { label: '181 ≥ 365', type: 'leaf', idx: 7, indent: true },
+  { label: 'Above 365', type: 'leaf', idx: 8, indent: true },
+];
 
 let drawdownRows = [];
 let repaymentRows = [];
@@ -346,7 +366,10 @@ let selectedDate = null;
 let dataLoadedAt = null;
 let minDataDate = null;
 let currencyMode = 'PHP'; // 'PHP' | 'USD'
-let dpdDefinition = 'any'; // 'any' (Renewal 1 / Renewal 2 / Maturity, in order) | 'maturity' (Final Maturity only)
+// 'maturity' = 2a — Maturity DPD (Final Maturity Date only)
+// 'any'      = 2b — Renewal + Maturity DPD (Renewal 1 → Renewal 2 → Final Maturity, in order)
+let dpdDefinition = 'maturity';
+let viewMode = 'pct'; // 'pct' | 'value' | 'count'
 
 const filterState = { financier: new Set() };
 
@@ -562,12 +585,12 @@ function isOpenAsOf(loan, asOf) {
 
 // Finds the earliest unpaid due-date checkpoint as of `asOf`, per the
 // selected definition:
-//   'any'      — walks Renewal 1 → Renewal 2 → Final Maturity in order.
-//                The first checkpoint whose due date has passed AND whose
-//                own payment date is still blank (or dated after asOf)
-//                is the one driving DPD.
-//   'maturity' — only Final Maturity Date / Full Settlement Date matter;
-//                Renewal 1/2 are ignored entirely.
+//   'maturity' — (2a) only Final Maturity Date / Full Settlement Date
+//                matter; Renewal 1/2 are ignored entirely.
+//   'any'      — (2b) walks Renewal 1 → Renewal 2 → Final Maturity in
+//                order. The first checkpoint whose due date has passed AND
+//                whose own payment date is still blank (or dated after
+//                asOf) is the one driving DPD.
 // A checkpoint is "unpaid as of asOf" when its payment-date field is blank
 // or falls after asOf — purely date-driven, so this works correctly for
 // any report date, not just today.
@@ -591,15 +614,16 @@ function unpaidDueDate(loan, asOf, definition) {
 }
 function bucketForDPD(dpd) {
   if (dpd <= 0) return 0; // Current
-  for (let i = 0; i < DPD_BOUNDS.length; i++) { if (dpd <= DPD_BOUNDS[i]) return i + 1; }
-  return DPD_BOUNDS.length;
+  for (let i = 0; i < DPD_FINE_BOUNDS.length; i++) { if (dpd <= DPD_FINE_BOUNDS[i]) return i + 1; }
+  return DPD_FINE_BOUNDS.length;
 }
 
-function computeDPD(asOf) {
-  const n = DPD_BUCKETS.length;
+// Computes the fine-grained bucket distribution (count + AUM) of open loans
+// as of a single date. Used once per matrix column (i.e. once per month).
+function computeDPDForDate(asOf) {
+  const n = DPD_FINE_LABELS.length;
   const bucketN = new Array(n).fill(0);
   const bucketSum = new Array(n).fill(0);
-  const byDealer = {}; // dealerId -> { name, n:[...], sum:[...] }
 
   drawdownRows.forEach(loan => {
     if (!matchLoan(loan)) return;
@@ -611,14 +635,43 @@ function computeDPD(asOf) {
 
     bucketN[bi] += 1;
     bucketSum[bi] += out;
-
-    const key = loan.dealerId || '(no dealer id)';
-    if (!byDealer[key]) byDealer[key] = { name: loan.dealerName, n: new Array(n).fill(0), sum: new Array(n).fill(0) };
-    byDealer[key].n[bi] += 1;
-    byDealer[key].sum[bi] += out;
   });
 
-  return { bucketN, bucketSum, byDealer };
+  const totalN = bucketN.reduce((a, b) => a + b, 0);
+  const totalSum = bucketSum.reduce((a, b) => a + b, 0);
+  return { bucketN, bucketSum, totalN, totalSum };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MONTH COLUMNS — newest first. The first (current/in-progress) column is
+// reconstructed as of the selected report date; every earlier column is
+// reconstructed as of that calendar month's actual last day, regardless of
+// the date picker, so history never moves once a month has closed.
+// ═══════════════════════════════════════════════════════════════════════════
+function buildMonthColumns(asOf) {
+  const cols = [];
+  const y = asOf.getFullYear(), m = asOf.getMonth();
+  const isCurrentCalMonth = true;
+  cols.push({
+    asOf: asOf,
+    label: MONTH_ABBR[m] + " '" + String(y).slice(2),
+    sub: 'MTD',
+  });
+
+  const minY = minDataDate ? minDataDate.getFullYear() : y;
+  const minM = minDataDate ? minDataDate.getMonth() : 0;
+  let y2 = y, m2 = m;
+  while (true) {
+    m2--; if (m2 < 0) { m2 = 11; y2--; }
+    if (y2 < minY || (y2 === minY && m2 < minM)) break;
+    const monthEnd = new Date(y2, m2 + 1, 0);
+    cols.push({
+      asOf: monthEnd,
+      label: MONTH_ABBR[m2] + " '" + String(y2).slice(2),
+      sub: '',
+    });
+  }
+  return cols;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -630,54 +683,60 @@ function updateCurrencyLabels() {
     el.textContent = '(' + el.dataset[currencyMode === 'USD' ? 'usd' : 'php'] + ')';
   });
 }
+function updateViewUnitLabel() {
+  const el = document.getElementById('view-unit-label');
+  if (!el) return;
+  if (viewMode === 'pct') el.textContent = '(% of month AUM)';
+  else if (viewMode === 'count') el.textContent = '(# loans)';
+  else el.textContent = currencyMode === 'USD' ? '($ M)' : '(₱ M)';
+}
+function cellValue(n, sum, colTotalN, colTotalSum) {
+  if (viewMode === 'pct') return colTotalSum ? fmtNum(sum / colTotalSum * 100, 1) + '%' : '—';
+  if (viewMode === 'count') return fmtNum(n);
+  return fmtMio(sum);
+}
 
 function renderAll(asOf) {
   document.getElementById('rpt-date-display').textContent = toDateStr(asOf);
   document.querySelectorAll('.rpt-date-inline').forEach(el => el.textContent = toDateStr(asOf));
 
-  const { bucketN, bucketSum, byDealer } = computeDPD(asOf);
+  const columns = buildMonthColumns(asOf);
+  columns.forEach(col => { col.stats = computeDPDForDate(col.asOf); });
 
-  // Portfolio summary
-  const totN = bucketN.reduce((a, b) => a + b, 0);
-  const totSum = bucketSum.reduce((a, b) => a + b, 0);
-  const portfolioBody = document.getElementById('dpd-portfolio-body');
-  portfolioBody.innerHTML = DPD_BUCKETS.map((bk, i) => {
-    const n = bucketN[i], a = bucketSum[i];
-    return '<tr><td>' + bk + '</td>'
-      + '<td class="r">' + fmtNum(n) + '</td>'
-      + '<td class="r">' + (totN ? fmtNum(n / totN * 100, 1) + '%' : '—') + '</td>'
-      + '<td class="r">' + fmtMio(a) + '</td>'
-      + '<td class="r">' + (totSum ? fmtNum(a / totSum * 100, 1) + '%' : '—') + '</td></tr>';
-  }).join('') + '<tr class="bold"><td>Total</td>'
-    + '<td class="r">' + fmtNum(totN) + '</td><td class="r">100%</td>'
-    + '<td class="r">' + fmtMio(totSum) + '</td><td class="r">100%</td></tr>';
+  // Header
+  const head = document.getElementById('dpd-matrix-head');
+  head.innerHTML = '<tr><th class="sticky-col">Bucket</th>' + columns.map(c =>
+    '<th class="r month-col">' + c.label + (c.sub ? '<span class="month-sub">' + c.sub + '</span>' : '') + '</th>'
+  ).join('') + '</tr>';
 
-  // Per-dealer breakdown — header built dynamically so bucket labels/unit
-  // stay in sync with DPD_BUCKETS and the currency toggle.
-  const head = document.getElementById('dpd-dealer-head');
-  const unitSpan = '<span class="card-unit unit-fx" data-php="₱ M" data-usd="$ M">(₱ M)</span>';
-  head.innerHTML = '<tr><th>Dealer</th>' + DPD_BUCKETS.map(bk =>
-    '<th class="r"># ' + bk + '</th><th class="r">AUM ' + bk + ' ' + unitSpan + '</th>'
-  ).join('') + '<th class="r">Total Open AUM ' + unitSpan + '</th></tr>';
-
-  const dealerRows = Object.entries(byDealer).map(([dealerId, d]) => {
-    const totalOpenAUM = d.sum.reduce((a, b) => a + b, 0);
-    const overdueAUM = d.sum.slice(1).reduce((a, b) => a + b, 0); // excludes "Current"
-    const totalOpenN = d.n.reduce((a, b) => a + b, 0);
-    return { dealerId, name: d.name, n: d.n, sum: d.sum, totalOpenAUM, overdueAUM, totalOpenN };
-  }).filter(row => row.totalOpenN > 0)
-    .sort((a, b) => b.overdueAUM - a.overdueAUM || b.totalOpenAUM - a.totalOpenAUM);
-
-  const dealerBody = document.getElementById('dpd-dealer-body');
-  dealerBody.innerHTML = dealerRows.map(row => {
-    const cells = DPD_BUCKETS.map((bk, i) =>
-      '<td class="r">' + fmtNum(row.n[i]) + '</td><td class="r">' + fmtMio(row.sum[i]) + '</td>'
-    ).join('');
-    return '<tr><td class="dealer-name">' + row.dealerId + ' — ' + row.name + '</td>'
-      + cells + '<td class="r">' + fmtMio(row.totalOpenAUM) + '</td></tr>';
+  // Body — hierarchy rows, then a Total row
+  const body = document.getElementById('dpd-matrix-body');
+  const rowsHtml = MATRIX_ROWS.map(row => {
+    const rowClass = row.type === 'subtotal' ? ' class="subtotal-row"' : '';
+    const labelClass = 'bucket-label' + (row.indent ? ' indent' : '');
+    const cells = columns.map(col => {
+      let n, sum;
+      if (row.type === 'leaf') {
+        n = col.stats.bucketN[row.idx];
+        sum = col.stats.bucketSum[row.idx];
+      } else {
+        n = row.idxs.reduce((a, i) => a + col.stats.bucketN[i], 0);
+        sum = row.idxs.reduce((a, i) => a + col.stats.bucketSum[i], 0);
+      }
+      return '<td class="r month-col">' + cellValue(n, sum, col.stats.totalN, col.stats.totalSum) + '</td>';
+    }).join('');
+    return '<tr' + rowClass + '><td class="sticky-col ' + labelClass + '">' + row.label + '</td>' + cells + '</tr>';
   }).join('');
 
+  const totalCells = columns.map(col =>
+    '<td class="r month-col">' + cellValue(col.stats.totalN, col.stats.totalSum, col.stats.totalN, col.stats.totalSum) + '</td>'
+  ).join('');
+  const totalRow = '<tr class="total-row"><td class="sticky-col bucket-label">Total</td>' + totalCells + '</tr>';
+
+  body.innerHTML = rowsHtml + totalRow;
+
   updateCurrencyLabels();
+  updateViewUnitLabel();
 
   const stale = dataLoadedAt ? '' : ' (no data)';
   document.getElementById('data-status-global').textContent =
@@ -701,13 +760,14 @@ function makeChip(label, value, stateSet, containerId) {
 function buildStaticFilterUI() {
   FINANCIERS.forEach(f => makeChip(f, f, filterState.financier, 'filter-financier'));
   buildDpdDefinitionToggle();
+  buildViewModeToggle();
   buildCurrencyToggle();
 }
 function buildDpdDefinitionToggle() {
   const container = document.getElementById('filter-dpd-def');
   const options = [
-    { value: 'any', label: 'Any Unpaid Due Date' },
-    { value: 'maturity', label: 'Maturity Only' },
+    { value: 'maturity', label: '2a — Maturity DPD' },
+    { value: 'any', label: '2b — Renewal + Maturity DPD' },
   ];
   options.forEach(opt => {
     const el = document.createElement('span');
@@ -716,6 +776,27 @@ function buildDpdDefinitionToggle() {
     el.onclick = () => {
       if (dpdDefinition === opt.value) return;
       dpdDefinition = opt.value;
+      container.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      renderAll(selectedDate);
+    };
+    container.appendChild(el);
+  });
+}
+function buildViewModeToggle() {
+  const container = document.getElementById('filter-view');
+  const options = [
+    { value: 'pct', label: '% Outstanding' },
+    { value: 'value', label: 'Value' },
+    { value: 'count', label: 'Loan Count' },
+  ];
+  options.forEach(opt => {
+    const el = document.createElement('span');
+    el.className = 'filter-chip' + (opt.value === viewMode ? ' active' : '');
+    el.textContent = opt.label;
+    el.onclick = () => {
+      if (viewMode === opt.value) return;
+      viewMode = opt.value;
       container.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
       renderAll(selectedDate);
