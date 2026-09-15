@@ -115,7 +115,7 @@
 ,IF0114,AUTO-NATION CAR TRADING,Albert Dalupang,Zhesa Resurrecion,0,2,0,0,0,0,0,0,29.5,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46181,,1,1,0,0,0,0,,0,0,0,0,No
 ,IF0115,BUHAY SASAKYAN CAR TRADING,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Pending CLA Signature,,45464,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0116,AUTO-PRIME CAR TRADING,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Pending CLA Signature,,45538,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0117,GENZ CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,1,18,1,0,500000,500000,500000,0,28.94736842,,,,Open,,,,,17,12,5,0.001742387118,0,0,,0,0,0,1,No
+,IF0117,GENZ CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,1,18,1,0,500000,500000,500000,0,28.94736842,,,,Open,,,,,18,12,6,0.001742387118,0,0,46280,1,0,1,1,No
 ,IF0118,MON UNDER CHASSIS REPAIR SHOP,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46066,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0119,DLA AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,1,4,0,0,0,0,0,0,21,,,,Open,Finsso: Open | Netbank: Expired CL,,46069,,2,2,0,0,0,0,,0,0,0,0,No
 ,IF0120,JUN UNDERCHASSIS REPAIR SHOP,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46069,,0,0,0,0,0,0,,0,0,0,0,No
@@ -274,7 +274,7 @@
 ,IF0273,RJB AUTO MART,Marah Luriely A. Villaruz,Rhoyland Alagon,1,2,1,0,495720,495720,495720,0,80.66666667,,,,Open,,,,,2,2,0,0.001727472284,0,0,,0,0,0,0,No
 ,IF0274,BONG T AUTO SHOP,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46189.56181,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0275,JOM CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,1,0,3,811800,811800,0,811800,202.75,,136,46097,Blacklisted,15 DPD,46097,,,3,0,3,0.002828939724,183,177,46154,3,0,3,0,No,,,,46190.65122
-,IF0276,R.A.S. CONVENIENCE STORE,Albert Dalupang,Marlon Llamas,0,13,4,0,3486000,3486000,3486000,0,68.58823529,,1.4,,Open,,,,,19,13,6,0.01214792298,0,0,46241,7,5,2,0,No
+,IF0276,R.A.S. CONVENIENCE STORE,Albert Dalupang,Marlon Llamas,0,13,4,0,3486000,3486000,3486000,0,68.58823529,,1.4,,Hold,Multiple Failure Audits,,46280.64257,46280.64257,22,14,8,0.01214792298,0,0,46280,10,6,4,0,Yes
 ,IF0277,MELODYCARS CAR TRADING,Albert Dalupang,Marlon Llamas,0,20,0,0,0,0,0,0,22.5,,,,Open,,,,,10,5,5,0,0,0,,0,0,0,0,No
 ,IF0278,RJDG CUSTOMIZER AUTO SHOP,Marah Luriely A. Villaruz,Elvira Ladea,0,6,3,0,670000,670000,670000,0,69.66666667,,6,,Open,,,,,5,5,0,0.002334798738,0,0,46211,1,1,0,0,No
 ,IF0279,BHANONG CAR REPAIR SHOP,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46189.56528,,0,0,0,0,0,0,,0,0,0,0,No
