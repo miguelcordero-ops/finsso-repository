@@ -1,4 +1,4 @@
-Assigned Ops POC,Dealership/Business Name, Dealer Name,Date of Birth,Business/Showroom Address,Mobile Number ,ID Type (Primary Borrower),ID No (Primary Borrower),Assigned Sales POC,Assigned SM ,DD Processor ,New or Redrawdown ,Drawdown Submission Router,Brand ,Variant,Type of Body,Year Model,OR Number,Motor Engine Number,Chassis Number,Plate Number,MV FILE,CR Number,Type of Vehicle,Transmission,Documents Submitted,Documents Pending ,With Video Recording of the Unit?,Drawdown Submission Date by Sales (Captured from Gform),Date of Unit Inspection by Sales,Has Complete Requirements for Drawdown Processing? ,Last Date of ORCR Report,ORCR Verification Request Sent to Agency?,ORCR Verification Request Date to Agency,ORCR Service Provider,ORCR Verification Report Received?,ORCR Receipt Date from Agency,ORCR Status,Drawdown Status,Credit Remarks ,Additional Docs needed for Credit Evaluation ,Name of Co-Borrower,Email Address of the Co-Borrower,PNCM Date,Date of FMV Assessment,Email Address,Loan Amount in Figures,Motor Vehicle Amount (FMV) ,Credit Limit,FMV Assessment Result,Date of Carmudi CA issuance to Financier,PNCM Population by the Ops Team (Previously by Financier),PNCM Issuance Date to Dealer ,PNCM / Disclosure Statement /Amortization Schedule  Execution Date,Physical Docs Received?,Disbursed to the Dealer? ,Physical Docs Received from the Sales Officer,Receipt Date of Physical ORCR Documents ,Docs Returned o Delear? ,Release Date of Original Collateral Documents to the Dealer,Documents Released to the Dealer,Link to PNCM/Disclosure Docs,New / Dup (Plate),Financier,Drawdown ID,,FMV Assessment Timestamp
+,Dealership/Business Name, Dealer Name,Date of Birth,Business/Showroom Address,Mobile Number ,ID Type (Primary Borrower),ID No (Primary Borrower),Assigned Sales POC,Assigned SM ,DD Processor ,New or Redrawdown ,Drawdown Submission Router,Brand ,Variant,Type of Body,Year Model,OR Number,Motor Engine Number,Chassis Number,Plate Number,MV FILE,CR Number,Type of Vehicle,Transmission,Documents Submitted,Documents Pending ,With Video Recording of the Unit?,Drawdown Submission Date by Sales (Captured from Gform),Date of Unit Inspection by Sales,Has Complete Requirements for Drawdown Processing? ,Last Date of ORCR Report,ORCR Verification Request Sent to Agency?,ORCR Verification Request Date to Agency,ORCR Service Provider,ORCR Verification Report Received?,ORCR Receipt Date from Agency,ORCR Status,Drawdown Status,Credit Remarks ,Additional Docs needed for Credit Evaluation ,Name of Co-Borrower,Email Address of the Co-Borrower,PNCM Date,Date of FMV Assessment,Email Address,Loan Amount in Figures,Motor Vehicle Amount (FMV) ,Credit Limit,FMV Assessment Result,Date of Carmudi CA issuance to Financier,PNCM Population by the Ops Team (Previously by Financier),PNCM Issuance Date to Dealer ,PNCM / Disclosure Statement /Amortization Schedule  Execution Date,Physical Docs Received?,Disbursed to the Dealer? ,Physical Docs Received from the Sales Officer,Receipt Date of Physical ORCR Documents ,Docs Returned o Delear? ,Release Date of Original Collateral Documents to the Dealer,Documents Released to the Dealer,Link to PNCM/Disclosure Docs,New / Dup (Plate),Financier,Drawdown ID,,FMV Assessment Timestamp
 Mary Grace Pascual,EMC Prado Auto Inc,Enrique Miguel Prado,Enrique Miguel Prado,66 Maayusin St. U.P Village Quezon City,273404665,Philhealth,03-025426924-3,Marlon Llamas,Albert Dalupang,Sales POC,New,Manual,LEXUS,LX570,SUV/MUV,2009,0380-000000145529,3UR3049092,JTJHY00W9A4035370,NBQ546,130800000412278,17973940,,AT,"1. ORCR
 2. DEED OF SALE
 3. MOTOR VEHICLE INSPECTION REPORT
@@ -63716,6 +63716,24 @@ Shielyka Curate,JDRED.GARAGE CAR TRADING,MATT DARRELL RAMOS PAAS,36045,Blk 9-A L
 4. VALID IDS - ONGSIO, PHILIP",1.  OPEN DOS ,Yes,46279.46875,46279,No,,Yes,46279.57569,Internal TT Team,No,,Pending ORCR Report from Third Party Agency,,"-Open DOS from Current Owner
 -PDC
 -LTO Verification",,,,46279,46279,,500000,1059286.04,,Approved,46279.56458,,,,,,,,,,,,,,,46279.59865
-Shielyka Curate,TOP INSTA CONSTRUCTION CORPORATION,RO ANN TIZON MANALASTAS,33661,1 Marcos Highway Sitio Manalite Sta Cruz Antipolo City Rizal,9165971895,Passport,P1822156C,Herbert Capistrano,Marah Luriely A. Villaruz,,,,FORD,TERRITORY 1.5L,SUV/MUV,2023,2313139743,N8G069991,LJXCU2BB8NTF44820,NHD3694,1801-00000454129 ,48233157-0,,AT,,,,,,,,No,,,No,,,,"-LTO Verification
+,TOP INSTA CONSTRUCTION CORPORATION,RO ANN TIZON MANALASTAS,33661,1 Marcos Highway Sitio Manalite Sta Cruz Antipolo City Rizal,9165971895,Passport,P1822156C,Herbert Capistrano,Marah Luriely A. Villaruz,Alvin Cano,Redrawdown,SFA / Loanbox,FORD,TERRITORY 1.5L,SUV/MUV,2023,2313139743,N8G069991,LJXCU2BB8NTF44820,NHD3694,1801-00000454129 ,48233157-0,,AT,"1.ORCR
+2.SELFIE PHOTO WITH THE UNIT
+3.PNCM
+4.OPEN DEED OF SALE
+5.UMID & PASSPORT-TRINA MARIE GAMO
+6.CANCELLATION OF CM
+7.DOAS
+8.SECRETARY'S CERTIFICATE
+9.VOLUNTARY SURRENDER
+10.DL & PASSPORT-GLENN LEE
+11.COMPANY ID-PERLA BAUTISTA
+12.UMID & PASSPORT-EDMUNDO TAN
+13.UMID  & DL-LOLITA RESO-OR
+14.LATEST GEO-TAGGED PHOTO OF THE UNIT
+15.UNIT VIDEO",,Yes,46280.39236,46280,Yes,,Yes,46280.42639,Internal TT Team,No,,Pending ORCR Report from Third Party Agency,,"-LTO Verification
 -PDC
 -Payment Confirmation TICC2 (Open)",,,,46280,46280,,509223,808774.84,,Approved,46280.39444,,,,,,,,,,,,,,,46280.40759
+,MADDY CARS-OUTLET VEHICLE TRADING,Clark Eduard Macalintal Faltado,30627,1500 Ne Batangas Lobo Rd Gulod Labak Batangas City ,9956494835,Driver's License,D01-00-175735,Ricmar Magboo,Albert Dalupang,,,,HONDA,BRIO,Hatchback,2019,40425000010443,L12B32458052,MHRDD1870KJ001171,DAZ9586,40100001187626,69914986,,AT,,,,,,,,Yes,46280.42986,Internal TT Team,No,,Pending ORCR Report from Third Party Agency,,"- Updated LTO Verification
+- PDC
+- Payment Confirmation JUQ14 (Renewal Overdue)",,,,46280,46280,,315000,498268.64,,Approved,46280.41875,,,,,,,,,,,,,,,46280.44005
+,RAMP AUTO TRADING,Robert Angelo Miralfez Porto,31719,"Lot 15  Blk 13 Aguirre Street Pilar Village, Las Pinas City    ",0919-0997318 / 0916-7724604,Driver's License,N03-11-007108,Marlon Llamas,Albert Dalupang,,,,,,,,,,,WOR513,,,,,,,,,,,,Yes,46280.43264,Internal TT Team,No,,Pending ORCR Report from Third Party Agency
