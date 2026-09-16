@@ -1,5 +1,5 @@
 Dealer Referred By,Dealer ID,Dealership Name,Sept 16 - Review,GCD Code,Onboarding (Regular / Express),Name of Owner/Authorized Representative ,Date of Birth ,Contact Number,Business Address,Gender,ID Type (Primary Borrower),ID No (Primary Borrower),Assigned Ops POC,Assigned Sales POC,Assigned SM ,Documents Submitted ,Document Pending,No of Docs Pending,Date of Initial Application ,Date when to request for updated requirements ,Has Complete Requirements for BAP/CMAP Processing? ,BAP Request Date to Financier,BAP Receipt Date from Financier,CIC Request Date to Financier,CIC Receipt Date to Financier,Sent Email to Sales POC for Remaining Docs?,Request Date for Remaining Documents by Ops,BAP Status ,CMAP Status ,BAP/CMAP Credit Check Remarks ,Complete Docs ,Date of Completion of Onboarding Documents by Sales,Date of Endorsement to Credit,Application Remarks ,Financier,Application Status,Required PDC?,Reason for PDC Requirement,Co-borrower,Email Address of the Co Borrower,Remarks / Additional Docs Needed for Credit Evaluation,Sales Submission Date of Additional Credit Docs,Credit Officer,Initial Credit Evaluation Result,Initial Credit Evaluation Result Date,Final Credit Evaluation Result,Date of Final Credit Evaluation Result,Date of Issuance of CA to Financier,Original CLA - Receipt Date from Financier,Sanction Letter Population by the Ops Team,Original Credit Line issuance Date,Original CLA Signed Date,Link to Signed Credit Line Docs,Date of Last CL Increase Request to Netbank ,Date of Last CL Increase ,Date of Next CL Evaluation ,Latest Endorsed CL Amount,Latest CL Increase Type,,1. Routed for CL Increase? ,1. CL Increase Requested by,1. CL Increase Type,1. Proposed New Credit Line ,1. Loan Cycle,1. CL Increase Request Date to Netbank ,1. New CLA Receipt Date from Netbank,1. New CLA Signed by the Dealer ,,2. Routed for CL Increase? ,2. CL Increase Requested by,2. CL Increase Type,2. Proposed New Credit Line ,2. Loan Cycle,2. CL Increase Request Date to Netbank ,2. New CLA Receipt Date from Netbank,2. New CLA Signed by the Dealer ,2. New CLA Signed by the Dealer ,,3. Routed for CL Increase? ,3. CL Increase Requested by,3. CL Increase Type,3. Proposed New Credit Line ,3. Loan Cycle,3. CL Increase Request Date to Netbank ,3. New CLA Receipt Date from Netbank,3. New CLA Signed by the Dealer ,,4. Routed for CL Increase? ,4. CL Increase Requested by,4. CL Increase Type,4. Proposed New Credit Line ,4. Loan Cycle,4. CL Increase Request Date to Netbank ,4. New CLA Receipt Date from Netbank,4. New CLA Signed by the Dealer ,,5. Routed for CL Increase? ,5. CL Increase Requested by,5. CL Increase Type,5. Proposed New Credit Line ,5. Loan Cycle,5. CL Increase Request Date to Netbank ,5. New CLA Receipt Date from Netbank,5. New CLA Signed by the Dealer ,,6. Routed for CL Increase? ,6. CL Increase Requested by,6. CL Increase Type,6. Proposed New Credit Line ,6. Loan Cycle,6. CL Increase Request Date to Netbank ,6. New CLA Receipt Date from Netbank,6. New CLA Signed by the Dealer ,Paid Dealer Incentive?,,,Before Latest Credit Line Approval Date,Before Latest Credit Line (In PHP),Before Latest CL Increase Type,Total Number of CL Increase (Lifetime),Total Number of Automatic CL Increase (Lifetime)
-,IF0001,EMC PRADO AUTO INC,,GCD3943,Regular Onboarding,Enrique Miguel Prado,28339,9189425321,66 Maayusin Street UP Village,Male,Philhealth,03-025426924-3,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0001,EMC PRADO AUTO INC,,GCD3943,Regular Onboarding,Enrique Miguel Prado,28339,9189425321,66 Maayusin Street UP Village,Male,Philhealth,03-025426924-3,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Consent Form
 3.Valid ID (Driver's License)
 4.Mayor's Permit
@@ -12,7 +12,7 @@ Dealer Referred By,Dealer ID,Dealership Name,Sept 16 - Review,GCD Code,Onboardin
 11.BRGY. CLEARANCE
 12.OR/CR DOCS & DRAWDOWN DOCS
 13.2023 GIS",,0,45309,,Yes,45309.46458,45309.54653,,,No,,No Negative Credit Hit,No Negative Credit Hit,N/A,Yes,45309,,,Netbank,Eligible Application - Dealer Onboarded,,,,,,,Hans Tio,Approved,45313,Approved,45313,45635,45313,45313,45313,45316,https://drive.google.com/drive/u/0/folders/1NDFKLbaZWz_9UDMbrNF6QcIN2fe3DRxN,0,0,0,0
-,IF0002,DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),,GCD3944,Regular Onboarding,Sheena Ong Co,31432,9617068031,"154 Dr. Alejos St, Brgy Salvacion, La Loma",Female,Passport,P7377163B,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0002,DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),,GCD3944,Regular Onboarding,Sheena Ong Co,31432,9617068031,"154 Dr. Alejos St, Brgy Salvacion, La Loma",Female,Passport,P7377163B,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Consent Form
 3.Valid ID (PASSPORT)
 4.Inventory List
@@ -46,7 +46,7 @@ Report Date: 06/01/2017",Yes,45324,,,Finsso,Eligible Application - Dealer Onboar
 11.Credit Advise Sept-Feb
 12.POB Showroom
 13.Proof of Operation",,0,45322.62292,,Yes,45323.43264,45323.45694,,,No,,No Negative Credit Hit,No Negative Credit Hit,N/A,Yes,45327,,,Netbank,Eligible Application - Dealer Onboarded,,,,,,,Mary-Ann Perez,Approved,45335,Approved,,,45335,45338,45338,45342,https://drive.google.com/drive/u/0/folders/176PEfLyUsnQvfoebeLUbFvBCjN4DIE-p,0,0,0,0
-,IF0004,YOCARS AUTOMOTIVE CARE SERVICES,,GCD213,Regular Onboarding,Johann Edward Banez Pineda,27869,9175218603,"20 Ma Elena Street Carmel Subd.,  Bahay Toro",Male,Driver's License,N04-93-271781,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0004,YOCARS AUTOMOTIVE CARE SERVICES,,GCD213,Regular Onboarding,Johann Edward Banez Pineda,27869,9175218603,"20 Ma Elena Street Carmel Subd.,  Bahay Toro",Male,Driver's License,N04-93-271781,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Consent Form
 3.Valid ID (Driver's License)
 4.DTI
@@ -58,7 +58,7 @@ Report Date: 06/01/2017",Yes,45324,,,Finsso,Eligible Application - Dealer Onboar
 10.Signed Credit line Agreement/Sanction Letter (Physical Copy)
 11.Drawdown Folder (OR/CR docs) 
 12..Physical copies of the signed documentation (PNCM, Amortization Schedule,and disclosure statements)",,0,45334,,Yes,45334.59653,45335,,,Yes,45338,No Negative Credit Hit,No Negative Credit Hit,N/A,Yes,45343,,,Finsso,Eligible Application - Dealer Onboarded,,,,,,,Hans Tio,Approved,45349,Approved,,,45349,45349,45349,45349,https://drive.google.com/drive/u/0/folders/1aNVtl2x79MMeKZSEeTKS-lvI7XlhdRHi,45552,45558,45619,5000000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,4500000,,45463,45464,45467,,Yes,Payment Ops Team,Automatic CL Increase,5000000,,45552,45554,45558,,,,,,,,,45905.57222,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,45554,4500000,Automatic CL Increase,3,2
-,IF0005,RANDALL AUTO TRADING,,GCD4058,Regular Onboarding,Randall Reyes Cabral,30729,9260318543,"Blas Ople, Diversion Road, Barangay Anilao, Malolos City",Male,Driver's License,C07-10-015709,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0005,RANDALL AUTO TRADING,,GCD4058,Regular Onboarding,Randall Reyes Cabral,30729,9260318543,"Blas Ople, Diversion Road, Barangay Anilao, Malolos City",Male,Driver's License,C07-10-015709,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Consent Form
 3.Valid ID (Driver's License & TIN )
 4.DTI
@@ -114,7 +114,7 @@ Reported date: 06/06/2008",Yes,45348,,We will put this account on hold until we
 11. Additional Bank Statement - RCBC ","
 ",0,45348,,Yes,45348,45348,,,Yes,45349,No Negative Credit Hit,No Negative Credit Hit,N/A,Yes,45385,,"
 ",Netbank,Eligible Application - Dealer Onboarded,,,,,,,Mary-Ann Perez,Approved,45387.39444,Approved,,,45387.39444,45387.54861,45387.54861,45468.74931,https://drive.google.com/drive/u/0/folders/14BHH4h4vwb8206rt_mpEUpYTEQ6Beyb6,0,0,0,0
-,IF0007,RAMP AUTO TRADING,,GCD1716,Regular Onboarding,Robert Angelo Miralfez Porto,31719,0919-0997318 / 0916-7724604,"Lot 15  Blk 13 Aguirre Street Pilar Village, Las Pinas City    ",Male,Driver's License,N03-11-007108,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0007,RAMP AUTO TRADING,,GCD1716,Regular Onboarding,Robert Angelo Miralfez Porto,31719,0919-0997318 / 0916-7724604,"Lot 15  Blk 13 Aguirre Street Pilar Village, Las Pinas City    ",Male,Driver's License,N03-11-007108,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Consent Form
 3.Valid ID Robert & Kryztel Porto(Driver's License & UMID) 
 4.DTI
@@ -127,7 +127,7 @@ Reported date: 06/06/2008",Yes,45348,,We will put this account on hold until we
 11.Latest Sales Summary Report and Inventory List 
 12.Sales Acknowledgement Receipt
 13.Signed Credit line Agreement (Physical Copy)",1. Sanction Letter,1,45335,,Yes,45335,45335,,,Yes,45355,No Negative Credit Hit,No Negative Credit Hit,N/A,Yes,45356,,,Netbank,Eligible Application - Dealer Onboarded,,,,,,,Hans Tio,Approved,45358,Approved,,,45358,45358,45358,45358,https://drive.google.com/drive/u/0/folders/1zQLNg8D8oZDlwZ11XwvOKVljiTbz58WL,45757,45786,45847,6750000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,3000000,,45426,45428,45429,,Yes,Payment Ops Team,Automatic CL Increase,4500000,,45541,45544,45545,,,Yes,Payment Ops Team,Automatic CL Increase,6750000,,45757,45757,45786,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,45544,4500000,Automatic CL Increase,3,3
-,IF0008,JAYJAY CAR TRADING,,GCD2134,Regular Onboarding,Julius Mendoza Reyes,29590,9989995188,"No 45 Agnos At. NIA Village, Zone 1, Brgy. Sauyo",Male,Driver's License,N25-02-005522,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0008,JAYJAY CAR TRADING,,GCD2134,Regular Onboarding,Julius Mendoza Reyes,29590,9989995188,"No 45 Agnos At. NIA Village, Zone 1, Brgy. Sauyo",Male,Driver's License,N25-02-005522,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Consent Form
 3.Valid ID (Driver's License & TIN ID)
 4.Bank Statement (BDO July-Feb)
@@ -143,7 +143,7 @@ Reported date: 06/06/2008",Yes,45348,,We will put this account on hold until we
 14.Proof of New Showroom(Meralco & Maynilad OR) 
 15.Signed Credit line agreement( Physical Copy)
 16.Signed Sanction letter(Physical copy)",,0,45334,,Yes,45334,45335,,,Yes,45335,No Negative Credit Hit,No Negative Credit Hit,w,Yes,45362,,,Netbank,Eligible Application - Dealer Onboarded,,,,,,,Mary-Ann Perez,Approved,45363,Approved,,,45363,45364,45364,45364,https://drive.google.com/drive/u/0/folders/10QyCxjODlnaWiKM9bUNuPJfu1vHB8xkt,45604,0,0,10000000,CL Re-evaluation,,Yes,Sales Team,CL Re-evaluation,10000000,,45604,45610,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1
-,IF0009,MIKMIK'S CAR TRADING,,GCD1912,Regular Onboarding,Mike Anthony Aristorenas San Andres,32376,9566590932,91 Aurora Pijuan Street BF Resort Village Talon Dos,Male,Driver's License,N26-08-005402,Mary Grace Pascual,Rexcell Juegos,Albert Dalupang,"1.Application Form
+,IF0009,MIKMIK'S CAR TRADING,,GCD1912,Regular Onboarding,Mike Anthony Aristorenas San Andres,32376,9566590932,91 Aurora Pijuan Street BF Resort Village Talon Dos,Male,Driver's License,N26-08-005402,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Consent Form
 3.Valid (Driver's License & PWD ID)
 4. DTI
@@ -156,7 +156,7 @@ Reported date: 06/06/2008",Yes,45348,,We will put this account on hold until we
 11.Lease of Contract(proof of house & showroom)
 12. Current Inventory List 
 13..Signed Credit line agreement (Physical Copy)",1.Sanction Letter,1,45324,,Yes,45324,45324,,,Yes,45356,No Negative Credit Hit,No Negative Credit Hit,N/A,Yes,45359,,,Netbank,Eligible Application - Dealer Onboarded,,,,,,,Hans Tio,Approved,45363,Approved,,,45363,45364,45364,45364,https://drive.google.com/drive/u/0/folders/1jt7XXbYBLGGmJdfEOGpqjs7kbgt5rggw,0,0,0,0
-,IF0011,DAVE AND MELODY VEHICLE TRADING (Formerly as D.M Cars),,GCD1728,Regular Onboarding,David Joseph Ibarra Morales,33919,9276626333,Blk 9 Lot 71 Hills of Maia Alta Antipolo Rizal ,Male,Driver's License,D19-13-004832,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form(DM Cars)
+,IF0011,DAVE AND MELODY VEHICLE TRADING (Formerly as D.M Cars),,GCD1728,Regular Onboarding,David Joseph Ibarra Morales,33919,9276626333,Blk 9 Lot 71 Hills of Maia Alta Antipolo Rizal ,Male,Driver's License,D19-13-004832,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form(DM Cars)
 2.Valid ID(Driver's License & TIN ID) 
 3.Signed Consent Form
 4.Proof of House 
@@ -168,7 +168,7 @@ Reported date: 06/06/2008",Yes,45348,,We will put this account on hold until we
 10.NEW Application Form (under Dave and Melody Vehicle Trading)
 11.Current Inventory List
 12.Photo of Inventory",,0,45328,,Yes,45397,45397,45400,45400,Yes,45397,No Negative Credit Hit,No Negative Credit Hit,N/A,Yes,45397,,,Netbank,Eligible Application - Dealer Onboarded,,,,,,,Mary-Ann Perez,Approved,45400,Approved,,,45400,45401,45401,45404,https://drive.google.com/drive/u/0/folders/1NdjSUfWjkkhrf8ETHsvH4PFdFCY5Odvg,45923,45923,45984,2430000,,,Yes,Payment Ops Team,Automatic CL Increase,720000,,45583,45583,45586,,Yes,Payment Ops Team,Automatic CL Increase,1080000,,45677.66736,45699,45699,,,Yes,Payment Ops Team,Automatic CL Increase,1620000,,45760,45793,45796,,Yes,Payment Ops Team,Automatic CL Increase,2430000,,45923,45923,45923,,,,,,,,,,,,,,,,,,,,,,45793,1620000,Automatic CL Increase,4,4
-,IF0128,JELR CAR TRADING,,GCD2759,Inventory Underwriting, Jansel Emmanuel Lee Rodrigo,30996,9178521110,Garage A&B Park N Sell Meralco Avenue Corner Capt. Henry Javier Ortigas Pasig City,Male,Driver's License,N04-02-002341,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0128,JELR CAR TRADING,,GCD2759,Inventory Underwriting, Jansel Emmanuel Lee Rodrigo,30996,9178521110,Garage A&B Park N Sell Meralco Avenue Corner Capt. Henry Javier Ortigas Pasig City,Male,Driver's License,N04-02-002341,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form
 3.Valid ID (Driver's License & UMID)
 4.Geotagged Photo of the Showroom
@@ -200,7 +200,7 @@ Closed date: 9/10/2009
 Reported date: 10/7/2009",Yes,45586.72847,,"As per Joel, dealer is skeptical to proceed.  He is unsure about documentation completion since some are from his dad and some are from his partners 
 -9/27/24 As per Ms. Pao, Ms. Van and Ms. Pao agreed that we can accept the doc BPI BS as proof of billing of house.
 -10/21/2024 - as per Marlon, No sales on August 2024. They went on vacation for 3 weeks.",Netbank,Eligible Application - Dealer Onboarded,,,Jansel Emmanuel Lee Rodrigo,janselrodrigo@yahoo.com ,,,Angelika Jane Lipata,Approved,45712.47014,Approved,45712.63125,45712.47014,45712.63125,45712.73889,45712.73889,45715.57361,https://drive.google.com/drive/folders/1lNG2d8PXWQ9hihJ4oS_ePOlRIxoMzEvd,0,0,0,0
-,,BIG BOY CARS UNL ,,GCD4270,Regular Onboarding,Mari Luis Matsuo Nunez,34888,9175780045,Park N Sell Compound Meralco Ave. Pasig City,Male,Driver's License,N03-14-014608,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,BIG BOY CARS UNL ,,GCD4270,Regular Onboarding,Mari Luis Matsuo Nunez,34888,9175780045,Park N Sell Compound Meralco Ave. Pasig City,Male,Driver's License,N03-14-014608,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Consent Form
 3.Valid ID","1.Geotagged Photo of the Showroom
 2.Proof of House 
@@ -212,7 +212,7 @@ Reported date: 10/7/2009",Yes,45586.72847,,"As per Joel, dealer is skeptical to 
 8.DTI Certificate
 9.Existing Financier Agreement (Auto/Housing/Personal)",9,45329,,Yes,45329,45330,,,Yes,45330,No Negative Credit Hit,No Negative Credit Hit,N/A,No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,IF0079,DANIEL CAR TRADING,,GCD4059,Express Onboarding, Daniel Salvador,34914,9273137300,Park n Sell Meralco Ave corner Capt. Henry Javier Ortigas Pasig City  ,Male,Driver's License,N01-21-201457,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0079,DANIEL CAR TRADING,,GCD4059,Express Onboarding, Daniel Salvador,34914,9273137300,Park n Sell Meralco Ave corner Capt. Henry Javier Ortigas Pasig City  ,Male,Driver's License,N01-21-201457,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form
 3.Valid ID (Driver's License)
 4.DTI Certificate
@@ -228,7 +228,7 @@ Reported date: 10/7/2009",Yes,45586.72847,,"As per Joel, dealer is skeptical to 
 9.FB Page -Proof of Vintage
 10.FB Post -Proof of Sale","1.POB / Rental agreement (Residence and Business)
 ",1,45329,,Yes,45329,45330,,,Yes,45330,No Negative Credit Hit,No Negative Credit Hit,N/A,Yes,45603.56389,,,Netbank,Eligible Application - Dealer Onboarded,,,DANIEL SALVADOR,daniellucanas.dl@gmail.com,Proof of sales / Rental agreement,45586.87917,Myla Sabater,Approved,45590.44028,Approved,45595.34722,45590.44028,45595.34722,45595.42569,45595.42569,45603.56389,https://drive.google.com/drive/folders/1_f6yanmUWdGrW3lYa0H9LjRuV5jfuaMd,0,0,0,0
-,,GMD CAR CARE CENTER INC,,NGC01,Regular Onboarding, George Collantes Magpantay,28978,N/A,"Blk 48 Lot 7 Vista Verde,South Mambong Bacoor Cavite",Male,National ID,3182-0637-2836-2504,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,GMD CAR CARE CENTER INC,,NGC01,Regular Onboarding, George Collantes Magpantay,28978,N/A,"Blk 48 Lot 7 Vista Verde,South Mambong Bacoor Cavite",Male,National ID,3182-0637-2836-2504,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Consent Form
 3.Valid ID (NAT'L ID)","1.Geotagged Photo of the Showroom
 2.Proof of House 
@@ -250,7 +250,7 @@ Reported date: 10/7/2009",Yes,45586.72847,,"As per Joel, dealer is skeptical to 
 1.Auto Loan  PHP104,921.53
 Report Date:09/13/2022",Yes,46072,,,,Dealer Rejected,,,,,"Jose Rojas (Client)- Passed
 Karina Rojas (Spouse) - Auto Loan (Php104,921.53)",,,,,,,,,,,,,,,0
-,,PRIME AUTO ,,GCD2509,Regular Onboarding,Shirley Vistro Lagrito,27689,9397205957,B12 L13 Greenpoint Homes Mambong IV Bacoor Cavite,Female,UMID,0033-47033-0,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,PRIME AUTO ,,GCD2509,Regular Onboarding,Shirley Vistro Lagrito,27689,9397205957,B12 L13 Greenpoint Homes Mambong IV Bacoor Cavite,Female,UMID,0033-47033-0,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Consent Form
 3.Valid ID (UMID)","1.Geotagged Photo of the Showroom
 2.Proof of House 
@@ -276,7 +276,7 @@ Karina Rojas (Spouse) - Auto Loan (Php104,921.53)",,,,,,,,,,,,,,,0
 9.Existing Financier Agreement (Auto/Housing/Personal) - Mandatory
 ",9,45336,,Yes,45336,45337,,,Yes,45349,No Negative Credit Hit,No Negative Credit Hit,N/A,No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,,BUY N' SELL HUB,,NGC02,Regular Onboarding,Rian Rain Jimenez,,N/A,Park N' Sell Pasig City,Male,N/A,,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,BUY N' SELL HUB,,NGC02,Regular Onboarding,Rian Rain Jimenez,,N/A,Park N' Sell Pasig City,Male,N/A,,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form","1. Valid ID
 2. Contact Number of Rian Rain Jimenez
 3.Geotagged Photo of the Showroom
@@ -291,7 +291,7 @@ Karina Rojas (Spouse) - Auto Loan (Php104,921.53)",,,,,,,,,,,,,,,0
 12. Notarized Secretary's Certificate (if corporation)
 13.Existing Financier Agreement (Auto/Housing/Personal) - Mandatory
 ",13,45335,,No,,,,,No,,,,,No,,,"As per Joel, the dealer has an existing court case. Putting this account on hold. ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,,B.J.A CARS TRADING ,,GCD1241,Regular Onboarding, Bernardo Juan Abad,26668,9178016349,1261 Amang Rodriguez Sr. Ave. Brgy Dela Paz Pasig City,Male,National ID,4265-9067-2095-3741,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,B.J.A CARS TRADING ,,GCD1241,Regular Onboarding, Bernardo Juan Abad,26668,9178016349,1261 Amang Rodriguez Sr. Ave. Brgy Dela Paz Pasig City,Male,National ID,4265-9067-2095-3741,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Consent Form
 3.Valid ID
 4.DTI Cert.
@@ -423,7 +423,7 @@ Report Date:  12/12/2014",No,,,Corporate entity has withdrawn application. Jerom
 6.Current Inventory List
 7.Photo of Inventory (required when the geotagged photo of the showroom lacks visual confirmation of inventory)
 8.Latest 3-6 Months Bank Statements ",8,45343,,No,45343,45343,,,No,,,,,No,,,"Dealer has withdrawn its application. As per Joel, dealer cannot provide the required documentations. ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,,CARL DEALS ,,GCD4272,Regular Onboarding,Carl Allen Delos Reyes Manarpiis,36056,9171135417,22A Reyes Comp Marulas Valenzuela,Male,Driver's License,N25-16-900034,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,CARL DEALS ,,GCD4272,Regular Onboarding,Carl Allen Delos Reyes Manarpiis,36056,9171135417,22A Reyes Comp Marulas Valenzuela,Male,Driver's License,N25-16-900034,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form
 3.Valid ID (Driver's License & PWD)","1.Geotagged Photo of the Showroom
 2.Proof of House 
@@ -472,7 +472,7 @@ Report Date:  12/12/2014",No,,,Corporate entity has withdrawn application. Jerom
 1.Credit Card PHP49,234
 Closed Date: 06/13/2017
 Report Date: 11/10/2016",No,,,"As per Joel, This account will be cancelled, CMS is a group of owners.",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,IF0010,GARAGE888 AUTO TRADING,,GCD2868,Regular Onboarding,Mark Guilbert Gruta Llamado,32165,9165466695,601 Escoda St corner Santol St Sampaloc,Male,Driver's License,N01-13-017979,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0010,GARAGE888 AUTO TRADING,,GCD2868,Regular Onboarding,Mark Guilbert Gruta Llamado,32165,9165466695,601 Escoda St corner Santol St Sampaloc,Male,Driver's License,N01-13-017979,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (TIN & Driver's License)
 3.DTI
 4.Signed Consent Form
@@ -600,7 +600,7 @@ Report Date: 11/07/2017
 3.Credit Cards PHP58,142
 Closed Date: 02/28/2018
 Report Date: 10/10/2018",No,,,- The dealer has a 15M alternative credit line with another bank.,,Application Paused/On Hold by Sales,,,,,,,Myla Sabater,,,,,,,,,,,,,0
-,IF0013,DON/GIE 2ND HAND CAR TRADING,,GCD3942,Regular Onboarding,Donald Yambao Catapang,26460,9563848368,1011 EDSA Proj7 Veterans Village,Male,Driver's License,N02-91-175734,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0013,DON/GIE 2ND HAND CAR TRADING,,GCD3942,Regular Onboarding,Donald Yambao Catapang,26460,9563848368,1011 EDSA Proj7 Veterans Village,Male,Driver's License,N02-91-175734,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID 
 3.Signed Consent Form
 4.Proof of Showroom
@@ -646,7 +646,7 @@ Report Date: 03/24/2021
 
 6.Auto PHP0.01
 Report Date: 12/06/2021",Yes,45401,,,Netbank,Eligible Application - Dealer Onboarded,,,,,,,El Marie Dimaculangan,Approved,45405,Approved,,,45405,45407,45407,45408,https://drive.google.com/drive/u/0/folders/1pgT1nxlwixZfXl3NDDj2pjK9rz4Vzm__,0,0,0,0
-,IF0019,KAYKEES TRADING,,GCD4055,Regular Onboarding,Johnner Calalay Zuniga,25660,9178243819,1011 EDSA PROJECT 8,Male,Driver's License,N02-19-023064,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0019,KAYKEES TRADING,,GCD4055,Regular Onboarding,Johnner Calalay Zuniga,25660,9178243819,1011 EDSA PROJECT 8,Male,Driver's License,N02-19-023064,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (TIN/PHILHEALTH/DL)
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -710,7 +710,7 @@ Report Date:12/11/2023
 Personal/Salary PHP:267,965
 Report Date:12/11/2023
 ",Yes,45869.38194,,,Finsso,Eligible Application - Dealer Onboarded,,,,,,,Angelika Jane Lipata,Approved,45869.47153,Approved,45869.47153,45869.47153,45869.60417,45869.60417,45869.60417,45869.38194,https://drive.google.com/drive/folders/1Pb1TTs_1NjYKiRxR0PGWAgwH13QPswrY,0,0,0,0
-,IF0015,CARMATRIO AUTO TRADING,,GCD1880,Regular Onboarding,Mary Grace Manansala Perez,31397,0917-110-6622,No 80 Narra Marieta Romeo Village Sta Lucia Pasig ,Female,Driver's License,L04-10-003782,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0015,CARMATRIO AUTO TRADING,,GCD1880,Regular Onboarding,Mary Grace Manansala Perez,31397,0917-110-6622,No 80 Narra Marieta Romeo Village Sta Lucia Pasig ,Female,Driver's License,L04-10-003782,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Drivers License & TIN ID)
 3.Signed Consent Form
 4.DTI Certificate
@@ -732,7 +732,7 @@ Report Date:12/11/2023
 4.Photo of Inventory
 5.Latest 3-6 Months Bank Statements
 6.Existing Financier Agreement (Auto/Housing/Personal)",6,45401,,Yes,45401,45401,,,Yes,45401,No Negative Credit Hit,No Negative Credit Hit,N/A,No,,,"As per Joel Geronimo ,This client is not interested anymore due to he divert selling motorcycle only",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,IF0016,VERSATILE AUTO SALES,,GCD1518,Regular Onboarding,Joemarie Lavester Labastera,26671,9385120740 / 9916947421,"#7 Mindanao Avenue, Tandang Sora, Quezon City",Male,TIN,184-851-197,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0016,VERSATILE AUTO SALES,,GCD1518,Regular Onboarding,Joemarie Lavester Labastera,26671,9385120740 / 9916947421,"#7 Mindanao Avenue, Tandang Sora, Quezon City",Male,TIN,184-851-197,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Drivers License & TIN ID) 
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -766,7 +766,7 @@ Report Date: 9/02/2015
 6.Credit Cards PHP53,054
 Closed Date:5/22/2008
 Report Date: 8/05/2008",Yes,45411,,,Netbank,Eligible Application - Dealer Onboarded,,,,,,,El Marie Dimaculangan,Approved,45411,Approved,,,45411,45415,45415,45419,https://drive.google.com/drive/u/0/folders/18H2SWW1vv0ctwM3oeW1OypgDk1cqLEXj,45856,45796,45857,6075000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,1200000,,,45504,45504,,Yes,Payment Ops Team,Automatic CL Increase,1800000,,,45569,45610,,,Yes,Payment Ops Team,Automatic CL Increase,2700000,,45687,45699,45699,,Yes,Payment Ops Team,Automatic CL Increase,4050000,,45760,45793,45796,,Yes,Payment Ops Team,Automatic CL Increase,6075000,,45856,,,,,,,,,,,,,,,45699,4050000,Automatic CL Increase,4,5
-,IF0109,MJNGO DOCUMENT FACILITATION SERVICES,,GCD1515,Express Onboarding,Mark John Pangilinan Ngo,29789,09273029888 / 09987267998,4th floor. Ortigas Techno Point bldg. Parking Julia Vargas Ave. Pasig City,Male,Driver's License,D16-99-211318,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0109,MJNGO DOCUMENT FACILITATION SERVICES,,GCD1515,Express Onboarding,Mark John Pangilinan Ngo,29789,09273029888 / 09987267998,4th floor. Ortigas Techno Point bldg. Parking Julia Vargas Ave. Pasig City,Male,Driver's License,D16-99-211318,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Drivers License) 
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -922,7 +922,7 @@ ONETEN CAR TRADING,IF0225,EC CAR TRADING,,GCD342,Inventory Underwriting,Edgar Ga
 2021 TOYOTA VIOS 1.3 XLE CV_NEM4057
 2013 FORD EXPLORER_TOU883
 ",,0,45884.97014,,Yes,45887.47014,45888.60208,45887.47014,,Yes,45887.59583,No Negative Credit Hit,No Negative Credit Hit,N/A,Yes,45887.45625,,,Finsso,Eligible Application - Dealer Onboarded,,,,,,,Angelika Jane Lipata,Approved,45896.56944,Approved,45896.56944,45896.56944,45896.56944,45897.44583,45897.44583,45897.62431,https://drive.google.com/drive/folders/1xtvcFm_xWg_yisIopDJvAmv7Jy6wZIxd,45946,0,0,2550000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,2550000,,45946,45946,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1,1
-,IF0018,LUCKY 323 CAR TRADING,,GCD100,Regular Onboarding,Roderick Ople Bernardo,26546,09178537425/09228863831,7C Mindanao Ave. Tandang Sora District 6 Quezon City,Male,Driver's License,C07-90-042638,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0018,LUCKY 323 CAR TRADING,,GCD100,Regular Onboarding,Roderick Ople Bernardo,26546,09178537425/09228863831,7C Mindanao Ave. Tandang Sora District 6 Quezon City,Male,Driver's License,C07-90-042638,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Drivers License)
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -992,7 +992,7 @@ Report Date:11/10/2016",Yes,45439,,"Based on the initial assessment conducted by
 
 Note: Incomplete document (Current Inventory List & Photo of Inventory) 
 CLA issued, and the drawdown has already been executed.",Netbank,Eligible Application - Dealer Onboarded,,,,,,,Myla Sabater,Approved,45436,Approved,45439,45439,45440.61389,45440.62847,45440.62847,45446.83194,https://drive.google.com/drive/u/0/folders/13Z07j52z6gh0DeawLfqHx9PH-2goFxZ-,45923,45923,45984,9112500,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,1200000,,,45511,45511,,Yes,Payment Ops Team,Automatic CL Increase,1800000,,,45610,45612,,,Yes,Payment Ops Team,Automatic CL Increase,2700000,,45677.66597,45699,45699,,Yes,Payment Ops Team,Automatic CL Increase,4050000,,45757,45757,,,Yes,Payment Ops Team,Automatic CL Increase,6075000,,45838,45838,45842,,Yes,Payment Ops Team,Automatic CL Increase,9112500,,45923,45923,45923,,,,45838,6075000,Automatic CL Increase,6,6
-,,BRCK CAR TRADING,,GCD2547,Inventory Underwriting,Sabino Oralde Retes,25548,N/A,N/A,Male,Driver's License,N01-97-214395,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"RE-APPLICATION DOCS
+,,BRCK CAR TRADING,,GCD2547,Inventory Underwriting,Sabino Oralde Retes,25548,N/A,N/A,Male,Driver's License,N01-97-214395,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"RE-APPLICATION DOCS
 1.Application Form
 2.DL ID-NATIONAL ID-RETES 
 3.Signed Consent Form
@@ -1098,7 +1098,7 @@ Report Date:4/19/2023",,Myla Sabater,,,,,,,,,,,,,0
 ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
 ,,MAXZ AUTO TRADING,,GCD1205,Regular Onboarding,Mark Anthony Alfonso Pandanan,30053,N/A,N/A,Male,"1.Latest 3–6 months Sales Summary Report
 2.Current Inventory List
-3.Latest 3–6 months Bank Statements",N03-99-268382,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+3.Latest 3–6 months Bank Statements",N03-99-268382,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Drivers License & UMID)
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -1140,7 +1140,7 @@ Report Date:4/19/2023",,Myla Sabater,,,,,,,,,,,,,0
 18.GeneralPower of Atty
 19.Acknowledgement",,0,45446.66875,,Yes,45447.39722,45447.40417,45447.39722,,Yes,45447.40764,No Negative Credit Hit,No Negative Credit Hit,N/A,Yes,45513.47222,,,Netbank,Eligible Application - Dealer Onboarded,,,,,"GIS
 Company Profile",,Michelle Vinas,Approved,45461,Approved,45513,45513,45517.42292,,,,https://drive.google.com/drive/u/0/folders/13KV-3OVXQbDRfIpJ9S2o3_L4dcI19Fq1,,,0
-,,NONIE CARS,,GCD4289,Regular Onboarding,Jonel Palima Zamora,31095,N/A,N/A,N/A,PhilHealth,01-026699935-1,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,NONIE CARS,,GCD4289,Regular Onboarding,Jonel Palima Zamora,31095,N/A,N/A,N/A,PhilHealth,01-026699935-1,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID ( Philhealth)
 3.Signed Consent Form","1.Geotagged Photo of the Showroom
 2.Proof of House 
@@ -1152,7 +1152,7 @@ Company Profile",,Michelle Vinas,Approved,45461,Approved,45513,45513,45517.42292
 8.DTI Certificate 
 9.Existing Financier Agreement (Auto/Housing/Personal)",9,45446.67014,,Yes,45446.74167,45447.36111,45446.74167,,Yes,45446.7875,No Negative Credit Hit,No Negative Credit Hit,N/A,No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,IF0052,AUTO-NEXUS CAR TRADING,,GCD3269,Regular Onboarding,Ricardo Jose Escolar Gutierrez,33138,0917-856-0922,107 E Rodriguez jr. Avenue libis brgy. Ugong norte quezon city,Male,Driver's License,N25-14-015705,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0052,AUTO-NEXUS CAR TRADING,,GCD3269,Regular Onboarding,Ricardo Jose Escolar Gutierrez,33138,0917-856-0922,107 E Rodriguez jr. Avenue libis brgy. Ugong norte quezon city,Male,Driver's License,N25-14-015705,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Drivers License)
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -1203,7 +1203,7 @@ Company Profile",,Michelle Vinas,Approved,45461,Approved,45513,45513,45517.42292
 13.Open Deed of Sale
 14.Acknowledgement Receipt (July-Sept)
 15.BDO Bank Statement (April-Sept)",,0,45449.43264,,Yes,45449.45417,45449.63681,45449.45417,,Yes,45449.68125,No Negative Credit Hit,No Negative Credit Hit,N/A,Yes,45559.47083,,,Finsso,Eligible Application - Dealer Onboarded,No,,,,,,Michelle Vinas,Approved,45560.77083,Approved,45562.61528,45560.77083,45562.61528,45562.65833,45562.65833,45568,https://drive.google.com/drive/folders/1fpR-PJnxLzZO--2HwXwsSRMAbiNkn7CP,45721,45723,45784,1800000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,1800000,,45721,45723,45723,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1,1
-,IF0025,823ERIC CAR TRADING,,GCD4056,Regular Onboarding,Eric So Si,27680,9178233742,24-D 4th Street New Manila Damayang Lagi,Male,Voter's ID,7404-5228A-J1375ESS10001-8,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0025,823ERIC CAR TRADING,,GCD4056,Regular Onboarding,Eric So Si,27680,9178233742,24-D 4th Street New Manila Damayang Lagi,Male,Voter's ID,7404-5228A-J1375ESS10001-8,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Passport & Voters ID)
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -1217,7 +1217,7 @@ Company Profile",,Michelle Vinas,Approved,45461,Approved,45513,45513,45517.42292
 1.Photo of Inventory -  (as per request from Mam El, with geo-tagged photos), (June19)
 2.Existing Financier Agreement (Auto/Housing/Personal)
 -As per Arpit marked as complete(June 28)",,Eligible Application - Dealer Onboarded,,,,,,,Michelle Vinas,Approved,45450,Approved,45462,45462,45464.74931,45464.74931,45464.74931,45464.83472,https://drive.google.com/drive/u/0/folders/11P4WYEBAFqn4dhqSNnq6AWFVa0WpBdcn,0,0,0,0
-,IF0036,KCY CAR TRADING,,GCD326,Regular Onboarding,Kenneth Christopher Yu Yu,27336,9155074161,412 NS Amoranto St. Cor Speaker Perez Quezon City,Male,Driver's License,N25-05-119751,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0036,KCY CAR TRADING,,GCD326,Regular Onboarding,Kenneth Christopher Yu Yu,27336,9155074161,412 NS Amoranto St. Cor Speaker Perez Quezon City,Male,Driver's License,N25-05-119751,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Drivers License & Phil. ID)
 3.Signed Consent Form
 4.POB - Proof of Showroom & House - Claimed by Ricky as one and the same address
@@ -1720,7 +1720,7 @@ As discussed previously, we will hold the onboarding of this account until MJM i
 10.Sales Summary 
 11.Current Inventory List",,0,45467.76528,,Yes,45468.39792,45468.49236,45468.39792,,Yes,45468.54306,No Negative Credit Hit,No Negative Credit Hit,N/A,Yes,45474.41181,,"-POB-Proof of House & Showroom (claimed by Zhesa as one and the same address)
 -as per Zhesa, Carzon3 Auto Trading has no existing financial loan",,Eligible Application - Dealer Onboarded,,,,,,,Myla Sabater,Approved,45475,Approved,45475,45475,45477.42708,45477.50556,45477.50556,45477.59028,https://drive.google.com/drive/u/0/folders/1aAuw_7KfHWVuC1q8hoOBv99yOIH10Laa,45760,45796,45857,3037500,,,Yes,Payment Ops Team,Automatic CL Increase,900000,,,45517,45523,,Yes,Payment Ops Team,Automatic CL Increase,1350000,,,45604,45632,,,Yes,Payment Ops Team,Automatic CL Increase,2025000,,45677.67014,45699,45700,,Yes,Payment Ops Team,Automatic CL Increase,3037500,,45760,45793,45796,,,,,,,,,,,,,,,,,,,,,,45699,2025000,Automatic CL Increase,4,4
-,,REGSCORT CAR TRADING,,GCD2783,Regular Onboarding,Rheyjean Parraba Cortes,29141,N/A,N/A,N/A,Driver's License,N25-97-028208,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,REGSCORT CAR TRADING,,GCD2783,Regular Onboarding,Rheyjean Parraba Cortes,29141,N/A,N/A,N/A,Driver's License,N25-97-028208,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Drivers License)
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -2015,7 +2015,7 @@ VICTORYMIND CAR TRADING,IF0146,AGOSDELAISLACARS AUTO TRADING,,GCD2813,Inventory 
 Report Date:2/07/2024
 ",Yes,45743.67083,,,,Eligible Application - Dealer Onboarded,,,BIEN ANTHONY ISON BAUTISTA,bienisonbautista@gmail.com,Geotagged photos + ORCS,45750.36458,Myla Sabater,Approved,45750.71597,,,45750.71597,45751.5875,45751.6375,45751.6375,45751.73958,https://drive.google.com/drive/folders/1zQKIa8vU4s_offKE-bOrW5pqmYsRAXba,45994,0,0,1530000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,1020000,,45937,45937,,,Yes,Payment Ops Team,Automatic CL Increase,1530000,,45994,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1020000,Automatic CL Increase,1,2
 ,IF0041,NEO'S AUTO TRADING,,GCD3049,Regular Onboarding,Jose Antonio Uy Such Jr.,34250,9455562406,"6 amery corner north fairview park subd. Brgy Pasong Putik North 
-Fairview Quezon City",Male,Driver's License,C52-23-002940,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+Fairview Quezon City",Male,Driver's License,C52-23-002940,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Drivers License)
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -2030,7 +2030,7 @@ Fairview Quezon City",Male,Driver's License,C52-23-002940,Mary Grace Pascual,Mar
 13.BS Security Bank-checking account (July-Oct)
 14.PS Security Bank (March-July)",,0,45482.64583,,Yes,45483.71667,45484.38958,45483.71667,,Yes,45484.41319,No Negative Credit Hit,No Negative Credit Hit,N/A,Yes,45491.80972,,"-Claimed by Albert as one and the same address.
 ",,Eligible Application - Dealer Onboarded,,,,,,,Jan Melben Verdejo,Approved,45492,Approved,45492,45492,45496.3625,45496.39722,45496.39722,45496.59236,https://drive.google.com/drive/u/0/folders/1wkTb8_OZj4RpJg0z9haySDM4OFlWXjb_,0,45595,45656,1500000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,1500000,,,45590,45595,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1,1
-NEO'S AUTO TRADING,IF0153,AUTOVENTURES CAR DISPLAY CENTER,,GCD4268,Regular Onboarding,Marjorie Basilio Lumabas,34107,9616451911,#15 FAIRLANE ST WEST FAIRVIEW QC,Female,Driver's License,N03-18-051697,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+NEO'S AUTO TRADING,IF0153,AUTOVENTURES CAR DISPLAY CENTER,,GCD4268,Regular Onboarding,Marjorie Basilio Lumabas,34107,9616451911,#15 FAIRLANE ST WEST FAIRVIEW QC,Female,Driver's License,N03-18-051697,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form
 3.Geotagged Photo of the Showroom
 4.POB-Proof of House
@@ -2094,7 +2094,7 @@ Joel request this dealer on hold account but we will still follow up this dealer
 •⁠lease contracts when available
 •⁠awards / recognitions from the financiers dated 6mos ago.",5,45484.54167,,Yes,45484.57361,45484.57431,45484.57361,,Yes,45484.58472,No Negative Credit Hit,No Negative Credit Hit,N/A,No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,Myla Sabater,,,,,,,,,,,,,0
-,IF0098,BRO'S AUTODEALERS AUTO TRADING,,GCD2476,Inventory Underwriting,Robertino Inocencio Domingo,31285,9982531449,LOT 5 BLK 6 FRANCE ST ANNEX 57 BETTERLIVING PARANAQUE CITY,Male,PRC ID,497985,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0098,BRO'S AUTODEALERS AUTO TRADING,,GCD2476,Inventory Underwriting,Robertino Inocencio Domingo,31285,9982531449,LOT 5 BLK 6 FRANCE ST ANNEX 57 BETTERLIVING PARANAQUE CITY,Male,PRC ID,497985,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Driver's License & PRC)
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -2260,7 +2260,7 @@ Report Date:9/07/2016",Yes,45631.59375,,,,Eligible Application - Dealer Onboarde
 Closed Date:11/10/2021                    
 Report Date:12/09/2021 ",No,,,"-claimed by Marah as one and the same address
 -10/17/24,as per Marah, The dealer will not push through with the application.",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,IF0053,TRIPLE R VEHICLE TRADING,,GCD3957,Regular Onboarding,Rafael Martin Jesus Tronqued Cos,28145,9399349798,13A Jacqualine St. Cor. Janet St Pleasanview Subd. Tandang Sora Quezon City,Male,Driver's License,N01-96-190679,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0053,TRIPLE R VEHICLE TRADING,,GCD3957,Regular Onboarding,Rafael Martin Jesus Tronqued Cos,28145,9399349798,13A Jacqualine St. Cor. Janet St Pleasanview Subd. Tandang Sora Quezon City,Male,Driver's License,N01-96-190679,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID 
 3.Geotagged Photo of the Showroom
 4.BS Chinabank (Jan-July)
@@ -2417,7 +2417,7 @@ Report Date:2/10/2022
 6.Credit Cards PHP96,467
 Closed Date:10/28/2020                          
 Report Date:11/06/2020",Yes,45706.36111,,"-As per Zhesa, GMK he still not settled the credit he have that we see in BAP and he don't have any agreement to settled his credit.",,Eligible Application - Dealer Onboarded,,,KARL MEGRINO DELA PAZ,karldelapaz1984@gmail.com,,,Jan Melben Verdejo,Approved,45712.58125,,,,45712.63125,45714.71458,45714.71458,45714.76528,https://drive.google.com/drive/u/0/folders/1gP1OukBtDGb3S2e0bz-wlHPbDH-uejBC,45813,0,0,1800000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,1200000,,45757,45757,,,Yes,Payment Ops Team,Automatic CL Increase,1800000,,45813,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1200000,Automatic CL Increase,1,2
-,IF0083,KAMCARS ENTERPRISE,,GCD3959,Express Onboarding,Rogelio Ramos Martinez,21889,0922-867-0728,"#50 KAMUNING ROAD QUEZON CITY, METRO MANILA",Male,N/A,0111-7846453-5,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0083,KAMCARS ENTERPRISE,,GCD3959,Express Onboarding,Rogelio Ramos Martinez,21889,0922-867-0728,"#50 KAMUNING ROAD QUEZON CITY, METRO MANILA",Male,N/A,0111-7846453-5,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (UMID & Senior ID)
 3.Signed Consent Form
 4.Geo-tagged Photo of the  Showroom
@@ -2692,7 +2692,7 @@ Report Date:12/15/2016",Yes,45537.27639,,,,Eligible Application - Dealer Onboard
 9.FB Page-Proof of Vintage (December 15 2021)
 10.FB Post-Proof of Unit Sold
 11. Acknowledgement Receipt ( Sept & Oct)",,0,45523.80625,,Yes,45524.42986,45524.46875,45524.42986,,Yes,45524.48542,No Negative Credit Hit,No Negative Credit Hit,,Yes,45580.58264,,-claimed by Malou as one and the same address,,Eligible Application - Dealer Onboarded,,,,,,,Myla Sabater,Approved,45581.45278,Approved,,45581.45278,45586.19792,45593.47778,45593.47778,45593.48125,https://drive.google.com/drive/u/0/folders/1BELatju4Vys8LRJD1QrlR07OJq_KJ2GH,0,0,0,0
-,,AUTODOX CAR CARE CENTER OPC,,GCD4286,Regular Onboarding,Zander Revilla Lopecillo,34269,N/A,N/A,N/A,Driver's License,N02-13-017240,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,AUTODOX CAR CARE CENTER OPC,,GCD4286,Regular Onboarding,Zander Revilla Lopecillo,34269,N/A,N/A,N/A,Driver's License,N02-13-017240,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Drivers License) 
 3.Signed Consent Form
 4.SEC Certificate 
@@ -2963,7 +2963,7 @@ ALTUS CARS FINANCIAL CONSULTANCY SERVICES,IF0070,AUTO WEALTH MARKETING CONSULTAN
 11.Certification of Appreciation (Asialink)
 12.Sales Summary (July-Sept)
 13.Inventory List",,0,45562.77917,,Yes,45565.52847,45565.6375,45565.52847,,Yes,45565.64306,No Negative Credit Hit,No Negative Credit Hit,,Yes,45566.55417,,,Finsso,Eligible Application - Dealer Onboarded,,,,,,,Myla Sabater,Approved,45567.57917,Approved,,45567.57917,45569.56806,45569.59028,45569.59028,45569.70556,https://drive.google.com/drive/u/0/folders/1qj4fKKyGFb_sXZF_Vfr24QMxL8nO2KPa,45979,0,0,1080000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,720000,,,45610,,,Yes,Payment Ops Team,Automatic CL Increase,1080000,,45979,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,720000,Automatic CL Increase,1,2
-,IF0078,D.A.B. CAR TRADING,,GCD3484,Regular Onboarding,Danilo Nucom Tarroza,23494,0905-500-7205,Corner Amihan St. Bagong Calzada Taguig City,Male,N/A,C07-82-023001,Mary Grace Pascual,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0078,D.A.B. CAR TRADING,,GCD3484,Regular Onboarding,Danilo Nucom Tarroza,23494,0905-500-7205,Corner Amihan St. Bagong Calzada Taguig City,Male,N/A,C07-82-023001,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Drivers License) 
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -3174,7 +3174,7 @@ ALTUS CARS FINANCIAL CONSULTANCY SERVICES,IF0088,LARKD CAR TRADING,,GCD2852,Regu
 11.Acknowledgement receipt (Aug-Sept-Oct-Nov)
 12.DTI Certificate
 ",,0,45609.89306,,Yes,45610.40208,45610.49444,45610.40208,,Yes,45611.48264,No Negative Credit Hit,No Negative Credit Hit,,Yes,45611.46181,,,Netbank,Eligible Application - Dealer Onboarded,,,ALLEN SENSON CLEMENTE,all3n_82@hotmail.com,Sales Summary report,45611.49792,Jan Melben Verdejo,Approved,45615.4875,Approved,45617.38819,45615.4875,45617.60347,45617.60556,45617.60556,45617.62153,https://drive.google.com/drive/folders/1FmiE-7w6My2cCu9f_nnA2F5sULapClgI?usp=drive_link,45643.54444,45705,45764,4050000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,4050000,,45643.54444,45701,45705,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1,1
-,IF0089,RAYMOND AUTO SHOP,,GCD3978,Express Onboarding,Raymund Tan Morales,28425,9275942755,"48 Kamuning Rd., Quezon City",Male,Passport,P9442158B,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0089,RAYMOND AUTO SHOP,,GCD3978,Express Onboarding,Raymund Tan Morales,28425,9275942755,"48 Kamuning Rd., Quezon City",Male,Passport,P9442158B,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Passport ID)
 3PASSPORT ID-ANA MARIE RESURRECCION CHING
 4.Consent Form
@@ -3298,7 +3298,7 @@ PMB CAR EXCHANGE,IF0097,JEMM CAR TRADING,,GCD4057,Regular Onboarding,Ramir Merin
 8.POB (House & Showroom)
 9.BPI Bank statement (Oct-Jan)
 ",,0,45643.66528,,Yes,45643.69514,45644.65347,45643.69514,,Yes,45645.65556,No Negative Credit Hit,No Negative Credit Hit,,Yes,45707.63819,,-on Hold as requested by Sales,,Application Paused/On Hold by Sales,,,KAISSER JAMES MAYUELA SEÑARA,kaisserjames.kjs@gmail.com,AR'S,45685.37222,Angelika Jane Lipata,Approved,45673.44583,Approved,45698.40903,45687.59097,45698.40903,45698,45698,,,0,0,0,0
-,,PAM CARS,,GCD4211,Regular Onboarding,Ann Marie Pauline Munoz Santos,22320,N/A,N/A,N/A,National ID,5031-5463-9276-0189,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,PAM CARS,,GCD4211,Regular Onboarding,Ann Marie Pauline Munoz Santos,22320,N/A,N/A,N/A,National ID,5031-5463-9276-0189,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form
 3.Drivers License-National ID-Senior Citizen ID-Santos
 ","1.TIN Number of Ann Marie Pauline Munoz Santos (not indicated in the application form)
@@ -3326,7 +3326,7 @@ Report Date:1/06/2012
 
 ",No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,Jan Melben Verdejo,,,,,,,,,,,,,0
-,,CS MOTORS,,GCD4271,Express Onboarding,Jethro Sander Legaspi Centeno,33000,N/A,N/A,N/A,UMID,0111-4956122-1,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,CS MOTORS,,GCD4271,Express Onboarding,Jethro Sander Legaspi Centeno,33000,N/A,N/A,N/A,UMID,0111-4956122-1,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form
 3.UMID ID-PASSPORT ID-Centeno
 4.DTI Cert
@@ -3622,7 +3622,7 @@ KCL'S AUTO TRADING,IF0131,JAKEY CAR TRADING,,GCD1941,Inventory Underwriting,Jake
 8.DTI Certificate
 9.Existing Financier Agreement (Optional)  ",9,45672.42986,,Yes,45672.65278,45672.67708,45672.65278,,Yes,45677.64444,No Negative Credit Hit,No Negative Credit Hit,,No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,,DENNIS D. ONGKIATCO,,GCD4285,Express Onboarding,Dennis Dorado Ongkiatco,29435,N/A,N/A,N/A,Driver's License,B12-01-008764,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,DENNIS D. ONGKIATCO,,GCD4285,Express Onboarding,Dennis Dorado Ongkiatco,29435,N/A,N/A,N/A,Driver's License,B12-01-008764,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form
 3.Drivers License-Ongkiatco
 ","1.DTI Registration (at least 6 mos. registered)
@@ -3655,7 +3655,7 @@ Report Date:2/10/2014
 5.DTI Certificate
 6.Existing Financier Agreement (Optional)  ",6,45672.47431,45810.55764,Yes,45672.71806,45673.41458,45672.71806,,Yes,45677.65347,No Negative Credit Hit,No Negative Credit Hit,,No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,,MICCARS CAR TRADING,,GCD4284,Regular Onboarding,John Michael Adajar Gonzales,32543,N/A,N/A,N/A,N/A,N/A,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,MICCARS CAR TRADING,,GCD4284,Regular Onboarding,John Michael Adajar Gonzales,32543,N/A,N/A,N/A,N/A,N/A,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Passport ID-Gonzales
 3.Signed Consent Form
 
@@ -3874,7 +3874,7 @@ Report Date:8/07/2017
 2.Appliance/Gadget /Others PHP:10,000
 Report Date:7/08/2015",No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,Angelika Jane Lipata,,,,,,,,,,,,,0
-4BROTHERSAUTOSALES CAR TRADING,IF0137,SHERWIN CAR TRADING (Formerly :SHERWIN & CORA MOTORCYCLE BUY & SELL),,GCD4149,Express Onboarding,Sherwin Samson Medino,27677,9277885061,231 ORETA SUBD. BRGY SAN ISIDRO ANTIPOLO CITY,Male,Driver's License,D16-94-105705,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+4BROTHERSAUTOSALES CAR TRADING,IF0137,SHERWIN CAR TRADING (Formerly :SHERWIN & CORA MOTORCYCLE BUY & SELL),,GCD4149,Express Onboarding,Sherwin Samson Medino,27677,9277885061,231 ORETA SUBD. BRGY SAN ISIDRO ANTIPOLO CITY,Male,Driver's License,D16-94-105705,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form
 3.DRIVERS LICENSE-TIN ID-MEDINO
 4.FB Page Proof of Vintage/FB acc with Unit Posting
@@ -4247,7 +4247,7 @@ Adverse Findings: The dealer intentionally falsified their DTI Certificate. Onli
 10.RCBC Bank Statement (Dec 2024-Jan-Feb 2025)
 11.Current Inventory List
 12.Sales Summary Report (Nov-Dec/Jan-March 2025)",,0,45705.77014,,Yes,45705.78403,45706.52569,45705.78403,,Yes,45705.79375,No Negative Credit Hit,No Negative Credit Hit,,Yes,45729.63056,,-on Hold as requested by Sales,,Application Paused/On Hold by Sales,,,Mark Lou Anduiza Castillo,markloucastillo05@gmail.com,LATEST AR'S,45734.7,Angelika Jane Lipata,Approved,45735.70972,Approved,,45735.70972,45736.60625,45736,45736,,,0,0,0,0
-,IF0127,J'S AUTO TRADING,,GCD4146,Express Onboarding,John Vincent Rodas Bentula,35587,9603704729,ANNEX 5 NORWAY #10 BLS PARANAQUE CITY,Male,Driver's License,N26-16-011842,Mary Grace Pascual,Rexcell Juegos,Albert Dalupang,"1.Application Form
+,IF0127,J'S AUTO TRADING,,GCD4146,Express Onboarding,John Vincent Rodas Bentula,35587,9603704729,ANNEX 5 NORWAY #10 BLS PARANAQUE CITY,Male,Driver's License,N26-16-011842,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID - Drivers License & National ID
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -4383,7 +4383,7 @@ Credit Card PHP:Credit Cards
 Report Date:1/07/2019
 Close Date:4/25/2017",No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,,RENDEL SAGORTE SOLATORIO,,GCD4283,Express Onboarding,Rendel Salagoste Solatorio,30170,N/A,N/A,N/A,TIN ID,275-518-811,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,RENDEL SAGORTE SOLATORIO,,GCD4283,Express Onboarding,Rendel Salagoste Solatorio,30170,N/A,N/A,N/A,TIN ID,275-518-811,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form 
 3.TIN ID-SOLATORIO
 4.Geo-tagged photo of the showroom","1. DTI Registration (at least 6 mos registered)
@@ -4404,7 +4404,7 @@ Close Date:4/25/2017",No,,,"Dealer is no longer interested, uncooperative
 •Lease contracts when available
 •Awards / recognitions from the financiers dated 6mos ago.",4,45713.68611,45818.45903,Yes,45713.73264,45714.41111,45713.73264,,Yes,45713.72639,No Negative Credit Hit,No Negative Credit Hit,,No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,,MARIO ZAPICO,,GCD4280,Express Onboarding,Mario Juring Zapico JR,31770,N/A,N/A,N/A,TIN ID,421-764-671,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,MARIO ZAPICO,,GCD4280,Express Onboarding,Mario Juring Zapico JR,31770,N/A,N/A,N/A,TIN ID,421-764-671,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form 
 3.TIN ID-Zapico JR
 4.Geo-tagged photo of the showroom","1. DTI Registration (at least 6 mos registered)
@@ -4425,7 +4425,7 @@ Close Date:4/25/2017",No,,,"Dealer is no longer interested, uncooperative
 •Lease contracts when available
 •Awards / recognitions from the financiers dated 6mos ago.",4,45713.68611,45818.45972,Yes,45713.74792,45714.41042,45713.74792,,Yes,45713.75208,No Negative Credit Hit,No Negative Credit Hit,,No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,,REGAN ROMERO,,GCD15,Express Onboarding,Regan Tugbo Romero,28482,N/A,N/A,N/A,Driver's License,N01-99-232752,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,REGAN ROMERO,,GCD15,Express Onboarding,Regan Tugbo Romero,28482,N/A,N/A,N/A,Driver's License,N01-99-232752,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form 
 3.Drivers License-Romero
 4.Geo-tagged photo of the showroom","1. DTI Registration (at least 6 mos registered)
@@ -4488,7 +4488,7 @@ NISSAN SENTRA – UTM875
 2017 SUZUKI CELERIO MT – NAS9320
 
 1999 NISSAN SENTRA – WJX105",,0,45714.66389,45810.56736,Yes,45810.61597,,45810.61597,,Yes,45714.71458,No Negative Credit Hit,No Negative Credit Hit,,Yes,45811.54722,,,Netbank,Eligible Application - Dealer Onboarded,Yes,,"JEMMELE ALBERT MACASAET LEYESA, ",jemmeleleyesa@gmail.com,,,Angelika Jane Lipata,Approved,45813.60208,Approved,,45813.60208,45817.70069,45828.50625,45828.50625,45828.51111,https://drive.google.com/drive/folders/1iVimhzyW6n-grzMtgubO7DgzSSQR83iq,45966,45877,45938,2250000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,1500000,,45870,45873,45877,,Yes,Payment Ops Team,Automatic CL Increase,2250000,,45966,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1500000,Automatic CL Increase,1,2
-,,[MARIAS CAR TRADING Formerly Marlo Used Cars],,GCD4173,Express Onboarding,Aiza Nacion Diogracias,32531,N/A,N/A,N/A,National ID,5067-9260-4871-5270,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,[MARIAS CAR TRADING Formerly Marlo Used Cars],,GCD4173,Express Onboarding,Aiza Nacion Diogracias,32531,N/A,N/A,N/A,National ID,5067-9260-4871-5270,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form 
 3.National ID-PAG IBIG ID-Phil health ID-DIOGRACIAS
 4.Acknowledgement Receipt (Jan 2024-Dec 2024)
@@ -4530,7 +4530,7 @@ Kindly Submit 2018 HYUNDAI TUCSON 2.0 GL 6_EAB3240 (NO OR)
 11.Acknowledgement Receipt (Dec 2024-Jan-Feb 2025)
 
 ",,0,45719.67569,,Yes,45719.74028,45720.41528,45719.74028,,Yes,45720.42153,No Negative Credit Hit,No Negative Credit Hit,,Yes,45720.50556,,-claimed by Ricmar as one and the same address  (House & Showroom),Netbank,Eligible Application - Dealer Onboarded,No,,ROLDAN LANDICHO DUENAS,rldcarpaintingservices@yahoo.com,,,Angelika Jane Lipata,Approved,45721.67986,Approved,45723.6125,45721.67986,45723.6125,45723.64167,45723.64167,45726.55486,https://drive.google.com/drive/folders/1Zzqr2oyl0dnMCmOBEnc3o-PLrbZ_m21u,0,0,0,0
-NEO'S AUTO TRADING,IF0138,GUNNR AUTO'S AND CAR ACCESSORIES SHOP,,GCD4219,Express Onboarding,Shannen Faye Turla Trinidad,36992,9452533554,15 FAIRLANE ST WEST FAIRVIEW QC,Male,National ID,6290-6820-4751-9328,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+NEO'S AUTO TRADING,IF0138,GUNNR AUTO'S AND CAR ACCESSORIES SHOP,,GCD4219,Express Onboarding,Shannen Faye Turla Trinidad,36992,9452533554,15 FAIRLANE ST WEST FAIRVIEW QC,Male,National ID,6290-6820-4751-9328,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form
 3.Valid ID-National id-Turla
 4.DTI Cert
@@ -4550,7 +4550,7 @@ NEO'S AUTO TRADING,IF0138,GUNNR AUTO'S AND CAR ACCESSORIES SHOP,,GCD4219,Express
 ⁠•a dealer onboarding sheet/dealer-financing agreement document that will also do.
 •Lease contracts when available
 •Awards / recognitions from the financiers dated 6mos ago.",0,45722.66528,,Yes,45722.70208,45723.49861,45722.70208,,Yes,45722.69653,No Negative Credit Hit,No Negative Credit Hit,,Yes,45729.56528,,,Netbank,Eligible Application - Dealer Onboarded,No,,SHANNEN FAYE TURLA TRINIDAD,shannturla@gmail.com,,,Jan Melben Verdejo,Approved,45730.77083,Approved,,,45734.43403,45734.45347,45734.45347,45734.60833,https://drive.google.com/drive/folders/1LdR5xkLilMw74cjHrCojVzMxK3T_MmT8,45866,0,0,600000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,600000,,45866,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1
-,IF0136,SOUTHSIDE CAR TRADING,,GCD2386,Regular Onboarding,Jose Wally Puno Maduli,31273,9178215801 / 9279740218,8 EDWARD GO ST BFRV LAS PINAS CITY,Male,Driver's License,N26-04-000391,Terisa Gatchalian,Rexcell Juegos,Albert Dalupang,"1.Application Form
+,IF0136,SOUTHSIDE CAR TRADING,,GCD2386,Regular Onboarding,Jose Wally Puno Maduli,31273,9178215801 / 9279740218,8 EDWARD GO ST BFRV LAS PINAS CITY,Male,Driver's License,N26-04-000391,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Passport ID-LTOAPFA-Maduli
 3. Consent Form
 4. Photo of the Showroom
@@ -4751,7 +4751,7 @@ Report Date:1/13/2025
 Closed Date:9/30/2024
 ",No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,Angelika Jane Lipata,,,,,,,,,,,,,0
-MJO CAR TRADING,,GEN Z CARS,,GCD4274,Express Onboarding,Rian Rain Jimenez,37835,N/A,N/A,N/A,N/A,,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+MJO CAR TRADING,,GEN Z CARS,,GCD4274,Express Onboarding,Rian Rain Jimenez,37835,N/A,N/A,N/A,N/A,,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.TIN ID-Jimenez
 3.Signed Consent Form
 4.UNIT Photo (No ORCR)
@@ -4866,7 +4866,7 @@ Report Date:5/09/2024
 •Lease contracts when available
 •Awards / recognitions from the financiers dated 6mos ago.",3,45737.81806,45818.46528,Yes,45740.41806,45740.54722,45740.41806,,Yes,45740.41667,No Negative Credit Hit,No Negative Credit Hit,,No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,IF0183,AUTOGERD CAR TRADING,,GCD1887,Inventory Underwriting,Gerard Tesoro Faciol,31587,9179331404,"Juanita Cars Building, Policarpio St. Brgy. San Andres, Cainta, Rizal.",Male,Driver's License,N01-18-034892,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0183,AUTOGERD CAR TRADING,,GCD1887,Inventory Underwriting,Gerard Tesoro Faciol,31587,9179331404,"Juanita Cars Building, Policarpio St. Brgy. San Andres, Cainta, Rizal.",Male,Driver's License,N01-18-034892,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form
 3.Drivers License-Faciol
 4.Geo-Tagged Photo of the showroom
@@ -4880,7 +4880,7 @@ Express Onboarding/Inventory Base Under UW ORCR+UNIT PHOTO
 2024 MITSUBISHI L300C/C 2.2D_NHL9892
 2025 MITSUBISHI XPANDER GLS 1.5G ZWD_GBF6510",,0,45737.78125,45818.6875,Yes,45740.44514,45740.54722,45740.44514,,Yes,45740.44306,No Negative Credit Hit,No Negative Credit Hit,,Yes,45848.59167,,,Netbank,Eligible Application - Dealer Onboarded,No,,GERARD TESORO FACIOL,autogerd.cartrading@gmail.com,"Sales Summary report, and Proof of house and showroom
 ",,Jan Melben Verdejo,Approved,45846.42917,,,45846.42917,45848.45208,45848.50972,45848.50972,45848.59167,https://drive.google.com/drive/folders/1kYyTdcDE3UdPY9XHfYQBItr1ZvM2Q9nf,0,0,0,0
-,IF0300,WHEELS AND DEALS CAR TRADING,,GCD4322,Inventory Underwriting,Jonah Narvaez Caraan,31506,9063887199,Blk 5 Green Lane Executive Village Lot 14 Buen Mar Ave Cainta Rizal,Female,Driver's License,N03-08-027414,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0300,WHEELS AND DEALS CAR TRADING,,GCD4322,Inventory Underwriting,Jonah Narvaez Caraan,31506,9063887199,Blk 5 Green Lane Executive Village Lot 14 Buen Mar Ave Cainta Rizal,Female,Driver's License,N03-08-027414,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form
 3.Drivers License-Caraan
 4.Geo-Tagged Photo of the showroom
@@ -5107,7 +5107,7 @@ Also, per TU checking, the existing auto loan did not surface the BAP hit as the
 Auto: Php10,098
 Report Date:2/15/2018
 ",Yes,45775.61944,,,Netbank,Eligible Application - Dealer Onboarded,No,,Darren Keiven Escober Tacsuan,zkhc1730@gmail.com,,,Angelika Jane Lipata,Approved,45790.59167,Approved,,45790.59167,45793.77639,45796.37361,45796.37361,45798.63958,https://drive.google.com/drive/folders/1ikU262jcSCvmjRqpafGCjKCHyhIIPSZZ,0,0,0,0
-,,FERN MOTOCARS.PH,,GCD4349,Express Onboarding,Ferdinand Rivera Mendoza,35844,N/A,1 St Thomas Ave cor St Paul Ave Lopez Village Paranaque,Male,Passport,P9599303P,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,FERN MOTOCARS.PH,,GCD4349,Express Onboarding,Ferdinand Rivera Mendoza,35844,N/A,1 St Thomas Ave cor St Paul Ave Lopez Village Paranaque,Male,Passport,P9599303P,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form
 3.Passport ID-Mendoza
 4.Facebook account history with unit postings
@@ -5354,7 +5354,7 @@ KCL'S AUTO TRADING,IF0161,AUTO TRADING 8 CAR'S,,GCD4443,Inventory Underwriting,J
 2024 MITSUBISHI MIRAGE G4 GLX 1.2G CVT_NKB2184
 2024 TOYOTA VIOS 1.3 XLE CVT_NIQ9064
 ",,0,45775.64514,,Yes,45775.775,45776.63333,45775.775,,Yes,45775.74167,No Negative Credit Hit,No Negative Credit Hit,,Yes,45792.33819,,,Netbank,Eligible Application - Dealer Onboarded,No,,JUVEL ANTALAN GAMBALA,juvelgambala29@gmail.com,Latest AR's,45793,Jan Melben Verdejo,Approved,45798.65278,Approved,,45798.65278,45799.51528,45799.60556,45799.60556,45800.57292,https://drive.google.com/drive/folders/1L2BPQA6Hi6RSaIWkeiMJ0yyFzZ0I8vCi,45909,45911.4625,45972,2250000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,1500000,,45846,45846,45847,,Yes,Payment Ops Team,Automatic CL Increase,2250000,,45909,45910.30694,45911.4625,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,45846,1500000,Automatic CL Increase,2,2
-,IF0157,GMN CAR TRADING,,GCD1985,Inventory Underwriting,Digna Galinato Morales,26307,9175314427,B5 L5 MINDANAO AVE BAHAY TORO PROJ. 8 QUEZON CITY,Female,N/A,,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0157,GMN CAR TRADING,,GCD1985,Inventory Underwriting,Digna Galinato Morales,26307,9175314427,B5 L5 MINDANAO AVE BAHAY TORO PROJ. 8 QUEZON CITY,Female,N/A,,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-Morales
 3.Signed Consent Form
 4.DTI Certificate
@@ -5407,7 +5407,7 @@ NFA1173 (no ORCR)
 2021 MITSUBISHI L300 C/C 2.2_NFQ9636
 2020 MITSUBISHI L300 C/C 2.2D M_NGO4423",,0,45776.72014,,Yes,45776.73611,45777.43264,45776.73611,,Yes,45777.45833,No Negative Credit Hit,No Negative Credit Hit,,Yes,45783.99375,,-claimed by Marah as one and the same address  (House & Showroom),Netbank,Eligible Application - Dealer Onboarded,No,,ARNOLD BANAWA GINETE,chairmanabg@yahoo.com.ph,,,Jan Melben Verdejo,Approved,45786.62292,Approved,,45786.62292,45793.52361,45796.36667,45796.36667,45796.425,https://drive.google.com/drive/folders/12HdHjo011ZiuIHjC-lurilskQNTsA-f1,0,0,0,0
 ,,GELO KNOWS,,GCD4549,Regular Onboarding,"Mikael Angelo Muñoz Santos 
-",32825,N/A,U315 ASP M.Eusebio Pasig,Male,Driver's License,N02-18-009144,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+",32825,N/A,U315 ASP M.Eusebio Pasig,Male,Driver's License,N02-18-009144,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-Santos
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -5425,7 +5425,7 @@ Personal/Salary:395,451
 Report Date:8/15/2024
 Close Date:6/28/2024",No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,Angelika Jane Lipata,,,,,,,,,,,,,0
-,,A-CARS,,GCD4412,Regular Onboarding,Albert Jim Florentin ,23110,9156273382,J717 ASP Condominium M. Eusebio Pasig San Miguel,Male,N/A,,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,A-CARS,,GCD4412,Regular Onboarding,Albert Jim Florentin ,23110,9156273382,J717 ASP Condominium M. Eusebio Pasig San Miguel,Male,N/A,,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.ARC ID-Florentin
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom","1.Proof of House 
@@ -5577,7 +5577,7 @@ PRINCE CAR TRADING,IF0165,VIN CAR TRADING,,GCD3905,Inventory Underwriting,Marvin
 2020 MITSUBISHI MIRAGE G4 GLX 1_NGJ9450
 10.Global Dominion Credit Advice (Jan-April 2025)
 11.POB (House)",,0,45799.75833,,Yes,45800.44931,45800.49167,45800.44931,,Yes,45800.46181,No Negative Credit Hit,No Negative Credit Hit,,Yes,45804.81389,,,Netbank,Eligible Application - Dealer Onboarded,No,,MARVIN SANTOS CASTILLO,marvincastillo.june26@gmail.com,,,Jan Melben Verdejo,Approved,45805.70278,,,45805.70278,45812.41111,45812.64236,45812.64236,45812.87083,https://drive.google.com/drive/folders/1bBlHJSz7e7_3_V47XW5eYqgVL4rPhd27,45958,0,0,877500,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,877500,,45958,45958,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1,1
-,IF0177,JLIMAUTODEAL CAR TRADING,,GCD2053,Regular Onboarding,Joshua Stewart De Castro Lim,31414,9690397907,137 SYDNEY ST GREEN PARK VILLAGE MANGGAHAN PASIG ,Male,Driver's License,D16-03-000280,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0177,JLIMAUTODEAL CAR TRADING,,GCD2053,Regular Onboarding,Joshua Stewart De Castro Lim,31414,9690397907,137 SYDNEY ST GREEN PARK VILLAGE MANGGAHAN PASIG ,Male,Driver's License,D16-03-000280,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-LIM 
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -5602,7 +5602,7 @@ PRINCE CAR TRADING,IF0165,VIN CAR TRADING,,GCD3905,Inventory Underwriting,Marvin
 3.Photo of Inventory
 4.Latest 3-6 Months Bank Statements",4,45800.45903,45902.625,Yes,45800.55417,45800.60556,45800.55417,,Yes,45800.56319,No Negative Credit Hit,No Negative Credit Hit,,No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,Angelika Jane Lipata,,,,,,,,,,,,,0
-,,JOPET REYES,,GCD4446,Regular Onboarding,Franklin Joseph Yambao Reyes,29810,917805567,Park n Sell Ortigas Pasig Cluster J,Male,National ID,8946-3850-2391-3592,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,JOPET REYES,,GCD4446,Regular Onboarding,Franklin Joseph Yambao Reyes,29810,917805567,Park n Sell Ortigas Pasig Cluster J,Male,National ID,8946-3850-2391-3592,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.National ID-Reyes 
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -5628,7 +5628,7 @@ PRINCE CAR TRADING,IF0165,VIN CAR TRADING,,GCD3905,Inventory Underwriting,Marvin
 7.TIN ID Number and Civil Status for CIC Check
 ",7,45800.60486,,Yes,45800.64375,45800.67847,45800.64375,,Yes,45800.65,No Negative Credit Hit,No Negative Credit Hit,,No,,,"Dealer is no longer interested, uncooperative
 ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,,MATEO K AVENUE,,GCD397,Express Onboarding,Enrique Jr Garcia Litonjua,25287,9270637188,Metrowalk Complex Meralco Ave Paig City,Male,Driver's License,N02-03-012712,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,MATEO K AVENUE,,GCD397,Express Onboarding,Enrique Jr Garcia Litonjua,25287,9270637188,Metrowalk Complex Meralco Ave Paig City,Male,Driver's License,N02-03-012712,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-LITONJUA 
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -5668,7 +5668,7 @@ Report Date:022018
 ",,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
 ,,"IA CARS AUTOCARE AND AUTOTRADING
 ",,GCD4448,Regular Onboarding,"Ismael Jr Almoniña Aviso 
-",35677,9668661867,55 Blk 86 Lot 5 Katipunan,Male,Driver's License,N04-14-019386,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+",35677,9668661867,55 Blk 86 Lot 5 Katipunan,Male,Driver's License,N04-14-019386,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-Aviso
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -5913,7 +5913,7 @@ Personal/Salary:15,824
 Report Date:2/16/2001
 ",Yes,45823.60069,,,Netbank,Eligible Application - Dealer Onboarded,No,,MICHAEL DELA CRUZ BINUYA,mgbinuya25@gmail.com,,,Jan Melben Verdejo,Approved,45827.44653,Approved,,45827.44653,45828.35764,45828.43264,45828.43264,45828.44444,https://drive.google.com/drive/folders/1d04xlrWaf07suxLFGkJ9mGDvO8pjyCIS,45889,45896.43125,45957,3450000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,3450000,,45889,45895.61042,45896.43125,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1,1
 ,,RLCARS TRADING,"- Attempted for residence FCI last week but the dealer remains uncooperative
-- Not a priority dealer",,Express Onboarding,Ambrose Jason Lee Rodrigo,28904,9178192388,Park n Sell,Male,UMID ID,0111-3566089-3,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+- Not a priority dealer",,Express Onboarding,Ambrose Jason Lee Rodrigo,28904,9178192388,Park n Sell,Male,UMID ID,0111-3566089-3,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-UMID ID-Rodrigo
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -5954,7 +5954,7 @@ Close Date:1/12/2009
 Remarks:Fully Settled
 ",Yes,45877.66667,,,,Application Paused/On Hold by Sales,,,,,,,Angelika Jane Lipata,,,,,,,,,,,,,0
 ,,BALLISTIC COMMERCIAL EQUIPMENT WHOLESALING,,GCD4486,Regular Onboarding,"Darlene Rose Dela Cruz Rabor
-",27868,9619085297,U327 Amaia Steps Pasig M Eusebio San Miguel Pasig,Female,driver's License,L02-99-132357,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+",27868,9619085297,U327 Amaia Steps Pasig M Eusebio San Miguel Pasig,Female,driver's License,L02-99-132357,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-RABOR 
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -6014,7 +6014,7 @@ Credit Cards: 78,658
 Report Date:8/06/1999
 Close Date:7/01/1999
 ",Yes,45839.50208,,,Netbank,Eligible Application - Dealer Onboarded,No,,DAVE ALLEN MASANQUE MAJAROCON,adpama_ads@yahoo.com.ph,ORCR AND GEOTAGGED PHOTOS,45846,Jan Melben Verdejo,Approved,45846.72847,Approved,,45846.72847,45848.45208,45848.67292,45848.67292,45856.49792,https://drive.google.com/drive/folders/1iSRlIOqi4wt-A0g5QRTpjuuu_vJpZZIV,45979,0,0,2250000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,1500000,,45937,45937,,,Yes,Payment Ops Team,Automatic CL Increase,2250000,,45979,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1500000,Automatic CL Increase,1,2
-,IF0181,DASHMOTORS INC,,GCD4521,Regular Onboarding,Renz Joseph Almazan Duat,33012,9954593150,Unit 270 E NS AMORANTO STREET SALVACION QUEZON CITY,Male,Driver's License,D09-11-001905,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0181,DASHMOTORS INC,,GCD4521,Regular Onboarding,Renz Joseph Almazan Duat,33012,9954593150,Unit 270 E NS AMORANTO STREET SALVACION QUEZON CITY,Male,Driver's License,D09-11-001905,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-PASSPORT ID-DUAT 
 3.Signed Consent Form
 4.Mayor's Permit
@@ -6461,7 +6461,7 @@ Personal/Salary:19,428
 Report Date:8/03/2001
 Close Date:10/17/2000",Yes,45861.76181,,,Netbank,Eligible Application - Dealer Onboarded,No,,BRYAN PAUL LAZARTE LINO,bplfitness@gmail.com,Sales summary report,,Angelika Jane Lipata,Approved,45861.73264,Approved,,45861.73264,45863.60417,45863.64236,45863.64236,45863.75972,https://drive.google.com/drive/folders/1ytp03BbHr5yZEpVwmHPn3pAQNpLPSK9-,0,0,0,0
 ,IF0205,BHASTA MHANIBELA AUTO TRADING,,GCD103,Inventory Underwriting,"Gilbert Fernando Garcia
-",30656,9175489037,49 Assistant Road GSIS Village Proj 8 QC,Male,Driver's License,N25-03-094092,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+",30656,9175489037,49 Assistant Road GSIS Village Proj 8 QC,Male,Driver's License,N25-03-094092,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-SSS ID-GARCIA 
 3.Signed Consent Form
 4.Proof of House 
@@ -6947,7 +6947,7 @@ Close  Date:10/19/2020",No,,,,,Application Paused/On Hold by Sales,,,,,,,Angelik
 2018 ISUZU_NAQ5365
 2016 REBUILT_ISUZU_NCK4776","1.Proof of House
 2.Proof of Showroom",2,45881.50833,45895.63542,Yes,45881.72222,45881.70347,45881.72222,,Yes,45881.72917,No Negative Credit Hit,No Negative Credit Hit,,No,,,,,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,,RJ CARS,,GCD4604,Regular Onboarding,,,N/A,N/A,N/A,N/A,N/A,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,,,15,45881.53194,,,,,,,Yes,45881.59236,,,,No,,,,,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
+,,RJ CARS,,GCD4604,Regular Onboarding,,,N/A,N/A,N/A,N/A,N/A,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,,,15,45881.53194,,,,,,,Yes,45881.59236,,,,No,,,,,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
 PMB CAR EXCHANGE,IF0218,JVA CARS TRADING OPC,,GCD2704,Inventory Underwriting,John Vincent Manliclic Abeleda,36834,9777371984,4892 Jasmine St Marimar  Vill Paranaque City,Male,Driver's License,N03-19-018189,Terisa Gatchalian,Rose Batacan,Malou Alfonso,"1.Application Form
 2.DL ID-Abeleda
 3.Signed Consent Form
@@ -7012,7 +7012,7 @@ Credit Cards PHP:44,779
 Report Date:4/01/2008
 Close  Date:10/11/2007",Yes,45892.52778,,-claimed by Malou as one and the same address  (House & Showroom),Finsso,Eligible Application - Dealer Onboarded,No,,"ABELEDA, IRWIN SALANGA",irwinabeleda@yahoo.com,SOA ,45892,Angelika Jane Lipata,Approved,45895.46875,Approved,,45895.46875,45895.46875,45897.69514,45897.69514,45896.70069,https://drive.google.com/drive/folders/126PRnbQfQuBNRuZ8pzD9CPNzUeX5wndc,0,0,0,0
 ,IF0219,MAB CAR TRADING,,GCD4704,Inventory Underwriting,"Wilfredo III Magpoc Lagamon
-",32003,9062068276/0270031418,PH 6 LOT 18 bLK3 Catleya St Greenwoods Executive Village San Andress Cainta,Male,Passport ID,P6951364A,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+",32003,9062068276/0270031418,PH 6 LOT 18 bLK3 Catleya St Greenwoods Executive Village San Andress Cainta,Male,Passport ID,P6951364A,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Passport ID-LAGAMON
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -7455,7 +7455,7 @@ RENZ PATRICK MOJICA CAR AGENT SERVICES,IF0227,MEL CAR TRADING,,GCD1718,Inventory
 9.Photo of Inventory
 10.Acknowledgement Receipt  (June-Aug 2025)
 ",,0,45895.52292,,Yes,45895.59306,45896.39583,45895.59306,,Yes,45895.59792,No Negative Credit Hit,No Negative Credit Hit,,Yes,45926.60069,,,Finsso,Eligible Application - Dealer Onboarded,No,,EDUARD GARRETT MACALINTAL FALTADO,paltadogarrett@gmail.com,AR's,45926,Jan Melben Verdejo,Approved,45926.6,Approved,45926.6,45926.6,45926.6,45929.47292,45929.47292,45929.47569,https://drive.google.com/file/d/1Eqe7SY9hRvAq4kQVRRsyIBeHvzttiTKo/view?usp=sharing,0,0,0,0
-,IF0228,BHADZFAST AUTOWORKS,,GCD4613,Regular Onboarding,Wilfredo III Magpoc Lagamon,32003,9930997497,11 Carshop Eusebio Ave San Miguel Pasig,Male,Passport,P6951364A,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0228,BHADZFAST AUTOWORKS,,GCD4613,Regular Onboarding,Wilfredo III Magpoc Lagamon,32003,9930997497,11 Carshop Eusebio Ave San Miguel Pasig,Male,Passport,P6951364A,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.PASSPORT ID-LAGAMON
 3.Signed Consent Form
 4.Proof of House
@@ -7734,7 +7734,7 @@ INVENTORY BASE UW ORCR+UNIT PHOTO
 2017 BMW 320D GRAND TURIS_NBV3332
 2019 HONDA CITY_NBC9555
 ",,0,45910.35278,,Yes,45912.55764,45912.62222,45912.55764,,Yes,45912.67083,No Negative Credit Hit,No Negative Credit Hit,,Yes,45910.35278,,,Finsso,Eligible Application - Dealer Onboarded,No,,ALANIS KAYE DESOYO SAHAGUN,alanis.sahagun@gmail.com,,,Angelika Jane Lipata,Approved,45917.73611,Approved,45917.73611,45917.73611,45917.74028,45918.49028,45918.49028,45918.50556,https://drive.google.com/drive/folders/1SCH1dF81Wqn7H564NAVoEcB2UdA_ZiCF,0,0,0,0
-,,FASTAUTOWORKS MARIKINA AUTO DETAILING SERVICES,,GCD4487,Inventory Underwriting,Wildredo III Magpoc Lagamon,32003,9930997497,55 B86 L5 Katipunan Cor P Del Pilar Conception Dos Marikina,Male,Passport,P6951364A,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,FASTAUTOWORKS MARIKINA AUTO DETAILING SERVICES,,GCD4487,Inventory Underwriting,Wildredo III Magpoc Lagamon,32003,9930997497,55 B86 L5 Katipunan Cor P Del Pilar Conception Dos Marikina,Male,Passport,P6951364A,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.PASSPORT ID-LAGAMON
 3.Signed Consent Form
 4.Proof of House
@@ -7783,7 +7783,7 @@ If they require additional CL, this can be addressed through the regular OB proc
 Credit Cards PHP:64,382
 Report Date:12/11/2020
 Close Date:12/04/2020",Yes,45912.34931,,,Finsso,Eligible Application - Dealer Onboarded,No,,CHAVEZ CHASE NICO DOMINGUEZ,chasenicochavez@gmail.com,,,Angelika Jane Lipata,Approved,45919.36944,Approved,45919.36944,45919.36944,45919.36944,45919.41389,45919.41389,45919.42361,https://drive.google.com/drive/folders/1HK3lDUTskSpYxlfIKlN-aKq-7oSKE8bo,0,0,0,0
-,,SENYORA CARS,,,Regular Onboarding,Mark Señora,,N/A,N/A,N/A,N/A,N/A,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,SENYORA CARS,,,Regular Onboarding,Mark Señora,,N/A,N/A,N/A,N/A,N/A,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Signed Consent Form
 ","1.Valid ID
 2.Geotagged Photo of the Showroom
@@ -8054,7 +8054,7 @@ Primary Applicant BAP Hits:
 Credit Cards PHP:106,146
 Report Date:4/13/2009
 ",Yes,45922.39167,,-claimed by Malou as one and the same address  (House & Showroom),Finsso,Eligible Application - Dealer Onboarded,Yes,Thin file,APOLONIO VALDEZ ASUNCION,asuncionpolly@gmail.com,SALES SUMMARY REPORT,,Angelika Jane Lipata,Approved,45922.39236,Approved,45922.39236,45922.39236,45922.39167,45922.62222,45922.62222,45925.57083,https://drive.google.com/drive/folders/15UbHmHilO8Z7kFUC-2PgINs6WFFkKECk,0,0,0,0
-MAB CAR TRADING,IF0248,MANILA A DEAL CAR TRADING,,GCD4714,Inventory Underwriting,Joshua Dela Peña Raymundo,34604,9754130960,250 Lunas Compound St Brgy Sta Ana Pateros Metro Manila,Male,Driver's License,N01-12-008996,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+MAB CAR TRADING,IF0248,MANILA A DEAL CAR TRADING,,GCD4714,Inventory Underwriting,Joshua Dela Peña Raymundo,34604,9754130960,250 Lunas Compound St Brgy Sta Ana Pateros Metro Manila,Male,Driver's License,N01-12-008996,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-DELA PEÑA 
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -8308,7 +8308,7 @@ INVENTORY BASE UW ORCR+UNIT PHOTO
 2024 MITSUBISHI L300 C/C 2.2D MT_NKD1608
 ",,0,45921.49167,,Yes,45922.44167,45922.54097,45922.44167,,Yes,45929.4625,No Negative Credit Hit,No Negative Credit Hit,,Yes,45948.58958,45947.47778,,,Eligible Application - Dealer Onboarded,No,,FERDINAND BUNAG ANDRES,ferdie.andres369@gmail.com,,,Angelika Jane Lipata,Approved,45952.39236,Approved,45952.39236,45952.39236,45952.39097,45952.42708,45952.42708,45980.69167,https://drive.google.com/open?id=1SEKB36uVOXguYwLpJJGDx_j_gxJP-cK5&usp=drive_copy,0,0,0,0
 ,IF0277,MELODYCARS CAR TRADING,,GCD1619,Inventory Underwriting,Melody Magno Reyes,33531,9324733828,"Eastwood Avenue st. Eastwood City Libis Katipunan QC
-",Male,Driver's License,N04-12-023675,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+",Male,Driver's License,N04-12-023675,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-PASSPORT ID-Reyes
 3.Signed Consent Form
 4.DTI Certificate
@@ -8325,7 +8325,7 @@ INVENTORY BASE UW ORCR+UNIT PHOTO
 2024 HYUNDAI STARGAZER 1.5 GL IVT_NIR9804
 2024 MG G50 (8 Seater)_NKN6219
 ",,0,45925.83194,,Yes,45926.42431,45929.53403,45926.42431,,Yes,45926.42917,No Negative Credit Hit,No Negative Credit Hit,,Yes,45939.58889,45947.71042,,Finsso,Eligible Application - Dealer Onboarded,No,,,,,,Jan Melben Verdejo,Approved,45947.40486,Approved,45947.40486,45947.40486,45947.40486,45947.425,45947.425,45947.71042,https://drive.google.com/drive/folders/1dqvxxjLsTcR73voAGF1zsVKOxLl0bUjZ,0,0,0,0
-,IF0256,KRAUSEVILLECARS ATCARCITY CAR TRADING,,GCD1527,Inventory Underwriting,Joseph Antonio Tomas Cruz,28423,9175135343,Car City Garge & Sell Cor Seaside Drive Roxas Blvd Tambo Paranaque City,Male,Driver's License,N03-98-245190,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0256,KRAUSEVILLECARS ATCARCITY CAR TRADING,,GCD1527,Inventory Underwriting,Joseph Antonio Tomas Cruz,28423,9175135343,Car City Garge & Sell Cor Seaside Drive Roxas Blvd Tambo Paranaque City,Male,Driver's License,N03-98-245190,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-CRUZ
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -8347,7 +8347,7 @@ INVENTORY BASE UW ORCR+UNIT PHOTO
 2022 GEELY OKAVANCO_NGC7636
 
 ",,0,45925.69444,,Yes,45926.55556,45929.53472,45926.55556,,Yes,45926.57222,No Negative Credit Hit,No Negative Credit Hit,,Yes,45926.70069,,,Finsso,Eligible Application - Dealer Onboarded,No,,JOSEPH ANTONIO TOMAS CRUZ,slysep@yahoo.com,,,Jan Melben Verdejo,Approved,45929.56319,Approved,45929.56319,45929.56319,45929.56528,45929.57917,45929.57917,45929.62431,https://drive.google.com/file/d/1guJm8L6ppeTCPVlwLoFysR2ZAlStjYxw/view?usp=sharing,46017,46023.50486,46082,4500000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,4500000,,46017,46020,46023.50486,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1,1
-,,JKAYE TRANSPORT SERVICES,,GCD4766,Express Onboarding,Julius Dasco Ticson,28392,923087420,77 Ticson Herbal Park Loviva Compound P. Oliveros St Antipolo City,Male,Driver's License,D16-94-114763,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,JKAYE TRANSPORT SERVICES,,GCD4766,Express Onboarding,Julius Dasco Ticson,28392,923087420,77 Ticson Herbal Park Loviva Compound P. Oliveros St Antipolo City,Male,Driver's License,D16-94-114763,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (DL & SSS)
 3.Geotagged Photo of the Showroom
 4.Proof of House
@@ -8642,7 +8642,7 @@ Report Date:8/07/2024",Yes,45946.51597,45946.45972,,Finsso,Eligible Application 
 2024 MITSUBISHI MIRAGE G4 GLX 1.2G CVT_NKA6263
 
 13.BDO SOA  (June-Sept 2025)",,0,45936.60486,,Yes,45936.61875,45937.43819,,,,45936.66319,No Negative Credit Hit,No Negative Credit Hit,,Yes,45936.60486,45937.47361,,Finsso,Eligible Application - Dealer Onboarded,No,,FLORES CARLO JEROME TORRES							,cjpflow@gmail.com / carlojtflow@gmail.com,,,Jan Melben Verdejo,Approved,45943.42569,Approved,45943.42569,45943.42569,45943.42569,45943.54514,45943.54514,45944.42639,https://drive.google.com/drive/folders/1aiaqoQageDGhFgDrt2IYY6XTg8Q2-idh,45974,0,0,1500000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,1500000,,45974,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1
-ELLA BELLA CAR TRADING,IF0283,CRISJANE CAR TRADING,,GCD2548,Express Onboarding,Maricris Capalis Pacis,34223,9755201648,106 San Piper St. Moonville Subd. Better Living Parañaque City,Female,Driver's License,N01-22-303608,Mary Grace Pascual,Rexcell Juegos,Albert Dalupang,"1.Application Form
+ELLA BELLA CAR TRADING,IF0283,CRISJANE CAR TRADING,,GCD2548,Express Onboarding,Maricris Capalis Pacis,34223,9755201648,106 San Piper St. Moonville Subd. Better Living Parañaque City,Female,Driver's License,N01-22-303608,Mary Grace Pascual,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Valid ID (Driver's License)
 3.Inventory: Express Onboarding
 • 2025 SUZUKI DZIRE GLP AGS_GBJ9078
@@ -8681,7 +8681,7 @@ Report Date:7/31/2012
 Close Date:8/14/2012
 
 ",Yes,45940.87986,45943.44861,,Finsso,Eligible Application - Dealer Onboarded,No,,LAO JERRY ABILAR,,,,Jan Melben Verdejo,Approved,45944.74722,Approved,45944.74722,45944.74722,45944.74722,45944.75625,45944.75625,45944.78472,https://drive.google.com/drive/folders/1hokWAx8G2QE7ZSpmN_46uGeJDABHiIo6,45994,46000,46062,2400000,Automatic CL Increase,,Yes,Payment Ops Team,Automatic CL Increase,1600000,,45990,45990,45990,,Yes,Payment Operation,Automatic CL Increase,2400000,,45994,46000,46000,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,45990,1600000,Automatic CL Increase,2,2
-,IF0276,R.A.S. CONVENIENCE STORE,,GCD2639,Inventory Underwriting,Ralph Ashley Suzara Sales,35073,9178035513,28 Aquamarine St Northview 1 QC,Male,Driver's License,N04-13-014049,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0276,R.A.S. CONVENIENCE STORE,,GCD2639,Inventory Underwriting,Ralph Ashley Suzara Sales,35073,9178035513,28 Aquamarine St Northview 1 QC,Male,Driver's License,N04-13-014049,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-SALES 
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -8933,7 +8933,7 @@ VFH676
 ABQ7865
 
 ",4,45945.71528,,Yes,45946.49236,45946.67778,,,,45946.51458,No Negative Credit Hit,No Negative Credit Hit,,No,,,,,Application Paused/On Hold by Sales,,,,,,,,,,,,,,,,,,,,0
-,IF0296,DIONY CAR TRADING,,GCD4960,Regular Onboarding,Diony Jr Jacinto Inocentes,32197,9061485060,102 Kingfisher St Moonville Subd Paranaque City,Male,SSS ID,34-0014798-4,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0296,DIONY CAR TRADING,,GCD4960,Regular Onboarding,Diony Jr Jacinto Inocentes,32197,9061485060,102 Kingfisher St Moonville Subd Paranaque City,Male,SSS ID,34-0014798-4,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.TIN ID-SSS ID-INOCENTES 
 3.Signed Consent Form
 4.Proof of House
@@ -9044,7 +9044,7 @@ INVENTORY BASE UW ORCR+UNIT PHOTO
 ","NDT8275 - NO ORCR
 
 ",1,45952.60347,,Yes,45954.43472,45954.55069,,,,45954.44375,No Negative Credit Hit,No Negative Credit Hit,,No,,45958.62153,,,Eligible Application - Dealer Onboarded,Yes,,,,,,Jan Melben Verdejo,,,,,,,46175.55972,46175.55972,46175.575,,0,0,0,0
-,,R.A.S SALES ACCOUNTING SERVICES,,,Inventory Underwriting,Ralph Allen Suzara Sales,33492,9175202909,55 A Chysolite St Northview Batasan Hills QC,Male,Driver's License,N04-14-018003,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,R.A.S SALES ACCOUNTING SERVICES,,,Inventory Underwriting,Ralph Allen Suzara Sales,33492,9175202909,55 A Chysolite St Northview Batasan Hills QC,Male,Driver's License,N04-14-018003,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-SALES 
 3.Signed Consent Form
 4.Proof of House
@@ -9335,7 +9335,7 @@ INVENTORY BASE UW ORCR+UNIT PHOTO
 2011 TOYOTA HIACE COMMUTER_POE874
 2014 TOYOTA HIACE COMMUTER_AAL7244
 ",,0,45973.42222,,Yes,45974.45625,45974.54653,,,,45975.40764,No Negative Credit Hit,No Negative Credit Hit,,Yes,45973.42222,45975.40556,,Netbank & Finsso,Eligible Application - Dealer Onboarded,No,,"AGUSTIN, JAYROLD ARGA",jrdd1111@yahoo.com.ph,,,Jan Melben Verdejo,Approved,45982.48125,Approved,45982.48125,45982.48125,45982.48333,45982.58333,45982.58333,45982.64722,https://drive.google.com/drive/folders/1De2LU5grOI5ZmFkCSnjFfZx3geBtzORN,0,0,0,0
-,IF0312,JTRS AUTO TRADING,,GCD4865,Inventory Underwriting,Rodolfo Oralde Retes,26004,9667518468,65 Ruhale St Brgy Calzada Tipas Taguig,Male,Driver's License,N03-15-037723,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,IF0312,JTRS AUTO TRADING,,GCD4865,Inventory Underwriting,Rodolfo Oralde Retes,26004,9667518468,65 Ruhale St Brgy Calzada Tipas Taguig,Male,Driver's License,N03-15-037723,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.TIN ID-DL ID-RETES 
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -9541,7 +9541,7 @@ Thank you!
 --
 Best, 
 Hannah ",,,,,,,,,,,,,,,0
-,,PT AUTO REPAIR SHOP,,,Inventory Underwriting,Pedro Arcilla Tiglao,27574,9476060267,30A Narra St Pillar Village Laspinas Talon Dos Las Pinas,Male,Driver's License,C10-03-000563,Terisa Gatchalian,Rexcell Juegos,Albert Dalupang,"1. Application Form
+,,PT AUTO REPAIR SHOP,,,Inventory Underwriting,Pedro Arcilla Tiglao,27574,9476060267,30A Narra St Pillar Village Laspinas Talon Dos Las Pinas,Male,Driver's License,C10-03-000563,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1. Application Form
 2. Signed Consent Form
 3. Valid ID 
 4. Geotagged Photo of the Showroom
@@ -9703,7 +9703,7 @@ INVENTORY BASE UW ORCR+UNIT PHOTO
 Auto PHP:386,525
 Report Date:6/11/2015
 ",Yes,45987.05625,45986.9375,-claimed by Zhesa as one and the same address  (House & Showroom),,Eligible Application - Dealer Onboarded,Yes,TU High Risk Rating,"CORDERO, MIGUEL ANTONIO ZITA								",mcarsph@gmail.com,,,Jan Melben Verdejo,Approved,46000.69653,Approved,46000.69653,46000.69653,46000.69722,46002.64306,46002.64306,46003.68125,https://drive.google.com/drive/folders/1Ku_A_hvWqbGNa08IK095keCisgD2Mxri,0,0,0,0
-,,MGF-APEX AUTO TRADING,,,Inventory Underwriting,Mary Grace Florendo Hizon,34775,9688549481,Unit D Esj Place Blk 03 Lot 28 Capitoline Hills BFRN Talon Dos Las Piñas City,Male,Driver's License,N26-14-008958,Terisa Gatchalian,Rexcell Juegos,Albert Dalupang,"1.Application Form
+,,MGF-APEX AUTO TRADING,,,Inventory Underwriting,Mary Grace Florendo Hizon,34775,9688549481,Unit D Esj Place Blk 03 Lot 28 Capitoline Hills BFRN Talon Dos Las Piñas City,Male,Driver's License,N26-14-008958,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-NATIONAL ID-Hizon 
 3.Signed Consent Form
 4.Business Permit
@@ -9729,7 +9729,7 @@ Thank you!
 --
 Best, 
 Hannah ",,Angelika Jane Lipata,,,,,,,,,,,,,0
-,IF0358,MIKOTSE CORP,,GCD4000,Inventory Underwriting,Jan Michael Villanueva Acuña,31850,9175092102,4170 Aguilar Pulang Lupa Dos Las Piñas City,Male,Passport,P7029009B,Terisa Gatchalian,Rexcell Juegos,Albert Dalupang,"1.Application Form
+,IF0358,MIKOTSE CORP,,GCD4000,Inventory Underwriting,Jan Michael Villanueva Acuña,31850,9175092102,4170 Aguilar Pulang Lupa Dos Las Piñas City,Male,Passport,P7029009B,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.Passport ID-Acuña (Blurred Passport ID)
 3.Signed Consent Form
 3.SEC Certificate 
@@ -9817,7 +9817,7 @@ INVENTORY BASE UW ORCR+UNIT PHOTO
 2018 TOYOTA HIACE GL GRANDI_EAA9800
 2018 TOYOTA ALPHARD 3.5L WH_NBA6804
 ",,0,45985.71597,,Yes,45987.70278,45988.40694,,,,45987.73819,No Negative Credit Hit,No Negative Credit Hit,,Yes,45985.71597,45988.47917,,,Eligible Application - Dealer Onboarded,Yes,Risk Pricing (Level 3-5),RUEM MARTIN MASCARINAS,ryu8strengthproject@gmail.com,,,Jackilyn Nartatez,Approved,45996.75,Approved,45996.75,45996.75,46000.48056,46000.48056,46000.48056,46000.68958,https://drive.google.com/drive/folders/1hmsjY-9jOhuR_WbpdJ3zMPNY6z-frGxq,0,0,0,0
-JTRS AUTO TRADING,IF0344,G REN CAR TRADING,,GCD1807,Inventory Underwriting,Rene Regis Garcia,23683,9167714935,Unit N 200 M Almeda St Matanggol Pateros Manila,Male,Driver's License,N01-98-224082,Jan Melben Verdejo,Marlon Llamas,Albert Dalupang,"1. Application Form
+JTRS AUTO TRADING,IF0344,G REN CAR TRADING,,GCD1807,Inventory Underwriting,Rene Regis Garcia,23683,9167714935,Unit N 200 M Almeda St Matanggol Pateros Manila,Male,Driver's License,N01-98-224082,Jan Melben Verdejo,Albert Dalupang,Albert Dalupang,"1. Application Form
 2. Valid ID 
 3. Signed Consent Form
 4. Geotagged Photo of the Showroom
@@ -9876,7 +9876,7 @@ Also, geotagged photos submitted were dated November 14... and were taken from a
 and residential address of the business owner. Although as per dealer the location belongs to his agent.
 This discrepancy raised concerns regarding the actual operational presence and consistency of the declared business location.
 ",,Jackilyn Nartatez,,,,,,,,,,,,,0
-,,BABOOH CAR'S AUTO TRADING,,,Inventory Underwriting,Michelle Manansala Young,29600,994015032,D 81 M Raymond St Marietta H Santa Lucia Pasig City,Female,Driver's License,L04-11-006307,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+,,BABOOH CAR'S AUTO TRADING,,,Inventory Underwriting,Michelle Manansala Young,29600,994015032,D 81 M Raymond St Marietta H Santa Lucia Pasig City,Female,Driver's License,L04-11-006307,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID-TIN ID-Young
 3.Signed Consent Form
 4.Geotagged Photo of the Showroom
@@ -9946,7 +9946,7 @@ Gibo Car trading (Referral)
 Espllaton
 Cris auto trading
 Tf8888",,Angelika Jane Lipata,Approved,46003.49306,Approved,46003.49306,46003.49306,46003.49514,46003.63403,46003.63403,46003.64375,https://drive.google.com/drive/folders/1sO5nM9VA_6DZthh8z7atrRG6ehWGyX2Y,0,0,0,0
-JTRS AUTO TRADING,,CAR TRADING JCRS,,,Inventory Underwriting,Joy Christine Altez Lagoc,37043,90810483323,80 Narra St Bagumbayan Taguig City,Male,Philhealth ID,08-201825194-5,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+JTRS AUTO TRADING,,CAR TRADING JCRS,,,Inventory Underwriting,Joy Christine Altez Lagoc,37043,90810483323,80 Narra St Bagumbayan Taguig City,Male,Philhealth ID,08-201825194-5,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2. ID-TIN-NATIONAL ID-LAGOC 
 3. Consent Form
 4.Sales Summary Report (Aug-Nov 2025)
@@ -10086,7 +10086,7 @@ INVENTORY BASE UW ORCR+UNIT PHOTO
 2024 MITSUBISHI L300 C/C 2.2D MT_NKC4787
 
 ",,0,45995.90903,,Yes,46000.63958,46001.61181,,,,46000.66806,No Negative Credit Hit,No Negative Credit Hit,,Yes,45995.90903,46001.62986,-claimed by Malou as one and the same address  (House & Showroom),Finsso,Eligible Application - Dealer Onboarded,Yes,Thin file,"Ruego, Zacary Torecampo",zacaryruego@gmail.com,POB RESIDENCE requested dec 18 / sent by Sales 01/07,46029,Jan Melben Verdejo,Approved,46029.66806,Approved,46029.66806,46029.66806,46029.66875,46029.74375,46029.74375,46030.73125,https://drive.google.com/drive/folders/1ia5uM2bpQUI30z4ul-lfGtHmkJTwNCsa?usp=drive_link,0,0,0,0
-JTRS AUTO TRADING,,JTRS TRUCKING SERVICES,,GCD4865,Inventory Underwriting,Mary Joyce Retes Bautista,35142,9169787589,2019 A Ruhale St Calzada Taguig,Male,TIN ID,501-163-598,Terisa Gatchalian,Marlon Llamas,Albert Dalupang,"1.Application Form
+JTRS AUTO TRADING,,JTRS TRUCKING SERVICES,,GCD4865,Inventory Underwriting,Mary Joyce Retes Bautista,35142,9169787589,2019 A Ruhale St Calzada Taguig,Male,TIN ID,501-163-598,Terisa Gatchalian,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.TIN ID-BAUTISTA 
 3.Signed Consent Form
 4.DTI Certificate
@@ -10107,7 +10107,7 @@ INVENTORY BASE UW ORCR+UNIT PHOTO
 -Some of the units submitted for inventory funding were posted by the same agents, which further limits our ability to validate the inventory independently.
 -Thin File with Medium Risk findings in TU, no active line/loans to further check his payment behavior, hence, difficult to establish not only the dealer's existence but also his overall payment capacity and character.
 ",,Angelika Jane Lipata,,,,,,,,,,,,,0
-,,MAKALINTAL 6D'S FOOD SERVICE,,,Inventory Underwriting,Glenn Hernandez Makalintal,28607,917565277,B11 L18 Banaba Manila Doctors Village Amanza Uno Las Piñas City,Male,Driver's License,D04-95-090522,Joyce D. Basallote,Rexcell Juegos,Albert Dalupang,"1.Application Form
+,,MAKALINTAL 6D'S FOOD SERVICE,,,Inventory Underwriting,Glenn Hernandez Makalintal,28607,917565277,B11 L18 Banaba Manila Doctors Village Amanza Uno Las Piñas City,Male,Driver's License,D04-95-090522,Joyce D. Basallote,Albert Dalupang,Albert Dalupang,"1.Application Form
 2.DL ID/HERNANDEZ
 3.Signed Consent Form
 4.Proof of House
@@ -10305,7 +10305,7 @@ In the event of payment concerns or collection related matters, the limited avai
 6. DTI Certificate
 7. 6 units with complete ORCR+Geotagged Photos
 8. Proof of Showroom / Residence ",,0,46038.44236,,Yes,46038.59444,46038.70556,,,,46038.59653,No Negative Credit Hit,Not requested,,Yes,46038.89306,46041.43889,,,Eligible Application - Dealer Onboarded,Yes,Thin file,EDMON SANTOS PLATON,platonedmon29@gmail.com,LIP VALID ID,46052,Angelika Jane Lipata,Approved,46052.70833,Approved,46052.70833,46052.70833,46052.70833,46053.70903,46053.70903,46053.71319,https://drive.google.com/file/d/1-O8dMp67gVVuIphfvUrEtzVTHJdnm5PT/view?usp=drive_link,0,0,0,0
-,,JOYCAL PHILIPPINES INC,,,Inventory Underwriting,YUKI YAMANAKA,34525,9171581902,12TH FLOOR FIVE ECOM CENTER BLDG. PACIFIC DRIVE EXT. MALL OF ASIA COMPLEX BARANGAY 76 PASAY CITY,Male,Passport,TS2489607,Jan Melben Verdejo,Rexcell Juegos,Albert Dalupang,"1. Application Form
+,,JOYCAL PHILIPPINES INC,,,Inventory Underwriting,YUKI YAMANAKA,34525,9171581902,12TH FLOOR FIVE ECOM CENTER BLDG. PACIFIC DRIVE EXT. MALL OF ASIA COMPLEX BARANGAY 76 PASAY CITY,Male,Passport,TS2489607,Jan Melben Verdejo,Albert Dalupang,Albert Dalupang,"1. Application Form
 2. Consent Form
 3. Geotagged Photo of the Showroom
 4. Barangay Clearance
@@ -10337,7 +10337,7 @@ In the event of payment concerns or collection related matters, the limited avai
 @romela.rivera@finsso.com Dealer has been unresponsive according to the sales team. Let's please put this account on hold for the meantime. 
 
 cc: @hannah.ibay@carmudi.com.ph",,Application Paused/On Hold by Credit,,,,,,,Angelika Jane Lipata,,,,,,,,,,,,,0
-,IF0349,VECTORTECH AUTO TRADING,,GCD5220,Inventory Underwriting,RHODERICK WELSH RAMIREZ,25009,9178241224,"WAREHOUSE 208, BORMAHECO COMPOUND CERVANTES ROAD KM17, WEST SERVICE ROAD, SOUTH SUPER HIGHWAY PARANAQUE CITY",Male,Driver's License,N03-97-223622,Jan Melben Verdejo,Marlon Llamas,Albert Dalupang,"1. Application Form
+,IF0349,VECTORTECH AUTO TRADING,,GCD5220,Inventory Underwriting,RHODERICK WELSH RAMIREZ,25009,9178241224,"WAREHOUSE 208, BORMAHECO COMPOUND CERVANTES ROAD KM17, WEST SERVICE ROAD, SOUTH SUPER HIGHWAY PARANAQUE CITY",Male,Driver's License,N03-97-223622,Jan Melben Verdejo,Albert Dalupang,Albert Dalupang,"1. Application Form
 2. Valid ID 
 3. Signed Consent Form
 4. Geotagged Photo of the Showroom
@@ -10372,7 +10372,7 @@ cc: @hannah.ibay@carmudi.com.ph",,Application Paused/On Hold by Credit,,,,,,,Ang
 8. - Proof of House  (Updated)
 9. ID of comaker
 ",,0,46042.86389,,Yes,46043.61042,46044.47639,,,,46043.62569,No Negative Credit Hit,Not requested,,Yes,46044.67569,46044.60347,,,Eligible Application - Dealer Onboarded,Yes,TU High Risk Rating,FRANCIS MENDOZA CRUZ															,franciscruz6.fc@gmail.com,BUSINESS PARTNERS ID AND SPOUSE,46056,Jan Melben Verdejo,Approved,46057.55486,Approved,46057.55486,46057.55486,46057.55556,46058.67778,46058.67778,46059.85347,https://drive.google.com/file/d/1d3hQbpVRdK-MCqJzTIkEhKZZt9Hw6DwJ/view?usp=drive_link,0,0,0,0
-BRO'S AUTODEALERS AUTO TRADING,IF0366,DREAM CAR AUTO TRADING,,GCD3450,Inventory Underwriting,JOHN VELDEN LACSON LIM,31700,9188155513,Lot 5 Blk 6 France St Annex 57 Betterliving Parañaque City,Male,Driver's License,N04-03-503902,Jan Melben Verdejo,Rexcell Juegos,Albert Dalupang,"1. Valid ID's
+BRO'S AUTODEALERS AUTO TRADING,IF0366,DREAM CAR AUTO TRADING,,GCD3450,Inventory Underwriting,JOHN VELDEN LACSON LIM,31700,9188155513,Lot 5 Blk 6 France St Annex 57 Betterliving Parañaque City,Male,Driver's License,N04-03-503902,Jan Melben Verdejo,Albert Dalupang,Albert Dalupang,"1. Valid ID's
 2. Proof of House 
 3. DTI Certificate
 4. Application Form
@@ -10446,7 +10446,7 @@ This decision is due to adverse findings noted during our evaluation, particular
 In addition, we were unable to validate or receive sufficient and solid proof of settlement to address the said obligation.
 
 Given these risk considerations, we are unable to move forward with the account in line with our credit and risk policies.",,,,,,,,,,,,,,,0
-,IF0345,WHEELDEALS CAR AGENT SERVICES,,GCD5029,Inventory Underwriting,TIMOTHY JAMES VILORIA FAMULAR,32494,9162341475,BLK20 LOT14 JUBILATION NORTH BINAN CITY LAGUNA,Male,Passport,P3735646B,Jan Melben Verdejo,Rexcell Juegos,Albert Dalupang,"1. Application Form
+,IF0345,WHEELDEALS CAR AGENT SERVICES,,GCD5029,Inventory Underwriting,TIMOTHY JAMES VILORIA FAMULAR,32494,9162341475,BLK20 LOT14 JUBILATION NORTH BINAN CITY LAGUNA,Male,Passport,P3735646B,Jan Melben Verdejo,Albert Dalupang,Albert Dalupang,"1. Application Form
 2. Signed Consent Form
 3. 4 units with complete ORCR+Geotagged photos
 4. DTI Certificate
@@ -10576,7 +10576,7 @@ Credit Cards        10,494        6/03/2022
 2/20 Done KYC
 2/23 Received FCI report
 2/26 Endorse",,Angelika Jane Lipata,Approved,46079.64792,Approved,46079.64792,46079.64792,46079,46079,46079,46086.52014,,0,0,0,0
-JTRS AUTO TRADING,,RED- X KLN CAR TRADING,,,Inventory Underwriting,JHUNILEONIL KEN MAGPANTAY NOCHE,34709,9915239646,28 BAGONG CALZADA USUSAN TAGUIG,Male,Driver's License,N50-22-317669,Jan Melben Verdejo,Marlon Llamas,Albert Dalupang,"1. Application Form
+JTRS AUTO TRADING,,RED- X KLN CAR TRADING,,,Inventory Underwriting,JHUNILEONIL KEN MAGPANTAY NOCHE,34709,9915239646,28 BAGONG CALZADA USUSAN TAGUIG,Male,Driver's License,N50-22-317669,Jan Melben Verdejo,Albert Dalupang,Albert Dalupang,"1. Application Form
 2. Valid ID - Dealer
 3. Valid ID of Wife
 4. Signed Consent Form
@@ -10711,7 +10711,7 @@ Feb 20 = Done KYC, As per the dealer, he is currently on vacation and is unable 
 When asked about his availability, he did not provide a specific date for rescheduling. He also mentioned that he does not require the application at this time.
 Received FCI Report by 4:41pm
 Feb 23 = Approved",,,Approved,46072.69028,Approved,46072.69028,46072.69028,46077.45903,46077.45903,46077.45903,46077.45903,https://drive.google.com/open?id=17e4SVy7a4ilWPY0S-7DsaWeU1dRJB8e4&usp=drive_copy,0,0,0,0
-,IF0354,PAGUICAN CAR TRADING,,,Inventory Underwriting,MARIO OCLARIT PAGUICAN,24142,9612187023,CAR CITY COMPOUND ROXAS BOULEVARD COR SEASIDE DRIVE TAMBO PARANAQUE CITY,Male,UMID ID,0111-8144050-4,Jan Melben Verdejo,Rexcell Juegos,Albert Dalupang,"1. Application Form
+,IF0354,PAGUICAN CAR TRADING,,,Inventory Underwriting,MARIO OCLARIT PAGUICAN,24142,9612187023,CAR CITY COMPOUND ROXAS BOULEVARD COR SEASIDE DRIVE TAMBO PARANAQUE CITY,Male,UMID ID,0111-8144050-4,Jan Melben Verdejo,Albert Dalupang,Albert Dalupang,"1. Application Form
 2. Valid ID - Dealer
 3. Signed Consent Form
 4. Geotagged Photo of the Showroom
@@ -11049,7 +11049,7 @@ feb 27 - Approved
 10. Geotagged photos
 ",,0,46074.78472,,Yes,46076.65069,46076.65625,,,Yes,46076.50347,No Negative Credit Hit,Not requested,,Yes,46076.50347,46076.66736,,,Eligible Application - Dealer Onboarded,Yes,Thin file,RANDY ROMEO CONEL,randymarketing@yahoo.com,"Feb 26 = Done KYC/ Received FCI
 Feb 27 = Done Computation ABD/ ADB, Approved 2:15 pm",,Jan Melben Verdejo,Approved,46080.59375,Approved,46080.59375,46080.59375,46080,46080,46080,46080,https://drive.google.com/open?id=1Vt699-GC2qDqhk2PKP2qglJNh9DWxKwU&usp=drive_copy,0,0,0,0
-,IF0378,CARMAX SALES AND SERVICE INC.,,,Regular Onboarding,ARIEL JAN CARLO PALABAY GONZALES,33807,9064405139,S1105 THE VERANDA EAST UNION DRV ARCA SOUTH WESTERN BICUTAN TAGUIG CITY,Male,Passport,P8460770A,Jhon Carlo Pidlaoan,Marlon Llamas,Albert Dalupang,"1. Application Form
+,IF0378,CARMAX SALES AND SERVICE INC.,,,Regular Onboarding,ARIEL JAN CARLO PALABAY GONZALES,33807,9064405139,S1105 THE VERANDA EAST UNION DRV ARCA SOUTH WESTERN BICUTAN TAGUIG CITY,Male,Passport,P8460770A,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"1. Application Form
 2. Valid ID - Dealer
 3. Signed Consent Form
 4. Proof of Showroom
@@ -11095,7 +11095,7 @@ Mar 12 - CO firmed with the 5.3M CL and 3.2M DP, offline called with Ms Hannah t
 Mar 16 - Ms Hannah provided BS and Sales Sum rep.
 Mar 17 - Approved
 ",,Jackilyn Nartatez,Approved,46098.57569,Approved,46098.57569,46098.57569,,46098.67222,46098.67222,,,0,0,0,0
-,IF0368,F&J VEHICLE TRADING,,GCD5096,Regular Onboarding,JUVELYN TAGHAP DIGMAN,33654,9666141038,BLK 29 LOT 1 PH2 BRGY AMAYA 1 CASA AMAYA TANZA CAVITE,Female,Driver's License,D19-19-013194,Jhon Carlo Pidlaoan,Rexcell Juegos,Albert Dalupang,"1. Application Form
+,IF0368,F&J VEHICLE TRADING,,GCD5096,Regular Onboarding,JUVELYN TAGHAP DIGMAN,33654,9666141038,BLK 29 LOT 1 PH2 BRGY AMAYA 1 CASA AMAYA TANZA CAVITE,Female,Driver's License,D19-19-013194,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"1. Application Form
 2. Valid ID - Dealer
 3. Signed Consent Form
 4. Geotagged Photo of the Showroom
@@ -11347,7 +11347,7 @@ Mar 13 - 9:30 AM KYC verification is complete and has been endorsed for FCI, s
 Mar 16 - FCI Received
 Mar 17 - Approved
 ",,Jan Melben Verdejo,Approved,46098.57639,Approved,46098.57639,46098.57639,,46098.67222,46098.67222,46104.45972,,0,0,0,0
-,,BIGBOYCARSMNL VEHICLE TRADING,,GCD4292,Inventory Underwriting,MARI LUIS MATSUO NUNEZ,34888,9175780049,Park N Sell Meralco ave Ortigas pasig city,Male,Driver's License,N03-14-014608,Jhon Carlo Pidlaoan,Marlon Llamas,Albert Dalupang,"Application Form
+,,BIGBOYCARSMNL VEHICLE TRADING,,GCD4292,Inventory Underwriting,MARI LUIS MATSUO NUNEZ,34888,9175780049,Park N Sell Meralco ave Ortigas pasig city,Male,Driver's License,N03-14-014608,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form
 Valid ID - Dealer
 Signed Consent Form
 Geotagged Photo of the Showroom
@@ -11400,7 +11400,7 @@ Mar 12 - FCI report received, assessing the limit
 Mar 13 - Approved
 
 ",,Jan Melben Verdejo,Approved,46094.68681,Approved,46094.68681,46094.68681,,46097.40972,46097.40972,,,0,0,0,0
-,IF0398,PURPLEBLOOM CARZ CAR AGENT SERVICES,,GCD5218,Express Onboarding,ROCHELLE NOBLE AYROSO,29210,9165313708,350 GARDENIA ST GREENHEIGHTS NEWTOWN MAYAMOT ANTIPOLO CITY,Female,Passport,P7993775A,Jhon Carlo Pidlaoan,Marlon Llamas,Albert Dalupang,"Application Form 
+,IF0398,PURPLEBLOOM CARZ CAR AGENT SERVICES,,GCD5218,Express Onboarding,ROCHELLE NOBLE AYROSO,29210,9165313708,350 GARDENIA ST GREENHEIGHTS NEWTOWN MAYAMOT ANTIPOLO CITY,Female,Passport,P7993775A,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form 
 Valid ID - Dealer 
 Signed Consent Form
 Proof of House
@@ -11678,7 +11678,7 @@ Mar 23 - done with the KYC verification and already endorsed for FCI for tomorro
 Mar 23 - CO flagged the initial limit
 Mar 24 - FCI report received
 Mar 24 - Approved",,Jan Melben Verdejo,Approved,46105.68681,Approved,46105.68681,46105.68681,,46105.71042,46105.71042,46105.71319,,0,0,0,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Yes
-,,ASHCOL AIRCONDITIONING SERVICES,,,,AMADO MAGBOO IGNACIO,28612,91789333,GENESIS BUILDING UNIT 2 EAST REMBO TAGUIG,Male,Driver's License,N04-13-016440,Jhon Carlo Pidlaoan,Marlon Llamas,Albert Dalupang,"Application Form
+,,ASHCOL AIRCONDITIONING SERVICES,,,,AMADO MAGBOO IGNACIO,28612,91789333,GENESIS BUILDING UNIT 2 EAST REMBO TAGUIG,Male,Driver's License,N04-13-016440,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form
 Valid ID - Dealer
 Signed Consent Form
 DTI Certificate
@@ -12203,7 +12203,7 @@ and there is also a BAP hit under PSBank Revolving Credit that has been written 
 
 Given these findings, we cannot move forward with the onboarding application at this time. 
 Kindly advise the dealer accordingly.",,Jan Melben Verdejo,Rejected,,Rejected,,,,,,,,,,0
-,,PATRICK BRYAN CABELINGA ANGELES,,,,PATRICK BRYAN CABELINGA ANGELES,32052,9175999046,30 HIGHLAND ST. RANCITO EAST CONCEPTION 2 MARIKINA CITY,Male,Driver's License,D16-05-012482,Jhon Carlo Pidlaoan,Marlon Llamas,Albert Dalupang,"Application Form
+,,PATRICK BRYAN CABELINGA ANGELES,,,,PATRICK BRYAN CABELINGA ANGELES,32052,9175999046,30 HIGHLAND ST. RANCITO EAST CONCEPTION 2 MARIKINA CITY,Male,Driver's License,D16-05-012482,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form
 Valid ID - Dealer
 Signed Consent Form
 ","Valid ID of Spouse / Wife
@@ -12658,7 +12658,7 @@ Apr 26: Weekends
 Apr 27: 2nd attempt of FCI failed as per external FCI dealer was unresponsive/ resched on apr 28
 Apr 28: FCI report received
 Apr 29: Approved / pending Tin Proof",,Jan Melben Verdejo,Approved,46141.62222,Approved,46141.62222,46141.62222,,46141.63681,46141.63681,46142.63194,,0,0,0,0
-,,RJ ELITE AUTOCARS,,,,REGINALD JOSEPH GREGORIO BATOON,35517,9568800435,28 BAGONG CALZADA TAGUIG CITY,Male,Passport,P33914520,Jhon Carlo Pidlaoan,Marlon Llamas,Albert Dalupang,"Application Form
+,,RJ ELITE AUTOCARS,,,,REGINALD JOSEPH GREGORIO BATOON,35517,9568800435,28 BAGONG CALZADA TAGUIG CITY,Male,Passport,P33914520,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form
 Signed Consent Form
 Valid ID - Dealer","Geotagged Photo of the Showroom
 Proof of House
@@ -12693,7 +12693,7 @@ Latest 3-6 Months Bank Statements
 DTI Certificate
 ",6,46136.51528,,No,,,,,Yes,46136.67639,Not requested,Not requested,,No,,,"Apr 24, 12:22PM - Sales endorsement
 Apr 24: Flagged for lacking docs",,Eligible Application - Pending Credit Line Documents,,,,,,,,,,,,,,,,,,,,0
-,IF0437,ALLGOOD AUTO TRADING,,GCD5178,Express Onboarding,RAY ARVIN GARZANO GUALVEZ,33899,9561907920,BLK 6 L8 KINGSTON ST METRO SOUTH VILLAGE 5 MANGGAHAN GENERAL TRIAS CAVITE,Male,Driver's License,D06-11-009072,Jhon Carlo Pidlaoan,Rexcell Juegos,Albert Dalupang,"Application Form
+,IF0437,ALLGOOD AUTO TRADING,,GCD5178,Express Onboarding,RAY ARVIN GARZANO GUALVEZ,33899,9561907920,BLK 6 L8 KINGSTON ST METRO SOUTH VILLAGE 5 MANGGAHAN GENERAL TRIAS CAVITE,Male,Driver's License,D06-11-009072,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form
 Signed Consent Form
 Valid ID - Dealer
 Geotagged Photo of the Showroom
@@ -13155,7 +13155,7 @@ Latest 3-6 Months Sales Summary Report or (AR's)",,0,46152.50486,,Yes,46153.4368
 5/14 - KYC done, scheduled for FCI
 5/15 FCI done
 5/15 - Approved",,Jan Melben Verdejo,Approved,46157.65694,Approved,46157.65694,46157.65694,,46157.68264,46157.68264,46160.45347,,0,0,0,0
-,,ASILO CAR TRADING,,,Inventory Underwriting,MARY GRACE SILVESTRE ASILO,32139,9662714979,6 ARTENIO ST REMARVILLE SUBD BAGBAG QUEZON CITY,Female,Driver's License,N03-23-018602,Jhon Carlo Pidlaoan,Marlon Llamas,Albert Dalupang,"Application Form
+,,ASILO CAR TRADING,,,Inventory Underwriting,MARY GRACE SILVESTRE ASILO,32139,9662714979,6 ARTENIO ST REMARVILLE SUBD BAGBAG QUEZON CITY,Female,Driver's License,N03-23-018602,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form
 Signed Consent Form
 Valid ID - Dealer
 DTI Certificate
@@ -13206,7 +13206,7 @@ We understand this may not be the expected outcome, and we sincerely appreciate 
 Please be assured that this decision was made following a fair and objective evaluation based on our credit policies.
 
 Thank you,",,Jan Melben Verdejo,,,,,,,,,,,,,0
-,,TAURUS CAR EXCHANGE CO.,,,Regular Onboarding,JOSELITO VIZCARRA ENRIQUEZ,24630,9152993242,BLK 3 LOT 35 HUMILITY ST MULTINATIONAL VILLAGE MOONWALK PARANAQUE,Male,Driver's License,N03-06-027813,Jhon Carlo Pidlaoan,Rexcell Juegos,Albert Dalupang,"Application Form
+,,TAURUS CAR EXCHANGE CO.,,,Regular Onboarding,JOSELITO VIZCARRA ENRIQUEZ,24630,9152993242,BLK 3 LOT 35 HUMILITY ST MULTINATIONAL VILLAGE MOONWALK PARANAQUE,Male,Driver's License,N03-06-027813,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form
 Signed Consent Form
 Valid ID - Dealer
 Valid ID of Spouse / Wife
@@ -13471,7 +13471,7 @@ DTI Certificate
 5/21 - scheduled for FCI 
 5/22 - KYC done and FCI done
 5/22 - Approved",,Jan Melben Verdejo,Approved,46164.88958,Approved,46164.88958,46164.88958,,46167.59063,46167.59063,46167.74306,,0,0,0,0
-,,GCU VEHICLE TRADING,,,,JAYSON ROMEL DUNGCA CORPUZ,35472,,60 ELGA LEO ST TATALON QUEZON CITY,Male,Driver's License,N04-22-000698,Jhon Carlo Pidlaoan,Marlon Llamas,Albert Dalupang,"Signed Consent Form
+,,GCU VEHICLE TRADING,,,,JAYSON ROMEL DUNGCA CORPUZ,35472,,60 ELGA LEO ST TATALON QUEZON CITY,Male,Driver's License,N04-22-000698,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Signed Consent Form
 Valid ID - Dealer
 Proof of House
 DTI Certificate","Application Form
@@ -13483,7 +13483,7 @@ ORCR+Geotagged photos
 ",6,46163.41042,,No,,,,,Yes,46163.47431,Not requested,Not requested,,No,,,"May 21, 9:51 AM - Sales endorsement
 5/21 - Flagged for Lacking docs
 ",,Eligible Application - Pending Credit Line Documents,,,,,,,,,,,,,,,,,,,,0
-,,METROCARS CO,,,,STUART SPENCER SEE CO,29914,9173295586,PARK N SELL ORTIGAS PASIG,Male,Voter's ID,7405-0261A-K2481SSC10000-0,Jhon Carlo Pidlaoan,Marlon Llamas,Albert Dalupang,"Application Form
+,,METROCARS CO,,,,STUART SPENCER SEE CO,29914,9173295586,PARK N SELL ORTIGAS PASIG,Male,Voter's ID,7405-0261A-K2481SSC10000-0,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form
 Signed Consent Form
 Valid ID - Dealer","Valid ID of Spouse / Wife
 Geotagged Photo of the Showroom
@@ -14346,7 +14346,7 @@ Latest 3-6 Months Bank Statements",,0,46191.52778,,Yes,46191.57847,46191.58542,,
 6/23 - SO provided screenshot of bank statement, docs not accepted 
 6/25 - SO provided Passbook and ARs
 6/25 - Approved",,Jan Melben Verdejo,Approved,46198.59097,Approved,46198.59097,46198.59097,,46198.59722,46198.59722,,,0,0,0,0
-,IF0493,BICUTAN AUTO EXCHANGE CO.,,,Inventory Underwriting,FLOR JR UMALI BUTIONG,26568,9175914567,SM CITY BICUTAN BLDG A OPEN PARKING SPACE DONA SOLEDAD BETTER LIVING SUBD DON BOSCO PARANAQUE CITY,Male,Driver's License,N04-89-119421,Jhon Carlo Pidlaoan,Rexcell Juegos,Albert Dalupang,"Application Form
+,IF0493,BICUTAN AUTO EXCHANGE CO.,,,Inventory Underwriting,FLOR JR UMALI BUTIONG,26568,9175914567,SM CITY BICUTAN BLDG A OPEN PARKING SPACE DONA SOLEDAD BETTER LIVING SUBD DON BOSCO PARANAQUE CITY,Male,Driver's License,N04-89-119421,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form
 Signed Consent Form
 Valid ID - Dealer
 Proof of House (2025)
@@ -14518,7 +14518,7 @@ Latest 3-6 Months Sales Summary Report or (AR's)",,0,46194.7375,,Yes,46195.66389
 6/24 - KYC done, scheduled for FCI 
 6/25 - FCI done
 6/25 - Approved",,Jan Melben Verdejo,Approved,46198.68542,Approved,46198.68542,46198.68542,,,,,,,,0
-,,GM GARAGE1 CAR TRADING,,,Express Onboarding,GERALD ASTORIANO MALAGASI,37169,9657638413,1353 J RAAMOS ST IBAYO TIPAS TAGUIG CITY,Male,Driver's License,N50-25-005978,Jhon Carlo Pidlaoan,Rexcell Juegos,Albert Dalupang,"Application Form
+,,GM GARAGE1 CAR TRADING,,,Express Onboarding,GERALD ASTORIANO MALAGASI,37169,9657638413,1353 J RAAMOS ST IBAYO TIPAS TAGUIG CITY,Male,Driver's License,N50-25-005978,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form
 Signed Consent Form
 Valid ID - Dealer
 Proof of House
@@ -14552,7 +14552,7 @@ We understand this may not be the expected outcome, and we sincerely appreciate 
 Please be assured that this decision followed a fair and objective evaluation based on our credit policies and risk appetite.
 
 Thank you,",,Jan Melben Verdejo,Rejected,,Rejected,,,,,,,,,,0
-,,MIKE CENTRAL CAR TRADING,,,Express Onboarding,MIGUEL CABILLAN GREFIEL,25937,9776877303,SM BICUTAN OPEN PARKING,Male,TIN ID,252-248-507,Jhon Carlo Pidlaoan,Rexcell Juegos,Albert Dalupang,"Application Form
+,,MIKE CENTRAL CAR TRADING,,,Express Onboarding,MIGUEL CABILLAN GREFIEL,25937,9776877303,SM BICUTAN OPEN PARKING,Male,TIN ID,252-248-507,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form
 Signed Consent Form
 Valid ID - Dealer","Valid ID of Spouse / Wife
 Geotagged Photo of the Showroom
@@ -14584,7 +14584,7 @@ Tin proof",,0,46196.01806,,Yes,46196.40556,46196.41667,,,,,With Negative Credit 
 6/23 - KYC done, scheduled for FCI 
 6/24 - FCI done
 6/24 - Approved",,Jan Melben Verdejo,Approved,46197.72778,Approved,46197.72778,46197.72778,,46197.77639,46197.77639,46198.41111,,0,0,0,0
-,,EASYSELL PH CO.,,,Express Onboarding,LLYOD ALLAN AGBADA MENDOZA ,32056,9171852316,C3 9/F-D HOLLAND PARK CLUSTER 3 BLDG SOUTHWOODS CENTER SAN FRANCISCO BINAN LAGUNA,Male,Driver's License,N26-11-021922,Jhon Carlo Pidlaoan,Rexcell Juegos,Albert Dalupang,"Application Form
+,,EASYSELL PH CO.,,,Express Onboarding,LLYOD ALLAN AGBADA MENDOZA ,32056,9171852316,C3 9/F-D HOLLAND PARK CLUSTER 3 BLDG SOUTHWOODS CENTER SAN FRANCISCO BINAN LAGUNA,Male,Driver's License,N26-11-021922,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form
 Signed Consent Form
 Valid ID - Dealer
 Proof of House and Showroom
@@ -15025,7 +15025,7 @@ We understand this may not be the expected outcome, and we sincerely appreciate 
 Please be assured that this decision followed a fair and objective evaluation based on our credit policies.
 
 Thank you.",,Jan Melben Verdejo,Rejected,,Rejected,,,,,,,,,,0
-,,BOSSCHOCK CAR TRADING,,,Inventory Underwriting,JESSIELITO ACUÑA PERELOÑA ,31752,9333114916,TANZANG LUMA VI IMUS CITY CAVITE ,Male,Driver's License,N04-08-008499,Jhon Carlo Pidlaoan,Rexcell Juegos,Albert Dalupang,"Application Form
+,,BOSSCHOCK CAR TRADING,,,Inventory Underwriting,JESSIELITO ACUÑA PERELOÑA ,31752,9333114916,TANZANG LUMA VI IMUS CITY CAVITE ,Male,Driver's License,N04-08-008499,Jhon Carlo Pidlaoan,Albert Dalupang,Albert Dalupang,"Application Form
 Signed Consent Form
 Valid ID - Dealer
 Geotagged Photo of the Showroom
@@ -15240,7 +15240,7 @@ List of inventory",,0,46231.55833,,Yes,46231.58333,46231.59167,,,,,With Negative
 7/30/26 - Endorsed to credit 
 7/30/26 - Tried to call for KYC
 7/31/26 - Done with KYC sched for FCI on Aug 4
-",,Eligible Application - Dealer Onboarded,No,,,,,,Jan Melben Verdejo,Approved,46239.48819,Approved,46239.48819,46239.48819,,46280.75138,46280.75138,46246.56667,,0,0,0,0
+",,Eligible Application - Dealer Onboarded,No,,,,,,Jan Melben Verdejo,Approved,46239.48819,Approved,46239.48819,46239.48819,,46281.46232,46281.46232,46246.56667,,0,0,0,0
 CAR TRADING KUYA J,IF0486,CAR AGENT SERVICES KKJ,,GCD5455,Inventory Underwriting,JUAN CARLOS ENDOZO DE PAZ,32341,9918011160,BLK37 L23 KAPAYAPAAN VILLE PH 1-A CANLUBANG CALAMBA LAGUNA,Male,Driver's License,D04-05-004781,Jhon Carlo Pidlaoan,Myrnalyn Bankingkito,Malou Alfonso,"Application Form (Finsso and Netbank)
 Signed Consent Form (Finsso and Netbank)
 Valid ID - Dealer
