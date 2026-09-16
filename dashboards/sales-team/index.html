@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PH Sales Team Performance</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{
+  --primary:#E8461E;
+  --accent:#F97316;
+  --bg:#F0F4FD;
+  --surface:rgba(255,255,255,0.68);
+  --border:rgba(255,255,255,0.75);
+  --border2:rgba(0,0,0,0.08);
+  --text:#111827;
+  --text2:#4B5563;
+  --text3:#9CA3AF;
+  --tbl-hdr:rgba(255,255,255,0.50);
+  --tbl-bdr:rgba(0,0,0,0.05);
+  --tbl-bdr2:rgba(0,0,0,0.09);
+  --total-bg:rgba(232,70,30,0.07);
+  --warn-bg:rgba(245,158,11,0.12);
+  --warn-text:#92400E;
+  --pad:24px;
+  --gap:16px;
+  --rcard:16px;
+  --rctrl:8px;
+
+  --surface-a:rgba(255,255,255,0.72);
+  --surface-b:rgba(255,255,255,0.65);
+  --surface-c:rgba(255,255,255,0.55);
+  --surface-d:rgba(255,255,255,0.80);
+  --surface-hi:rgba(255,255,255,0.95);
+  --chip-hover:rgba(255,255,255,0.9);
+  --overlay-tint:rgba(240,244,253,0.82);
+  --lock-tint:rgba(220,230,255,0.60);
+  --lock-card-bg:rgba(255,255,255,0.82);
+  --spinner-track:rgba(0,0,0,0.08);
+  --grad-1:#FFE8D6;
+  --grad-2:#DDE8FF;
+  --grad-3:#F5F0FF;
+  --tr-hover:rgba(255,248,245,0.7);
+  --section-bg:rgba(232,70,30,0.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0B0F1A;
+  --surface:rgba(30,35,50,0.65);
+  --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.10);
+  --text:#E5E7EB;
+  --text2:#9CA3AF;
+  --text3:#6B7280;
+  --tbl-hdr:rgba(255,255,255,0.04);
+  --tbl-bdr:rgba(255,255,255,0.06);
+  --tbl-bdr2:rgba(255,255,255,0.10);
+  --total-bg:rgba(232,70,30,0.16);
+  --warn-bg:rgba(245,158,11,0.14);
+  --warn-text:#FBBF24;
+
+  --surface-a:rgba(24,28,40,0.78);
+  --surface-b:rgba(24,28,40,0.65);
+  --surface-c:rgba(24,28,40,0.55);
+  --surface-d:rgba(24,28,40,0.82);
+  --surface-hi:rgba(255,255,255,0.06);
+  --chip-hover:rgba(255,255,255,0.10);
+  --overlay-tint:rgba(11,15,26,0.88);
+  --lock-tint:rgba(11,15,26,0.78);
+  --lock-card-bg:rgba(24,28,40,0.88);
+  --spinner-track:rgba(255,255,255,0.10);
+  --grad-1:#3A2A1E;
+  --grad-2:#1B2438;
+  --grad-3:#241E33;
+  --tr-hover:rgba(255,255,255,0.05);
+  --section-bg:rgba(232,70,30,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:light dark}
+html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="light"]{color-scheme:light}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:
+    radial-gradient(ellipse at 15% 10%, var(--grad-1) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 90%, var(--grad-2) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, var(--grad-3) 0%, transparent 80%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--text);
+  font-size:13px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  transition:background-color 0.2s, color 0.2s;
+}
+a{color:inherit;text-decoration:none}
+
+.topbar{
+  background:var(--surface-a);
+  border-bottom:1px solid var(--border2);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 8px 32px rgba(99,102,241,0.08),0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
+  backdrop-filter:blur(28px) saturate(180%);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);
+  padding:14px var(--pad);
+  display:flex;flex-direction:column;gap:0;
+  position:sticky;top:0;z-index:300;
+}
+.report-title{font-size:20px;font-weight:600;color:var(--primary);letter-spacing:-0.3px}
+.report-subtitle{font-size:12px;color:var(--text3);margin-top:3px}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.topbar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
+.theme-toggle{
+  font-size:12px;padding:5px 10px;border-radius:var(--rctrl);
+  border:1px solid var(--border2);background:var(--surface-d);
+  color:var(--text2);cursor:pointer;transition:all 0.15s;
+}
+.theme-toggle:hover{background:var(--chip-hover)}
+
+.main{padding:20px var(--pad);max-width:1100px;margin:0 auto}
+.section-title{font-size:16px;font-weight:600;color:var(--primary);text-align:center;margin-bottom:4px}
+.section-sub{font-size:11px;color:var(--text3);text-align:center;margin-bottom:20px}
+
+.warn-banner{
+  max-width:1100px;margin:0 auto 14px;padding:8px 16px;border-radius:10px;
+  background:var(--warn-bg);color:var(--warn-text);font-size:11px;text-align:center;
+}
+.warn-banner.hidden{display:none}
+
+.card{
+  background:var(--surface-b);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 8px 32px rgba(99,102,241,0.08),0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
+  backdrop-filter:blur(16px) saturate(150%);
+  -webkit-backdrop-filter:blur(16px) saturate(150%);
+  border-radius:var(--rcard);padding:16px;overflow-x:auto;
+  margin-bottom:var(--gap);
+}
+.card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px}
+.card-unit{font-size:10px;color:var(--text3);font-weight:400;margin-left:4px}
+
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+  text-align:left;padding:6px 10px;
+  color:var(--text3);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;
+  background:var(--tbl-hdr);
+  border-bottom:1px solid var(--tbl-bdr2);
+  white-space:nowrap;
+}
+th.r,td.r{text-align:right}
+td{padding:6px 10px;color:var(--text2);border-bottom:1px solid var(--tbl-bdr);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--tr-hover)}
+tr.section-row td{font-weight:700;color:var(--primary);background:var(--section-bg);font-size:10px;text-transform:uppercase;letter-spacing:0.05em}
+td.metric-label{color:var(--text);font-weight:500}
+
+.filter-bar{
+  background:var(--surface-c);
+  border-bottom:1px solid var(--border2);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  padding:10px var(--pad);
+  display:flex;flex-wrap:wrap;align-items:center;gap:14px;
+  position:sticky;top:54px;z-index:250;
+}
+.filter-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.filter-group-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;margin-right:2px}
+.filter-chip{
+  font-size:11px;padding:4px 10px;border-radius:9999px;
+  border:1px solid var(--border2);background:var(--surface-b);
+  color:var(--text2);cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.filter-chip:hover{background:var(--chip-hover)}
+.filter-chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+.loading-overlay{
+  position:fixed;inset:0;
+  background:var(--overlay-tint);
+  backdrop-filter:blur(32px) saturate(180%);
+  -webkit-backdrop-filter:blur(32px) saturate(180%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:999;gap:14px;
+}
+.loading-overlay.hidden{display:none}
+.spinner{width:36px;height:36px;border:3px solid var(--spinner-track);border-top-color:var(--primary);border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--text2)}
+.error-box{
+  background:var(--surface-d);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 8px 32px rgba(99,102,241,0.10),0 2px 8px rgba(0,0,0,0.06);
+  backdrop-filter:blur(32px);
+  border-radius:var(--rcard);padding:20px 28px;text-align:center;max-width:380px;
+}
+.error-box h3{color:#A32D2D;margin-bottom:8px;font-size:14px}
+.error-box p{color:var(--text2);font-size:12px;line-height:1.6}
+.error-box button{margin-top:12px;padding:8px 18px;background:var(--primary);color:#fff;border:none;border-radius:var(--rctrl);cursor:pointer;font-size:13px}
+
+.data-status{font-size:11px;color:var(--text3);text-align:right;margin-top:4px}
+
+.lock-overlay{
+  position:fixed;inset:0;
+  background:var(--lock-tint);
+  backdrop-filter:blur(48px) saturate(200%);
+  -webkit-backdrop-filter:blur(48px) saturate(200%);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;
+  transition:opacity 0.35s ease;
+}
+.lock-overlay.unlocking{opacity:0;pointer-events:none}
+.lock-overlay.hidden{display:none}
+.lock-card{
+  background:var(--lock-card-bg);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 80px 120px rgba(99,102,241,0.18),0 8px 32px rgba(0,0,0,0.08),inset 0 1px 0 var(--surface-hi);
+  backdrop-filter:blur(32px) saturate(200%);
+  -webkit-backdrop-filter:blur(32px) saturate(200%);
+  border-radius:28px;
+  padding:36px 32px 28px;
+  width:360px;max-width:90vw;
+  display:flex;flex-direction:column;align-items:center;
+}
+.lock-icon-box{
+  width:62px;height:62px;border-radius:18px;
+  background:linear-gradient(135deg,var(--accent),var(--primary));
+  border:1px solid rgba(232,70,30,0.35);
+  box-shadow:0 4px 16px rgba(232,70,30,0.30);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;
+}
+.lock-icon-box svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lock-title{font-size:17px;font-weight:600;color:var(--text);letter-spacing:-0.3px;margin-bottom:6px;text-align:center}
+.lock-sub{font-size:12px;color:var(--text3);margin-bottom:22px;text-align:center;line-height:1.6}
+.lock-signin{min-height:44px;display:flex;justify-content:center}
+.lock-error-msg{font-size:11px;color:#DC2626;margin-top:10px;min-height:16px;text-align:center}
+.lock-footer{font-size:10px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.06em;text-align:center;margin-top:20px}
+.lock-contact{font-size:11px;color:var(--text3);text-align:center;margin-top:6px}
+.lock-contact a{color:var(--primary);text-decoration:underline}
+
+@media(max-width:600px){
+  body{font-size:12px}
+  .topbar{padding:10px 14px}
+  .main{padding:12px 14px}
+  .report-title{font-size:15px}
+  .filter-bar{top:89px;padding:8px 14px;gap:10px}
+  .card{padding:12px}
+  table{font-size:9px}
+  th{padding:4px 6px;font-size:8px}
+  td{padding:4px 6px;font-size:9px}
+}
+</style>
+</head>
+<body>
+
+<!-- Login gate -->
+<div class="lock-overlay" id="lock-overlay">
+  <div class="lock-card">
+    <div class="lock-icon-box">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    </div>
+    <div class="lock-title">Sales Team Performance</div>
+    <div class="lock-sub">Sign in with your Finsso account<br>to access this dashboard</div>
+    <div id="g-signin" class="lock-signin"></div>
+    <div class="lock-error-msg" id="lock-err"></div>
+    <div class="lock-footer">Restricted access</div>
+    <div class="lock-contact">Need access? Contact <a href="mailto:miguel.cordero@finsso.com">miguel.cordero@finsso.com</a></div>
+  </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay hidden" id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text">Loading data…</div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-top">
+    <div style="flex:1">
+      <div class="report-title">Sales Team Performance</div>
+      <div class="report-subtitle">Team Marah · Team Albert · Team Malou — computed live from drawdown, visit, onboarding &amp; application data</div>
+      <div class="data-status" id="data-status-global" style="text-align:left">Loading…</div>
+    </div>
+    <div class="header-right">
+      <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+    </div>
+  </div>
+</div>
+
+<div class="filter-bar" id="filter-bar">
+  <div class="filter-group" id="filter-team"><span class="filter-group-label">Team</span></div>
+  <div class="filter-group" id="filter-entity"><span class="filter-group-label">Officer</span></div>
+  <div class="filter-group" id="filter-currency"><span class="filter-group-label">Currency</span></div>
+</div>
+
+<div class="main">
+  <div class="warn-banner hidden" id="unmapped-warning"></div>
+  <div class="section-title" id="entity-title">–</div>
+  <div class="section-sub" id="entity-sub">–</div>
+
+  <div class="card">
+    <div class="card-title">Key Metrics <span class="card-unit" id="currency-note"></span></div>
+    <table id="metrics-table">
+      <thead id="metrics-head"></thead>
+      <tbody id="metrics-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="error-box" id="error-box" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9998">
+  <h3>Couldn't load data</h3>
+  <p id="error-msg">Something went wrong fetching the dashboard data.</p>
+  <button onclick="location.reload()">Retry</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// DATA SOURCES — every metric here is computed live from raw sheet exports
+// already refreshed hourly by ExportAllSheetsToGitHub.gs in the Finsso
+// Dashboard Backend project: drawdown.csv, repayment.csv, dealer-checker.csv,
+// ob-masterlist.csv, and visits.csv (the last one added specifically for
+// this dashboard). Each is exported as the FULL raw sheet with its original
+// column headers — this dashboard just picks the columns it needs by name,
+// the same way the other Finsso dashboards already use drawdown.csv.
+// ═══════════════════════════════════════════════════════════════════════════
+const DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-repository/main/data/';
+const DAY_MS = 86400000;
+const FX_PHP_PER_USD = 60;
+const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const HISTORY_MONTHS = 6; // current (MTD) + this many prior closed months
+
+// SO → Team roster. Short list, changes rarely — kept here rather than in a
+// sheet because the one sheet that had it ("List of SOs Mapping") turned out
+// to be a multi-purpose city-assignment table, not a clean roster, and
+// wasn't safe to auto-parse. UPDATE THIS when someone joins/leaves a team.
+// Note: "Ricmar Magboo" has a non-breaking space between the names in the
+// source data (drawdown.csv, Visits Export, etc.) — kept verbatim below so
+// the lookup actually matches.
+const SO_TEAM_MAP = {
+  'Elvira Ladea': 'Marah',
+  'Rhoyland Alagon': 'Marah',
+  'Herbert Capistrano': 'Marah',
+  'Albert Dalupang': 'Albert',
+  'Zhesa Resurrecion': 'Albert',
+  'Ricmar Magboo': 'Albert',
+  'Rexcell Juegos': 'Albert',
+  'Rose Batacan': 'Malou',
+  'Myrnalyn Bankingkito': 'Malou',
+  'Candyce Aguete': 'Malou',
+  'Reyzon Manaog': 'Malou',
+};
+const TEAMS = ['Marah', 'Albert', 'Malou'];
+
+const METRIC_SECTIONS = [
+  { title: 'Visits & Conversion', metrics: ['Total Visit', 'Unique Visits', 'Visits to Application', 'Visits to Onboard', 'Average Visit'] },
+  { title: 'Onboarding & Drawdowns', metrics: ['New Dealer Applications', 'Dealer Application Completed', 'Onboarded Dealers', 'Drawdowns (Sales)', 'Drawdowns (Runners request)'] },
+  { title: 'GMV & AUM', metrics: ['GMV', 'AUM', 'AUM (Net Blacklisted)', 'GMV Growth', 'AUM Growth'] },
+  { title: 'Dealer Activation', metrics: ['AUM Active Dealer', 'First-time Activation', 'Same Month Activation'] },
+];
+const METRIC_TYPES = {
+  'Total Visit': 'Count', 'Unique Visits': 'Count', 'Visits to Application': 'Ratio', 'Visits to Onboard': 'Ratio', 'Average Visit': 'Ratio',
+  'New Dealer Applications': 'Count', 'Dealer Application Completed': 'Count', 'Onboarded Dealers': 'Count', 'Drawdowns (Sales)': 'Count', 'Drawdowns (Runners request)': 'Count',
+  'GMV': 'Currency', 'AUM': 'Currency', 'AUM (Net Blacklisted)': 'Currency', 'GMV Growth': 'Percent', 'AUM Growth': 'Percent',
+  'AUM Active Dealer': 'Count', 'First-time Activation': 'Count', 'Same Month Activation': 'Count',
+};
+
+let drawdownRows = [], repaymentRows = [], visitRows = [], onboardingRows = [], applicationRows = [];
+let dataLoadedAt = null, unmappedCount = 0;
+let currencyMode = 'PHP';
+let selectedTeam = 'Marah';
+let selectedEntity = null; // SO name, or '__TEAM__' for the team total
+
+// ── THEME ────────────────────────────────────────────────────
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('theme-toggle-btn');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  try { localStorage.setItem('finsso-theme', theme); } catch (e) {}
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+(function initTheme() {
+  let stored = null;
+  try { stored = localStorage.getItem('finsso-theme'); } catch (e) {}
+  const preferred = stored || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(preferred);
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DATE / NUMBER UTILS
+// ═══════════════════════════════════════════════════════════════════════════
+function parseSheetDate(v) {
+  if (v === null || v === undefined) return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  if (/^\d+(\.\d+)?$/.test(s)) {
+    const serial = Math.floor(parseFloat(s));
+    if (serial < 20000 || serial > 60000) return null;
+    const utcMs = Math.round((serial - 25569) * DAY_MS);
+    const utcDate = new Date(utcMs);
+    return new Date(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate());
+  }
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[1]-1, +m[2]);
+  const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+function parseNum(v) {
+  if (v === null || v === undefined || v === '') return 0;
+  const s = String(v).replace(/[,₱%]/g,'').trim();
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+function fmtNum(v, decimals=0) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  return Number(v).toLocaleString('en-US', {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+}
+function fmtMio(v) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  const converted = currencyMode === 'USD' ? Number(v) / FX_PHP_PER_USD : Number(v);
+  return fmtNum(converted / 1e6, 2);
+}
+function fmtPercent(v) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  return fmtNum(Number(v) * 100, 1) + '%';
+}
+function fmtByType(v, type) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  if (type === 'Currency') return fmtMio(v);
+  if (type === 'Percent') return fmtPercent(v);
+  if (type === 'Ratio') return fmtNum(v, 2);
+  return fmtNum(v, 0);
+}
+function monthLabel(d, isCurrent) {
+  return MONTH_ABBR[d.getMonth()] + "'" + String(d.getFullYear()).slice(2) + (isCurrent ? ' (MTD)' : '');
+}
+function monthEnd(year, month) { return new Date(year, month + 1, 0); }
+function monthStart(year, month) { return new Date(year, month, 1); }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CSV PARSING — same RFC4180-ish parser used across every Finsso dashboard.
+// Tolerant of short/ragged rows (trailing blank cells some exports drop) —
+// get() below just returns '' for any index past the row's actual length.
+// ═══════════════════════════════════════════════════════════════════════════
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i+1] === '"') { field += '"'; i++; }
+      else if (ch === '"') inQ = false;
+      else field += ch;
+    } else {
+      if (ch === '"') inQ = true;
+      else if (ch === ',') { row.push(field); field = ''; }
+      else if (ch === '\r') { /* skip */ }
+      else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else field += ch;
+    }
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
+}
+function buildColumnMap(headerRow) {
+  const idx = {};
+  headerRow.forEach((h, i) => { const key = String(h).trim(); if (key && !(key in idx)) idx[key] = i; });
+  return function (name) { return idx[name] !== undefined ? idx[name] : -1; };
+}
+function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
+
+async function fetchCSV(name, optional) {
+  const url = DATA_BASE + name + '?_=' + Date.now();
+  const r = await fetch(url);
+  if (!r.ok) {
+    if (optional) return null; // e.g. a new export not deployed yet — degrade gracefully
+    throw new Error('Failed to load ' + name + ' (HTTP ' + r.status + ')');
+  }
+  return parseCSV(await r.text());
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LOAD
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadData() {
+  const loadingEl = document.getElementById('loading-overlay');
+  const errEl = document.getElementById('error-box');
+  loadingEl.classList.remove('hidden');
+  try {
+    const [ddGrid, rpGrid, visitGrid, dcGrid, obGrid] = await Promise.all([
+      fetchCSV('drawdown.csv'),
+      fetchCSV('repayment.csv'),
+      fetchCSV('visits.csv', true),         // full "[Raw] Visits" sheet
+      fetchCSV('dealer-checker.csv', true), // full "[Raw] Dealer Checker" sheet
+      fetchCSV('ob-masterlist.csv', true),  // full "[Raw] OB Masterlist" sheet
+    ]);
+
+    // ── Drawdown (one row per loan) ──
+    const ddCol = buildColumnMap(ddGrid[0]);
+    drawdownRows = [];
+    for (let i = 1; i < ddGrid.length; i++) {
+      const r = ddGrid[i];
+      const id = get(r, ddCol('Drawdown ID')).trim();
+      if (!id) continue;
+      const so = get(r, ddCol('SO')).trim() || get(r, ddCol('Assigned SO')).trim(); // current-book SO, falling back to originating SO
+      drawdownRows.push({
+        id,
+        dealerId: get(r, ddCol('Dealer ID')).trim(),
+        creditDate: parseSheetDate(get(r, ddCol('Credit Date to Dealer Bank Account'))),
+        originalPrincipal: parseNum(get(r, ddCol('Original Principal'))),
+        loanStatus: get(r, ddCol('Loan Status')).trim(),
+        assignedSO: get(r, ddCol('Assigned SO')).trim(),   // who originated the drawdown — used for GMV / Drawdowns / First-time Activation
+        so: so,                                            // current book owner — used for AUM / AUM Active Dealer
+        requestedVia: get(r, ddCol('Requested Via')).trim(),
+        blacklistedDate: parseSheetDate(get(r, ddCol('Blacklisted Date'))),
+      });
+    }
+
+    // ── Repayment ──
+    const rpCol = buildColumnMap(rpGrid[0]);
+    repaymentRows = [];
+    for (let i = 1; i < rpGrid.length; i++) {
+      const r = rpGrid[i];
+      const drawdownId = get(r, rpCol('Drawdown ID')).trim();
+      if (!drawdownId) continue;
+      repaymentRows.push({
+        drawdownId,
+        paymentDate: parseSheetDate(get(r, rpCol('Dealer Payment Date'))),
+        paidPrincipal: parseNum(get(r, rpCol('Dealer Paid Principal'))),
+      });
+    }
+
+    // ── Visits — full "[Raw] Visits" sheet (optional: degrades to blank
+    // Visits metrics if the export hasn't been added yet) ──
+    visitRows = [];
+    if (visitGrid) {
+      const vCol = buildColumnMap(visitGrid[0]);
+      for (let i = 1; i < visitGrid.length; i++) {
+        const r = visitGrid[i];
+        const so = get(r, vCol('Executive Name')).trim();
+        const date = parseSheetDate(get(r, vCol('Visited Date')));
+        if (!so || !date) continue;
+        visitRows.push({ so, date, dealerKey: get(r, vCol('Clean GCD')).trim() || get(r, vCol('Dealer Name')).trim() });
+      }
+    }
+
+    // ── Dealer onboarding — full "[Raw] Dealer Checker" sheet (optional) ──
+    onboardingRows = [];
+    if (dcGrid) {
+      const dcCol = buildColumnMap(dcGrid[0]);
+      for (let i = 1; i < dcGrid.length; i++) {
+        const r = dcGrid[i];
+        const dealerId = get(r, dcCol('Dealer ID')).trim();
+        if (!dealerId) continue;
+        onboardingRows.push({
+          dealerId,
+          so: get(r, dcCol('Assigned Sales Officer')).trim(),
+          onboardingDate: parseSheetDate(get(r, dcCol('Original Onboarding Date'))),
+        });
+      }
+    }
+
+    // ── Dealer applications — full "[Raw] OB Masterlist" sheet (optional) ──
+    applicationRows = [];
+    if (obGrid) {
+      const obCol = buildColumnMap(obGrid[0]);
+      for (let i = 1; i < obGrid.length; i++) {
+        const r = obGrid[i];
+        const dealerId = get(r, obCol('Dealer ID')).trim();
+        if (!dealerId) continue;
+        applicationRows.push({
+          dealerId,
+          so: get(r, obCol('Assigned Sales POC')).trim(),
+          applicationDate: parseSheetDate(get(r, obCol('Date of Initial Application'))),
+          completionDate: parseSheetDate(get(r, obCol('Date of Completion of Onboarding Documents by Sales'))),
+        });
+      }
+    }
+
+    dataLoadedAt = new Date();
+    loadingEl.classList.add('hidden');
+    return true;
+  } catch (e) {
+    loadingEl.classList.add('hidden');
+    errEl.style.display = 'block';
+    document.getElementById('error-msg').textContent = e.message || 'Something went wrong fetching the dashboard data.';
+    return false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DERIVED / PRECOMPUTED
+// ═══════════════════════════════════════════════════════════════════════════
+let repaymentsByLoan = null;
+function getRepaymentsByLoan() {
+  if (repaymentsByLoan) return repaymentsByLoan;
+  repaymentsByLoan = {};
+  repaymentRows.forEach(rp => { (repaymentsByLoan[rp.drawdownId] = repaymentsByLoan[rp.drawdownId] || []).push(rp); });
+  return repaymentsByLoan;
+}
+function outstandingAsOf(loan, asOf) {
+  if (!loan.creditDate || loan.creditDate > asOf) return 0;
+  const repayments = getRepaymentsByLoan()[loan.id] || [];
+  let paid = 0;
+  repayments.forEach(rp => { if (rp.paymentDate && rp.paymentDate <= asOf) paid += rp.paidPrincipal; });
+  return Math.max(0, loan.originalPrincipal - paid);
+}
+
+// Earliest-ever Credit Date per dealer, with the SO who originated that
+// first loan — drives First-time Activation and Same-Month Activation.
+let dealerFirstDrawdown = null;
+function getDealerFirstDrawdown() {
+  if (dealerFirstDrawdown) return dealerFirstDrawdown;
+  dealerFirstDrawdown = {};
+  drawdownRows.forEach(loan => {
+    if (!loan.dealerId || !loan.creditDate) return;
+    const existing = dealerFirstDrawdown[loan.dealerId];
+    if (!existing || loan.creditDate < existing.date) {
+      dealerFirstDrawdown[loan.dealerId] = { date: loan.creditDate, so: loan.assignedSO };
+    }
+  });
+  return dealerFirstDrawdown;
+}
+
+function teamOf(so) { return SO_TEAM_MAP[so] || null; }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// METRIC COMPUTATION — one bucket per SO, aggregated to team totals with
+// ratios recomputed from the team's summed counts (not averaged across SOs).
+// ═══════════════════════════════════════════════════════════════════════════
+function emptyBucket() {
+  return {
+    totalVisit: 0, uniqueVisitDealers: new Set(),
+    newApplications: 0, applicationsCompleted: 0, onboardedDealers: 0,
+    drawdownsSales: 0, drawdownsRunners: 0,
+    gmv: 0, aum: 0, aumNetBlacklisted: 0, aumActiveDealers: new Set(),
+    firstTimeActivation: 0, sameMonthActivation: 0,
+  };
+}
+function computeMonth(mStart, mEnd) {
+  const soBuckets = {}; // SO name -> bucket
+  const bucket = so => soBuckets[so] || (soBuckets[so] = emptyBucket());
+  let localUnmapped = 0;
+  function attribute(so) {
+    if (so && !teamOf(so)) {
+      localUnmapped++;
+      window.__unmappedSOs = window.__unmappedSOs || {};
+      window.__unmappedSOs[so] = (window.__unmappedSOs[so] || 0) + 1;
+    }
+  }
+
+  // Drawdown-flow metrics (GMV, Drawdowns Sales/Runners) — attributed to the
+  // originating SO, counted when Credit Date falls in the month.
+  drawdownRows.forEach(loan => {
+    if (!loan.creditDate || loan.creditDate < mStart || loan.creditDate > mEnd) return;
+    attribute(loan.assignedSO);
+    if (!loan.assignedSO) return;
+    const b = bucket(loan.assignedSO);
+    b.gmv += loan.originalPrincipal;
+    const via = loan.requestedVia.toLowerCase();
+    if (via.indexOf('runner') >= 0) b.drawdownsRunners += 1;
+    else if (via.indexOf('sales officer') >= 0) b.drawdownsSales += 1;
+  });
+
+  // Drawdown-stock metrics (AUM, AUM Net Blacklisted, AUM Active Dealer) —
+  // attributed to the current book-owner SO, reconstructed as of month-end
+  // (or "today" for the in-progress current month).
+  drawdownRows.forEach(loan => {
+    attribute(loan.so);
+    if (!loan.so) return;
+    const out = outstandingAsOf(loan, mEnd);
+    if (out <= 0) return;
+    const b = bucket(loan.so);
+    b.aum += out;
+    b.aumActiveDealers.add(loan.dealerId);
+    const isBlacklisted = loan.blacklistedDate && loan.blacklistedDate <= mEnd;
+    if (!isBlacklisted) b.aumNetBlacklisted += out;
+  });
+
+  // First-time Activation — dealer's first-ever drawdown lands in this month.
+  const firstDD = getDealerFirstDrawdown();
+  Object.keys(firstDD).forEach(dealerId => {
+    const rec = firstDD[dealerId];
+    if (rec.date < mStart || rec.date > mEnd) return;
+    attribute(rec.so);
+    if (!rec.so) return;
+    bucket(rec.so).firstTimeActivation += 1;
+  });
+
+  // Visits
+  visitRows.forEach(v => {
+    if (v.date < mStart || v.date > mEnd) return;
+    attribute(v.so);
+    if (!teamOf(v.so)) return;
+    const b = bucket(v.so);
+    b.totalVisit += 1;
+    if (v.dealerKey) b.uniqueVisitDealers.add(v.dealerKey);
+  });
+
+  // Applications & completions
+  applicationRows.forEach(a => {
+    if (a.applicationDate && a.applicationDate >= mStart && a.applicationDate <= mEnd) {
+      attribute(a.so);
+      if (teamOf(a.so)) bucket(a.so).newApplications += 1;
+    }
+    if (a.completionDate && a.completionDate >= mStart && a.completionDate <= mEnd) {
+      attribute(a.so);
+      if (teamOf(a.so)) bucket(a.so).applicationsCompleted += 1;
+    }
+  });
+
+  // Onboarding + Same-Month Activation (onboarding month === first-drawdown month === this month)
+  onboardingRows.forEach(ob => {
+    if (!ob.onboardingDate || ob.onboardingDate < mStart || ob.onboardingDate > mEnd) return;
+    attribute(ob.so);
+    if (!teamOf(ob.so)) return;
+    bucket(ob.so).onboardedDealers += 1;
+    const first = firstDD[ob.dealerId];
+    if (first && first.date >= mStart && first.date <= mEnd) {
+      bucket(ob.so).sameMonthActivation += 1;
+    }
+  });
+
+  return { soBuckets, unmapped: localUnmapped };
+}
+
+function rollUpTeam(soBuckets, soNames) {
+  const t = emptyBucket();
+  soNames.forEach(so => {
+    const b = soBuckets[so];
+    if (!b) return;
+    t.totalVisit += b.totalVisit;
+    b.uniqueVisitDealers.forEach(d => t.uniqueVisitDealers.add(d));
+    t.newApplications += b.newApplications;
+    t.applicationsCompleted += b.applicationsCompleted;
+    t.onboardedDealers += b.onboardedDealers;
+    t.drawdownsSales += b.drawdownsSales;
+    t.drawdownsRunners += b.drawdownsRunners;
+    t.gmv += b.gmv;
+    t.aum += b.aum;
+    t.aumNetBlacklisted += b.aumNetBlacklisted;
+    b.aumActiveDealers.forEach(d => t.aumActiveDealers.add(d));
+    t.firstTimeActivation += b.firstTimeActivation;
+    t.sameMonthActivation += b.sameMonthActivation;
+  });
+  return t;
+}
+
+function bucketToMetrics(b) {
+  const div = (a, c) => c ? a / c : null;
+  return {
+    'Total Visit': b.totalVisit,
+    'Unique Visits': b.uniqueVisitDealers.size,
+    'Average Visit': div(b.totalVisit, b.uniqueVisitDealers.size),
+    'Visits to Application': div(b.newApplications, b.totalVisit),
+    'Visits to Onboard': div(b.onboardedDealers, b.newApplications),
+    'New Dealer Applications': b.newApplications,
+    'Dealer Application Completed': b.applicationsCompleted,
+    'Onboarded Dealers': b.onboardedDealers,
+    'Drawdowns (Sales)': b.drawdownsSales,
+    'Drawdowns (Runners request)': b.drawdownsRunners,
+    'GMV': b.gmv,
+    'AUM': b.aum,
+    'AUM (Net Blacklisted)': b.aumNetBlacklisted,
+    'AUM Active Dealer': b.aumActiveDealers.size,
+    'First-time Activation': b.firstTimeActivation,
+    'Same Month Activation': b.sameMonthActivation,
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// COLUMN SERIES — current month (MTD, as of today) + trailing closed months
+// ═══════════════════════════════════════════════════════════════════════════
+let monthColumns = null; // [{label, start, end, isCurrent, soBuckets, unmapped}]
+function buildMonthColumns() {
+  const today = new Date();
+  const cols = [];
+  for (let i = 0; i < HISTORY_MONTHS; i++) {
+    let y = today.getFullYear(), m = today.getMonth() - i;
+    while (m < 0) { m += 12; y -= 1; }
+    const isCurrent = i === 0;
+    const mStart = monthStart(y, m);
+    const mEnd = isCurrent ? today : monthEnd(y, m);
+    const { soBuckets, unmapped } = computeMonth(mStart, mEnd);
+    cols.push({ label: monthLabel(mStart, isCurrent), start: mStart, end: mEnd, isCurrent, soBuckets, unmapped });
+  }
+  return cols;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════════════
+function entityMetricsSeries(team, entity) {
+  // entity is either an SO name or '__TEAM__'
+  return monthColumns.map((col, i) => {
+    let bucket;
+    if (entity === '__TEAM__') {
+      const soNames = Object.keys(SO_TEAM_MAP).filter(so => SO_TEAM_MAP[so] === team);
+      bucket = rollUpTeam(col.soBuckets, soNames);
+    } else {
+      bucket = col.soBuckets[entity] || emptyBucket();
+    }
+    return bucketToMetrics(bucket);
+  });
+}
+function applyGrowth(series) {
+  // series is newest-first; growth compares each column to the one right
+  // after it chronologically (i.e. the previous, older column in this array).
+  for (let i = 0; i < series.length; i++) {
+    const prev = series[i + 1];
+    const gmvPrev = prev ? prev['GMV'] : null;
+    const aumPrev = prev ? prev['AUM'] : null;
+    series[i]['GMV Growth'] = gmvPrev ? (series[i]['GMV'] - gmvPrev) / gmvPrev : null;
+    series[i]['AUM Growth'] = aumPrev ? (series[i]['AUM'] - aumPrev) / aumPrev : null;
+  }
+}
+
+function renderEntity() {
+  const soNames = Object.keys(SO_TEAM_MAP).filter(so => SO_TEAM_MAP[so] === selectedTeam);
+  if (!selectedEntity) selectedEntity = '__TEAM__';
+
+  document.getElementById('entity-title').textContent =
+    selectedEntity === '__TEAM__' ? 'Team ' + selectedTeam + ' — Team Total' : selectedEntity + ' — Team ' + selectedTeam;
+  document.getElementById('entity-sub').textContent = 'monthly, newest first';
+  document.getElementById('currency-note').textContent = currencyMode === 'USD' ? '($ M for GMV/AUM rows)' : '(₱ M for GMV/AUM rows)';
+
+  const series = entityMetricsSeries(selectedTeam, selectedEntity);
+  applyGrowth(series);
+
+  const head = document.getElementById('metrics-head');
+  head.innerHTML = '<tr><th>Metric</th>' + monthColumns.map(c => '<th class="r">' + c.label + '</th>').join('') + '</tr>';
+
+  const body = document.getElementById('metrics-body');
+  let html = '';
+  METRIC_SECTIONS.forEach(section => {
+    html += '<tr class="section-row"><td colspan="' + (monthColumns.length + 1) + '">' + section.title + '</td></tr>';
+    section.metrics.forEach(metric => {
+      const cells = series.map(s => '<td class="r">' + fmtByType(s[metric], METRIC_TYPES[metric]) + '</td>').join('');
+      html += '<tr><td class="metric-label">' + metric + '</td>' + cells + '</tr>';
+    });
+  });
+  body.innerHTML = html;
+
+  const stale = dataLoadedAt ? '' : ' (no data)';
+  document.getElementById('data-status-global').textContent =
+    dataLoadedAt ? 'Data as of ' + dataLoadedAt.toLocaleString('en-PH', {dateStyle:'medium', timeStyle:'short'}) : 'Loading…' + stale;
+
+  const warnEl = document.getElementById('unmapped-warning');
+  if (unmappedCount > 0) {
+    warnEl.classList.remove('hidden');
+    warnEl.textContent = 'Heads up: ' + fmtNum(unmappedCount) + ' record(s) across the loaded months came from an SO name not in SO_TEAM_MAP and were excluded from every team total. Check the browser console (window.__unmappedSOs) or update SO_TEAM_MAP in the dashboard file.';
+  } else {
+    warnEl.classList.add('hidden');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FILTER UI
+// ═══════════════════════════════════════════════════════════════════════════
+function buildTeamChips() {
+  const container = document.getElementById('filter-team');
+  container.querySelectorAll('.filter-chip').forEach(el => el.remove());
+  TEAMS.forEach(t => {
+    const el = document.createElement('span');
+    el.className = 'filter-chip' + (t === selectedTeam ? ' active' : '');
+    el.textContent = 'Team ' + t;
+    el.onclick = () => {
+      if (selectedTeam === t) return;
+      selectedTeam = t;
+      selectedEntity = '__TEAM__';
+      buildTeamChips();
+      buildEntityChips();
+      renderEntity();
+    };
+    container.appendChild(el);
+  });
+}
+function buildEntityChips() {
+  const container = document.getElementById('filter-entity');
+  container.querySelectorAll('.filter-chip').forEach(el => el.remove());
+  const soNames = Object.keys(SO_TEAM_MAP).filter(so => SO_TEAM_MAP[so] === selectedTeam);
+  const options = ['__TEAM__'].concat(soNames);
+  options.forEach(name => {
+    const el = document.createElement('span');
+    el.className = 'filter-chip' + (name === selectedEntity ? ' active' : '');
+    el.textContent = name === '__TEAM__' ? 'Team Total' : name;
+    el.onclick = () => {
+      if (selectedEntity === name) return;
+      selectedEntity = name;
+      buildEntityChips();
+      renderEntity();
+    };
+    container.appendChild(el);
+  });
+}
+function buildCurrencyToggle() {
+  const container = document.getElementById('filter-currency');
+  const modes = ['PHP', 'USD'];
+  modes.forEach(mode => {
+    const el = document.createElement('span');
+    el.className = 'filter-chip' + (mode === currencyMode ? ' active' : '');
+    el.textContent = mode;
+    el.onclick = () => {
+      if (currencyMode === mode) return;
+      currencyMode = mode;
+      container.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      renderEntity();
+    };
+    container.appendChild(el);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════
+async function init() {
+  buildCurrencyToggle();
+  const ok = await loadData();
+  if (!ok) return;
+
+  monthColumns = buildMonthColumns();
+  unmappedCount = monthColumns.reduce((a, c) => a + c.unmapped, 0);
+
+  selectedTeam = TEAMS[0];
+  selectedEntity = '__TEAM__';
+  buildTeamChips();
+  buildEntityChips();
+  renderEntity();
+}
+
+init();
+
+/* ══════════════════════════════════════════════════
+   GOOGLE SIGN-IN + ALLOWLIST GATE
+   Requires HTTPS (won't work from file://). Uses the same
+   Access Control sheet/service as every other Finsso dashboard.
+   NOTE: uses its own Allowlist tab ('SalesPerf') — add that tab
+   (or add this dashboard's URL to an existing shared tab) in the
+   Access Control sheet before sharing the link around.
+══════════════════════════════════════════════════ */
+var GOOGLE_CLIENT_ID = '263530903165-4nv0iueb5ftb5hjevr14mqug3rlraav5.apps.googleusercontent.com';
+var ALLOWLIST_API = 'https://script.google.com/a/macros/finsso.com/s/AKfycbznI2kQ8a0ApTS9xbDjY4oLoya5KQlqJ-xHm4X75BwkgIby4Cfqtz2xCupYOeFMBFik/exec';
+var ALLOWLIST_TAB = 'SalesPerf';
+var ALLOWLIST = null;
+var _allowlistLoading = null;
+
+async function _loadAllowlist() {
+  if (ALLOWLIST !== null) return ALLOWLIST;
+  if (_allowlistLoading) return _allowlistLoading;
+  _allowlistLoading = (async function () {
+    for (var attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) await new Promise(function (res) { setTimeout(res, attempt * 500); });
+      try {
+        var url = ALLOWLIST_API + (ALLOWLIST_API.indexOf('?') >= 0 ? '&' : '?') + 'action=allowlist&tab=' + encodeURIComponent(ALLOWLIST_TAB) + '&_=' + Date.now();
+        var r = await fetch(url);
+        var j = await r.json();
+        var list = (j.emails || []).map(function (s) { return String(s).toLowerCase().trim(); }).filter(Boolean);
+        ALLOWLIST = list;
+        return list;
+      } catch (e) { /* retry */ }
+    }
+    return null;
+  })();
+  try { return await _allowlistLoading; }
+  finally { _allowlistLoading = null; }
+}
+async function _isAllowed(email) {
+  var list = await _loadAllowlist();
+  if (!list) return { ok: false, reason: 'load-failed' };
+  email = String(email).toLowerCase().trim();
+  if (list.indexOf(email) >= 0) return { ok: true };
+  var at = email.indexOf('@'), dom = at >= 0 ? email.slice(at) : '';
+  if (dom && list.indexOf(dom) >= 0) return { ok: true };
+  return { ok: false, reason: 'not-listed' };
+}
+function _decodeJwt(t) {
+  try {
+    var p = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(decodeURIComponent(escape(atob(p))));
+  } catch (e) { return null; }
+}
+function _authError(msg) { var e = document.getElementById('lock-err'); if (e) e.textContent = msg; }
+function _logAccess(email) {
+  try {
+    var url = ALLOWLIST_API + (ALLOWLIST_API.indexOf('?') >= 0 ? '&' : '?') + 'action=log&tab=' + encodeURIComponent(ALLOWLIST_TAB)
+      + '&email=' + encodeURIComponent(email) + '&ua=' + encodeURIComponent(navigator.userAgent)
+      + '&dashboard=' + encodeURIComponent(location.origin + location.pathname);
+    fetch(url, { mode: 'no-cors' }).catch(function () {});
+  } catch (e) {}
+}
+function _grantAccess(profile) {
+  var s = document.getElementById('lock-overlay');
+  if (s) { s.classList.add('unlocking'); setTimeout(function () { s.classList.add('hidden'); }, 400); }
+  _logAccess(profile.email);
+}
+async function _onGoogleCredential(resp) {
+  _authError('');
+  var data = _decodeJwt(resp && resp.credential);
+  if (!data || !data.email) { _authError('Could not read your Google account. Try again.'); return; }
+  if (data.email_verified === false) { _authError('Your Google email is not verified.'); return; }
+  var result = await _isAllowed(data.email);
+  if (result.ok) {
+    _grantAccess({ email: String(data.email).toLowerCase(), name: data.name || '' });
+  } else if (result.reason === 'load-failed') {
+    _authError('Could not verify access right now — check your connection and try again.');
+  } else {
+    if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
+    _authError(data.email + ' is not on the access list. Ask the admin to add you.');
+  }
+}
+function _initGoogleAuth() {
+  if (!window.google || !google.accounts || !google.accounts.id) { return setTimeout(_initGoogleAuth, 200); }
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: _onGoogleCredential, auto_select: true, cancel_on_tap_outside: false });
+  google.accounts.id.renderButton(document.getElementById('g-signin'), { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'signin_with', logo_alignment: 'center', width: 260 });
+  google.accounts.id.prompt();
+}
+_loadAllowlist();
+if (document.readyState !== 'loading') _initGoogleAuth();
+else document.addEventListener('DOMContentLoaded', _initGoogleAuth);
+</script>
+</body></html>
