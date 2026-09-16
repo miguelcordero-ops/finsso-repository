@@ -328,14 +328,15 @@ const FX_PHP_PER_USD = 60;
 const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const HISTORY_MONTHS = 6; // current (MTD) + this many prior closed months
 
-// SO → Team roster. Short list, changes rarely — kept here rather than in a
-// sheet because the one sheet that had it ("List of SOs Mapping") turned out
-// to be a multi-purpose city-assignment table, not a clean roster, and
-// wasn't safe to auto-parse. UPDATE THIS when someone joins/leaves a team.
-// Note: "Ricmar Magboo" has a non-breaking space between the names in the
-// source data (drawdown.csv, Visits Export, etc.) — kept verbatim below so
-// the lookup actually matches.
-const SO_TEAM_MAP = {
+// SO → Team roster. Loaded live from "[Raw] Mapping" (data/mapping.csv,
+// columns "SO Name" / "Team") — see loadData(). This hardcoded object is
+// only the FALLBACK used if that export isn't available yet (e.g. the
+// sheet was just added and hasn't run through the hourly export once).
+// It's intentionally small/incomplete — the mapping sheet is the real
+// source of truth now. Note: "Ricmar Magboo" has a non-breaking space
+// between the names in the source data (drawdown.csv, Visits Export,
+// etc.) — kept verbatim below so the lookup actually matches.
+const FALLBACK_SO_TEAM_MAP = {
   'Elvira Ladea': 'Marah',
   'Rhoyland Alagon': 'Marah',
   'Herbert Capistrano': 'Marah',
@@ -348,7 +349,9 @@ const SO_TEAM_MAP = {
   'Candyce Aguete': 'Malou',
   'Reyzon Manaog': 'Malou',
 };
+let SO_TEAM_MAP = FALLBACK_SO_TEAM_MAP;
 const TEAMS = ['Marah', 'Albert', 'Malou'];
+const ALL_TEAMS = '__ALL__'; // pseudo-team: every SO across Marah+Albert+Malou combined
 
 const METRIC_SECTIONS = [
   { title: 'Visits & Conversion', metrics: ['Total Visit', 'Unique Visits', 'Visits to Application', 'Visits to Onboard', 'Average Visit'] },
@@ -490,13 +493,30 @@ async function loadData() {
   const errEl = document.getElementById('error-box');
   loadingEl.classList.remove('hidden');
   try {
-    const [ddGrid, rpGrid, visitGrid, dcGrid, obGrid] = await Promise.all([
+    const [ddGrid, rpGrid, visitGrid, dcGrid, obGrid, mapGrid] = await Promise.all([
       fetchCSV('drawdown.csv'),
       fetchCSV('repayment.csv'),
       fetchCSV('visits.csv', true),         // full "[Raw] Visits" sheet
       fetchCSV('dealer-checker.csv', true), // full "[Raw] Dealer Checker" sheet
       fetchCSV('ob-masterlist.csv', true),  // full "[Raw] OB Masterlist" sheet
+      fetchCSV('mapping.csv', true),        // "[Raw] Mapping": SO Name / Team
     ]);
+
+    // ── SO → Team mapping — real source of truth once this export exists;
+    // falls back to FALLBACK_SO_TEAM_MAP if it hasn't run yet. ──
+    if (mapGrid) {
+      const mCol = buildColumnMap(mapGrid[0]);
+      const loaded = {};
+      for (let i = 1; i < mapGrid.length; i++) {
+        const r = mapGrid[i];
+        const so = get(r, mCol('SO Name')).trim();
+        const team = get(r, mCol('Team')).trim();
+        if (!so || !team) continue;
+        if (TEAMS.indexOf(team) < 0) continue; // ignore anything not Marah/Albert/Malou
+        loaded[so] = team;
+      }
+      if (Object.keys(loaded).length) SO_TEAM_MAP = loaded;
+    }
 
     // ── Drawdown (one row per loan) ──
     const ddCol = buildColumnMap(ddGrid[0]);
@@ -798,7 +818,9 @@ function entityMetricsSeries(team, entity) {
   return monthColumns.map((col, i) => {
     let bucket;
     if (entity === '__TEAM__') {
-      const soNames = Object.keys(SO_TEAM_MAP).filter(so => SO_TEAM_MAP[so] === team);
+      const soNames = team === ALL_TEAMS
+        ? Object.keys(SO_TEAM_MAP)
+        : Object.keys(SO_TEAM_MAP).filter(so => SO_TEAM_MAP[so] === team);
       bucket = rollUpTeam(col.soBuckets, soNames);
     } else {
       bucket = col.soBuckets[entity] || emptyBucket();
@@ -819,11 +841,11 @@ function applyGrowth(series) {
 }
 
 function renderEntity() {
-  const soNames = Object.keys(SO_TEAM_MAP).filter(so => SO_TEAM_MAP[so] === selectedTeam);
   if (!selectedEntity) selectedEntity = '__TEAM__';
 
+  const teamLabel = selectedTeam === ALL_TEAMS ? 'Whole Sales Team' : 'Team ' + selectedTeam;
   document.getElementById('entity-title').textContent =
-    selectedEntity === '__TEAM__' ? 'Team ' + selectedTeam + ' — Team Total' : selectedEntity + ' — Team ' + selectedTeam;
+    selectedEntity === '__TEAM__' ? teamLabel + ' — Total' : selectedEntity + ' — ' + teamLabel;
   document.getElementById('entity-sub').textContent = 'monthly, newest first';
   document.getElementById('currency-note').textContent = currencyMode === 'USD' ? '($ M for GMV/AUM rows)' : '(₱ M for GMV/AUM rows)';
 
@@ -851,7 +873,7 @@ function renderEntity() {
   const warnEl = document.getElementById('unmapped-warning');
   if (unmappedCount > 0) {
     warnEl.classList.remove('hidden');
-    warnEl.textContent = 'Heads up: ' + fmtNum(unmappedCount) + ' record(s) across the loaded months came from an SO name not in SO_TEAM_MAP and were excluded from every team total. Check the browser console (window.__unmappedSOs) or update SO_TEAM_MAP in the dashboard file.';
+    warnEl.textContent = 'Heads up: ' + fmtNum(unmappedCount) + ' record(s) across the loaded months came from an SO name not found in "[Raw] Mapping" and were excluded from every team total (correctly, if they\'re outside these three teams). Check window.__unmappedSOs in the browser console to see which names, and add any real Sales team members to the Mapping sheet.';
   } else {
     warnEl.classList.add('hidden');
   }
@@ -863,10 +885,11 @@ function renderEntity() {
 function buildTeamChips() {
   const container = document.getElementById('filter-team');
   container.querySelectorAll('.filter-chip').forEach(el => el.remove());
-  TEAMS.forEach(t => {
+  const options = TEAMS.concat([ALL_TEAMS]);
+  options.forEach(t => {
     const el = document.createElement('span');
     el.className = 'filter-chip' + (t === selectedTeam ? ' active' : '');
-    el.textContent = 'Team ' + t;
+    el.textContent = t === ALL_TEAMS ? 'Whole Sales Team' : 'Team ' + t;
     el.onclick = () => {
       if (selectedTeam === t) return;
       selectedTeam = t;
@@ -881,12 +904,14 @@ function buildTeamChips() {
 function buildEntityChips() {
   const container = document.getElementById('filter-entity');
   container.querySelectorAll('.filter-chip').forEach(el => el.remove());
-  const soNames = Object.keys(SO_TEAM_MAP).filter(so => SO_TEAM_MAP[so] === selectedTeam);
+  const soNames = selectedTeam === ALL_TEAMS
+    ? Object.keys(SO_TEAM_MAP).sort((a, b) => (SO_TEAM_MAP[a] + a).localeCompare(SO_TEAM_MAP[b] + b))
+    : Object.keys(SO_TEAM_MAP).filter(so => SO_TEAM_MAP[so] === selectedTeam);
   const options = ['__TEAM__'].concat(soNames);
   options.forEach(name => {
     const el = document.createElement('span');
     el.className = 'filter-chip' + (name === selectedEntity ? ' active' : '');
-    el.textContent = name === '__TEAM__' ? 'Team Total' : name;
+    el.textContent = name === '__TEAM__' ? 'Total' : (selectedTeam === ALL_TEAMS ? name + ' (' + SO_TEAM_MAP[name] + ')' : name);
     el.onclick = () => {
       if (selectedEntity === name) return;
       selectedEntity = name;
