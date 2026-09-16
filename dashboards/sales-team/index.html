@@ -577,20 +577,21 @@ async function loadData() {
       }
     }
 
-    // ── Dealer applications — full "[Raw] OB Masterlist" sheet (optional) ──
+    // ── Dealer applications — full "[Raw] OB Masterlist" sheet (optional).
+    // Counted even when Dealer ID is blank (some application rows don't get
+    // one assigned yet) — only truly empty rows (no SO and no dates at all,
+    // e.g. trailing sheet padding) are skipped. ──
     applicationRows = [];
     if (obGrid) {
       const obCol = buildColumnMap(obGrid[0]);
       for (let i = 1; i < obGrid.length; i++) {
         const r = obGrid[i];
         const dealerId = get(r, obCol('Dealer ID')).trim();
-        if (!dealerId) continue;
-        applicationRows.push({
-          dealerId,
-          so: get(r, obCol('Assigned Sales POC')).trim(),
-          applicationDate: parseSheetDate(get(r, obCol('Date of Initial Application'))),
-          completionDate: parseSheetDate(get(r, obCol('Date of Completion of Onboarding Documents by Sales'))),
-        });
+        const so = get(r, obCol('Assigned Sales POC')).trim();
+        const applicationDate = parseSheetDate(get(r, obCol('Date of Initial Application')));
+        const completionDate = parseSheetDate(get(r, obCol('Date of Completion of Onboarding Documents by Sales')));
+        if (!so && !applicationDate && !completionDate) continue; // fully blank row
+        applicationRows.push({ dealerId, so, applicationDate, completionDate });
       }
     }
 
@@ -800,6 +801,22 @@ function buildMonthColumns() {
     const mEnd = isCurrent ? today : monthEnd(y, m);
     const { soBuckets, unmapped } = computeMonth(mStart, mEnd);
     cols.push({ label: monthLabel(mStart, isCurrent), start: mStart, end: mEnd, isCurrent, soBuckets, unmapped });
+
+    // LMTD — right after the current MTD column: last month, cut off at the
+    // same day-of-month as today, so it's a fair apples-to-apples comparison
+    // against MTD (the plain "last full month" column still follows further
+    // right, covering the entire prior month instead).
+    if (isCurrent) {
+      let ly = y, lm = m - 1;
+      while (lm < 0) { lm += 12; ly -= 1; }
+      const lStart = monthStart(ly, lm);
+      const lNaturalEnd = monthEnd(ly, lm);
+      const sameDay = new Date(ly, lm, today.getDate());
+      const lEnd = sameDay > lNaturalEnd ? lNaturalEnd : sameDay;
+      const { soBuckets: lBuckets, unmapped: lUnmapped } = computeMonth(lStart, lEnd);
+      const lLabel = MONTH_ABBR[lStart.getMonth()] + "'" + String(lStart.getFullYear()).slice(2) + ' (LMTD)';
+      cols.push({ label: lLabel, start: lStart, end: lEnd, isCurrent: false, isLMTD: true, soBuckets: lBuckets, unmapped: lUnmapped });
+    }
   }
   return cols;
 }
@@ -876,7 +893,7 @@ function renderEntity() {
 function buildTeamChips() {
   const container = document.getElementById('filter-team');
   container.querySelectorAll('.filter-chip').forEach(el => el.remove());
-  const options = TEAMS.concat([ALL_TEAMS]);
+  const options = [ALL_TEAMS].concat(TEAMS);
   options.forEach(t => {
     const el = document.createElement('span');
     el.className = 'filter-chip' + (t === selectedTeam ? ' active' : '');
