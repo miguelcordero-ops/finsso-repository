@@ -336,8 +336,8 @@ const HISTORY_MONTHS = 6; // current (MTD) + this many prior closed months
 // mapping export hasn't run yet or is empty, SO_TEAM_MAP stays empty and
 // every team will show zeros until it has real rows.
 let SO_TEAM_MAP = {};
-const TEAMS = ['Marah', 'Albert', 'Malou'];
-const ALL_TEAMS = '__ALL__'; // pseudo-team: every SO across Marah+Albert+Malou combined
+let TEAMS = []; // populated from "[Raw] Mapping" in loadData() — see below
+const ALL_TEAMS = '__ALL__'; // pseudo-team: every SO across every team combined
 
 const METRIC_SECTIONS = [
   { title: 'Visits & Conversion', metrics: ['Total Visit', 'Unique Visits', 'Visits to Application', 'Visits to Onboard', 'Average Visit'] },
@@ -492,24 +492,30 @@ async function loadData() {
     // org-chart rows: L0 - Territory Sales Head / L1 - Sales Manager /
     // L2 - Sales Officer. The team a person belongs to is read off their
     // L1 - Sales Manager's first name (e.g. "Malou Alfonso" -> Malou), so
-    // this stays correct automatically if the manager names change, and any
-    // new SO added under an existing manager picks up their team for free.
-    // Any name in the data that never appears under L2 here is strictly
-    // excluded — no fallback roster, no partial match. ──
+    // this stays correct automatically if the manager names change. The
+    // TEAMS list itself is fully dynamic too — it's just the distinct set
+    // of manager first names found here, in the order they first appear in
+    // the sheet — so adding a new Sales Manager row (a new team) or a new
+    // SO under an existing one just works on the next reload, with no code
+    // change. Any name in the data that never appears under L2 here is
+    // strictly excluded — no fallback roster, no partial match. ──
     if (mapGrid) {
       const mCol = buildColumnMap(mapGrid[0]);
       const loaded = {};
+      const teamsFound = [];
       for (let i = 1; i < mapGrid.length; i++) {
         const r = mapGrid[i];
         const so = get(r, mCol('L2 - Sales Officer')).trim();
         const manager = get(r, mCol('L1 - Sales Manager')).trim();
         if (!so || !manager) continue;
-        const firstName = manager.split(/\s+/)[0];
-        const team = TEAMS.find(t => t.toLowerCase() === firstName.toLowerCase());
-        if (!team) continue; // manager doesn't map to Marah/Albert/Malou — skip
+        const team = manager.split(/\s+/)[0]; // manager's first name = team name
+        if (teamsFound.indexOf(team) < 0) teamsFound.push(team);
         loaded[so] = team;
       }
-      if (Object.keys(loaded).length) SO_TEAM_MAP = loaded;
+      if (Object.keys(loaded).length) {
+        SO_TEAM_MAP = loaded;
+        TEAMS = teamsFound;
+      }
     }
 
     // ── Drawdown (one row per loan) ──
@@ -958,7 +964,7 @@ async function init() {
   monthColumns = buildMonthColumns();
   unmappedCount = monthColumns.reduce((a, c) => a + c.unmapped, 0);
 
-  selectedTeam = TEAMS[0];
+  selectedTeam = TEAMS.length ? TEAMS[0] : ALL_TEAMS; // guard against an empty/not-yet-run Mapping export
   selectedEntity = '__TEAM__';
   buildTeamChips();
   buildEntityChips();
