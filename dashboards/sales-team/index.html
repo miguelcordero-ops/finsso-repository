@@ -166,6 +166,19 @@ tr:hover td{background:var(--tr-hover)}
 tr.section-row td{font-weight:700;color:var(--primary);background:var(--section-bg);font-size:10px;text-transform:uppercase;letter-spacing:0.05em}
 td.metric-label{color:var(--text);font-weight:500}
 
+/* Locks the month header row in place while scrolling down through the
+   metrics table — stays visible below the sticky topbar + filter bar.
+   --sticky-offset is computed in JS (updateStickyOffset()) from those two
+   elements' actual rendered height, so it stays correct if their content
+   ever wraps to more lines (e.g. many team chips on a narrow screen). */
+#metrics-head th{
+  position:sticky;top:var(--sticky-offset, 96px);z-index:200;
+  background:var(--surface-d);
+  backdrop-filter:blur(12px) saturate(150%);
+  -webkit-backdrop-filter:blur(12px) saturate(150%);
+  box-shadow:0 1px 0 var(--tbl-bdr2);
+}
+
 .filter-bar{
   background:var(--surface-c);
   border-bottom:1px solid var(--border2);
@@ -378,7 +391,8 @@ const ALL_TEAMS = '__ALL__'; // pseudo-team: every SO across every team combined
 // than silently vanishing.
 const VISIT_PURPOSE_BUCKETS = [
   { key: 'Application', tags: ['application', 'collecting applications'] },
-  { key: 'Reactivation / Activation', tags: ['reactivation', 'reactivation - not interested', 'activation', 'activation - not interested'] },
+  { key: 'Reactivation', tags: ['reactivation', 'reactivation - not interested'] },
+  { key: 'Activation', tags: ['activation', 'activation - not interested'] },
   { key: 'Regular Visit', tags: ['regular visit', 'regular visit (for active dealer)'] },
   { key: 'Product Pitch', tags: ['product pitch', 'product pitching', 'new product pitching', 'new dealer pitching', 'product upgradation', 'sold package'] },
   { key: 'Document Collection', tags: ['document collection', 'income proof', 'rc copy', 'driving license', 'rent agreement', 'electricity bill', 'passport', 'ration card', 'card or bank bill', 'gas connection', 'internet or mobile bill', 'telephone bill', 'loan doc collection'] },
@@ -1110,6 +1124,8 @@ function renderEntity() {
   // excluded per the Mapping sheet. window.__unmappedSOs (set in
   // computeMonth()) still records name -> record-count for anyone who
   // wants to check the browser console, without surfacing it in the UI.
+
+  updateStickyOffset(); // filter-bar height can change (chip wrapping) on every render
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1172,6 +1188,17 @@ function buildCurrencyToggle() {
   });
 }
 
+// Recomputes how far down the sticky month header row should sit, so it
+// docks directly under the topbar + filter bar instead of a hardcoded guess
+// — stays correct if either one ever wraps to more lines (e.g. many team
+// chips on a narrow screen) or their heights change.
+function updateStickyOffset() {
+  const filterBar = document.getElementById('filter-bar');
+  const offset = filterBar ? Math.ceil(filterBar.getBoundingClientRect().bottom) : 0;
+  document.documentElement.style.setProperty('--sticky-offset', offset + 'px');
+}
+window.addEventListener('resize', updateStickyOffset);
+
 // ═══════════════════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1187,7 +1214,7 @@ async function init() {
   selectedEntity = '__TEAM__';
   buildTeamChips();
   buildEntityChips();
-  renderEntity();
+  renderEntity(); // also calls updateStickyOffset() internally
 }
 
 init();
