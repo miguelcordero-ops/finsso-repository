@@ -137,6 +137,20 @@ a{color:inherit;text-decoration:none}
 .card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px}
 .card-unit{font-size:10px;color:var(--text3);font-weight:400;margin-left:4px}
 
+.charts-section{display:grid;grid-template-columns:1fr;gap:var(--gap)}
+.charts-section.hidden{display:none}
+@media (min-width:820px){ .charts-section{grid-template-columns:1fr 1fr} }
+.chart-svg{width:100%;height:220px;display:block;overflow:visible}
+.chart-bar,.chart-dot{cursor:pointer;transition:opacity 0.12s}
+.chart-bar:hover,.chart-dot:hover{opacity:0.72}
+.chart-tooltip{
+  position:fixed;pointer-events:none;z-index:1000;
+  background:var(--surface-d);border:1px solid var(--border2);
+  padding:4px 9px;border-radius:6px;font-size:11px;color:var(--text);
+  box-shadow:0 4px 12px rgba(0,0,0,0.14);white-space:nowrap;
+}
+.chart-tooltip.hidden{display:none}
+
 table{width:100%;border-collapse:collapse;font-size:11px}
 th{
   text-align:left;padding:6px 10px;
@@ -303,7 +317,21 @@ td.metric-label{color:var(--text);font-weight:500}
       <tbody id="metrics-body"></tbody>
     </table>
   </div>
+
+  <!-- Charts — Whole Sales Team view only; see renderCharts(). -->
+  <div class="charts-section hidden" id="charts-section">
+    <div class="card">
+      <div class="card-title">Visits Trend</div>
+      <svg class="chart-svg" id="chart-visits" role="img" aria-label="Visits per month"></svg>
+    </div>
+    <div class="card">
+      <div class="card-title">AUM Trend <span class="card-unit" id="chart-aum-unit"></span></div>
+      <svg class="chart-svg" id="chart-aum" role="img" aria-label="AUM per month"></svg>
+    </div>
+  </div>
 </div>
+
+<div class="chart-tooltip hidden" id="chart-tooltip"></div>
 
 <div class="error-box" id="error-box" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9998">
   <h3>Couldn't load data</h3>
@@ -339,18 +367,49 @@ let SO_TEAM_MAP = {};
 let TEAMS = []; // populated from "[Raw] Mapping" in loadData() — see below
 const ALL_TEAMS = '__ALL__'; // pseudo-team: every SO across every team combined
 
+// Visit "Purpose" is free text and can list several purposes per visit,
+// comma-separated (71 distinct raw values seen in the live sheet, with
+// inconsistent casing/near-duplicates like "Product Pitch" vs "Product
+// Pitching"). Canonicalized here into a handful of business buckets, per
+// instruction. A visit that lists multiple purposes counts once in EVERY
+// matching bucket (also per instruction) — so bucket totals below can, and
+// normally will, sum to more than Total Visit. Anything not in this list
+// (a future new Purpose value, a typo, etc.) falls into "Others" rather
+// than silently vanishing.
+const VISIT_PURPOSE_BUCKETS = [
+  { key: 'Application', tags: ['application', 'collecting applications'] },
+  { key: 'Reactivation / Activation', tags: ['reactivation', 'reactivation - not interested', 'activation', 'activation - not interested'] },
+  { key: 'Regular Visit', tags: ['regular visit', 'regular visit (for active dealer)'] },
+  { key: 'Product Pitch', tags: ['product pitch', 'product pitching', 'new product pitching', 'new dealer pitching', 'product upgradation', 'sold package'] },
+  { key: 'Document Collection', tags: ['document collection', 'income proof', 'rc copy', 'driving license', 'rent agreement', 'electricity bill', 'passport', 'ration card', 'card or bank bill', 'gas connection', 'internet or mobile bill', 'telephone bill', 'loan doc collection'] },
+  { key: 'Onboarding & Training', tags: ['enrolling the dealer', 'new-dealer on-boarding', 'dealer training', 'master agreement signing', 'cla signing', 'training'] },
+  { key: 'Collections', tags: ['payment collection', 'cheque deposit', 'cash deposit', 'renewal collection', 'repayment & collections concern'] },
+  { key: 'Stock & Inspection', tags: ['stock updation', 'inspection requested', 'unit releasing'] },
+  { key: 'Servicing & Follow-up', tags: ['called on leads', 'lead issue/query', 'updated enquries', 'documents follow-up', 'monthly review', 'problem resolution', "dealer complain visit.", 'rc issue', 'meeting', 'feedback meeting', 'verification', 'drawdown processing', 'finance case punched', 'insurance punched', 'insurance punch', 'warranty punched', 'rsa punched'] },
+];
+const VISIT_PURPOSE_OTHER = 'Others';
+const VISIT_PURPOSE_KEYS = VISIT_PURPOSE_BUCKETS.map(b => b.key).concat([VISIT_PURPOSE_OTHER]);
+function purposeTagBucket(tag) {
+  const t = tag.trim().toLowerCase();
+  if (!t) return null;
+  const hit = VISIT_PURPOSE_BUCKETS.find(b => b.tags.indexOf(t) >= 0);
+  return hit ? hit.key : VISIT_PURPOSE_OTHER;
+}
+
 const METRIC_SECTIONS = [
   { title: 'Visits & Conversion', metrics: ['Total Visit', 'Unique Visits', 'Visits to Application', 'Visits to Onboard', 'Average Visit'] },
-  { title: 'Onboarding & Drawdowns', metrics: ['New Dealer Applications', 'Dealer Application Completed', 'Onboarded Dealers', 'Drawdowns (Sales)', 'Drawdowns (Runners request)'] },
+  { title: 'Visit Purpose Breakdown', metrics: VISIT_PURPOSE_KEYS.map(k => 'Visits: ' + k) },
+  { title: 'Onboarding & Drawdowns', metrics: ['New Dealer Applications', 'Dealer Application Completed', 'Onboarded Dealers', 'Total Disbursals', 'Drawdowns (Sales)', 'Drawdowns (Runners request)'] },
   { title: 'GMV & AUM', metrics: ['GMV', 'AUM', 'AUM (Net Blacklisted)', 'GMV Growth', 'AUM Growth'] },
   { title: 'Dealer Activation', metrics: ['AUM Active Dealer', 'First-time Activation', 'Same Month Activation'] },
 ];
 const METRIC_TYPES = {
   'Total Visit': 'Count', 'Unique Visits': 'Count', 'Visits to Application': 'Ratio', 'Visits to Onboard': 'Ratio', 'Average Visit': 'Ratio',
-  'New Dealer Applications': 'Count', 'Dealer Application Completed': 'Count', 'Onboarded Dealers': 'Count', 'Drawdowns (Sales)': 'Count', 'Drawdowns (Runners request)': 'Count',
+  'New Dealer Applications': 'Count', 'Dealer Application Completed': 'Count', 'Onboarded Dealers': 'Count', 'Total Disbursals': 'Count', 'Drawdowns (Sales)': 'Count', 'Drawdowns (Runners request)': 'Count',
   'GMV': 'Currency', 'AUM': 'Currency', 'AUM (Net Blacklisted)': 'Currency', 'GMV Growth': 'Percent', 'AUM Growth': 'Percent',
   'AUM Active Dealer': 'Count', 'First-time Activation': 'Count', 'Same Month Activation': 'Count',
 };
+VISIT_PURPOSE_KEYS.forEach(k => { METRIC_TYPES['Visits: ' + k] = 'Count'; });
 
 let drawdownRows = [], repaymentRows = [], visitRows = [], onboardingRows = [], applicationRows = [];
 let dataLoadedAt = null, unmappedCount = 0;
@@ -460,6 +519,14 @@ function buildColumnMap(headerRow) {
   return function (name) { return idx[name] !== undefined ? idx[name] : -1; };
 }
 function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
+// Normalizes a person-name field for matching: Google Sheets sometimes stores
+// a non-breaking space (U+00A0) instead of a regular space between a first
+// and last name (seen in real data as "Ricmar Magboo"), and typed sheets
+// like "[Raw] Mapping" use a plain space for the same name — without this,
+// those two strings don't compare equal and the SO silently falls out of
+// every team total. Collapses any run of whitespace (regular or NBSP) to a
+// single regular space, so the two representations always match.
+function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
 
 async function fetchCSV(name, optional) {
   const url = DATA_BASE + name + '?_=' + Date.now();
@@ -505,8 +572,8 @@ async function loadData() {
       const teamsFound = [];
       for (let i = 1; i < mapGrid.length; i++) {
         const r = mapGrid[i];
-        const so = get(r, mCol('L2 - Sales Officer')).trim();
-        const manager = get(r, mCol('L1 - Sales Manager')).trim();
+        const so = normName(get(r, mCol('L2 - Sales Officer')));
+        const manager = normName(get(r, mCol('L1 - Sales Manager')));
         if (!so || !manager) continue;
         const team = manager.split(/\s+/)[0]; // manager's first name = team name
         if (teamsFound.indexOf(team) < 0) teamsFound.push(team);
@@ -525,14 +592,14 @@ async function loadData() {
       const r = ddGrid[i];
       const id = get(r, ddCol('Drawdown ID')).trim();
       if (!id) continue;
-      const so = get(r, ddCol('SO')).trim() || get(r, ddCol('Assigned SO')).trim(); // current-book SO, falling back to originating SO
+      const so = normName(get(r, ddCol('SO'))) || normName(get(r, ddCol('Assigned SO'))); // current-book SO, falling back to originating SO
       drawdownRows.push({
         id,
         dealerId: get(r, ddCol('Dealer ID')).trim(),
         creditDate: parseSheetDate(get(r, ddCol('Credit Date to Dealer Bank Account'))),
         originalPrincipal: parseNum(get(r, ddCol('Original Principal'))),
         loanStatus: get(r, ddCol('Loan Status')).trim(),
-        assignedSO: get(r, ddCol('Assigned SO')).trim(),   // who originated the drawdown — used for GMV / Drawdowns / First-time Activation
+        assignedSO: normName(get(r, ddCol('Assigned SO'))),   // who originated the drawdown — used for GMV / Drawdowns / First-time Activation
         so: so,                                            // current book owner — used for AUM / AUM Active Dealer
         requestedVia: get(r, ddCol('Requested Via')).trim(),
         blacklistedDate: parseSheetDate(get(r, ddCol('Blacklisted Date'))),
@@ -554,16 +621,32 @@ async function loadData() {
     }
 
     // ── Visits — full "[Raw] Visits" sheet (optional: degrades to blank
-    // Visits metrics if the export hasn't been added yet) ──
+    // Visits metrics if the export hasn't been added yet). Filtered to
+    // "Visit Type" = IF Visit only, per instruction — Non IF Visit rows
+    // (the majority of the sheet) are dropped entirely and never reach any
+    // Visits metric, chart, or purpose-bucket breakdown below. Each row's
+    // "Purpose" field is comma-separated and can list more than one purpose
+    // (e.g. "Collecting Applications,Document Collection") — canonicalized
+    // into purposeBuckets via purposeTagBucket() below. ──
     visitRows = [];
     if (visitGrid) {
       const vCol = buildColumnMap(visitGrid[0]);
       for (let i = 1; i < visitGrid.length; i++) {
         const r = visitGrid[i];
-        const so = get(r, vCol('Executive Name')).trim();
+        const visitType = get(r, vCol('Visit Type')).trim().toLowerCase();
+        if (visitType !== 'if visit') continue;
+        const so = normName(get(r, vCol('Executive Name')));
         const date = parseSheetDate(get(r, vCol('Visited Date')));
         if (!so || !date) continue;
-        visitRows.push({ so, date, dealerKey: get(r, vCol('Clean GCD')).trim() || get(r, vCol('Dealer Name')).trim() });
+        const purposeRaw = get(r, vCol('Purpose')).trim();
+        const purposeBuckets = purposeRaw
+          ? Array.from(new Set(purposeRaw.split(',').map(t => purposeTagBucket(t)).filter(Boolean)))
+          : [];
+        visitRows.push({
+          so, date,
+          dealerKey: get(r, vCol('Clean GCD')).trim() || get(r, vCol('Dealer Name')).trim(),
+          purposeBuckets,
+        });
       }
     }
 
@@ -577,7 +660,7 @@ async function loadData() {
         if (!dealerId) continue;
         onboardingRows.push({
           dealerId,
-          so: get(r, dcCol('Assigned Sales Officer')).trim(),
+          so: normName(get(r, dcCol('Assigned Sales Officer'))),
           onboardingDate: parseSheetDate(get(r, dcCol('Original Onboarding Date'))),
         });
       }
@@ -593,7 +676,7 @@ async function loadData() {
       for (let i = 1; i < obGrid.length; i++) {
         const r = obGrid[i];
         const dealerId = get(r, obCol('Dealer ID')).trim();
-        const so = get(r, obCol('Assigned Sales POC')).trim();
+        const so = normName(get(r, obCol('Assigned Sales POC')));
         const applicationDate = parseSheetDate(get(r, obCol('Date of Initial Application')));
         const completionDate = parseSheetDate(get(r, obCol('Date of Completion of Onboarding Documents by Sales')));
         if (!so && !applicationDate && !completionDate) continue; // fully blank row
@@ -654,9 +737,9 @@ function teamOf(so) { return SO_TEAM_MAP[so] || null; }
 // ═══════════════════════════════════════════════════════════════════════════
 function emptyBucket() {
   return {
-    totalVisit: 0, uniqueVisitDealers: new Set(),
+    totalVisit: 0, uniqueVisitDealers: new Set(), purposeCounts: {},
     newApplications: 0, applicationsCompleted: 0, onboardedDealers: 0,
-    drawdownsSales: 0, drawdownsRunners: 0,
+    totalDisbursals: 0, drawdownsSales: 0, drawdownsRunners: 0,
     gmv: 0, aum: 0, aumNetBlacklisted: 0, aumActiveDealers: new Set(),
     firstTimeActivation: 0, sameMonthActivation: 0,
   };
@@ -673,14 +756,20 @@ function computeMonth(mStart, mEnd) {
     }
   }
 
-  // Drawdown-flow metrics (GMV, Drawdowns Sales/Runners) — attributed to the
-  // originating SO, counted when Credit Date falls in the month.
+  // Drawdown-flow metrics (GMV, Total Disbursals, Drawdowns Sales/Runners) —
+  // attributed to the originating SO, counted when Credit Date falls in the
+  // month. "Total Disbursals" is every credited drawdown in the month
+  // regardless of Requested Via — the parent total the Sales/Runners split
+  // below should add back up to (any request-via wording that matches
+  // neither "runner" nor "sales officer" would show up as a gap between
+  // this row and the two beneath it).
   drawdownRows.forEach(loan => {
     if (!loan.creditDate || loan.creditDate < mStart || loan.creditDate > mEnd) return;
     attribute(loan.assignedSO);
     if (!loan.assignedSO) return;
     const b = bucket(loan.assignedSO);
     b.gmv += loan.originalPrincipal;
+    b.totalDisbursals += 1;
     const via = loan.requestedVia.toLowerCase();
     if (via.indexOf('runner') >= 0) b.drawdownsRunners += 1;
     else if (via.indexOf('sales officer') >= 0) b.drawdownsSales += 1;
@@ -711,7 +800,7 @@ function computeMonth(mStart, mEnd) {
     bucket(rec.so).firstTimeActivation += 1;
   });
 
-  // Visits
+  // Visits (already filtered to Visit Type = IF Visit only, in loadData())
   visitRows.forEach(v => {
     if (v.date < mStart || v.date > mEnd) return;
     attribute(v.so);
@@ -719,6 +808,7 @@ function computeMonth(mStart, mEnd) {
     const b = bucket(v.so);
     b.totalVisit += 1;
     if (v.dealerKey) b.uniqueVisitDealers.add(v.dealerKey);
+    v.purposeBuckets.forEach(pb => { b.purposeCounts[pb] = (b.purposeCounts[pb] || 0) + 1; });
   });
 
   // Applications & completions
@@ -755,9 +845,11 @@ function rollUpTeam(soBuckets, soNames) {
     if (!b) return;
     t.totalVisit += b.totalVisit;
     b.uniqueVisitDealers.forEach(d => t.uniqueVisitDealers.add(d));
+    Object.keys(b.purposeCounts).forEach(k => { t.purposeCounts[k] = (t.purposeCounts[k] || 0) + b.purposeCounts[k]; });
     t.newApplications += b.newApplications;
     t.applicationsCompleted += b.applicationsCompleted;
     t.onboardedDealers += b.onboardedDealers;
+    t.totalDisbursals += b.totalDisbursals;
     t.drawdownsSales += b.drawdownsSales;
     t.drawdownsRunners += b.drawdownsRunners;
     t.gmv += b.gmv;
@@ -772,7 +864,7 @@ function rollUpTeam(soBuckets, soNames) {
 
 function bucketToMetrics(b) {
   const div = (a, c) => c ? a / c : null;
-  return {
+  const m = {
     'Total Visit': b.totalVisit,
     'Unique Visits': b.uniqueVisitDealers.size,
     'Average Visit': div(b.totalVisit, b.uniqueVisitDealers.size),
@@ -781,6 +873,7 @@ function bucketToMetrics(b) {
     'New Dealer Applications': b.newApplications,
     'Dealer Application Completed': b.applicationsCompleted,
     'Onboarded Dealers': b.onboardedDealers,
+    'Total Disbursals': b.totalDisbursals,
     'Drawdowns (Sales)': b.drawdownsSales,
     'Drawdowns (Runners request)': b.drawdownsRunners,
     'GMV': b.gmv,
@@ -790,6 +883,8 @@ function bucketToMetrics(b) {
     'First-time Activation': b.firstTimeActivation,
     'Same Month Activation': b.sameMonthActivation,
   };
+  VISIT_PURPOSE_KEYS.forEach(k => { m['Visits: ' + k] = b.purposeCounts[k] || 0; });
+  return m;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -857,6 +952,114 @@ function applyGrowth(series) {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// CHARTS — Visits and AUM trend for whatever's currently selected (Total or
+// a single SO), shown only on the Whole Sales Team view. Plain inline SVG,
+// no chart library, matching this dashboard's self-contained single-file
+// style. Each chart is a single series, so no legend is needed — the card
+// title names it. A shared floating tooltip (#chart-tooltip) follows the
+// cursor on hover, since a static chart with no way to read exact values
+// isn't good enough on its own.
+// ═══════════════════════════════════════════════════════════════════════════
+const CHART_LINE_COLOR = '#E8461E'; // --primary
+const CHART_BAR_COLOR = '#F97316';  // --accent
+
+function renderCharts(series) {
+  const wrap = document.getElementById('charts-section');
+  if (selectedTeam !== ALL_TEAMS) { wrap.classList.add('hidden'); return; }
+  wrap.classList.remove('hidden');
+
+  // monthColumns/series are newest-first; reverse to chronological
+  // (oldest -> newest, left-to-right) for a natural trend read.
+  const labels = monthColumns.map(c => c.label).slice().reverse();
+  const visits = series.map(s => s['Total Visit'] || 0).slice().reverse();
+  const aum = series.map(s => s['AUM'] || 0).slice().reverse();
+
+  document.getElementById('chart-aum-unit').textContent = currencyMode === 'USD' ? '($ M)' : '(₱ M)';
+
+  drawBarChart(document.getElementById('chart-visits'), labels, visits, {
+    color: CHART_BAR_COLOR, fmt: v => fmtNum(v) + ' visits',
+  });
+  drawLineChart(document.getElementById('chart-aum'), labels, aum, {
+    color: CHART_LINE_COLOR, fmt: v => fmtMio(v) + (currencyMode === 'USD' ? ' $M' : ' ₱M'),
+  });
+}
+
+function chartScaleMax(values) {
+  return Math.max(1, ...values.map(v => v || 0)) * 1.15; // 15% headroom above the tallest mark
+}
+
+function drawBarChart(svg, labels, values, opts) {
+  const W = 640, H = 220, padL = 42, padR = 12, padT = 12, padB = 26;
+  const innerW = W - padL - padR, innerH = H - padT - padB;
+  const max = chartScaleMax(values);
+  const n = Math.max(1, values.length);
+  const slot = innerW / n;
+  const barW = Math.min(40, slot * 0.55);
+
+  let svgHtml = '';
+  for (let g = 0; g <= 3; g++) {
+    const y = padT + innerH - (innerH * g / 3);
+    svgHtml += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="var(--tbl-bdr)" stroke-width="1"/>';
+    svgHtml += '<text x="' + (padL - 6) + '" y="' + (y + 3).toFixed(1) + '" font-size="9" fill="var(--text3)" text-anchor="end">' + fmtNum(max * g / 3) + '</text>';
+  }
+  values.forEach((v, i) => {
+    const h = innerH * v / max;
+    const x = padL + slot * i + (slot - barW) / 2;
+    const y = padT + innerH - h;
+    svgHtml += '<rect class="chart-bar" data-i="' + i + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + barW.toFixed(1) + '" height="' + Math.max(0, h).toFixed(1) + '" rx="3" fill="' + opts.color + '"/>';
+    svgHtml += '<text x="' + (x + barW / 2).toFixed(1) + '" y="' + (H - 8) + '" font-size="9" fill="var(--text3)" text-anchor="middle">' + labels[i] + '</text>';
+  });
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.innerHTML = svgHtml;
+  attachChartTooltip(svg, labels, values, opts);
+}
+
+function drawLineChart(svg, labels, values, opts) {
+  const W = 640, H = 220, padL = 48, padR = 12, padT = 12, padB = 26;
+  const innerW = W - padL - padR, innerH = H - padT - padB;
+  const max = chartScaleMax(values);
+  const n = values.length;
+  const stepX = n > 1 ? innerW / (n - 1) : 0;
+  const pts = values.map((v, i) => [padL + stepX * i, padT + innerH - innerH * v / max]);
+
+  let svgHtml = '';
+  for (let g = 0; g <= 3; g++) {
+    const y = padT + innerH - (innerH * g / 3);
+    svgHtml += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="var(--tbl-bdr)" stroke-width="1"/>';
+    svgHtml += '<text x="' + (padL - 6) + '" y="' + (y + 3).toFixed(1) + '" font-size="9" fill="var(--text3)" text-anchor="end">' + fmtMio(max * g / 3) + '</text>';
+  }
+  const linePath = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const areaPath = n
+    ? linePath + ' L ' + pts[n - 1][0].toFixed(1) + ' ' + (padT + innerH) + ' L ' + pts[0][0].toFixed(1) + ' ' + (padT + innerH) + ' Z'
+    : '';
+  svgHtml += '<path d="' + areaPath + '" fill="' + opts.color + '" opacity="0.12" stroke="none"/>';
+  svgHtml += '<path d="' + linePath + '" fill="none" stroke="' + opts.color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+  pts.forEach((p, i) => {
+    svgHtml += '<circle class="chart-dot" data-i="' + i + '" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="4" fill="' + opts.color + '"/>';
+    svgHtml += '<text x="' + p[0].toFixed(1) + '" y="' + (H - 8) + '" font-size="9" fill="var(--text3)" text-anchor="middle">' + labels[i] + '</text>';
+  });
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.innerHTML = svgHtml;
+  attachChartTooltip(svg, labels, values, opts);
+}
+
+function attachChartTooltip(svg, labels, values, opts) {
+  const tip = document.getElementById('chart-tooltip');
+  svg.querySelectorAll('.chart-bar, .chart-dot').forEach(el => {
+    const i = +el.getAttribute('data-i');
+    el.addEventListener('mouseenter', () => {
+      tip.textContent = labels[i] + ': ' + opts.fmt(values[i]);
+      tip.classList.remove('hidden');
+    });
+    el.addEventListener('mousemove', e => {
+      tip.style.left = (e.clientX + 14) + 'px';
+      tip.style.top = (e.clientY + 14) + 'px';
+    });
+    el.addEventListener('mouseleave', () => tip.classList.add('hidden'));
+  });
+}
+
 function renderEntity() {
   if (!selectedEntity) selectedEntity = '__TEAM__';
 
@@ -869,6 +1072,16 @@ function renderEntity() {
   const series = entityMetricsSeries(selectedTeam, selectedEntity);
   applyGrowth(series);
 
+  // "Total AUM (Company-Wide)" — only shown on the Whole Sales Team ▸ Total
+  // view. Unlike every other row, it ignores SO_TEAM_MAP entirely: it rolls
+  // up every SO bucket the data actually produced that month (mapped or
+  // not), so it's a true, filter-free company AUM figure to sanity-check
+  // the mapped total against — not just "every mapped team combined."
+  const showCompanyWideAUM = selectedTeam === ALL_TEAMS && selectedEntity === '__TEAM__';
+  const companyWideAUM = showCompanyWideAUM
+    ? monthColumns.map(col => bucketToMetrics(rollUpTeam(col.soBuckets, Object.keys(col.soBuckets)))['AUM'])
+    : null;
+
   const head = document.getElementById('metrics-head');
   head.innerHTML = '<tr><th>Metric</th>' + monthColumns.map(c => '<th class="r">' + c.label + '</th>').join('') + '</tr>';
 
@@ -879,9 +1092,15 @@ function renderEntity() {
     section.metrics.forEach(metric => {
       const cells = series.map(s => '<td class="r">' + fmtByType(s[metric], METRIC_TYPES[metric]) + '</td>').join('');
       html += '<tr><td class="metric-label">' + metric + '</td>' + cells + '</tr>';
+      if (metric === 'AUM (Net Blacklisted)' && showCompanyWideAUM) {
+        const cwCells = companyWideAUM.map(v => '<td class="r">' + fmtByType(v, 'Currency') + '</td>').join('');
+        html += '<tr><td class="metric-label">Total AUM (Company-Wide, Unfiltered)</td>' + cwCells + '</tr>';
+      }
     });
   });
   body.innerHTML = html;
+
+  renderCharts(series);
 
   const stale = dataLoadedAt ? '' : ' (no data)';
   document.getElementById('data-status-global').textContent =
