@@ -433,6 +433,19 @@ function purposeTagBucket(tag) {
   return hit ? hit.key : VISIT_PURPOSE_OTHER;
 }
 
+// The Visits Export ("[Raw] Visits") sheet spells a few names differently
+// than every other source (drawdown.csv, dealer-checker.csv, ob-masterlist.csv,
+// and "[Raw] Mapping" all agree with each other; only this sheet disagrees)
+// — confirmed with the user these are the same people, not different SOs.
+// Applied to "Executive Name" right after normName() in loadData(), so the
+// rest of the pipeline only ever sees the canonical Mapping-sheet spelling.
+// Add to this list if another Visits-only spelling variant turns up.
+const VISIT_NAME_ALIASES = {
+  'Rosario Batacan': 'Rose Batacan',
+  'Zhesa Ein Resurreccion': 'Zhesa Resurrecion',
+};
+function resolveVisitAlias(name) { return VISIT_NAME_ALIASES[name] || name; }
+
 const METRIC_SECTIONS = [
   { title: 'Visits & Conversion', metrics: ['Total Visit', 'Unique Visits', 'Visits to Application', 'Visits to Onboard', 'Average Visit'] },
   { title: 'Visit Purpose Breakdown', metrics: VISIT_PURPOSE_KEYS.map(k => 'Visits: ' + k) },
@@ -672,7 +685,7 @@ async function loadData() {
         const r = visitGrid[i];
         const visitType = get(r, vCol('Visit Type')).trim().toLowerCase();
         if (visitType !== 'if visit') continue;
-        const so = normName(get(r, vCol('Executive Name')));
+        const so = resolveVisitAlias(normName(get(r, vCol('Executive Name'))));
         const date = parseSheetDate(get(r, vCol('Visited Date')));
         if (!so || !date) continue;
         const purposeRaw = get(r, vCol('Purpose')).trim();
