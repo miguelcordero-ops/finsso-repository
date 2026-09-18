@@ -185,20 +185,27 @@ td.metric-label{color:var(--text);font-weight:500}
 .metrics-card{ overflow-x:visible; }
 #metrics-head th{
   position:sticky;top:var(--sticky-offset, 96px);z-index:200;
-  background:var(--surface-d);
+  /* Two background layers: a light brand-tinted wash (--section-bg, already
+     used elsewhere for the same tint) painted over the opaque --surface-d,
+     so the frozen month labels read as a clearly distinct band rather than
+     blending into whatever data row is currently scrolled underneath. */
+  background:linear-gradient(var(--section-bg), var(--section-bg)), var(--surface-d);
+  color:var(--text);font-weight:700;
   backdrop-filter:blur(12px) saturate(150%);
   -webkit-backdrop-filter:blur(12px) saturate(150%);
-  box-shadow:0 1px 0 var(--tbl-bdr2);
+  box-shadow:0 2px 0 var(--primary);
 }
 
 .filter-bar{
   background:var(--surface-c);
-  border-bottom:1px solid var(--border2);
+  border:1px solid var(--border2);
+  border-radius:var(--rcard);
   backdrop-filter:blur(20px) saturate(160%);
   -webkit-backdrop-filter:blur(20px) saturate(160%);
-  padding:10px var(--pad);
+  padding:10px 16px;
   display:flex;flex-wrap:wrap;align-items:center;gap:14px;
   position:sticky;top:54px;z-index:250;
+  margin-bottom:var(--gap);
 }
 .filter-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .filter-group-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;margin-right:2px}
@@ -325,15 +332,19 @@ td.metric-label{color:var(--text);font-weight:500}
   </div>
 </div>
 
-<div class="filter-bar" id="filter-bar">
-  <div class="filter-group" id="filter-team"><span class="filter-group-label">Team</span></div>
-  <div class="filter-group" id="filter-entity"><span class="filter-group-label">Officer</span></div>
-  <div class="filter-group" id="filter-currency"><span class="filter-group-label">Currency</span></div>
-</div>
-
 <div class="main">
   <div class="section-title" id="entity-title">–</div>
   <div class="section-sub" id="entity-sub">–</div>
+
+  <!-- Moved down next to the table it filters, so once you scroll it locks
+       in place directly above the frozen month-header row — the two form
+       one contiguous frozen block instead of the filter bar sitting far up
+       the page, separate from the data it controls. -->
+  <div class="filter-bar" id="filter-bar">
+    <div class="filter-group" id="filter-team"><span class="filter-group-label">Team</span></div>
+    <div class="filter-group" id="filter-entity"><span class="filter-group-label">Officer</span></div>
+    <div class="filter-group" id="filter-currency"><span class="filter-group-label">Currency</span></div>
+  </div>
 
   <div class="card metrics-card">
     <div class="card-title">Key Metrics <span class="card-unit" id="currency-note"></span></div>
@@ -1206,7 +1217,16 @@ function buildCurrencyToggle() {
 // chips on a narrow screen) or their heights change.
 function updateStickyOffset() {
   const filterBar = document.getElementById('filter-bar');
-  const offset = filterBar ? Math.ceil(filterBar.getBoundingClientRect().bottom) : 0;
+  if (!filterBar) { document.documentElement.style.setProperty('--sticky-offset', '0px'); return; }
+  // getBoundingClientRect() would read wherever the filter bar happens to be
+  // RIGHT NOW — its normal in-flow position if the page hasn't been scrolled
+  // to its sticky threshold yet, which is a different (larger) number than
+  // where it actually locks once scrolled. Its locked position is always
+  // its own CSS "top" (a fixed value, however far down the page it starts)
+  // plus its own rendered height — neither of which depends on scroll
+  // position — so that's what the month header should sit directly below.
+  const stuckTop = parseFloat(getComputedStyle(filterBar).top) || 0;
+  const offset = Math.ceil(stuckTop + filterBar.offsetHeight);
   document.documentElement.style.setProperty('--sticky-offset', offset + 'px');
 }
 window.addEventListener('resize', updateStickyOffset);
