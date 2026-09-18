@@ -170,7 +170,19 @@ td.metric-label{color:var(--text);font-weight:500}
    metrics table — stays visible below the sticky topbar + filter bar.
    --sticky-offset is computed in JS (updateStickyOffset()) from those two
    elements' actual rendered height, so it stays correct if their content
-   ever wraps to more lines (e.g. many team chips on a narrow screen). */
+   ever wraps to more lines (e.g. many team chips on a narrow screen).
+   IMPORTANT: position:sticky only tracks the page scroll if nothing between
+   the <th> and the page sets a non-"visible" overflow — .card's own
+   overflow-x:auto silently forces overflow-y to "auto" too (a CSS spec
+   quirk: an axis left as "visible" gets converted to "auto" the moment the
+   other axis isn't "visible"), which turns .card itself into the sticky
+   element's reference frame instead of the page — and since .card never
+   actually scrolls internally, the header just never appears to stick.
+   .metrics-card below overrides that back to overflow-x:visible so the
+   page is what the header sticks against; the trade-off is this table no
+   longer gets its own horizontal scrollbar on very narrow screens (it'll
+   scroll the whole page horizontally instead if it doesn't fit). */
+.metrics-card{ overflow-x:visible; }
 #metrics-head th{
   position:sticky;top:var(--sticky-offset, 96px);z-index:200;
   background:var(--surface-d);
@@ -323,7 +335,7 @@ td.metric-label{color:var(--text);font-weight:500}
   <div class="section-title" id="entity-title">–</div>
   <div class="section-sub" id="entity-sub">–</div>
 
-  <div class="card">
+  <div class="card metrics-card">
     <div class="card-title">Key Metrics <span class="card-unit" id="currency-note"></span></div>
     <table id="metrics-table">
       <thead id="metrics-head"></thead>
