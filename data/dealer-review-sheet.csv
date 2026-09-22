@@ -94,7 +94,7 @@
 ,IF0093,MACLOUIE CARS VEHICLE TRADING,Malou Alfonso,Rose Batacan,1,128,0,1,610000,610000,0,610000,57.58139535,,21.18421053,46162,Blacklisted,15 DPD,46162,,,189,80,109,0.002090489893,125,125,46224,5,1,4,6,No,,,,46190.65122
 ,IF0094,GONZAPCARS CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,1,37,3,2,3244023.01,3244023.01,1880223.01,1363800,91.21428571,,21.0086034,46165,Blacklisted,15 DPD,46165,,,117,58,59,0.01111737265,122,89,46276,22,13,9,5,No,,,,46190.65122
 ,IF0095,MACABEBEST CAR SHOP,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Pending CLA Signature,,45631,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0096,VICTORYMIND CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,38,4,0,1063611,1063611,1063611,0,67.26190476,,3,,Open,Finsso: Open | Netbank: Expired CL,,46225,,45,39,6,0.003645029584,0,0,46274,9,5,4,1,No
+,IF0096,VICTORYMIND CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,38,4,0,1063611,1063611,1063611,0,67.26190476,,3,,Open,Finsso: Open | Netbank: Expired CL,,46225,,49,43,6,0.003645029584,0,0,46287,13,9,4,0,No
 ,IF0097,JEMM CAR TRADING,Malou Alfonso,Rose Batacan,0,114,0,17,10664444.2,10664444.2,0,10664444.2,94.28244275,,52.02173913,46132,Blacklisted,15 DPD,46132,,,283,220,63,0.03654739806,155,90,46217,49,27,22,0,Yes,,,,46190.65122
 ,IF0098,BRO'S AUTODEALERS AUTO TRADING,Albert Dalupang,Albert Dalupang,0,13,0,0,0,0,0,0,36.92307692,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,45666.70417,,10,8,2,0,0,0,,0,0,0,0,No
 ,IF0099,KELVEN CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46044,,0,0,0,0,0,0,,0,0,0,0,No
@@ -447,7 +447,7 @@
 ,IF0446,HEPLUCK CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0447,MFJ CAR TRADING,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0448,BOSSS A SECONDHANDQUALITY CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,0,1,0,512000,512000,512000,0,15,,,,Open,,,,,2,1,1,,0,0,46280,2,1,1,0,No
-,IF0449,JAIME BARCIAL CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,1,0,0,381000,381000,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
+,IF0449,JAIME BARCIAL CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,1,0,0,381000,381000,0,,,,,Open,,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0450,PGGARAGE CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0451,D3 AUTOHAUS CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0452,TAKUSAWA AUTO TRADING,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
@@ -496,7 +496,7 @@
 ,IF0495,M13.GARAGE AUTO TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0496,NAZ CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0497,PAROMIA CAR TRADING,Albert Dalupang,Albert Dalupang,0,0,1,0,1000000,1000000,1000000,0,8,,,,Open,Finsso: Pending CLA Signature | Netbank: Open,,46273.43194,,0,0,0,,0,0,,0,0,0,0,No
-,IF0498,ASTON'S AUTO SHOP,Malou Alfonso,Rose Batacan,0,0,1,0,0,570000,570000,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
+,IF0498,ASTON'S AUTO SHOP,Malou Alfonso,Rose Batacan,0,0,1,0,0,570000,570000,0,,,,,Open,,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0499,MARLO AUTOGARAGE CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0500,G.B.O VEHICLE TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,1,0,353000,353000,353000,0,5,,,,Open,,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0501,RF CHU AUTO TRADING,Albert Dalupang,Albert Dalupang,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
