@@ -694,7 +694,7 @@ async function loadData() {
           : [];
         visitRows.push({
           so, date,
-          dealerKey: get(r, vCol('Clean GCD')).trim() || get(r, vCol('Dealer Name')).trim(),
+          dealerKey: get(r, vCol('Clean GCD')).trim() || get(r, vCol('ID')).trim(),
           purposeBuckets,
         });
       }
