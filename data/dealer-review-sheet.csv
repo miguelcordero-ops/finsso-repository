@@ -319,7 +319,7 @@
 ,IF0318,ITEQ AUTO CENTRUM,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46140.43819,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0319,JHAYS CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46174.43681,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0320,AUTO-IN AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,2,0,0,0,0,0,0,99,,18,,Blacklisted,Locked by Timestamp,46224.04093,,,1,0,1,0,0,0,,0,0,0,0,No,,,,46224.04093
-,IF0321,AUTONEH CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,1,1,0,340200,340200,340200,0,101.5,,26.665625,46279.66875,Hold,w/ Due Repayments - >= 5DPD,,46279.66875,,3,2,1,0.001168058514,13.33125,13.33125,46283,1,0,1,0,No
+,IF0321,AUTONEH CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,1,1,0,340200,340200,340200,0,101.5,,26.665625,46279.66875,Hold,w/ Due Repayments - >= 5DPD,,46279.66875,,4,3,1,0.001168058514,13.33125,13.33125,46290,2,1,1,0,No
 ,IF0322,BUENAFE TRADING,Albert Dalupang,Zhesa Resurrecion,0,1,0,0,0,0,0,0,96,,5,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46174.48125,,1,0,1,0,0,0,,0,0,0,0,No
 ,IF0323,DM CAR SHOP,Malou Alfonso,Myrnalyn Bankingkito,0,2,0,0,0,0,0,0,15,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46174.48611,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0324,IJ CAR AGENT SERVICES,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,1,63703,63703,0,63703,279,,189,46104,Blacklisted,15 DPD,46104,,,2,1,1,0.0002187208451,189,189,46118,2,1,1,0,No,,,,46190.65122
@@ -333,7 +333,7 @@
 ,IF0332,DLA'S AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,3,0,0,0,0,0,0,31.33333333,,,,Open,,,,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0333,ZC AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,2,3,0,0,0,0,0,0,70.66666667,,1.5,,Open,,,,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0334,JAGSON AUTO TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,4,1,0,371025,371025,371025,0,62.8,,,,Open,,,,,2,2,0,0.001273894503,0,0,,0,0,0,0,No
-,IF0335,DECK AUTO TRADING,Malou Alfonso,Rose Batacan,0,2,1,0,360000,360000,360000,0,70.33333333,,,,Open,,,,,1,0,1,0.001236040755,0,0,46283,1,0,1,0,No
+,IF0335,DECK AUTO TRADING,Malou Alfonso,Rose Batacan,0,2,1,0,360000,360000,360000,0,70.33333333,,,,Hold,Multiple Failure Audits,,46293.47591,46293.47591,2,0,2,0.001236040755,0,0,46283,2,0,2,0,Yes
 ,IF0336,GLLEGACY CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,10,4,0,1950000,1950000,1950000,0,51.5,,5.497916667,46287.75,Hold,w/ Due Repayments - >= 5DPD,,46287.75,,15,13,2,0.006695220758,5.25,1.239583333,46286,3,3,0,0,No
 ,IF0337,RMMZ CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46160.74792,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0338,SASAKYAN DEALSPH CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,3,1,0,238500,238500,238500,0,48,,16,,Open,Reassessed - 08/12/2026 | Finsso: Open | Netbank: Open,,,,3,2,1,0.0008188770004,0,0,46287,1,1,0,0,No,,,46246,46174
@@ -344,7 +344,7 @@
 ,IF0343,F20 CAR CARE CENTER,Malou Alfonso,Candyce Aguete,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0344,G REN CAR TRADING,Albert Dalupang,Albert Dalupang,0,6,2,0,753597.3,753597.3,753597.3,0,63.375,,,,Open,,,,,15,11,4,0.002587436044,0,0,46268,2,2,0,0,No
 ,IF0345,WHEELDEALS CAR AGENT SERVICES,Albert Dalupang,Albert Dalupang,2,4,1,0,238140,238140,238140,0,32.4,,,,Open,,,,,0,0,0,0.0008176409596,0,0,,0,0,0,0,No
-,IF0346,KOTSE-KOTSEHAN AUTO TRADING,Malou Alfonso,Candyce Aguete,0,0,1,0,1000000,1000000,1000000,0,34,,4.375694444,46288.62431,Open,,,,,0,0,0,0.003433446543,4.375694444,4.375694444,,0,0,0,0,No
+,IF0346,KOTSE-KOTSEHAN AUTO TRADING,Malou Alfonso,Candyce Aguete,0,0,1,0,1000000,1000000,1000000,0,34,,4.375694444,46288.62431,Open,,,,,1,0,1,0.003433446543,4.375694444,4.375694444,46290,1,0,1,0,No
 ,IF0347,TAMBAY.GARAGE AUTO TRADING,Malou Alfonso,Candyce Aguete,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46161.41944,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0348,TOL DENZ CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46140.49375,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0349,VECTORTECH AUTO TRADING,Albert Dalupang,Albert Dalupang,0,2,2,0,830000,830000,830000,0,95.5,,18,46263,Blacklisted,15 DPD,46263,,,11,8,3,0.00284976063,30,30,46287,7,4,3,0,No,,,,46278.04094
