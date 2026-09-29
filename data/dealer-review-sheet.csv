@@ -319,7 +319,7 @@
 ,IF0318,ITEQ AUTO CENTRUM,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46140.43819,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0319,JHAYS CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46174.43681,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0320,AUTO-IN AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,2,0,0,0,0,0,0,99,,18,,Blacklisted,Locked by Timestamp,46224.04093,,,1,0,1,0,0,0,,0,0,0,0,No,,,,46224.04093
-,IF0321,AUTONEH CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,1,1,0,340200,340200,340200,0,102.5,,27.665625,46279.66875,Blacklisted,15 DPD,46279.66875,,,4,3,1,0.001129096453,15.33125,15.33125,46290,2,1,1,0,No
+,IF0321,AUTONEH CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,1,1,0,340200,340200,340200,0,102.5,,27.665625,46279.66875,Blacklisted,15 DPD,46279.66875,,,4,3,1,0.001129096453,15.33125,15.33125,46290,2,1,1,0,No,,,,46295.04116
 ,IF0322,BUENAFE TRADING,Albert Dalupang,Zhesa Resurrecion,0,1,0,0,0,0,0,0,96,,5,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46174.48125,,1,0,1,0,0,0,,0,0,0,0,No
 ,IF0323,DM CAR SHOP,Malou Alfonso,Myrnalyn Bankingkito,0,2,0,0,0,0,0,0,15,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46174.48611,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0324,IJ CAR AGENT SERVICES,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,1,63703,63703,0,63703,281,,191,46104,Blacklisted,15 DPD,46104,,,2,1,1,0.0002114251363,191,191,46118,2,1,1,0,No,,,,46190.65122
