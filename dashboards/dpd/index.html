@@ -152,14 +152,16 @@ tr.total-row td{font-weight:700;color:var(--text);background:var(--total-bg)}
 tr.subtotal-row td{font-weight:600;color:var(--text);background:var(--tbl-hdr)}
 tr:hover td{background:var(--tr-hover)}
 td.dealer-name{white-space:normal;max-width:220px}
-td.bucket-label.indent{padding-left:26px;font-weight:400;color:var(--text2)}
-td.bucket-label{color:var(--text)}
+td.bucket-label.indent{padding-left:26px;font-weight:500;color:var(--text)}
+td.bucket-label{color:var(--text);font-weight:700}
 th.month-col,td.month-col{min-width:78px}
-th.sticky-col,td.sticky-col{position:sticky;left:0;z-index:2;background:var(--surface-b);box-shadow:1px 0 0 var(--tbl-bdr2)}
+th.sticky-col,td.sticky-col{position:sticky;left:0;z-index:2;background:var(--surface-d);box-shadow:2px 0 0 var(--primary)}
 tr.subtotal-row td.sticky-col{background:var(--tbl-hdr)}
 tr.total-row td.sticky-col{background:var(--total-bg)}
-th.sticky-col{z-index:3;background:var(--tbl-hdr)}
+th.sticky-col{z-index:3;background:var(--tbl-hdr);color:var(--text);font-weight:700}
 .month-sub{font-size:9px;color:var(--text3);text-transform:none;letter-spacing:0;display:block;margin-top:1px}
+td.drill-cell{cursor:pointer}
+td.drill-cell:hover{background:var(--chip-hover)}
 
 .filter-bar{
   background:var(--surface-c);
@@ -206,6 +208,35 @@ th.sticky-col{z-index:3;background:var(--tbl-hdr)}
 .error-box button{margin-top:12px;padding:8px 18px;background:var(--primary);color:#fff;border:none;border-radius:var(--rctrl);cursor:pointer;font-size:13px}
 
 .data-status{font-size:11px;color:var(--text3);text-align:right;margin-top:4px}
+
+.drill-overlay{
+  position:fixed;inset:0;
+  background:var(--overlay-tint);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  display:flex;align-items:center;justify-content:center;
+  z-index:900;padding:24px;
+}
+.drill-overlay.hidden{display:none}
+.drill-card{
+  background:var(--surface-a);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 24px 64px rgba(0,0,0,0.25),0 2px 8px rgba(0,0,0,0.08),inset 0 1px 0 var(--surface-hi);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border-radius:var(--rcard);
+  width:720px;max-width:92vw;max-height:80vh;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.drill-header{display:flex;align-items:flex-start;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid var(--border2)}
+.drill-title{font-size:15px;font-weight:700;color:var(--text)}
+.drill-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.drill-close{cursor:pointer;color:var(--text3);font-size:15px;padding:3px 8px;border-radius:6px;line-height:1}
+.drill-close:hover{background:var(--chip-hover);color:var(--text)}
+.drill-table-wrap{overflow:auto;padding:0 20px}
+.drill-table-wrap table{font-size:11px}
+.drill-footer{padding:12px 20px 18px;font-size:11px;font-weight:600;color:var(--text);text-align:right;border-top:1px solid var(--border2)}
 
 .lock-overlay{
   position:fixed;inset:0;
@@ -327,6 +358,26 @@ th.sticky-col{z-index:3;background:var(--tbl-hdr)}
   <button onclick="location.reload()">Retry</button>
 </div>
 
+<!-- Drill-down: loans behind a clicked bucket/month cell -->
+<div class="drill-overlay hidden" id="drill-overlay" onclick="if(event.target===this) closeDrillDown()">
+  <div class="drill-card">
+    <div class="drill-header">
+      <div>
+        <div class="drill-title" id="drill-title">—</div>
+        <div class="drill-sub" id="drill-sub">—</div>
+      </div>
+      <span class="drill-close" onclick="closeDrillDown()">✕</span>
+    </div>
+    <div class="drill-table-wrap">
+      <table id="drill-table">
+        <thead><tr><th>Drawdown ID</th><th class="dealer-name">Dealer</th><th>Financier</th><th class="r">DPD</th><th>Due Date</th><th class="r">Outstanding</th></tr></thead>
+        <tbody id="drill-body"></tbody>
+      </table>
+    </div>
+    <div class="drill-footer" id="drill-footer"></div>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════════════════════════════
 // DATA SOURCES — public repo, raw CSV, refreshed hourly by Apps Script
@@ -362,6 +413,7 @@ const MATRIX_ROWS = [
 
 let drawdownRows = [];
 let repaymentRows = [];
+let lastColumns = null; // most recently rendered month columns, incl. per-bucket loan lists — read by the drill-down modal
 let selectedDate = null;
 let dataLoadedAt = null;
 let minDataDate = null;
@@ -439,6 +491,10 @@ function fmtNum(v, decimals=0) {
 function fmtMio(v) {
   const converted = currencyMode === 'USD' ? v / FX_PHP_PER_USD : v;
   return fmtNum(converted / 1e6, 2);
+}
+function fmtCurrencyFull(v) {
+  const converted = currencyMode === 'USD' ? v / FX_PHP_PER_USD : v;
+  return (currencyMode === 'USD' ? '$' : '₱') + fmtNum(converted, 0);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -624,6 +680,10 @@ function computeDPDForDate(asOf) {
   const n = DPD_FINE_LABELS.length;
   const bucketN = new Array(n).fill(0);
   const bucketSum = new Array(n).fill(0);
+  // Per-bucket list of the actual loans behind each number — kept alongside
+  // the aggregates so a clicked cell can show exactly which drawdowns make
+  // it up, without re-scanning drawdownRows at click time.
+  const bucketLoans = Array.from({ length: n }, () => []);
 
   drawdownRows.forEach(loan => {
     if (!matchLoan(loan)) return;
@@ -635,11 +695,19 @@ function computeDPDForDate(asOf) {
 
     bucketN[bi] += 1;
     bucketSum[bi] += out;
+    bucketLoans[bi].push({
+      id: loan.id,
+      dealerName: loan.dealerName,
+      financier: loan.financier,
+      dueDate,
+      dpd,
+      out,
+    });
   });
 
   const totalN = bucketN.reduce((a, b) => a + b, 0);
   const totalSum = bucketSum.reduce((a, b) => a + b, 0);
-  return { bucketN, bucketSum, totalN, totalSum };
+  return { bucketN, bucketSum, totalN, totalSum, bucketLoans };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -702,6 +770,7 @@ function renderAll(asOf) {
 
   const columns = buildMonthColumns(asOf);
   columns.forEach(col => { col.stats = computeDPDForDate(col.asOf); });
+  lastColumns = columns;
 
   // Header
   const head = document.getElementById('dpd-matrix-head');
@@ -709,27 +778,28 @@ function renderAll(asOf) {
     '<th class="r month-col">' + c.label + (c.sub ? '<span class="month-sub">' + c.sub + '</span>' : '') + '</th>'
   ).join('') + '</tr>';
 
-  // Body — hierarchy rows, then a Total row
+  // Body — hierarchy rows, then a Total row. Every data cell gets a
+  // data-col/data-idxs pair so openDrillDown(this) can look back into
+  // lastColumns[...].stats.bucketLoans for exactly the loans behind that
+  // row+column without recomputing anything.
   const body = document.getElementById('dpd-matrix-body');
   const rowsHtml = MATRIX_ROWS.map(row => {
     const rowClass = row.type === 'subtotal' ? ' class="subtotal-row"' : '';
     const labelClass = 'bucket-label' + (row.indent ? ' indent' : '');
-    const cells = columns.map(col => {
-      let n, sum;
-      if (row.type === 'leaf') {
-        n = col.stats.bucketN[row.idx];
-        sum = col.stats.bucketSum[row.idx];
-      } else {
-        n = row.idxs.reduce((a, i) => a + col.stats.bucketN[i], 0);
-        sum = row.idxs.reduce((a, i) => a + col.stats.bucketSum[i], 0);
-      }
-      return '<td class="r month-col">' + cellValue(n, sum, col.stats.totalN, col.stats.totalSum) + '</td>';
+    const idxs = row.type === 'leaf' ? [row.idx] : row.idxs;
+    const cells = columns.map((col, ci) => {
+      const n = idxs.reduce((a, i) => a + col.stats.bucketN[i], 0);
+      const sum = idxs.reduce((a, i) => a + col.stats.bucketSum[i], 0);
+      return '<td class="r month-col drill-cell" data-col="' + ci + '" data-idxs="' + idxs.join('_') + '" onclick="openDrillDown(this)">'
+        + cellValue(n, sum, col.stats.totalN, col.stats.totalSum) + '</td>';
     }).join('');
     return '<tr' + rowClass + '><td class="sticky-col ' + labelClass + '">' + row.label + '</td>' + cells + '</tr>';
   }).join('');
 
-  const totalCells = columns.map(col =>
-    '<td class="r month-col">' + cellValue(col.stats.totalN, col.stats.totalSum, col.stats.totalN, col.stats.totalSum) + '</td>'
+  const allIdxs = DPD_FINE_LABELS.map((_, i) => i);
+  const totalCells = columns.map((col, ci) =>
+    '<td class="r month-col drill-cell" data-col="' + ci + '" data-idxs="' + allIdxs.join('_') + '" onclick="openDrillDown(this)">'
+      + cellValue(col.stats.totalN, col.stats.totalSum, col.stats.totalN, col.stats.totalSum) + '</td>'
   ).join('');
   const totalRow = '<tr class="total-row"><td class="sticky-col bucket-label">Total</td>' + totalCells + '</tr>';
 
@@ -742,6 +812,49 @@ function renderAll(asOf) {
   document.getElementById('data-status-global').textContent =
     dataLoadedAt ? 'Data as of ' + dataLoadedAt.toLocaleString('en-PH', {dateStyle:'medium', timeStyle:'short'}) : 'Loading…' + stale;
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DRILL-DOWN — clicking any matrix cell lists the actual open loans behind
+// that row (bucket, or subtotal, or Total) for that column's month/as-of
+// date, pulled straight from lastColumns[...].stats.bucketLoans (no re-scan).
+// ═══════════════════════════════════════════════════════════════════════════
+function openDrillDown(el) {
+  if (!lastColumns) return;
+  const colIdx = parseInt(el.dataset.col, 10);
+  const col = lastColumns[colIdx];
+  if (!col) return;
+  const idxs = el.dataset.idxs.split('_').map(Number);
+
+  let loans = [];
+  idxs.forEach(i => { loans = loans.concat(col.stats.bucketLoans[i] || []); });
+  loans.sort((a, b) => b.out - a.out);
+
+  const tr = el.closest('tr');
+  const labelEl = tr ? tr.querySelector('.bucket-label') : null;
+  const label = labelEl ? labelEl.textContent.trim() : '';
+
+  document.getElementById('drill-title').textContent = label + ' — ' + col.label + (col.sub ? ' (' + col.sub + ')' : '');
+  document.getElementById('drill-sub').textContent = loans.length + ' open loan' + (loans.length === 1 ? '' : 's') + ' as of ' + toDateStr(col.asOf);
+
+  const body = document.getElementById('drill-body');
+  if (!loans.length) {
+    body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px">No open loans in this bucket</td></tr>';
+  } else {
+    body.innerHTML = loans.map(l =>
+      '<tr><td>' + l.id + '</td><td class="dealer-name">' + l.dealerName + '</td><td>' + (l.financier || '—') + '</td>'
+      + '<td class="r">' + (l.dpd > 0 ? fmtNum(l.dpd) : '—') + '</td><td>' + (l.dueDate ? toDateStr(l.dueDate) : '—') + '</td>'
+      + '<td class="r">' + fmtCurrencyFull(l.out) + '</td></tr>'
+    ).join('');
+  }
+  const totalOut = loans.reduce((a, l) => a + l.out, 0);
+  document.getElementById('drill-footer').textContent = 'Total outstanding: ' + fmtCurrencyFull(totalOut);
+
+  document.getElementById('drill-overlay').classList.remove('hidden');
+}
+function closeDrillDown() {
+  document.getElementById('drill-overlay').classList.add('hidden');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrillDown(); });
 
 // ═══════════════════════════════════════════════════════════════════════════
 // FILTER UI
