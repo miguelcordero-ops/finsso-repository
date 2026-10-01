@@ -155,9 +155,9 @@ td.dealer-name{white-space:normal;max-width:220px}
 td.bucket-label.indent{padding-left:26px;font-weight:500;color:var(--text)}
 td.bucket-label{color:var(--text);font-weight:700}
 th.month-col,td.month-col{min-width:78px}
-th.sticky-col,td.sticky-col{position:sticky;left:0;z-index:2;background:var(--surface-d);box-shadow:2px 0 0 var(--primary)}
-tr.subtotal-row td.sticky-col{background:var(--tbl-hdr)}
-tr.total-row td.sticky-col{background:var(--total-bg)}
+th.sticky-col,td.sticky-col{position:sticky;left:0;z-index:2;background:var(--tbl-hdr);box-shadow:3px 0 0 var(--primary)}
+tr.subtotal-row td.sticky-col{background:var(--total-bg)}
+tr.total-row td.sticky-col{background:var(--primary);color:#fff}
 th.sticky-col{z-index:3;background:var(--tbl-hdr);color:var(--text);font-weight:700}
 .month-sub{font-size:9px;color:var(--text3);text-transform:none;letter-spacing:0;display:block;margin-top:1px}
 td.drill-cell{cursor:pointer}
@@ -370,7 +370,7 @@ td.drill-cell:hover{background:var(--chip-hover)}
     </div>
     <div class="drill-table-wrap">
       <table id="drill-table">
-        <thead><tr><th>Drawdown ID</th><th class="dealer-name">Dealer</th><th>Financier</th><th class="r">DPD</th><th>Due Date</th><th class="r">Outstanding</th></tr></thead>
+        <thead><tr><th>Drawdown ID</th><th class="dealer-name">Dealer</th><th>Financier</th><th>PNCM Date</th><th>DPD Aging</th><th class="r">Principal Repaid (3 Mo)</th><th class="r">Total Outstanding</th></tr></thead>
         <tbody id="drill-body"></tbody>
       </table>
     </div>
@@ -415,6 +415,7 @@ let drawdownRows = [];
 let repaymentRows = [];
 let lastColumns = null; // most recently rendered month columns, incl. per-bucket loan lists — read by the drill-down modal
 let selectedDate = null;
+let todayDate = null; // the real current date, captured once at load — always kept as its own column regardless of what the date picker is set to
 let dataLoadedAt = null;
 let minDataDate = null;
 let currencyMode = 'PHP'; // 'PHP' | 'USD'
@@ -561,6 +562,7 @@ async function loadData() {
         originalPrincipal: parseNum(get(r, ddCol('Original Principal'))),
         loanStatus: get(r, ddCol('Loan Status')).trim(),
         financier: get(r, ddCol('Financier')).trim(),
+        pncmDate: parseSheetDate(get(r, ddCol('PNCM Date'))),
         fullSettlementDate: parseSheetDate(get(r, ddCol('Full Settlement Date'))),
         renewal1Due: parseSheetDate(get(r, ddCol('Renewal 1 Due Date'))),
         renewal1PaidDate: parseSheetDate(get(r, ddCol('Payment Date for Renewal 1'))),
@@ -618,6 +620,16 @@ function outstandingAsOf(loan, asOf) {
   let paid = 0;
   repayments.forEach(rp => { if (rp.paymentDate && rp.paymentDate <= asOf) paid += rp.paidPrincipal; });
   return Math.max(0, loan.originalPrincipal - paid);
+}
+// Rolling 3-calendar-month window ending at asOf (e.g. asOf = 15 Oct → window
+// is 15 Jul through 15 Oct), used only for the drill-down's "Principal
+// Repayment (Last 3 Mo)" column — not part of the DPD/outstanding math above.
+function principalRepaidLast3Mo(loan, asOf) {
+  const windowStart = new Date(asOf.getFullYear(), asOf.getMonth() - 3, asOf.getDate());
+  const repayments = getRepaymentsByLoan()[loan.id] || [];
+  let sum = 0;
+  repayments.forEach(rp => { if (rp.paymentDate && rp.paymentDate > windowStart && rp.paymentDate <= asOf) sum += rp.paidPrincipal; });
+  return sum;
 }
 function matchLoan(loan) {
   if (filterState.financier.size && !filterState.financier.has(loan.financier)) return false;
@@ -699,8 +711,11 @@ function computeDPDForDate(asOf) {
       id: loan.id,
       dealerName: loan.dealerName,
       financier: loan.financier,
+      pncmDate: loan.pncmDate,
+      bucketIdx: bi,
       dueDate,
       dpd,
+      principalRepaid3mo: principalRepaidLast3Mo(loan, asOf),
       out,
     });
   });
@@ -716,15 +731,29 @@ function computeDPDForDate(asOf) {
 // reconstructed as of that calendar month's actual last day, regardless of
 // the date picker, so history never moves once a month has closed.
 // ═══════════════════════════════════════════════════════════════════════════
-function buildMonthColumns(asOf) {
+// `today` is the real current date — always shown as the first column so the
+// present MTD figures never disappear. `selectedAsOf` is whatever the date
+// picker is set to; when it differs from today, it's inserted as its own
+// second column (an "as of <day>" snapshot) without displacing the real MTD
+// column or the month-on-month history, which always walks backward from
+// today's month regardless of what's selected.
+function buildMonthColumns(today, selectedAsOf) {
   const cols = [];
-  const y = asOf.getFullYear(), m = asOf.getMonth();
-  const isCurrentCalMonth = true;
+  const y = today.getFullYear(), m = today.getMonth();
   cols.push({
-    asOf: asOf,
+    asOf: today,
     label: MONTH_ABBR[m] + " '" + String(y).slice(2),
     sub: 'MTD',
   });
+
+  if (selectedAsOf && toKey(selectedAsOf) !== toKey(today)) {
+    const sy = selectedAsOf.getFullYear(), sm = selectedAsOf.getMonth();
+    cols.push({
+      asOf: selectedAsOf,
+      label: MONTH_ABBR[sm] + " '" + String(sy).slice(2),
+      sub: 'as of ' + selectedAsOf.getDate(),
+    });
+  }
 
   const minY = minDataDate ? minDataDate.getFullYear() : y;
   const minM = minDataDate ? minDataDate.getMonth() : 0;
@@ -768,7 +797,7 @@ function renderAll(asOf) {
   document.getElementById('rpt-date-display').textContent = toDateStr(asOf);
   document.querySelectorAll('.rpt-date-inline').forEach(el => el.textContent = toDateStr(asOf));
 
-  const columns = buildMonthColumns(asOf);
+  const columns = buildMonthColumns(todayDate || asOf, asOf);
   columns.forEach(col => { col.stats = computeDPDForDate(col.asOf); });
   lastColumns = columns;
 
@@ -838,13 +867,15 @@ function openDrillDown(el) {
 
   const body = document.getElementById('drill-body');
   if (!loans.length) {
-    body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px">No open loans in this bucket</td></tr>';
+    body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">No open loans in this bucket</td></tr>';
   } else {
-    body.innerHTML = loans.map(l =>
-      '<tr><td>' + l.id + '</td><td class="dealer-name">' + l.dealerName + '</td><td>' + (l.financier || '—') + '</td>'
-      + '<td class="r">' + (l.dpd > 0 ? fmtNum(l.dpd) : '—') + '</td><td>' + (l.dueDate ? toDateStr(l.dueDate) : '—') + '</td>'
-      + '<td class="r">' + fmtCurrencyFull(l.out) + '</td></tr>'
-    ).join('');
+    body.innerHTML = loans.map(l => {
+      const agingLabel = l.bucketIdx === 0 ? 'Current' : DPD_FINE_LABELS[l.bucketIdx] + ' (' + fmtNum(l.dpd) + 'd)';
+      return '<tr><td>' + l.id + '</td><td class="dealer-name">' + l.dealerName + '</td><td>' + (l.financier || '—') + '</td>'
+        + '<td>' + (l.pncmDate ? toDateStr(l.pncmDate) : '—') + '</td><td>' + agingLabel + '</td>'
+        + '<td class="r">' + fmtCurrencyFull(l.principalRepaid3mo) + '</td>'
+        + '<td class="r">' + fmtCurrencyFull(l.out) + '</td></tr>';
+    }).join('');
   }
   const totalOut = loans.reduce((a, l) => a + l.out, 0);
   document.getElementById('drill-footer').textContent = 'Total outstanding: ' + fmtCurrencyFull(totalOut);
@@ -954,14 +985,14 @@ async function init() {
   if (!ok) return;
 
   const input = document.getElementById('rpt-date-input');
-  const today = new Date();
+  todayDate = new Date();
   const minStr = minDataDate ? toKey(minDataDate) : '2023-01-01';
   input.min = minStr;
-  input.max = toKey(today);
+  input.max = toKey(todayDate);
 
-  selectedDate = today;
-  input.value = toKey(today);
-  renderAll(today);
+  selectedDate = todayDate;
+  input.value = toKey(todayDate);
+  renderAll(todayDate);
 }
 
 init();
