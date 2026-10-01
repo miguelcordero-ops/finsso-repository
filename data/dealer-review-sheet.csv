@@ -99,7 +99,7 @@
 ,IF0098,BRO'S AUTODEALERS AUTO TRADING,Albert Dalupang,Albert Dalupang,0,13,0,0,0,0,0,0,36.92307692,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,45666.70417,,10,8,2,0,0,0,,0,0,0,0,No
 ,IF0099,KELVEN CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46044,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0100,EY7 CAR GARAHE VEHICLE TRADING,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46043,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0101,ADDTOCAR CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,18,2,0,1646200,1646200,1646200,0,46.3,,,,Open,Finsso: Expired CL | Netbank: Open,,46293,,10,8,2,0.005879797524,0,0,,0,0,0,0,No
+,IF0101,ADDTOCAR CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,18,2,0,1646200,1646200,1646200,0,46.3,,,,Open,Finsso: Expired CL | Netbank: Open,,46293,,12,9,3,0.005879797524,0,0,46296,2,1,1,1,No
 ,IF0102,XKK CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,5,0,2,1350000,1350000,0,1350000,118.7142857,,184.3333333,46015,Blacklisted,15 DPD,46015,,,4,4,0,0.004821848291,281,259,,0,0,0,0,No,,,,46190.65122
 ,IF0103,JKARS CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,21,0,3,2303000,2303000,0,2303000,94.33333333,,103.9090909,46007,Blacklisted,15 DPD,46007,,,13,12,1,0.008225716011,289,247,,0,0,0,0,No,,,,46190.65122
 ,IF0104,RIVERSIDE KOTSE DEPOT,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46045,,0,0,0,0,0,0,,0,0,0,0,No
@@ -505,3 +505,4 @@
 ,IF0504,CHARKKAUTODEALS AUTO TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,1,0,446500,446500,446500,0,2,,,,Open,,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0505,DRL AUTO TRADING,Albert Dalupang,Albert Dalupang,0,0,1,0,512000,512000,512000,0,2,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0506,NASIR/ALICE CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,1,0,400000,400000,400000,0,0,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
+,IF0507,INTIA AUTO TRADING,,,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
