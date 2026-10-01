@@ -119,7 +119,7 @@
 ,IF0118,MON UNDER CHASSIS REPAIR SHOP,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46066,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0119,DLA AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,1,4,0,0,0,0,0,0,21,,,,Open,Finsso: Open | Netbank: Expired CL,,46069,,2,2,0,0,0,0,,0,0,0,0,No
 ,IF0120,JUN UNDERCHASSIS REPAIR SHOP,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46069,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0121,XCAG CAR TRADING,Albert Dalupang,Ricmar Magboo,1,11,1,0,294030,294030,294030,0,63.5,,,,Open,,,,,6,6,0,0.001062880284,0,0,46279,2,2,0,0,No
+,IF0121,XCAG CAR TRADING,Albert Dalupang,Ricmar Magboo,1,11,2,0,294030,879030,879030,0,63.5,,,,Open,,,,,6,6,0,0.001062880284,0,0,46279,2,2,0,0,No
 ,IF0122,JHIAN CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,16,0,0,0,0,0,0,32.5625,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46071,,22,12,10,0,0,0,,0,0,0,0,No
 ,IF0123,JMTS CARFINDERS TELEMARKETING SERVICES,Marah Luriely A. Villaruz,Elvira Ladea,1,73,1,3,1332900,1332900,306000,1026900,49.28571429,,27.07638889,46202,Blacklisted,15 DPD,46202,,,106,68,38,0.004818260487,94,84,46288,30,21,9,1,No,,,,46197.04094
 ,IF0124,AUTO EDGE CAR TRADING,Albert Dalupang,Ricmar Magboo,0,17,4,0,1248000,1248000,1248000,0,50.71428571,,7.5,46295.75903,Open,,,,,12,10,2,0.004511358007,0,0,,0,0,0,1,No
@@ -216,7 +216,7 @@
 ,IF0215,J4 CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Expired CL | Netbank: Pending CLA Signature,,46251,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0216,GABCARS AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Expired CL | Netbank: Pending CLA Signature,,46251,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0217,PRIMELYONE CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Expired CL | Netbank: Pending CLA Signature,,46251,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0218,JVA CARS TRADING OPC,Malou Alfonso,Rose Batacan,2,15,8,0,6265350,6749850,6749850,0,64.77272727,,6,,Open,,,,,33,29,4,0.022648427,0,0,46275,14,14,0,0,No
+,IF0218,JVA CARS TRADING OPC,Malou Alfonso,Rose Batacan,3,15,7,0,6265350,6265350,6265350,0,64.77272727,,6,,Open,,,,,33,29,4,0.022648427,0,0,46275,14,14,0,0,No
 ,IF0219,MAB CAR TRADING,Albert Dalupang,Albert Dalupang,0,2,0,3,3675000,3675000,0,3675000,267.6,,249.25,45961,Blacklisted,15 DPD,45961,,,6,1,5,0.01328464798,335,289,45980,5,1,4,0,Yes,46006,Emailed Endorsement,,46190.65122
 ,IF0220,KIDSZONETOYSAVENUE TOY STORE,Marah Luriely A. Villaruz,Rhoyland Alagon,0,2,0,0,0,0,0,0,48,,15,,Blacklisted,Locked by Timestamp,46199.04094,,,1,1,0,0,0,0,,0,0,0,0,No,,,,46199.04094
 ,IF0221,ALP AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,1,2,0,0,0,0,0,0,30,,,,Hold,Finsso: Expired CL | Netbank: Pending CLA Signature,,46253,,0,0,0,0,0,0,,0,0,0,0,No
@@ -284,7 +284,7 @@
 ,IF0283,CRISJANE CAR TRADING,Albert Dalupang,Albert Dalupang,0,0,0,0,0,0,0,0,,,,,Hold,Pending CLA Signature,,46189.60625,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0284,PAWNAGE CAR TRADING,Malou Alfonso,Rose Batacan,1,1,0,0,0,0,0,0,71,,12,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46189.60903,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0285,RB AUTO BODY REPAIR SERVICE,Marah Luriely A. Villaruz,Rhoyland Alagon,0,1,1,0,343080,343080,343080,0,65.5,,7,,Open,,,,,0,0,0,0.001240189668,0,0,,0,0,0,0,No
-,IF0286,RLP TRADING INC,Malou Alfonso,Myrnalyn Bankingkito,0,8,4,0,5316847.148,8316847.148,8316847.148,0,78.45454545,,,,Open,Finsso: Open | Netbank: Pending CL,,,,13,2,11,0.0192197123,0,0,46293,7,2,5,0,No
+,IF0286,RLP TRADING INC,Malou Alfonso,Myrnalyn Bankingkito,1,8,3,0,5316847.148,5316847.148,5316847.148,0,78.45454545,,,,Open,Finsso: Open | Netbank: Pending CL,,,,13,2,11,0.0192197123,0,0,46293,7,2,5,0,No
 ,IF0287,BOSS CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,4,0,3,1050000,1050000,0,1050000,131,,154.25,46088,Blacklisted,15 DPD,46088,,,3,0,3,0.003795613708,208,198,46140,3,0,3,0,No,,,,46190.65122
 ,IF0288,PWESTO VEHICULO AUTO TRADING,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46189.74792,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0289,LMK-KJM TRADING,Albert Dalupang,Zhesa Resurrecion,0,1,0,0,0,0,0,0,29,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46184.44931,,0,0,0,0,0,0,,0,0,0,0,No
