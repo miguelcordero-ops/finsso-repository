@@ -907,11 +907,12 @@ function computeDPDForDate(asOf) {
     const dpd = dueDate ? Math.round((asOf - dueDate) / DAY_MS) : 0;
 
     if (loan.restructureStatus === 'active' || loan.restructureStatus === 'pending') {
-      // For restructured loans, DO (Restructuring Balance) is the
-      // authoritative outstanding principal — the original repayment
-      // schedule outstandingAsOf() walks no longer reflects the loan once
-      // it's been restructured, so we use DO directly instead.
-      const out = loan.restructureBalance || 0;
+      // The matrix $ value for Active/Pending still reflects the loan's
+      // actual declining outstanding principal over time (same calc as
+      // every other open loan) — DO (Restructuring Balance) is the
+      // locked-in balance set at restructuring and is shown as its own
+      // column in the drill-down instead of standing in for a time series.
+      const out = outstandingAsOf(loan, asOf);
       const record = {
         id: loan.id,
         dealerName: loan.dealerName,
