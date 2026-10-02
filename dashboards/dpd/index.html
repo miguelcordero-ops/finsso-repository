@@ -684,6 +684,10 @@ async function loadData() {
         const id = get(r, d3Col('Drawdown ID')).trim();
         if (!id) continue;
         const creditDate = parseSheetDate(get(r, d3Col('Credit Date to Dealer Bank Account')));
+        // Every checkpoint (R1-R5, Maturity) is computed off the credit
+        // date, so a v3 row without one can't be aged at all — skip it
+        // rather than let it silently sit un-countable in drawdownRows.
+        if (!creditDate) continue;
         const r1Due = parseSheetDate(get(r, d3Col('R1 Due Date')));
         const r1Paid = parseSheetDate(get(r, d3Col('R1 Payment Date')));
         const r2Due = parseSheetDate(get(r, d3Col('R2 Due Date')));
