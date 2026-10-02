@@ -675,18 +675,20 @@ async function loadData() {
         renewal2Due: parseSheetDate(get(r, ddCol('Renewal 2 Due Date'))),
         renewal2PaidDate: parseSheetDate(get(r, ddCol('Payment Date for Renewal 2'))),
         maturityDue: parseSheetDate(get(r, ddCol('Final Maturity Date'))),
-        // ── Restructuring (Drawdown Tracker columns DG–DO) ──
-        // Status (DH) drives which loans get pulled into the "Restructured
-        // Accounts" bucket instead of the normal DPD-aging buckets:
-        // "Current Restructuring" = Active, "Pending Restructuring" = Pending.
+        // ── Restructuring ──
+        // Tagging now comes from "Loan Status" (col AJ) itself — "Restructuring
+        // Active" / "Restructuring Pending" — rather than the separate
+        // "Restructuring Status" column (DH, "Current Restructuring" /
+        // "Pending Restructuring"), which tagged far more loans as pending
+        // than AJ's own status actually reflects.
         // DI/DK/DM are the three Yes/No milestone flags shown in the
         // drill-down; DO is read positionally since it's being repurposed
         // from "Restructuring ID" to the restructuring balance amount.
-        restructureStatus: (function (raw) {
-          if (raw === 'Current Restructuring') return 'active';
-          if (raw === 'Pending Restructuring') return 'pending';
+        restructureStatus: (function (status) {
+          if (status === 'Restructuring Active') return 'active';
+          if (status === 'Restructuring Pending') return 'pending';
           return null;
-        })(get(r, ddCol('Restructuring Status')).trim()),
+        })(get(r, ddCol('Loan Status')).trim()),
         initialPaymentPaid: getByLetter(r, 'DI').trim(),
         initialPaymentDate: parseSheetDate(getByLetter(r, 'DJ')),
         lrsSigned: getByLetter(r, 'DK').trim(),
@@ -1032,9 +1034,11 @@ function computeDPDForDate(asOf) {
         sub.loans.push(record);
       }
 
-      if (loan.initialPaymentDate
-        && loan.initialPaymentDate.getFullYear() === asOf.getFullYear()
-        && loan.initialPaymentDate.getMonth() === asOf.getMonth()) {
+      // Treated like PNCM date — once a restructuring's effectivity (Initial
+      // Payment Date) has passed, the loan keeps showing up in "Restructured
+      // Active" for every later month too, not just the one month it became
+      // effective in.
+      if (loan.initialPaymentDate && loan.initialPaymentDate <= asOf) {
         restructure.effectivity.n += 1;
         restructure.effectivity.sum += (loan.restructureBalance || 0);
         restructure.effectivity.loans.push(record);
