@@ -689,6 +689,7 @@ async function loadData() {
           if (status === 'Restructuring Pending') return 'pending';
           return null;
         })(get(r, ddCol('Loan Status')).trim()),
+        forRestructuringEndorsement: getByLetter(r, 'DG').trim(),
         initialPaymentPaid: getByLetter(r, 'DI').trim(),
         initialPaymentDate: parseSheetDate(getByLetter(r, 'DJ')),
         lrsSigned: getByLetter(r, 'DK').trim(),
@@ -766,6 +767,7 @@ async function loadData() {
           maturityDue,
           // Restructuring isn't tracked on this sheet yet.
           restructureStatus: null,
+          forRestructuringEndorsement: '',
           initialPaymentPaid: '',
           lrsSigned: '',
           lraSigned: '',
@@ -1028,17 +1030,35 @@ function computeDPDForDate(asOf) {
 
       if (loan.restructureStatus === 'pending') {
         const paidInit = (loan.initialPaymentPaid || '').trim().toLowerCase() === 'yes';
-        const sub = paidInit ? restructure.pendingPaidInit : restructure.pendingUnpaidInit;
-        sub.n += 1;
-        sub.sum += out;
-        sub.loans.push(record);
+        if (paidInit) {
+          restructure.pendingPaidInit.n += 1;
+          restructure.pendingPaidInit.sum += out;
+          restructure.pendingPaidInit.loans.push(record);
+        } else {
+          // "Pending Initial Payment, Pending Docs" — flagged for
+          // restructuring endorsement (col DG = Yes) but with no updates
+          // yet in either restructuring document column (LRS/LRA Signed
+          // both blank/not-yet-Yes). This is deliberately not just
+          // "everything else" in the pending bucket — a loan that doesn't
+          // meet this DG+no-updates condition falls into neither sub-row.
+          const dgYes = (loan.forRestructuringEndorsement || '').trim().toLowerCase() === 'yes';
+          const lrsYes = (loan.lrsSigned || '').trim().toLowerCase() === 'yes';
+          const lraYes = (loan.lraSigned || '').trim().toLowerCase() === 'yes';
+          if (dgYes && !lrsYes && !lraYes) {
+            restructure.pendingUnpaidInit.n += 1;
+            restructure.pendingUnpaidInit.sum += out;
+            restructure.pendingUnpaidInit.loans.push(record);
+          }
+        }
       }
 
       // Treated like PNCM date — once a restructuring's effectivity (Initial
       // Payment Date) has passed, the loan keeps showing up in "Restructured
       // Active" for every later month too, not just the one month it became
-      // effective in.
-      if (loan.initialPaymentDate && loan.initialPaymentDate <= asOf) {
+      // effective in. Only the "active" subset counts toward this total —
+      // "pending" loans are excluded even if they have an Initial Payment
+      // Date, since they haven't actually become active restructurings.
+      if (loan.restructureStatus === 'active' && loan.initialPaymentDate && loan.initialPaymentDate <= asOf) {
         restructure.effectivity.n += 1;
         restructure.effectivity.sum += (loan.restructureBalance || 0);
         restructure.effectivity.loans.push(record);
