@@ -676,19 +676,27 @@ async function loadData() {
         renewal2PaidDate: parseSheetDate(get(r, ddCol('Payment Date for Renewal 2'))),
         maturityDue: parseSheetDate(get(r, ddCol('Final Maturity Date'))),
         // ── Restructuring ──
-        // Tagging now comes from "Loan Status" (col AJ) itself — "Restructuring
+        // Tagging comes from "Loan Status" (col AJ) itself — "Restructuring
         // Active" / "Restructuring Pending" — rather than the separate
         // "Restructuring Status" column (DH, "Current Restructuring" /
-        // "Pending Restructuring"), which tagged far more loans as pending
-        // than AJ's own status actually reflects.
+        // "Pending Restructuring"), which drifted out of sync with AJ.
+        // One exception: a loan can be flagged "For Restructuring
+        // Endorsement" (col DG = Y) before AJ itself has been updated to
+        // "Restructuring Pending" — e.g. it still shows "Overdue"/"Open"/
+        // "Closed" in AJ even though it's already been routed into
+        // restructuring. DG = Y is treated as pending too (unless AJ
+        // already says Active), so these loans still show up under
+        // Restructured Accounts instead of silently falling out of both
+        // populations.
         // DI/DK/DM are the three Yes/No milestone flags shown in the
         // drill-down; DO is read positionally since it's being repurposed
         // from "Restructuring ID" to the restructuring balance amount.
-        restructureStatus: (function (status) {
+        restructureStatus: (function (status, dgFlag) {
           if (status === 'Restructuring Active') return 'active';
           if (status === 'Restructuring Pending') return 'pending';
+          if (/^y/i.test((dgFlag || '').trim())) return 'pending';
           return null;
-        })(get(r, ddCol('Loan Status')).trim()),
+        })(get(r, ddCol('Loan Status')).trim(), getByLetter(r, 'DG')),
         forRestructuringEndorsement: getByLetter(r, 'DG').trim(),
         initialPaymentPaid: getByLetter(r, 'DI').trim(),
         initialPaymentDate: parseSheetDate(getByLetter(r, 'DJ')),
@@ -1029,7 +1037,7 @@ function computeDPDForDate(asOf) {
       rbs.loans[underlyingBucketIdx].push(record);
 
       if (loan.restructureStatus === 'pending') {
-        const paidInit = (loan.initialPaymentPaid || '').trim().toLowerCase() === 'yes';
+        const paidInit = /^y/i.test((loan.initialPaymentPaid || '').trim());
         if (paidInit) {
           restructure.pendingPaidInit.n += 1;
           restructure.pendingPaidInit.sum += out;
@@ -1041,9 +1049,9 @@ function computeDPDForDate(asOf) {
           // both blank/not-yet-Yes). This is deliberately not just
           // "everything else" in the pending bucket — a loan that doesn't
           // meet this DG+no-updates condition falls into neither sub-row.
-          const dgYes = (loan.forRestructuringEndorsement || '').trim().toLowerCase() === 'yes';
-          const lrsYes = (loan.lrsSigned || '').trim().toLowerCase() === 'yes';
-          const lraYes = (loan.lraSigned || '').trim().toLowerCase() === 'yes';
+          const dgYes = /^y/i.test((loan.forRestructuringEndorsement || '').trim());
+          const lrsYes = /^y/i.test((loan.lrsSigned || '').trim());
+          const lraYes = /^y/i.test((loan.lraSigned || '').trim());
           if (dgYes && !lrsYes && !lraYes) {
             restructure.pendingUnpaidInit.n += 1;
             restructure.pendingUnpaidInit.sum += out;
