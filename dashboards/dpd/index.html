@@ -244,6 +244,17 @@ td.drill-cell:hover{background:var(--chip-hover)}
 .drill-table-wrap table{font-size:12px}
 .drill-table-wrap th,.drill-table-wrap td{padding:8px 12px}
 .drill-footer{padding:12px 20px 18px;font-size:11px;font-weight:600;color:var(--text);text-align:right;border-top:1px solid var(--border2)}
+.drill-toolbar{display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--border2)}
+.drill-filter-input{
+  flex:1;max-width:320px;font-size:12px;padding:6px 10px;
+  border:1px solid var(--border2);border-radius:var(--rctrl);
+  background:var(--surface-d);color:var(--text);
+}
+.drill-filter-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(232,70,30,0.10)}
+.drill-filter-count{font-size:11px;color:var(--text3)}
+.drill-table-wrap th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
+.drill-table-wrap th.sortable:hover{color:var(--text)}
+.drill-sort-arrow{font-size:9px;margin-left:3px;opacity:0.7}
 
 .lock-overlay{
   position:fixed;inset:0;
@@ -375,6 +386,10 @@ td.drill-cell:hover{background:var(--chip-hover)}
       </div>
       <span class="drill-close" onclick="closeDrillDown()">✕</span>
     </div>
+    <div class="drill-toolbar">
+      <input type="text" id="drill-filter" class="drill-filter-input" placeholder="Filter by Drawdown ID or dealer…" oninput="onDrillFilterInput(this.value)">
+      <span class="drill-filter-count" id="drill-filter-count"></span>
+    </div>
     <div class="drill-table-wrap">
       <table id="drill-table">
         <thead id="drill-thead"></thead>
@@ -409,6 +424,9 @@ const DPD_FINE_BOUNDS = [30, 60, 90, 120, 150, 180, 365, Infinity]; // applies t
 // buckets above and reported only here — see computeDPDForDate().
 const MATRIX_ROWS = [
   { label: 'Standard / Current', type: 'leaf', idx: 0 },
+  { label: 'Restructured Accounts', type: 'restructureSubtotal', keys: ['active', 'pending'] },
+  { label: 'Active', type: 'restructureLeaf', key: 'active', indent: true },
+  { label: 'Pending', type: 'restructureLeaf', key: 'pending', indent: true },
   { label: 'DPD 1 – 90', type: 'subtotal', idxs: [1, 2, 3] },
   { label: '1 ≥ 30', type: 'leaf', idx: 1, indent: true },
   { label: '31 ≥ 60', type: 'leaf', idx: 2, indent: true },
@@ -419,9 +437,6 @@ const MATRIX_ROWS = [
   { label: '151 ≥ 180', type: 'leaf', idx: 6, indent: true },
   { label: '181 ≥ 365', type: 'leaf', idx: 7, indent: true },
   { label: 'Above 365', type: 'leaf', idx: 8, indent: true },
-  { label: 'Restructured Accounts', type: 'restructureSubtotal', keys: ['active', 'pending'] },
-  { label: 'Active', type: 'restructureLeaf', key: 'active', indent: true },
-  { label: 'Pending', type: 'restructureLeaf', key: 'pending', indent: true },
 ];
 
 let drawdownRows = [];
@@ -626,10 +641,20 @@ async function loadData() {
           return null;
         })(get(r, ddCol('Restructuring Status')).trim()),
         initialPaymentPaid: getByLetter(r, 'DI').trim(),
+        initialPaymentDate: parseSheetDate(getByLetter(r, 'DJ')),
         lrsSigned: getByLetter(r, 'DK').trim(),
         lraSigned: getByLetter(r, 'DM').trim(),
         restructureBalance: parseNum(getByLetter(r, 'DO')),
       };
+      // Restructured loans are treated as new loans from the restructuring's
+      // Initial Payment Date onward — they drop out of the month-on-month
+      // view entirely before that date, same as any loan that hasn't been
+      // disbursed yet. Falls back to the original credit date only when no
+      // initial payment has been recorded yet (so a Pending loan still shows
+      // up somewhere before it has one).
+      if ((loan.restructureStatus === 'active' || loan.restructureStatus === 'pending') && loan.initialPaymentDate) {
+        loan.creditDate = loan.initialPaymentDate;
+      }
       drawdownRows.push(loan);
       if (creditDate && (!earliestDisb || creditDate < earliestDisb)) earliestDisb = creditDate;
     }
@@ -1068,26 +1093,33 @@ function ynCell(v) { return v || '—'; }
 // Financier / PNCM Date / DPD Aging / Principal Repaid / Total Outstanding),
 // and a dedicated Restructured-Accounts view surfacing the three milestone
 // flags (DI/DK/DM) and the restructuring balance (DO) the Active/Pending
-// rows are specifically about.
+// rows are specifically about. `key` extracts a sortable value (string or
+// number) and `render` builds the cell's HTML — both driven off the same
+// loan-record shape computeDPDForDate() already produces.
 const DRILL_COLUMNS_DPD = [
-  { label: 'Drawdown ID', cls: '' },
-  { label: 'Dealer', cls: 'dealer-name' },
-  { label: 'Financier', cls: '' },
-  { label: 'PNCM Date', cls: '' },
-  { label: 'DPD Aging', cls: '' },
-  { label: 'Principal Repaid (3 Mo)', cls: 'r' },
-  { label: 'Total Outstanding', cls: 'r' },
+  { label: 'Drawdown ID', cls: '', type: 'text', key: l => l.id, render: l => l.id },
+  { label: 'Dealer', cls: 'dealer-name', type: 'text', key: l => l.dealerName, render: l => l.dealerName },
+  { label: 'Financier', cls: '', type: 'text', key: l => l.financier || '', render: l => l.financier || '—' },
+  { label: 'PNCM Date', cls: '', type: 'number', key: l => l.pncmDate ? l.pncmDate.getTime() : -Infinity, render: l => l.pncmDate ? toDateStr(l.pncmDate) : '—' },
+  { label: 'DPD Aging', cls: '', type: 'number', key: l => l.dpd, render: l => restructureAgingLabel(l) },
+  { label: 'Principal Repaid (3 Mo)', cls: 'r', type: 'number', key: l => l.principalRepaid3mo, render: l => fmtCurrencyFull(l.principalRepaid3mo) },
+  { label: 'Total Outstanding', cls: 'r', type: 'number', key: l => l.out, render: l => fmtCurrencyFull(l.out) },
 ];
 const DRILL_COLUMNS_RESTRUCTURE = [
-  { label: 'Drawdown ID', cls: '' },
-  { label: 'Dealer', cls: 'dealer-name' },
-  { label: 'Financier', cls: '' },
-  { label: 'Restructuring Balance', cls: 'r' },
-  { label: 'Initial Payment Paid?', cls: '' },
-  { label: 'LRS Signed?', cls: '' },
-  { label: 'LRA Signed?', cls: '' },
-  { label: 'Total Outstanding', cls: 'r' },
+  { label: 'Drawdown ID', cls: '', type: 'text', key: l => l.id, render: l => l.id },
+  { label: 'Dealer', cls: 'dealer-name', type: 'text', key: l => l.dealerName, render: l => l.dealerName },
+  { label: 'Financier', cls: '', type: 'text', key: l => l.financier || '', render: l => l.financier || '—' },
+  { label: 'Restructuring Balance', cls: 'r', type: 'number', key: l => l.restructureBalance, render: l => fmtCurrencyFull(l.restructureBalance) },
+  { label: 'Initial Payment Paid?', cls: '', type: 'text', key: l => l.initialPaymentPaid || '', render: l => ynCell(l.initialPaymentPaid) },
+  { label: 'LRS Signed?', cls: '', type: 'text', key: l => l.lrsSigned || '', render: l => ynCell(l.lrsSigned) },
+  { label: 'LRA Signed?', cls: '', type: 'text', key: l => l.lraSigned || '', render: l => ynCell(l.lraSigned) },
+  { label: 'Total Outstanding', cls: 'r', type: 'number', key: l => l.out, render: l => fmtCurrencyFull(l.out) },
 ];
+
+// Current modal's state — the raw (unfiltered, unsorted) loan list plus
+// whatever the user has typed/clicked, so filtering and sorting re-render
+// instantly without recomputing anything from lastColumns.
+let drillState = { loans: [], cols: [], sortIdx: null, sortDir: 'desc', filterText: '' };
 
 function openDrillDown(el) {
   if (!lastColumns) return;
@@ -1106,41 +1138,84 @@ function openDrillDown(el) {
     DPD_FINE_LABELS.forEach((_, i) => { loans = loans.concat(col.stats.bucketLoans[i] || []); });
     loans = loans.concat(col.stats.restructure.active.loans, col.stats.restructure.pending.loans);
   }
-  loans.sort((a, b) => b.out - a.out);
 
   const tr = el.closest('tr');
   const labelEl = tr ? tr.querySelector('.bucket-label') : null;
   const label = labelEl ? labelEl.textContent.trim() : '';
 
   document.getElementById('drill-title').textContent = label + ' — ' + col.label + (col.sub ? ' (' + col.sub + ')' : '');
-  document.getElementById('drill-sub').textContent = loans.length + ' open loan' + (loans.length === 1 ? '' : 's') + ' as of ' + toDateStr(col.asOf);
+  document.getElementById('drill-sub').textContent = toDateStr(col.asOf);
 
-  const isRestructureView = kind === 'restructure';
-  const cols = isRestructureView ? DRILL_COLUMNS_RESTRUCTURE : DRILL_COLUMNS_DPD;
-  document.getElementById('drill-thead').innerHTML = '<tr>' + cols.map(c => '<th' + (c.cls ? ' class="' + c.cls + '"' : '') + '>' + c.label + '</th>').join('') + '</tr>';
+  drillState = {
+    loans,
+    cols: kind === 'restructure' ? DRILL_COLUMNS_RESTRUCTURE : DRILL_COLUMNS_DPD,
+    sortIdx: null, // default sort below (Total Outstanding desc) until the user clicks a header
+    sortDir: 'desc',
+    filterText: '',
+  };
+  const defaultSortIdx = drillState.cols.length - 1; // "Total Outstanding" is always last
+  drillState.sortIdx = defaultSortIdx;
+  document.getElementById('drill-filter').value = '';
+
+  renderDrillBody();
+  document.getElementById('drill-overlay').classList.remove('hidden');
+}
+
+function renderDrillBody() {
+  const { loans, cols, sortIdx, sortDir, filterText } = drillState;
+  const q = filterText.trim().toLowerCase();
+  let filtered = !q ? loans : loans.filter(l =>
+    String(l.id).toLowerCase().includes(q)
+    || String(l.dealerName).toLowerCase().includes(q)
+    || String(l.financier || '').toLowerCase().includes(q)
+  );
+
+  if (sortIdx !== null) {
+    const col = cols[sortIdx];
+    const dir = sortDir === 'asc' ? 1 : -1;
+    filtered = filtered.slice().sort((a, b) => {
+      const av = col.key(a), bv = col.key(b);
+      if (typeof av === 'string' || typeof bv === 'string') return String(av).localeCompare(String(bv)) * dir;
+      return ((av || 0) - (bv || 0)) * dir;
+    });
+  }
+
+  // Header row — each th is clickable to sort by that column, with an arrow
+  // on whichever column is currently driving the sort.
+  document.getElementById('drill-thead').innerHTML = '<tr>' + cols.map((c, i) => {
+    const arrow = i === sortIdx ? '<span class="drill-sort-arrow">' + (sortDir === 'asc' ? '▲' : '▼') + '</span>' : '';
+    return '<th class="sortable' + (c.cls ? ' ' + c.cls : '') + '" onclick="sortDrillBy(' + i + ')">' + c.label + arrow + '</th>';
+  }).join('') + '</tr>';
 
   const body = document.getElementById('drill-body');
-  if (!loans.length) {
-    body.innerHTML = '<tr><td colspan="' + cols.length + '" style="text-align:center;color:var(--text3);padding:20px">No open loans in this bucket</td></tr>';
-  } else if (isRestructureView) {
-    body.innerHTML = loans.map(l =>
-      '<tr><td>' + l.id + '</td><td class="dealer-name">' + l.dealerName + '</td><td>' + (l.financier || '—') + '</td>'
-      + '<td class="r">' + fmtCurrencyFull(l.restructureBalance) + '</td>'
-      + '<td>' + ynCell(l.initialPaymentPaid) + '</td><td>' + ynCell(l.lrsSigned) + '</td><td>' + ynCell(l.lraSigned) + '</td>'
-      + '<td class="r">' + fmtCurrencyFull(l.out) + '</td></tr>'
-    ).join('');
+  if (!filtered.length) {
+    body.innerHTML = '<tr><td colspan="' + cols.length + '" style="text-align:center;color:var(--text3);padding:20px">No loans match' + (q ? ' this filter' : ' this bucket') + '</td></tr>';
   } else {
-    body.innerHTML = loans.map(l =>
-      '<tr><td>' + l.id + '</td><td class="dealer-name">' + l.dealerName + '</td><td>' + (l.financier || '—') + '</td>'
-      + '<td>' + (l.pncmDate ? toDateStr(l.pncmDate) : '—') + '</td><td>' + restructureAgingLabel(l) + '</td>'
-      + '<td class="r">' + fmtCurrencyFull(l.principalRepaid3mo) + '</td>'
-      + '<td class="r">' + fmtCurrencyFull(l.out) + '</td></tr>'
+    body.innerHTML = filtered.map(l =>
+      '<tr>' + cols.map(c => '<td' + (c.cls ? ' class="' + c.cls + '"' : '') + '>' + c.render(l) + '</td>').join('') + '</tr>'
     ).join('');
   }
-  const totalOut = loans.reduce((a, l) => a + l.out, 0);
-  document.getElementById('drill-footer').textContent = 'Total outstanding: ' + fmtCurrencyFull(totalOut);
 
-  document.getElementById('drill-overlay').classList.remove('hidden');
+  const totalOut = filtered.reduce((a, l) => a + l.out, 0);
+  const countLabel = filtered.length === loans.length
+    ? filtered.length + ' loan' + (filtered.length === 1 ? '' : 's')
+    : filtered.length + ' of ' + loans.length + ' loans';
+  document.getElementById('drill-filter-count').textContent = countLabel;
+  document.getElementById('drill-footer').textContent = 'Total outstanding: ' + fmtCurrencyFull(totalOut);
+}
+
+function sortDrillBy(idx) {
+  if (drillState.sortIdx === idx) {
+    drillState.sortDir = drillState.sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    drillState.sortIdx = idx;
+    drillState.sortDir = drillState.cols[idx].type === 'text' ? 'asc' : 'desc';
+  }
+  renderDrillBody();
+}
+function onDrillFilterInput(v) {
+  drillState.filterText = v;
+  renderDrillBody();
 }
 function closeDrillDown() {
   document.getElementById('drill-overlay').classList.add('hidden');
