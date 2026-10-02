@@ -159,6 +159,9 @@ tr.subtotal-row td{font-weight:600;color:var(--text);background:var(--tbl-hdr)}
 tr:hover td{background:var(--tr-hover)}
 td.dealer-name{white-space:normal;max-width:220px}
 td.bucket-label.indent{padding-left:26px;font-weight:500;color:var(--text)}
+td.bucket-label.indent2{padding-left:44px;font-weight:500;color:var(--text)}
+.row-toggle{display:inline-block;width:14px;cursor:pointer;user-select:none;color:var(--text3);font-size:10px;margin-right:4px}
+.row-toggle:hover{color:var(--text)}
 td.bucket-label{color:var(--text);font-weight:700}
 th.month-col,td.month-col{min-width:78px}
 th.sticky-col,td.sticky-col{position:sticky;left:0;z-index:2;background:var(--col1-solid);box-shadow:3px 0 0 var(--primary)}
@@ -425,9 +428,11 @@ const DPD_FINE_BOUNDS = [30, 60, 90, 120, 150, 180, 365, Infinity]; // applies t
 const MATRIX_ROWS = [
   { label: 'Standard / Current', type: 'leaf', idx: 0 },
   { label: 'Restructured Accounts', type: 'restructureSubtotal', keys: ['active', 'pending'] },
-  { label: 'Active', type: 'restructureLeaf', key: 'active', indent: true },
-  { label: 'Pending', type: 'restructureLeaf', key: 'pending', indent: true },
-  { label: 'Effectivity Date', type: 'restructureLeaf', key: 'effectivity', indent: true },
+  { label: 'Effectivity Date', type: 'restructureLeaf', key: 'effectivity', indent: true, groupId: 'eff', collapsible: true },
+  { label: 'Active', type: 'restructureLeaf', key: 'active', indent: true, indentLevel: 2, parentGroup: 'eff' },
+  { label: 'Pending', type: 'restructureLeaf', key: 'pending', indent: true, groupId: 'pend', collapsible: true },
+  { label: 'Paid Initial Payment, Pending Docs', type: 'restructureLeaf', key: 'pendingPaidInit', indent: true, indentLevel: 2, parentGroup: 'pend' },
+  { label: 'Pending Initial Payment, Pending Docs', type: 'restructureLeaf', key: 'pendingUnpaidInit', indent: true, indentLevel: 2, parentGroup: 'pend' },
   { label: 'DPD 1 – 90', type: 'subtotal', idxs: [1, 2, 3] },
   { label: '1 ≥ 30', type: 'leaf', idx: 1, indent: true },
   { label: '31 ≥ 60', type: 'leaf', idx: 2, indent: true },
@@ -452,6 +457,12 @@ let currencyMode = 'PHP'; // 'PHP' | 'USD'
 // 'any'      = 2b — Renewal + Maturity DPD (Renewal 1 → Renewal 2 → Final Maturity, in order)
 let dpdDefinition = 'maturity';
 let viewMode = 'pct'; // 'pct' | 'value' | 'count'
+
+// Which collapsible matrix row-groups (by groupId) are currently collapsed —
+// i.e. their child rows (parentGroup === that id) are hidden. Persists
+// across re-renders (view-mode toggles, date changes) until the user clicks
+// the group's toggle arrow again.
+const collapsedGroups = new Set();
 
 const filterState = { financier: new Set() };
 
@@ -890,6 +901,12 @@ function computeDPDForDate(asOf) {
   const restructure = {
     active:  { n: 0, sum: 0, loans: [] },
     pending: { n: 0, sum: 0, loans: [] },
+    // Pending restructurings are, by definition, still waiting on docs
+    // (LRS/LRA) — the two sub-categories below split them purely by
+    // whether the dealer/customer has made the Initial Payment (DI) yet,
+    // same loans as "pending" above, not an additional count.
+    pendingPaidInit:   { n: 0, sum: 0, loans: [] },
+    pendingUnpaidInit: { n: 0, sum: 0, loans: [] },
     // "Effectivity Date" is a secondary, informational lens on the same
     // active/pending restructured loans above — it does NOT add to
     // totalN/totalSum (those loans are already counted once under
@@ -934,6 +951,14 @@ function computeDPDForDate(asOf) {
       rb.n += 1;
       rb.sum += out;
       rb.loans.push(record);
+
+      if (loan.restructureStatus === 'pending') {
+        const paidInit = (loan.initialPaymentPaid || '').trim().toLowerCase() === 'yes';
+        const sub = paidInit ? restructure.pendingPaidInit : restructure.pendingUnpaidInit;
+        sub.n += 1;
+        sub.sum += out;
+        sub.loans.push(record);
+      }
 
       if (loan.initialPaymentDate
         && loan.initialPaymentDate.getFullYear() === asOf.getFullYear()
@@ -1036,6 +1061,16 @@ function cellValue(n, sum, colTotalN, colTotalSum) {
   return fmtMio(sum);
 }
 
+// Toggles a collapsible matrix row-group (e.g. "Active" nested under
+// "Effectivity Date", or the two Pending sub-categories) open/closed, then
+// re-renders the matrix body only — the month columns themselves don't
+// change, just which rows are visible.
+function toggleRowGroup(groupId) {
+  if (collapsedGroups.has(groupId)) collapsedGroups.delete(groupId);
+  else collapsedGroups.add(groupId);
+  renderAll(selectedDate);
+}
+
 function renderAll(asOf) {
   document.getElementById('rpt-date-display').textContent = toDateStr(asOf);
   document.querySelectorAll('.rpt-date-inline').forEach(el => el.textContent = toDateStr(asOf));
@@ -1055,11 +1090,15 @@ function renderAll(asOf) {
   // lastColumns[...].stats.bucketLoans for exactly the loans behind that
   // row+column without recomputing anything.
   const body = document.getElementById('dpd-matrix-body');
-  const rowsHtml = MATRIX_ROWS.map(row => {
+  const rowsHtml = MATRIX_ROWS.filter(row => !row.parentGroup || !collapsedGroups.has(row.parentGroup)).map(row => {
     const isRestructure = row.type === 'restructureLeaf' || row.type === 'restructureSubtotal';
     const isSubtotal = row.type === 'subtotal' || row.type === 'restructureSubtotal';
     const rowClass = isSubtotal ? ' class="subtotal-row"' : '';
-    const labelClass = 'bucket-label' + (row.indent ? ' indent' : '');
+    const indentClass = row.indentLevel === 2 ? ' indent2' : (row.indent ? ' indent' : '');
+    const labelClass = 'bucket-label' + indentClass;
+    const toggleHtml = row.collapsible
+      ? '<span class="row-toggle" onclick="toggleRowGroup(\'' + row.groupId + '\')">' + (collapsedGroups.has(row.groupId) ? '▸' : '▾') + '</span>'
+      : '';
     const idxs = row.type === 'leaf' ? [row.idx] : row.idxs;
     const keys = row.type === 'restructureLeaf' ? [row.key] : row.keys;
     const cells = columns.map((col, ci) => {
@@ -1076,7 +1115,7 @@ function renderAll(asOf) {
       return '<td class="r month-col drill-cell" data-col="' + ci + '" data-kind="' + (isRestructure ? 'restructure' : 'dpd') + '" data-idxs="' + dataIdxs + '" onclick="openDrillDown(this)">'
         + cellValue(n, sum, col.stats.totalN, col.stats.totalSum) + '</td>';
     }).join('');
-    return '<tr' + rowClass + '><td class="sticky-col ' + labelClass + '">' + row.label + '</td>' + cells + '</tr>';
+    return '<tr' + rowClass + '><td class="sticky-col ' + labelClass + '">' + toggleHtml + row.label + '</td>' + cells + '</tr>';
   }).join('');
 
   const allIdxs = DPD_FINE_LABELS.map((_, i) => i);
