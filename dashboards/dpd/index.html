@@ -427,6 +427,7 @@ const MATRIX_ROWS = [
   { label: 'Restructured Accounts', type: 'restructureSubtotal', keys: ['active', 'pending'] },
   { label: 'Active', type: 'restructureLeaf', key: 'active', indent: true },
   { label: 'Pending', type: 'restructureLeaf', key: 'pending', indent: true },
+  { label: 'Effectivity Date', type: 'restructureLeaf', key: 'effectivity', indent: true },
   { label: 'DPD 1 – 90', type: 'subtotal', idxs: [1, 2, 3] },
   { label: '1 ≥ 30', type: 'leaf', idx: 1, indent: true },
   { label: '31 ≥ 60', type: 'leaf', idx: 2, indent: true },
@@ -646,15 +647,10 @@ async function loadData() {
         lraSigned: getByLetter(r, 'DM').trim(),
         restructureBalance: parseNum(getByLetter(r, 'DO')),
       };
-      // Restructured loans are treated as new loans from the restructuring's
-      // Initial Payment Date onward — they drop out of the month-on-month
-      // view entirely before that date, same as any loan that hasn't been
-      // disbursed yet. Falls back to the original credit date only when no
-      // initial payment has been recorded yet (so a Pending loan still shows
-      // up somewhere before it has one).
-      if ((loan.restructureStatus === 'active' || loan.restructureStatus === 'pending') && loan.initialPaymentDate) {
-        loan.creditDate = loan.initialPaymentDate;
-      }
+      // Restructured loans age off their normal PNCM/credit date, same as any
+      // other loan — the restructuring's Initial Payment Date is tracked
+      // separately (see the "Effectivity Date" row) but does not change when
+      // the loan is considered open in the month-on-month view.
       drawdownRows.push(loan);
       if (creditDate && (!earliestDisb || creditDate < earliestDisb)) earliestDisb = creditDate;
     }
@@ -894,6 +890,14 @@ function computeDPDForDate(asOf) {
   const restructure = {
     active:  { n: 0, sum: 0, loans: [] },
     pending: { n: 0, sum: 0, loans: [] },
+    // "Effectivity Date" is a secondary, informational lens on the same
+    // active/pending restructured loans above — it does NOT add to
+    // totalN/totalSum (those loans are already counted once under
+    // active/pending). It instead re-buckets them by the calendar month
+    // their restructuring actually became effective (Initial Payment
+    // Date / DJ), giving a vintage-style "how many restructurings started
+    // this month" row, independent of normal PNCM-date aging.
+    effectivity: { n: 0, sum: 0, loans: [] },
   };
 
   drawdownRows.forEach(loan => {
@@ -901,13 +905,14 @@ function computeDPDForDate(asOf) {
     if (!isOpenAsOf(loan, asOf)) return;
     const dueDate = unpaidDueDate(loan, asOf, dpdDefinition);
     const dpd = dueDate ? Math.round((asOf - dueDate) / DAY_MS) : 0;
-    const out = outstandingAsOf(loan, asOf);
 
     if (loan.restructureStatus === 'active' || loan.restructureStatus === 'pending') {
-      const rb = restructure[loan.restructureStatus];
-      rb.n += 1;
-      rb.sum += out;
-      rb.loans.push({
+      // For restructured loans, DO (Restructuring Balance) is the
+      // authoritative outstanding principal — the original repayment
+      // schedule outstandingAsOf() walks no longer reflects the loan once
+      // it's been restructured, so we use DO directly instead.
+      const out = loan.restructureBalance || 0;
+      const record = {
         id: loan.id,
         dealerName: loan.dealerName,
         financier: loan.financier,
@@ -918,14 +923,28 @@ function computeDPDForDate(asOf) {
         dpd,
         principalRepaid3mo: principalRepaidLast3Mo(loan, asOf),
         initialPaymentPaid: loan.initialPaymentPaid,
+        initialPaymentDate: loan.initialPaymentDate,
         lrsSigned: loan.lrsSigned,
         lraSigned: loan.lraSigned,
         restructureBalance: loan.restructureBalance,
         out,
-      });
+      };
+      const rb = restructure[loan.restructureStatus];
+      rb.n += 1;
+      rb.sum += out;
+      rb.loans.push(record);
+
+      if (loan.initialPaymentDate
+        && loan.initialPaymentDate.getFullYear() === asOf.getFullYear()
+        && loan.initialPaymentDate.getMonth() === asOf.getMonth()) {
+        restructure.effectivity.n += 1;
+        restructure.effectivity.sum += (loan.restructureBalance || 0);
+        restructure.effectivity.loans.push(record);
+      }
       return;
     }
 
+    const out = outstandingAsOf(loan, asOf);
     const bi = bucketForDPD(dpd);
     bucketN[bi] += 1;
     bucketSum[bi] += out;
@@ -1110,6 +1129,7 @@ const DRILL_COLUMNS_RESTRUCTURE = [
   { label: 'Dealer', cls: 'dealer-name', type: 'text', key: l => l.dealerName, render: l => l.dealerName },
   { label: 'Financier', cls: '', type: 'text', key: l => l.financier || '', render: l => l.financier || '—' },
   { label: 'Restructuring Balance', cls: 'r', type: 'number', key: l => l.restructureBalance, render: l => fmtCurrencyFull(l.restructureBalance) },
+  { label: 'Effectivity Date', cls: '', type: 'number', key: l => l.initialPaymentDate ? l.initialPaymentDate.getTime() : -Infinity, render: l => l.initialPaymentDate ? toDateStr(l.initialPaymentDate) : '—' },
   { label: 'Initial Payment Paid?', cls: '', type: 'text', key: l => l.initialPaymentPaid || '', render: l => ynCell(l.initialPaymentPaid) },
   { label: 'LRS Signed?', cls: '', type: 'text', key: l => l.lrsSigned || '', render: l => ynCell(l.lrsSigned) },
   { label: 'LRA Signed?', cls: '', type: 'text', key: l => l.lraSigned || '', render: l => ynCell(l.lraSigned) },
