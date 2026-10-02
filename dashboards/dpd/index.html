@@ -377,7 +377,7 @@ td.drill-cell:hover{background:var(--chip-hover)}
     </div>
     <div class="drill-table-wrap">
       <table id="drill-table">
-        <thead><tr><th>Drawdown ID</th><th class="dealer-name">Dealer</th><th>Financier</th><th>PNCM Date</th><th>DPD Aging</th><th class="r">Principal Repaid (3 Mo)</th><th class="r">Total Outstanding</th></tr></thead>
+        <thead id="drill-thead"></thead>
         <tbody id="drill-body"></tbody>
       </table>
     </div>
@@ -402,8 +402,11 @@ const DPD_FINE_LABELS = ['Current','1–30','31–60','61–90','91–120','121�
 const DPD_FINE_BOUNDS = [30, 60, 90, 120, 150, 180, 365, Infinity]; // applies to indices 1..8
 
 // Row hierarchy for the matrix — "Standard/Current" and "Total" are
-// standalone rows; "DPD 1 – 90" and "DPD Above 90" are bold subtotal
-// headers whose indented children are the fine buckets they roll up.
+// standalone rows; "DPD 1 – 90", "DPD Above 90" and "Restructured Accounts"
+// are bold subtotal headers whose indented children are the fine buckets (or,
+// for Restructured Accounts, the Active/Pending split) they roll up.
+// Restructured loans are pulled entirely out of the DPD 1–90 / Above 90
+// buckets above and reported only here — see computeDPDForDate().
 const MATRIX_ROWS = [
   { label: 'Standard / Current', type: 'leaf', idx: 0 },
   { label: 'DPD 1 – 90', type: 'subtotal', idxs: [1, 2, 3] },
@@ -416,6 +419,9 @@ const MATRIX_ROWS = [
   { label: '151 ≥ 180', type: 'leaf', idx: 6, indent: true },
   { label: '181 ≥ 365', type: 'leaf', idx: 7, indent: true },
   { label: 'Above 365', type: 'leaf', idx: 8, indent: true },
+  { label: 'Restructured Accounts', type: 'restructureSubtotal', keys: ['active', 'pending'] },
+  { label: 'Active', type: 'restructureLeaf', key: 'active', indent: true },
+  { label: 'Pending', type: 'restructureLeaf', key: 'pending', indent: true },
 ];
 
 let drawdownRows = [];
@@ -528,12 +534,28 @@ function parseCSV(text) {
   if (field.length || row.length) { row.push(field); rows.push(row); }
   return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
 }
+// Collapses any run of whitespace (including the double-spaces that show up
+// in some of the newer Drawdown Tracker v3 headers, e.g. "R4  Payment Date")
+// to a single space, so a lookup written with normal spacing still matches.
+function normalizeHeader(h) { return String(h).replace(/\s+/g, ' ').trim(); }
 function buildColumnMap(headerRow) {
   const idx = {};
-  headerRow.forEach((h, i) => { const key = String(h).trim(); if (key && !(key in idx)) idx[key] = i; });
-  return function (name) { return idx[name] !== undefined ? idx[name] : -1; };
+  headerRow.forEach((h, i) => { const key = normalizeHeader(h); if (key && !(key in idx)) idx[key] = i; });
+  return function (name) { const key = normalizeHeader(name); return idx[key] !== undefined ? idx[key] : -1; };
 }
 function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
+// Converts a spreadsheet column letter ('A', 'DO', ...) to a 0-based row
+// index. Used only for the Restructuring block (DI/DK/DM/DO) — those
+// columns are new, and DO's header text is expected to be repurposed from
+// "Restructuring ID" to the restructuring balance amount without necessarily
+// getting a clean new header name right away, so position is the more
+// reliable anchor for that one than a name lookup would be.
+function letterToIndex(letter) {
+  let col = 0;
+  for (let i = 0; i < letter.length; i++) col = col * 26 + (letter.charCodeAt(i) - 64);
+  return col - 1;
+}
+function getByLetter(row, letter) { return get(row, letterToIndex(letter)); }
 
 async function fetchCSV(name) {
   const url = DATA_BASE + name + '?_=' + Date.now();
@@ -541,15 +563,30 @@ async function fetchCSV(name) {
   if (!r.ok) throw new Error('Failed to load ' + name + ' (HTTP ' + r.status + ')');
   return parseCSV(await r.text());
 }
+// Tolerant variant for files that may not exist yet (e.g. drawdownv3.csv /
+// repaymentv3.csv before the new loan product's sheets are exported) —
+// returns null instead of failing the whole dashboard load.
+async function fetchCSVOptional(name) {
+  try {
+    const url = DATA_BASE + name + '?_=' + Date.now();
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    return parseCSV(await r.text());
+  } catch (e) {
+    return null;
+  }
+}
 
 async function loadData() {
   const loadingEl = document.getElementById('loading-overlay');
   const errEl = document.getElementById('error-box');
   loadingEl.classList.remove('hidden');
   try {
-    const [ddGrid, rpGrid] = await Promise.all([
+    const [ddGrid, rpGrid, dd3Grid, rp3Grid] = await Promise.all([
       fetchCSV('drawdown.csv'),
       fetchCSV('repayment.csv'),
+      fetchCSVOptional('drawdownv3.csv'),
+      fetchCSVOptional('repaymentv3.csv'),
     ]);
 
     // ── Drawdown (one row per loan) ──
@@ -576,9 +613,101 @@ async function loadData() {
         renewal2Due: parseSheetDate(get(r, ddCol('Renewal 2 Due Date'))),
         renewal2PaidDate: parseSheetDate(get(r, ddCol('Payment Date for Renewal 2'))),
         maturityDue: parseSheetDate(get(r, ddCol('Final Maturity Date'))),
+        // ── Restructuring (Drawdown Tracker columns DG–DO) ──
+        // Status (DH) drives which loans get pulled into the "Restructured
+        // Accounts" bucket instead of the normal DPD-aging buckets:
+        // "Current Restructuring" = Active, "Pending Restructuring" = Pending.
+        // DI/DK/DM are the three Yes/No milestone flags shown in the
+        // drill-down; DO is read positionally since it's being repurposed
+        // from "Restructuring ID" to the restructuring balance amount.
+        restructureStatus: (function (raw) {
+          if (raw === 'Current Restructuring') return 'active';
+          if (raw === 'Pending Restructuring') return 'pending';
+          return null;
+        })(get(r, ddCol('Restructuring Status')).trim()),
+        initialPaymentPaid: getByLetter(r, 'DI').trim(),
+        lrsSigned: getByLetter(r, 'DK').trim(),
+        lraSigned: getByLetter(r, 'DM').trim(),
+        restructureBalance: parseNum(getByLetter(r, 'DO')),
       };
       drawdownRows.push(loan);
       if (creditDate && (!earliestDisb || creditDate < earliestDisb)) earliestDisb = creditDate;
+    }
+
+    // ── Drawdown v3 (one row per loan) — new 180-day, 6-checkpoint product:
+    // R1 (30d) → R2 (60d) → R3+P1 (90d) → R4+P2 (120d) → R5+P3 (150d) →
+    // Maturity (180d). From the 90-day checkpoint onward, a renewal fee (R)
+    // AND a principal paydown (P) are both due on the same date — per
+    // confirmation, the checkpoint only counts as settled once BOTH legs are
+    // paid. "Maturity Due Date" mirrors R5P3's due date in the sample data
+    // we were given (an upstream formula bug), so the final checkpoint is
+    // built from "Maturity Date" (credit date + 180 days) instead, per
+    // confirmation. Merged into the same drawdownRows array as the v2 loans
+    // above, normalized to the same shape, so AUM/DPD totals are whole-book
+    // — isOpenAsOf()/outstandingAsOf() need no schema-specific branching.
+    if (dd3Grid && dd3Grid.length > 1) {
+      const d3Col = buildColumnMap(dd3Grid[0]);
+      for (let i = 1; i < dd3Grid.length; i++) {
+        const r = dd3Grid[i];
+        const id = get(r, d3Col('Drawdown ID')).trim();
+        if (!id) continue;
+        const creditDate = parseSheetDate(get(r, d3Col('Credit Date to Dealer Bank Account')));
+        const r1Due = parseSheetDate(get(r, d3Col('R1 Due Date')));
+        const r1Paid = parseSheetDate(get(r, d3Col('R1 Payment Date')));
+        const r2Due = parseSheetDate(get(r, d3Col('R2 Due Date')));
+        const r2Paid = parseSheetDate(get(r, d3Col('R2 Payment Date')));
+        const r3p1Due = parseSheetDate(get(r, d3Col('R3P1 Due Date')));
+        const r3Paid = parseSheetDate(get(r, d3Col('R3 Payment Date')));
+        const p1Paid = parseSheetDate(get(r, d3Col('P1 Payment Date')));
+        const r4p2Due = parseSheetDate(get(r, d3Col('R4P2 Due Date')));
+        const r4Paid = parseSheetDate(get(r, d3Col('R4 Payment Date')));
+        const p2Paid = parseSheetDate(get(r, d3Col('P2 Payment Date')));
+        const r5p3Due = parseSheetDate(get(r, d3Col('R5P3 Due Date')));
+        const r5Paid = parseSheetDate(get(r, d3Col('R5 Payment Date')));
+        const p3Paid = parseSheetDate(get(r, d3Col('P3 Payment Date')));
+        const maturityDue = parseSheetDate(get(r, d3Col('Maturity Date')));
+        const maturityPaid = parseSheetDate(get(r, d3Col('Maturity Payment Date')));
+
+        const loan = {
+          id,
+          dealerId: get(r, d3Col('Dealer ID')).trim(),
+          dealerName: (get(r, d3Col('Dealership Name')).trim() || get(r, d3Col('Dealer Name')).trim() || '(unnamed)'),
+          creditDate,
+          originalPrincipal: parseNum(get(r, d3Col('Original Principal'))),
+          // v3's cancellation signal lives in "Loan Status Remarks" rather
+          // than "Loan Status" in the sample we were given — fall back to it
+          // so isOpenAsOf()'s existing loanStatus === 'Cancelled' check works
+          // unchanged for both schemas.
+          loanStatus: get(r, d3Col('Loan Status')).trim() || get(r, d3Col('Loan Status Remarks')).trim(),
+          financier: get(r, d3Col('Financier')).trim(),
+          pncmDate: parseSheetDate(get(r, d3Col('PNCM Date'))),
+          fullSettlementDate: maturityPaid,
+          renewal1Due: r1Due,
+          renewal1PaidDate: r1Paid,
+          renewal2Due: r2Due,
+          renewal2PaidDate: r2Paid,
+          maturityDue,
+          // Restructuring isn't tracked on this sheet yet.
+          restructureStatus: null,
+          initialPaymentPaid: '',
+          lrsSigned: '',
+          lraSigned: '',
+          restructureBalance: 0,
+          // Drives unpaidDueDate()'s 'any' (Renewal + Maturity) walk — see
+          // that function. A `paid` entry can be a single date or an array
+          // of dates that must ALL be on/before asOf to count as settled.
+          checkpoints: [
+            { due: r1Due, paid: r1Paid },
+            { due: r2Due, paid: r2Paid },
+            { due: r3p1Due, paid: [r3Paid, p1Paid] },
+            { due: r4p2Due, paid: [r4Paid, p2Paid] },
+            { due: r5p3Due, paid: [r5Paid, p3Paid] },
+            { due: maturityDue, paid: maturityPaid },
+          ],
+        };
+        drawdownRows.push(loan);
+        if (creditDate && (!earliestDisb || creditDate < earliestDisb)) earliestDisb = creditDate;
+      }
     }
 
     // ── Repayment (one row per repayment transaction, linked by Drawdown ID) ──
@@ -593,6 +722,25 @@ async function loadData() {
         paymentDate: parseSheetDate(get(r, rpCol('Dealer Payment Date'))),
         paidPrincipal: parseNum(get(r, rpCol('Dealer Paid Principal'))),
       });
+    }
+
+    // ── Repayment v3 — same shape, merged into the same array so
+    // outstandingAsOf()/principalRepaidLast3Mo() see the whole book
+    // regardless of which schema a loan's repayments were recorded under.
+    // v3's principal-paid column is named "Principal Applied" rather than
+    // "Dealer Paid Principal".
+    if (rp3Grid && rp3Grid.length > 1) {
+      const rp3Col = buildColumnMap(rp3Grid[0]);
+      for (let i = 1; i < rp3Grid.length; i++) {
+        const r = rp3Grid[i];
+        const drawdownId = get(r, rp3Col('Drawdown ID')).trim();
+        if (!drawdownId) continue;
+        repaymentRows.push({
+          drawdownId,
+          paymentDate: parseSheetDate(get(r, rp3Col('Dealer Payment Date'))),
+          paidPrincipal: parseNum(get(r, rp3Col('Principal Applied'))),
+        });
+      }
     }
 
     minDataDate = earliestDisb;
@@ -669,21 +817,30 @@ function isOpenAsOf(loan, asOf) {
 // A checkpoint is "unpaid as of asOf" when its payment-date field is blank
 // or falls after asOf — purely date-driven, so this works correctly for
 // any report date, not just today.
+// A checkpoint's `paid` field is normally a single Date (or null), but on
+// v3 loans the 90/120/150-day checkpoints require BOTH a renewal payment AND
+// a principal payment on the same due date — represented as an array of
+// dates, ALL of which must be present and on/before asOf for the checkpoint
+// to count as settled.
+function isCheckpointPaidAsOf(paid, asOf) {
+  const list = Array.isArray(paid) ? paid : [paid];
+  return list.length > 0 && list.every(d => d && d <= asOf);
+}
 function unpaidDueDate(loan, asOf, definition) {
   if (definition === 'maturity') {
     if (!loan.maturityDue || loan.maturityDue > asOf) return null;
-    const paid = loan.fullSettlementDate && loan.fullSettlementDate <= asOf;
-    return paid ? null : loan.maturityDue;
+    return isCheckpointPaidAsOf(loan.fullSettlementDate, asOf) ? null : loan.maturityDue;
   }
-  const checkpoints = [
+  // v3 loans carry their own 6-checkpoint schedule (see loadData); v2 loans
+  // fall back to the original Renewal 1 → Renewal 2 → Maturity chain.
+  const checkpoints = loan.checkpoints || [
     { due: loan.renewal1Due, paid: loan.renewal1PaidDate },
     { due: loan.renewal2Due, paid: loan.renewal2PaidDate },
     { due: loan.maturityDue, paid: loan.fullSettlementDate },
   ];
   for (const cp of checkpoints) {
     if (!cp.due || cp.due > asOf) continue;
-    const isPaid = cp.paid && cp.paid <= asOf;
-    if (!isPaid) return cp.due;
+    if (!isCheckpointPaidAsOf(cp.paid, asOf)) return cp.due;
   }
   return null;
 }
@@ -704,14 +861,47 @@ function computeDPDForDate(asOf) {
   // it up, without re-scanning drawdownRows at click time.
   const bucketLoans = Array.from({ length: n }, () => []);
 
+  // Restructured accounts (Drawdown Tracker "Restructuring Status" = Current
+  // Restructuring / Pending Restructuring) are pulled out of the normal DPD
+  // fine buckets entirely and reported only under "Restructured Accounts" —
+  // regardless of what raw DPD they'd otherwise fall into. They're still
+  // open loans, so they still count toward totalN/totalSum below.
+  const restructure = {
+    active:  { n: 0, sum: 0, loans: [] },
+    pending: { n: 0, sum: 0, loans: [] },
+  };
+
   drawdownRows.forEach(loan => {
     if (!matchLoan(loan)) return;
     if (!isOpenAsOf(loan, asOf)) return;
     const dueDate = unpaidDueDate(loan, asOf, dpdDefinition);
     const dpd = dueDate ? Math.round((asOf - dueDate) / DAY_MS) : 0;
-    const bi = bucketForDPD(dpd);
     const out = outstandingAsOf(loan, asOf);
 
+    if (loan.restructureStatus === 'active' || loan.restructureStatus === 'pending') {
+      const rb = restructure[loan.restructureStatus];
+      rb.n += 1;
+      rb.sum += out;
+      rb.loans.push({
+        id: loan.id,
+        dealerName: loan.dealerName,
+        financier: loan.financier,
+        pncmDate: loan.pncmDate,
+        bucketIdx: null,
+        restructureStatus: loan.restructureStatus,
+        dueDate,
+        dpd,
+        principalRepaid3mo: principalRepaidLast3Mo(loan, asOf),
+        initialPaymentPaid: loan.initialPaymentPaid,
+        lrsSigned: loan.lrsSigned,
+        lraSigned: loan.lraSigned,
+        restructureBalance: loan.restructureBalance,
+        out,
+      });
+      return;
+    }
+
+    const bi = bucketForDPD(dpd);
     bucketN[bi] += 1;
     bucketSum[bi] += out;
     bucketLoans[bi].push({
@@ -720,6 +910,7 @@ function computeDPDForDate(asOf) {
       financier: loan.financier,
       pncmDate: loan.pncmDate,
       bucketIdx: bi,
+      restructureStatus: null,
       dueDate,
       dpd,
       principalRepaid3mo: principalRepaidLast3Mo(loan, asOf),
@@ -727,9 +918,9 @@ function computeDPDForDate(asOf) {
     });
   });
 
-  const totalN = bucketN.reduce((a, b) => a + b, 0);
-  const totalSum = bucketSum.reduce((a, b) => a + b, 0);
-  return { bucketN, bucketSum, totalN, totalSum, bucketLoans };
+  const totalN = bucketN.reduce((a, b) => a + b, 0) + restructure.active.n + restructure.pending.n;
+  const totalSum = bucketSum.reduce((a, b) => a + b, 0) + restructure.active.sum + restructure.pending.sum;
+  return { bucketN, bucketSum, totalN, totalSum, bucketLoans, restructure };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -820,13 +1011,24 @@ function renderAll(asOf) {
   // row+column without recomputing anything.
   const body = document.getElementById('dpd-matrix-body');
   const rowsHtml = MATRIX_ROWS.map(row => {
-    const rowClass = row.type === 'subtotal' ? ' class="subtotal-row"' : '';
+    const isRestructure = row.type === 'restructureLeaf' || row.type === 'restructureSubtotal';
+    const isSubtotal = row.type === 'subtotal' || row.type === 'restructureSubtotal';
+    const rowClass = isSubtotal ? ' class="subtotal-row"' : '';
     const labelClass = 'bucket-label' + (row.indent ? ' indent' : '');
     const idxs = row.type === 'leaf' ? [row.idx] : row.idxs;
+    const keys = row.type === 'restructureLeaf' ? [row.key] : row.keys;
     const cells = columns.map((col, ci) => {
-      const n = idxs.reduce((a, i) => a + col.stats.bucketN[i], 0);
-      const sum = idxs.reduce((a, i) => a + col.stats.bucketSum[i], 0);
-      return '<td class="r month-col drill-cell" data-col="' + ci + '" data-idxs="' + idxs.join('_') + '" onclick="openDrillDown(this)">'
+      let n, sum, dataIdxs;
+      if (isRestructure) {
+        n = keys.reduce((a, k) => a + col.stats.restructure[k].n, 0);
+        sum = keys.reduce((a, k) => a + col.stats.restructure[k].sum, 0);
+        dataIdxs = keys.join('_');
+      } else {
+        n = idxs.reduce((a, i) => a + col.stats.bucketN[i], 0);
+        sum = idxs.reduce((a, i) => a + col.stats.bucketSum[i], 0);
+        dataIdxs = idxs.join('_');
+      }
+      return '<td class="r month-col drill-cell" data-col="' + ci + '" data-kind="' + (isRestructure ? 'restructure' : 'dpd') + '" data-idxs="' + dataIdxs + '" onclick="openDrillDown(this)">'
         + cellValue(n, sum, col.stats.totalN, col.stats.totalSum) + '</td>';
     }).join('');
     return '<tr' + rowClass + '><td class="sticky-col ' + labelClass + '">' + row.label + '</td>' + cells + '</tr>';
@@ -834,7 +1036,7 @@ function renderAll(asOf) {
 
   const allIdxs = DPD_FINE_LABELS.map((_, i) => i);
   const totalCells = columns.map((col, ci) =>
-    '<td class="r month-col drill-cell" data-col="' + ci + '" data-idxs="' + allIdxs.join('_') + '" onclick="openDrillDown(this)">'
+    '<td class="r month-col drill-cell" data-col="' + ci + '" data-kind="all" data-idxs="' + allIdxs.join('_') + '" onclick="openDrillDown(this)">'
       + cellValue(col.stats.totalN, col.stats.totalSum, col.stats.totalN, col.stats.totalSum) + '</td>'
   ).join('');
   const totalRow = '<tr class="total-row"><td class="sticky-col bucket-label">Total</td>' + totalCells + '</tr>';
@@ -854,15 +1056,56 @@ function renderAll(asOf) {
 // that row (bucket, or subtotal, or Total) for that column's month/as-of
 // date, pulled straight from lastColumns[...].stats.bucketLoans (no re-scan).
 // ═══════════════════════════════════════════════════════════════════════════
+function restructureAgingLabel(l) {
+  if (l.restructureStatus === 'active') return 'Restructured – Active';
+  if (l.restructureStatus === 'pending') return 'Restructured – Pending';
+  if (l.bucketIdx === 0) return 'Current';
+  return DPD_FINE_LABELS[l.bucketIdx] + ' (' + fmtNum(l.dpd) + 'd)';
+}
+function ynCell(v) { return v || '—'; }
+
+// Two column layouts: the normal DPD-aging view (Drawdown ID / Dealer /
+// Financier / PNCM Date / DPD Aging / Principal Repaid / Total Outstanding),
+// and a dedicated Restructured-Accounts view surfacing the three milestone
+// flags (DI/DK/DM) and the restructuring balance (DO) the Active/Pending
+// rows are specifically about.
+const DRILL_COLUMNS_DPD = [
+  { label: 'Drawdown ID', cls: '' },
+  { label: 'Dealer', cls: 'dealer-name' },
+  { label: 'Financier', cls: '' },
+  { label: 'PNCM Date', cls: '' },
+  { label: 'DPD Aging', cls: '' },
+  { label: 'Principal Repaid (3 Mo)', cls: 'r' },
+  { label: 'Total Outstanding', cls: 'r' },
+];
+const DRILL_COLUMNS_RESTRUCTURE = [
+  { label: 'Drawdown ID', cls: '' },
+  { label: 'Dealer', cls: 'dealer-name' },
+  { label: 'Financier', cls: '' },
+  { label: 'Restructuring Balance', cls: 'r' },
+  { label: 'Initial Payment Paid?', cls: '' },
+  { label: 'LRS Signed?', cls: '' },
+  { label: 'LRA Signed?', cls: '' },
+  { label: 'Total Outstanding', cls: 'r' },
+];
+
 function openDrillDown(el) {
   if (!lastColumns) return;
   const colIdx = parseInt(el.dataset.col, 10);
   const col = lastColumns[colIdx];
   if (!col) return;
-  const idxs = el.dataset.idxs.split('_').map(Number);
+  const kind = el.dataset.kind; // 'dpd' | 'restructure' | 'all'
+  const keys = el.dataset.idxs.split('_');
 
   let loans = [];
-  idxs.forEach(i => { loans = loans.concat(col.stats.bucketLoans[i] || []); });
+  if (kind === 'dpd') {
+    keys.map(Number).forEach(i => { loans = loans.concat(col.stats.bucketLoans[i] || []); });
+  } else if (kind === 'restructure') {
+    keys.forEach(k => { loans = loans.concat(col.stats.restructure[k].loans || []); });
+  } else { // 'all' — the Total row: every fine bucket plus both restructure buckets
+    DPD_FINE_LABELS.forEach((_, i) => { loans = loans.concat(col.stats.bucketLoans[i] || []); });
+    loans = loans.concat(col.stats.restructure.active.loans, col.stats.restructure.pending.loans);
+  }
   loans.sort((a, b) => b.out - a.out);
 
   const tr = el.closest('tr');
@@ -872,17 +1115,27 @@ function openDrillDown(el) {
   document.getElementById('drill-title').textContent = label + ' — ' + col.label + (col.sub ? ' (' + col.sub + ')' : '');
   document.getElementById('drill-sub').textContent = loans.length + ' open loan' + (loans.length === 1 ? '' : 's') + ' as of ' + toDateStr(col.asOf);
 
+  const isRestructureView = kind === 'restructure';
+  const cols = isRestructureView ? DRILL_COLUMNS_RESTRUCTURE : DRILL_COLUMNS_DPD;
+  document.getElementById('drill-thead').innerHTML = '<tr>' + cols.map(c => '<th' + (c.cls ? ' class="' + c.cls + '"' : '') + '>' + c.label + '</th>').join('') + '</tr>';
+
   const body = document.getElementById('drill-body');
   if (!loans.length) {
-    body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">No open loans in this bucket</td></tr>';
+    body.innerHTML = '<tr><td colspan="' + cols.length + '" style="text-align:center;color:var(--text3);padding:20px">No open loans in this bucket</td></tr>';
+  } else if (isRestructureView) {
+    body.innerHTML = loans.map(l =>
+      '<tr><td>' + l.id + '</td><td class="dealer-name">' + l.dealerName + '</td><td>' + (l.financier || '—') + '</td>'
+      + '<td class="r">' + fmtCurrencyFull(l.restructureBalance) + '</td>'
+      + '<td>' + ynCell(l.initialPaymentPaid) + '</td><td>' + ynCell(l.lrsSigned) + '</td><td>' + ynCell(l.lraSigned) + '</td>'
+      + '<td class="r">' + fmtCurrencyFull(l.out) + '</td></tr>'
+    ).join('');
   } else {
-    body.innerHTML = loans.map(l => {
-      const agingLabel = l.bucketIdx === 0 ? 'Current' : DPD_FINE_LABELS[l.bucketIdx] + ' (' + fmtNum(l.dpd) + 'd)';
-      return '<tr><td>' + l.id + '</td><td class="dealer-name">' + l.dealerName + '</td><td>' + (l.financier || '—') + '</td>'
-        + '<td>' + (l.pncmDate ? toDateStr(l.pncmDate) : '—') + '</td><td>' + agingLabel + '</td>'
-        + '<td class="r">' + fmtCurrencyFull(l.principalRepaid3mo) + '</td>'
-        + '<td class="r">' + fmtCurrencyFull(l.out) + '</td></tr>';
-    }).join('');
+    body.innerHTML = loans.map(l =>
+      '<tr><td>' + l.id + '</td><td class="dealer-name">' + l.dealerName + '</td><td>' + (l.financier || '—') + '</td>'
+      + '<td>' + (l.pncmDate ? toDateStr(l.pncmDate) : '—') + '</td><td>' + restructureAgingLabel(l) + '</td>'
+      + '<td class="r">' + fmtCurrencyFull(l.principalRepaid3mo) + '</td>'
+      + '<td class="r">' + fmtCurrencyFull(l.out) + '</td></tr>'
+    ).join('');
   }
   const totalOut = loans.reduce((a, l) => a + l.out, 0);
   document.getElementById('drill-footer').textContent = 'Total outstanding: ' + fmtCurrencyFull(totalOut);
