@@ -1,4 +1,4 @@
-Assigned Ops POC,Dealership/Business Name, Dealer Name,Date of Birth,Business/Showroom Address,Mobile Number ,ID Type (Primary Borrower),ID No (Primary Borrower),Assigned Sales POC,Assigned SM ,DD Processor ,New or Redrawdown ,Drawdown Submission Router,Brand ,Variant,Type of Body,Year Model,OR Number,Motor Engine Number,Chassis Number,Plate Number,MV FILE,CR Number,Type of Vehicle,Transmission,Documents Submitted,Documents Pending ,With Video Recording of the Unit?,Drawdown Submission Date by Sales (Captured from Gform),Date of Unit Inspection by Sales,Has Complete Requirements for Drawdown Processing? ,Last Date of ORCR Report,ORCR Verification Request Sent to Agency?,ORCR Verification Request Date to Agency,ORCR Service Provider,ORCR Verification Report Received?,ORCR Receipt Date from Agency,ORCR Status,Drawdown Status,Credit Remarks ,Additional Docs needed for Credit Evaluation ,Name of Co-Borrower,Email Address of the Co-Borrower,PNCM Date,Date of FMV Assessment,Email Address,Loan Amount in Figures,Motor Vehicle Amount (FMV) ,Credit Limit,FMV Assessment Result,Date of Carmudi CA issuance to Financier,PNCM Population by the Ops Team (Previously by Financier),PNCM Issuance Date to Dealer ,PNCM / Disclosure Statement /Amortization Schedule  Execution Date,Physical Docs Received?,Disbursed to the Dealer? ,Physical Docs Received from the Sales Officer,Receipt Date of Physical ORCR Documents ,Docs Returned o Delear? ,Release Date of Original Collateral Documents to the Dealer,Documents Released to the Dealer,Link to PNCM/Disclosure Docs,New / Dup (Plate),Financier,Drawdown ID,,FMV Assessment Timestamp
+UJO615,Dealership/Business Name, Dealer Name,Date of Birth,Business/Showroom Address,Mobile Number ,ID Type (Primary Borrower),ID No (Primary Borrower),Assigned Sales POC,Assigned SM ,DD Processor ,New or Redrawdown ,Drawdown Submission Router,Brand ,Variant,Type of Body,Year Model,OR Number,Motor Engine Number,Chassis Number,Plate Number,MV FILE,CR Number,Type of Vehicle,Transmission,Documents Submitted,Documents Pending ,With Video Recording of the Unit?,Drawdown Submission Date by Sales (Captured from Gform),Date of Unit Inspection by Sales,Has Complete Requirements for Drawdown Processing? ,Last Date of ORCR Report,ORCR Verification Request Sent to Agency?,ORCR Verification Request Date to Agency,ORCR Service Provider,ORCR Verification Report Received?,ORCR Receipt Date from Agency,ORCR Status,Drawdown Status,Credit Remarks ,Additional Docs needed for Credit Evaluation ,Name of Co-Borrower,Email Address of the Co-Borrower,PNCM Date,Date of FMV Assessment,Email Address,Loan Amount in Figures,Motor Vehicle Amount (FMV) ,Credit Limit,FMV Assessment Result,Date of Carmudi CA issuance to Financier,PNCM Population by the Ops Team (Previously by Financier),PNCM Issuance Date to Dealer ,PNCM / Disclosure Statement /Amortization Schedule  Execution Date,Physical Docs Received?,Disbursed to the Dealer? ,Physical Docs Received from the Sales Officer,Receipt Date of Physical ORCR Documents ,Docs Returned o Delear? ,Release Date of Original Collateral Documents to the Dealer,Documents Released to the Dealer,Link to PNCM/Disclosure Docs,New / Dup (Plate),Financier,Drawdown ID,,FMV Assessment Timestamp
 Mary Grace Pascual,EMC Prado Auto Inc,Enrique Miguel Prado,Enrique Miguel Prado,66 Maayusin St. U.P Village Quezon City,273404665,Philhealth,03-025426924-3,Albert Dalupang,Albert Dalupang,Sales POC,New,Manual,LEXUS,LX570,SUV/MUV,2009,0380-000000145529,3UR3049092,JTJHY00W9A4035370,NBQ546,130800000412278,17973940,,AT,"1. ORCR
 2. DEED OF SALE
 3. MOTOR VEHICLE INSPECTION REPORT
@@ -64227,14 +64227,18 @@ Shielyka Curate,C.B AUTOWORKS VEHICLE TRADING,JONAH ANDRES BALINGIT,30263,81 Don
 9. CONFIRMATION OF SALE 
 ",,Yes,46290.49097,46290,Yes,,Yes,46290.42639,Internal TT Team,Yes,46290.45824,Cleaned ORCR,,"- PDC
 -Original documents c/o Ops",,,,46290,46290,,508000,635393.75,,Approved,46290.6,,,,,,,,,,,,,,,46290.62669
-Shielyka Curate,RLP TRADING INC,Roy Lemuel Orlanes Padrienos,30833,21 Beaterio St Brgy Matandang Balara New Intramuros Village Qc,9157871178,Passport,P1765873B,Myrnalyn Bankingkito,Malou Alfonso,,,,RAM,1500 TRX,Pick-Up,2021,2295617903,MN901045,1C6SRFU98MN901045,NFG2288,1301-00001708483,46822662-5,,AT,,,,,,,,Yes,46290.475,Internal TT Team,Yes,46290.55514,Encumbered,,"- Collateral docs
+Shielyka Curate,RLP TRADING INC,Roy Lemuel Orlanes Padrienos,30833,21 Beaterio St Brgy Matandang Balara New Intramuros Village Qc,9157871178,Passport,P1765873B,Myrnalyn Bankingkito,Malou Alfonso,Jaonas Galicia,New,SFA / Loanbox,RAM,1500 TRX,Pick-Up,2021,2295617903,MN901045,1C6SRFU98MN901045,NFG2288,1301-00001708483,46822662-5,,AT,"1. ORCR
+2. LATEST UNIT PHOTOS
+3. SELFIE PHOTO WITH UNIT ",,Yes,46290.54931,46290,Yes,,Yes,46290.475,Internal TT Team,Yes,46290.55514,Encumbered,,"- Collateral docs
 - PDC
 - SI Failed RLP9 and RLP10",,,,46290,46290,,3000000,6421393.23,,Approved,46290.46736,,,,,,,,,,,,,,,46290.47678
-Shielyka Curate,KPMA CAR TRADING,Kenn Joseph 2nd Fuentes Poseran,33894,0183 Cableway St Macamot Binagonan Rizal,9279667352,Passport,P0425962B,Elvira Ladea,Marah Luriely A. Villaruz,,,,HYUNDAI,STARGAZER 1.5 GL IVT,MPV,2025,0301-000000231184,G4FLRQ427413,MF3NB81DESJ067469,CCJ7167/MH834A,30125004157080,62802301,,AT,,,,,,,,Yes,46290.50442,Internal TT Team,Yes,46290.63888,Encumbered,,"- For Collateral Completion c/o OPS Team
+Shielyka Curate,KPMA CAR TRADING,Kenn Joseph 2nd Fuentes Poseran,33894,0183 Cableway St Macamot Binagonan Rizal,9279667352,Passport,P0425962B,Elvira Ladea,Marah Luriely A. Villaruz,Jaonas Galicia,New,SFA / Loanbox,HYUNDAI,STARGAZER 1.5 GL IVT,MPV,2025,0301-000000231184,G4FLRQ427413,MF3NB81DESJ067469,CCJ7167/MH834A,30125004157080,62802301,,AT,"1. ORCR
+2. SELFIE PHOTO WITH UNIT
+3. LATEST UNIT PHOTOS  - GEO TAGGED ",,Yes,46290.45486,46290,Yes,,Yes,46290.50442,Internal TT Team,Yes,46290.63888,Encumbered,Drawdown Approved and Disbursed,"- For Collateral Completion c/o OPS Team
 - Gate Pass/Release Form
 - LTO Verification
 ",,,,46290,46290,,385056,481320,,Approved,46290.51111,,,,,,,,,,,,,,,46290.62497
-Shielyka Curate,CHARKKAUTODEALS AUTO TRADING,RANDOLF SHARI ENDAYA REYES,33743,161 Coralan Santa Maria Laguna,9454712214,Driver's License,D12-11-003851,Herbert Capistrano,Marah Luriely A. Villaruz,,,,TOYOTA,HIACE COMMUTER ,Van,2016,0478-000000221243,1KD2586947,JTFJT02P000001999,NDS8905,1306-00000595739,244157756,,,"1. ORCR
+Shielyka Curate,CHARKKAUTODEALS AUTO TRADING,RANDOLF SHARI ENDAYA REYES,33743,161 Coralan Santa Maria Laguna,9454712214,Driver's License,D12-11-003851,Herbert Capistrano,Marah Luriely A. Villaruz,Alvin Cano,New,SFA / Loanbox,TOYOTA,HIACE COMMUTER ,Van,2016,0478-000000221243,1KD2586947,JTFJT02P000001999,NDS8905,1306-00000595739,244157756,,MT,"1. ORCR
 2. OPEN DOS
 3. CLOSED DOS
 4. VALID ID -  ARABIT, MARVIN
@@ -64242,11 +64246,14 @@ Shielyka Curate,CHARKKAUTODEALS AUTO TRADING,RANDOLF SHARI ENDAYA REYES,33743,16
 6. SEC CERT
 7. LATEST UNIT PHOTOS - GEO TAGGED
 8.. SELFIE W/ UNIT
-9. UNIT VIDEO","1. COLLTERAL DOCS
-",,46290.60625,46290,Yes,,Yes,46274.58472,Internal TT Team,Yes,46274.72361,Cleaned ORCR,,"-PDC
+9. UNIT VIDEO",,Yes,46290.60625,46290,Yes,,Yes,46274.58472,Internal TT Team,Yes,46274.72361,Cleaned ORCR,Drawdown Approved and Disbursed,"-PDC
 -LTO Verification
 -DOCS onhand by Inspector Alvin ",,,,46290,46290,,446500,647907.29,,Approved,46290.64375,,,,,,,,,,,,,,,46290.68297
-Shielyka Curate,VIN CAR TRADING,Marvin Santos Castillo,31589,Blk5 Lot 26 Durian St Golden Acres Las Pinas City,9277229428,Driver's License,N03-11-004837,Albert Dalupang,Albert Dalupang,,,,HYUNDAI,ACCENT 1.4 GL6,Sedan,2018,1366-000001043405,G4LCHU799437,KMHCT41BAHU32367,NBK4446,1301-00001028294,131511237,,,,,,,,,,Yes,46290.69212,Internal TT Team,Yes,46290.72406,Cleaned ORCR,,"- LTO Verification
+Shielyka Curate,VIN CAR TRADING,Marvin Santos Castillo,31589,Blk5 Lot 26 Durian St Golden Acres Las Pinas City,9277229428,Driver's License,N03-11-004837,Albert Dalupang,Albert Dalupang,Ian Andaya,New,SFA / Loanbox,HYUNDAI,ACCENT 1.4 GL6,Sedan,2018,1366-000001043405,G4LCHU799437,KMHCT41BAHU32367,NBK4446,1301-00001028294,131511237,,AT,"1. ORCR 
+2. LATEST UNIT PHOTOS - GEO TAGGED 
+3. SELFIE PHOTO WITH UNIT
+4. OPEN DOS 
+5. VAILID IDS - LONJAWON, JULMAR",,Yes,46290.66389,46290,Yes,,Yes,46290.69212,Internal TT Team,Yes,46290.72406,Cleaned ORCR,,"- LTO Verification
 -Physical Documents onhand by Inspector Ian",,,,46290,46290,,250000,327846.15,,Approved,46290.6875,,,,,,,,,,,,,,,46290.69363
 Shielyka Curate,KPMA CAR TRADING,Kenn Joseph 2nd Fuentes Poseran,33894,0183 Cableway St Macamot Binagonan Rizal,9279667352,Passport,P0425962B,Elvira Ladea,Marah Luriely A. Villaruz,,,,MITSUBISHI,MIRAGE G4 GLX 1.2G CVT,Sedan,2024,1391-000000259050,3A92UMJ0806,PAEA13RJRRA004887,NKI4126,130124002394237,59166063,,,,,,,,,,Yes,46290,Internal TT Team,Yes,46293.46641,Encumbered,,"- For Collateral Completion c/o OPS Team
 - Gate Pass/Release Form",,,,46293,46293,,364560,455700,,Approved,46293.64583,,,,,,,,,,,,,,,46293.64818
@@ -64358,10 +64365,26 @@ Shielyka Curate,NAZ CAR TRADING,NAZEYAH BARA-ACAL DIMACALING,37547,24 Pebble Lan
 -Open DOS and Valid IDS of current owner
 -Valid IDS of Registered owner
 -Proof of payment if the unit was bought by NAZ from Janairah",,,,46296,46296,,180500,339605.76,,Approved,46296.43542,,,,,,,,,,,,,,,46296.47785
-Shielyka Curate,JVA CARS TRADING OPC,John Vincent Manliclic Abeleda,36834,4892 Jasmine St Marimar  Vill Paranaque City,9777371984,Driver's License,N03-19-018189,Rose Batacan,Malou Alfonso,,,,HYUNDAI,SANTA FE 2.2 CR,SUV/MUV,2020,2149360765,D4HBJU910474,KMHS381CBKU141048,DAX1255,42000000296297,42886124-1,,MT,,,,,,,,Yes,46296.36272,Internal TT Team,No,,Pending ORCR Report from Third Party Agency,,"- Notarized DOAS from Carwin to dealer
+Shielyka Curate,JVA CARS TRADING OPC,John Vincent Manliclic Abeleda,36834,4892 Jasmine St Marimar  Vill Paranaque City,9777371984,Driver's License,N03-19-018189,Rose Batacan,Malou Alfonso,Jaonas Galicia,Redrawdown,SFA / Loanbox,HYUNDAI,SANTA FE 2.2 CR,SUV/MUV,2020,2149360765,D4HBJU910474,KMHS381CBKU141048,DAX1255,42000000296297,42886124-1,,MT,"1.ORCR
+2.SELFIE PHOTO WITH THE UNIT/MVIR
+3.VSO-HYUNDAI LAGUNA INC.
+4.RELEASE OF CM
+5.DOAS
+6.PETITION
+7.DL-JOSE SAMUDIO
+8.OPEN DEED OF SALE
+9.SECRETARY'S CERTIFICATE
+10.PNCM
+11.COMPANY ID & INTEGRATED BAR OF THE PHILS.-ROSANNA ESPINO
+12.DL & PHILHEALTH-JOHN VINCENT ABELEDA
+13.VOLUNTARY SURRENDER
+14.COMPANY ID & SSS-ROLANDO RAMIREZ JR.
+15.PASSPORT & COMPANY ID-RESER CLAIRE MIRANDA
+16.LATEST GEO-TAGGED PHOTO OF THE UNIT
+17.UNIT VIDEO",,,,,,,Yes,46296.36272,Internal TT Team,No,,Pending ORCR Report from Third Party Agency,,"- Notarized DOAS from Carwin to dealer
 - Docs onhand by lyka (OPS)",,,,46296,46296,,912000,1139511.67,,Approved,46296.54236
 Shielyka Curate,AUTO BOUTIQ AUTO TRADING,Julius Cruz San Juan,31479," 122 Gen. B. G. Molina St. Parang Marikina
-",0917-8800-531,Passport,P1518615B,Elvira Ladea,Marah Luriely A. Villaruz,,,,TOYOTA,AVANZA E 1.3 CVT,Wagon,2025,1324-000000693911,1NRY434330,MHFAA1B2S0041036,NJF7018,132425004568147,78276684,,,,,,,,,,Yes,46296.49722,Internal TT Team,No,,,,"-Affidavit of undertaking (signed by the dealer)
+",0917-8800-531,Passport,P1518615B,Elvira Ladea,Marah Luriely A. Villaruz,Sales POC,New,Manual,TOYOTA,AVANZA E 1.3 CVT,Wagon,2025,1324-000000693911,1NRY434330,MHFAA1B2S0041036,NJF7018,132425004568147,78276684,,,1. ORCR,,Yes,46296,,,,Yes,46296.49722,Internal TT Team,No,,,,"-Affidavit of undertaking (signed by the dealer)
 - SPA executed by the dealer in favor of Carmudi
 - Authorization Letter to the Bank (Issued by the Dealer to the Bank)
 - PDC per unit dated 30 days from the disbursal date
@@ -64374,7 +64397,7 @@ Shielyka Curate,AUTO BOUTIQ AUTO TRADING,Julius Cruz San Juan,31479," 122 Gen. B
 - LTO Verification
 - Failed SI ABA173,ABA174, ABA175, ABA176, ABA177, ABA179, ABA180, ABA181, ABA183, ABA188 (reported sold) and ABA184 (unvalidated unit)",,,,46296,46296,,537200,671500,,Approved,46296.57292,,,,,,,,,,,,,,,46296.58198
 Shielyka Curate,AUTO BOUTIQ AUTO TRADING,Julius Cruz San Juan,31479," 122 Gen. B. G. Molina St. Parang Marikina
-",0917-8800-531,Passport,P1518615B,Elvira Ladea,Marah Luriely A. Villaruz,,,,TOYOTA,AVANZA E 1.3 CV,Wagon,2025,132425000013664,1NRY490441,MHFAA1BY7S0046636,NJE8891,132400000911246,93325170,,,,,,,,,,Yes,46296.49861,Internal TT Team,No,,,,"-Affidavit of undertaking (signed by the dealer)
+",0917-8800-531,Passport,P1518615B,Elvira Ladea,Marah Luriely A. Villaruz,Sales POC,New,Manual,TOYOTA,AVANZA E 1.3 CV,Wagon,2025,132425000013664,1NRY490441,MHFAA1BY7S0046636,NJE8891,132400000911246,93325170,,,1. ORCR,,Yes,46296,,,,Yes,46296.49861,Internal TT Team,No,,,,"-Affidavit of undertaking (signed by the dealer)
 - SPA executed by the dealer in favor of Carmudi
 - Authorization Letter to the Bank (Issued by the Dealer to the Bank)
 - PDC per unit dated 30 days from the disbursal date
@@ -64387,7 +64410,7 @@ Shielyka Curate,AUTO BOUTIQ AUTO TRADING,Julius Cruz San Juan,31479," 122 Gen. B
 - LTO Verification
 - Failed SI ABA173,ABA174, ABA175, ABA176, ABA177, ABA179, ABA180, ABA181, ABA183, ABA188 (reported sold) and ABA184 (unvalidated unit)",,,,46296,46296,,545206.4,681508,,Approved,46296.57292,,,,,,,,,,,,,,,46296.58193
 Shielyka Curate,AUTO BOUTIQ AUTO TRADING,Julius Cruz San Juan,31479," 122 Gen. B. G. Molina St. Parang Marikina
-",0917-8800-531,Passport,P1518615B,Elvira Ladea,Marah Luriely A. Villaruz,,,,TOYOTA,AVANZA E 1.3 CVT,Wagon,2025,1336-000000709199,1NRY433538,MHFAA1BY7S0040917,NJQ1454,133625004458574,74686753,,,,,,,,,,Yes,46296.5,Internal TT Team,No,,,,"-Affidavit of undertaking (signed by the dealer)
+",0917-8800-531,Passport,P1518615B,Elvira Ladea,Marah Luriely A. Villaruz,Sales POC,New,Manual,TOYOTA,AVANZA E 1.3 CVT,Wagon,2025,1336-000000709199,1NRY433538,MHFAA1BY7S0040917,NJQ1454,133625004458574,74686753,,,1. ORCR,,Yes,46296,,,,Yes,46296.5,Internal TT Team,No,,,,"-Affidavit of undertaking (signed by the dealer)
 - SPA executed by the dealer in favor of Carmudi
 - Authorization Letter to the Bank (Issued by the Dealer to the Bank)
 - PDC per unit dated 30 days from the disbursal date
@@ -64399,14 +64422,20 @@ Shielyka Curate,AUTO BOUTIQ AUTO TRADING,Julius Cruz San Juan,31479," 122 Gen. B
 - MVIR
 - LTO Verification
 - Failed SI ABA173,ABA174, ABA175, ABA176, ABA177, ABA179, ABA180, ABA181, ABA183, ABA188 (reported sold) and ABA184 (unvalidated unit)",,,,46296,46296,,545200,681500,,Approved,46296.57292,,,,,,,,,,,,,,,46296.58135
-Shielyka Curate,R ZABLAN AUTO TRADING,Ronald Carreon Zablan ,26214,Pasay Auto Mall Pasay Edsa Cor. Harizon,9177111971,Driver's License,C11-89-043705,Rhoyland Alagon,Marah Luriely A. Villaruz,,,,KIA,GRAND CARNIVAL,Van,2018,1336-000000780015,D4HBHH817055,KNAMC81ABJ6390613,NBI8207,1301-00001025699,41857513-5,,,,,,,,,,Yes,46296.59514,Internal TT Team,No,,,,"-For Stock Inspection - failed SI RZAT113 prior disbursement or PDC in lieu of SI.
+Shielyka Curate,R ZABLAN AUTO TRADING,Ronald Carreon Zablan ,26214,Pasay Auto Mall Pasay Edsa Cor. Harizon,9177111971,Driver's License,C11-89-043705,Rhoyland Alagon,Marah Luriely A. Villaruz,Chrisjohn Basco Basco,New,SFA / Loanbox,KIA,GRAND CARNIVAL,Van,2018,1336-000000780015,D4HBHH817055,KNAMC81ABJ6390613,NBI8207,1301-00001025699,41857513-5,,AT,"1. ORCR 
+2. SELFIE PHOTO WITH UNIT
+3. LATEST UNIT PHOTOS - GEO TAGGED 
+4. OPEN DOS 
+5. VALID IDS - LEE, DAVID ",,Yes,46296.55069,,Yes,,Yes,46296.59514,Internal TT Team,No,,,,"-For Stock Inspection - failed SI RZAT113 prior disbursement or PDC in lieu of SI.
 -PDC
 -LTO Verification
 -Physical Docs onhand by Inspector Crisjohn",,,,46296,46296,,568000,822000.08,,Approved,46296.64514,,,,,,,,,,,,,,,46296.65201
-Shielyka Curate,Z2.GARAGE CAR TRADING,JOEL GUMAPAC MOTIL,30176,Blk 7 Lot 7 Hillsboro Subd. Santor Tanauan City Batangas Electric,9178666856,Driver's License,D14-06-004424,Ricmar Magboo,Albert Dalupang,Sales POC,New,SFA / Loanbox,TOYOTA,FORTUNER 4X2 2,SUV/MUV,2017,1093868182,2GDC111670,MHFJB8GS0G1517568,NAE4572,1301-00000838135,267558152,,,,,,,,,,Yes,46296.73056,Internal TT Team,No,,Pending ORCR Report from Third Party Agency,,"-PDC
+Shielyka Curate,Z2.GARAGE CAR TRADING,JOEL GUMAPAC MOTIL,30176,Blk 7 Lot 7 Hillsboro Subd. Santor Tanauan City Batangas Electric,9178666856,Driver's License,D14-06-004424,Ricmar Magboo,Albert Dalupang,Sales POC,New,SFA / Loanbox,TOYOTA,FORTUNER 4X2 2,SUV/MUV,2017,1093868182,2GDC111670,MHFJB8GS0G1517568,NAE4572,1301-00000838135,267558152,,AT,"1. ORCR
+2. SELFIE PHOTO WITH UNIT 
+3. LATEST UNIT PHOTOS - GEO TAGGED ",1. VALID IDS ,Yes,46297.71667,,No,,Yes,46296.73056,Internal TT Team,No,,Pending ORCR Report from Third Party Agency,,"-PDC
 -LTO Verification
 -Valid ID of Current Owner
 -Physical Docs onhand by SO Ricmar",,,,46296,46296,,508000,1010192.26,,Approved,46296.74861,,,,,,,,,,,,,,,46296.75108
 ,ROSMEL AUTO TRADING,Rodrigo Ortega Bathan,19652,Purok 3 Tambo Lipa City Batangas,9687673454,Driver's License,D08-75-004934,Ricmar Magboo,Albert Dalupang,,,,MITSUBISHI,MONTERO SPT GLX ,Wagon,2013,352000000476750,4D56UCEA1270,MMBGRKG40DD003646,UJO615,1358-00000166155,171692522,,,,,,,,,,Yes,46297.41736,Internal TT Team,No,,,,	- LTO Verification,,,,46297,46297,,370000,463050.72,,Approved,46297.41875,,,,,,,,,,,,,,,46297.41971
-,RAS CAR TRADING,Randall Arriasgado Solito,29782,Cd Rrmo Lower Bicutan Taguig,9164259199,Driver's License,N01-12-009812,Myrnalyn Bankingkito,Malou Alfonso,,,,SUZUKI,DZIRE GL AMT ,Sedan,2024,1301-000000035646,K12MP4374639,MBHZF63S9RG441033,NHG4650,130123000598777,42211280,,,,,,,,,,No,,,No
-,JAML16 AUTO TRADING,Jemmele Albert Macasaet Leyesa,30118,Doctor Gregorio Zara St Brgy Tambo Lipa City Batangas,9158490545,Driver's License,N03-22-303862,Ricmar Magboo,Albert Dalupang,,,,MG,ZS,SUV/MUV,2021,0448-000000835371,15S4C8FGL9230453,LSJW74U96LZ190567,NDO3521,,,,,,,,,,,,Yes,46297.45486,Internal TT Team,No,,Pending ORCR Report from Third Party Agency
+,RAS CAR TRADING,Randall Arriasgado Solito,29782,Cd Rrmo Lower Bicutan Taguig,9164259199,Driver's License,N01-12-009812,Myrnalyn Bankingkito,Malou Alfonso,,,,SUZUKI,DZIRE GL AMT ,Sedan,2024,1301-000000035646,K12MP4374639,MBHZF63S9RG441033,NHG4650,130123000598777,42211280,,,,,,,,,,No,,,No,,,,Ok to disburse,,,,46297,46297,,312000,445010.91,,Approved,46297.46319,,,,,,,,,,,,,,,46297.46475
+,JAML16 AUTO TRADING,Jemmele Albert Macasaet Leyesa,30118,Doctor Gregorio Zara St Brgy Tambo Lipa City Batangas,9158490545,Driver's License,N03-22-303862,Ricmar Magboo,Albert Dalupang,,,,MG,ZS,SUV/MUV,2021,0448-000000835371,15S4C8FGL9230453,LSJW74U96LZ190567,NDO3521,1301-00001688829,433036015,,,,,,,,,,Yes,46297.45486,Internal TT Team,No,,Pending ORCR Report from Third Party Agency
