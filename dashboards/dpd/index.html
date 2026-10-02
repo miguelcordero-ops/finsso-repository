@@ -375,7 +375,8 @@ td.drill-cell:hover{background:var(--chip-hover)}
 
   <div class="card" style="margin-top:24px">
     <div class="card-title">Restructured Accounts — Underlying DPD Bucket <span class="card-unit" id="view-unit-label2"></span></div>
-    <div class="section-sub" style="margin:-6px 0 14px">what DPD bucket these drawdowns would be tagged as if they weren't pulled out into Restructured Accounts</div>
+    <div class="section-sub" style="margin:-6px 0 10px">what DPD bucket these drawdowns would be tagged as if they weren't pulled out into Restructured Accounts</div>
+    <div class="filter-group" id="filter-restructure-scope" style="margin:0 0 14px"><span class="filter-group-label">Show</span></div>
     <table id="restructure-bucket-matrix-table">
       <thead id="restructure-bucket-matrix-head"></thead>
       <tbody id="restructure-bucket-matrix-body"></tbody>
@@ -488,6 +489,9 @@ let viewMode = 'pct'; // 'pct' | 'value' | 'count'
 // total/bucket/drill-down everywhere in the dashboard — a quick way to see
 // AUM/DPD net of units that have already been recovered.
 let netOfRepo = false;
+// Scopes the second table (Restructured Accounts — Underlying DPD Bucket)
+// to all restructured loans, Restructured Active only, or Pending only.
+let restructureScope = 'all'; // 'all' | 'active' | 'pending'
 
 // Which collapsible matrix row-groups (by groupId) are currently collapsed —
 // i.e. their child rows (parentGroup === that id) are hidden. Persists
@@ -943,6 +947,12 @@ function computeDPDForDate(asOf) {
   const restructureBucketN = new Array(n).fill(0);
   const restructureBucketSum = new Array(n).fill(0);
   const restructureBucketLoans = Array.from({ length: n }, () => []);
+  // Same breakdown, split by restructureStatus — drives the second table's
+  // All / Restructured Active / Pending scope toggle without recomputing.
+  const restructureBucketByStatus = {
+    active:  { n: new Array(n).fill(0), sum: new Array(n).fill(0), loans: Array.from({ length: n }, () => []) },
+    pending: { n: new Array(n).fill(0), sum: new Array(n).fill(0), loans: Array.from({ length: n }, () => []) },
+  };
 
   // Restructured accounts (Drawdown Tracker "Restructuring Status" = Current
   // Restructuring / Pending Restructuring) are pulled out of the normal DPD
@@ -1009,6 +1019,11 @@ function computeDPDForDate(asOf) {
       restructureBucketSum[underlyingBucketIdx] += out;
       restructureBucketLoans[underlyingBucketIdx].push(record);
 
+      const rbs = restructureBucketByStatus[loan.restructureStatus];
+      rbs.n[underlyingBucketIdx] += 1;
+      rbs.sum[underlyingBucketIdx] += out;
+      rbs.loans[underlyingBucketIdx].push(record);
+
       if (loan.restructureStatus === 'pending') {
         const paidInit = (loan.initialPaymentPaid || '').trim().toLowerCase() === 'yes';
         const sub = paidInit ? restructure.pendingPaidInit : restructure.pendingUnpaidInit;
@@ -1050,6 +1065,7 @@ function computeDPDForDate(asOf) {
   return {
     bucketN, bucketSum, totalN, totalSum, bucketLoans, restructure,
     restructureBucketN, restructureBucketSum, restructureBucketLoans,
+    restructureBucketByStatus,
   };
 }
 
@@ -1204,6 +1220,24 @@ function renderAll(asOf) {
 // bucket would these be tagged as if they weren't pulled out?" % mode here
 // is % of that column's restructured total, not whole-book AUM, since this
 // table is specifically about the restructured subset.
+// Picks the N/sum/loans arrays (one entry per fine DPD bucket) and the
+// %-mode denominator matching the current All / Restructured Active /
+// Pending scope toggle, without touching computeDPDForDate's cached stats.
+function restructureBucketScopedStats(col) {
+  if (restructureScope === 'active') {
+    const s = col.stats.restructureBucketByStatus.active;
+    return { n: s.n, sum: s.sum, loans: s.loans, totalN: col.stats.restructure.active.n, totalSum: col.stats.restructure.active.sum };
+  }
+  if (restructureScope === 'pending') {
+    const s = col.stats.restructureBucketByStatus.pending;
+    return { n: s.n, sum: s.sum, loans: s.loans, totalN: col.stats.restructure.pending.n, totalSum: col.stats.restructure.pending.sum };
+  }
+  return {
+    n: col.stats.restructureBucketN, sum: col.stats.restructureBucketSum, loans: col.stats.restructureBucketLoans,
+    totalN: col.stats.restructure.active.n + col.stats.restructure.pending.n,
+    totalSum: col.stats.restructure.active.sum + col.stats.restructure.pending.sum,
+  };
+}
 function renderRestructureBucketTable(columns) {
   const head = document.getElementById('restructure-bucket-matrix-head');
   if (!head) return;
@@ -1218,22 +1252,20 @@ function renderRestructureBucketTable(columns) {
     const labelClass = 'bucket-label' + (row.indent ? ' indent' : '');
     const idxs = row.type === 'leaf' ? [row.idx] : row.idxs;
     const cells = columns.map((col, ci) => {
-      const n = idxs.reduce((a, i) => a + col.stats.restructureBucketN[i], 0);
-      const sum = idxs.reduce((a, i) => a + col.stats.restructureBucketSum[i], 0);
-      const restructTotalN = col.stats.restructure.active.n + col.stats.restructure.pending.n;
-      const restructTotalSum = col.stats.restructure.active.sum + col.stats.restructure.pending.sum;
-      return '<td class="r month-col drill-cell" data-col="' + ci + '" data-kind="restructure-bucket" data-idxs="' + idxs.join('_') + '" onclick="openDrillDown(this)">'
-        + cellValue(n, sum, restructTotalN, restructTotalSum) + '</td>';
+      const s = restructureBucketScopedStats(col);
+      const n = idxs.reduce((a, i) => a + s.n[i], 0);
+      const sum = idxs.reduce((a, i) => a + s.sum[i], 0);
+      return '<td class="r month-col drill-cell" data-col="' + ci + '" data-kind="restructure-bucket" data-filter="' + restructureScope + '" data-idxs="' + idxs.join('_') + '" onclick="openDrillDown(this)">'
+        + cellValue(n, sum, s.totalN, s.totalSum) + '</td>';
     }).join('');
     return '<tr' + rowClass + '><td class="sticky-col ' + labelClass + '">' + row.label + '</td>' + cells + '</tr>';
   }).join('');
 
+  const allIdxs = DPD_FINE_LABELS.map((_, i) => i);
   const totalCells = columns.map((col, ci) => {
-    const restructTotalN = col.stats.restructure.active.n + col.stats.restructure.pending.n;
-    const restructTotalSum = col.stats.restructure.active.sum + col.stats.restructure.pending.sum;
-    const allIdxs = DPD_FINE_LABELS.map((_, i) => i);
-    return '<td class="r month-col drill-cell" data-col="' + ci + '" data-kind="restructure-bucket" data-idxs="' + allIdxs.join('_') + '" onclick="openDrillDown(this)">'
-      + cellValue(restructTotalN, restructTotalSum, restructTotalN, restructTotalSum) + '</td>';
+    const s = restructureBucketScopedStats(col);
+    return '<td class="r month-col drill-cell" data-col="' + ci + '" data-kind="restructure-bucket" data-filter="' + restructureScope + '" data-idxs="' + allIdxs.join('_') + '" onclick="openDrillDown(this)">'
+      + cellValue(s.totalN, s.totalSum, s.totalN, s.totalSum) + '</td>';
   }).join('');
   const totalRow = '<tr class="total-row"><td class="sticky-col bucket-label">Total</td>' + totalCells + '</tr>';
 
@@ -1301,7 +1333,11 @@ function openDrillDown(el) {
   } else if (kind === 'restructure') {
     keys.forEach(k => { loans = loans.concat(col.stats.restructure[k].loans || []); });
   } else if (kind === 'restructure-bucket') {
-    keys.map(Number).forEach(i => { loans = loans.concat(col.stats.restructureBucketLoans[i] || []); });
+    const filter = el.dataset.filter || 'all';
+    const src = filter === 'active' ? col.stats.restructureBucketByStatus.active.loans
+      : filter === 'pending' ? col.stats.restructureBucketByStatus.pending.loans
+      : col.stats.restructureBucketLoans;
+    keys.map(Number).forEach(i => { loans = loans.concat(src[i] || []); });
   } else { // 'all' — the Total row: every fine bucket plus both restructure buckets
     DPD_FINE_LABELS.forEach((_, i) => { loans = loans.concat(col.stats.bucketLoans[i] || []); });
     loans = loans.concat(col.stats.restructure.active.loans, col.stats.restructure.pending.loans);
@@ -1410,6 +1446,7 @@ function buildStaticFilterUI() {
   buildViewModeToggle();
   buildCurrencyToggle();
   buildRepoToggle();
+  buildRestructureScopeToggle();
 }
 function buildDpdDefinitionToggle() {
   const container = document.getElementById('filter-dpd-def');
@@ -1489,11 +1526,36 @@ function buildRepoToggle() {
     container.appendChild(el);
   });
 }
+function buildRestructureScopeToggle() {
+  const container = document.getElementById('filter-restructure-scope');
+  const options = [
+    { value: 'all', label: 'All' },
+    { value: 'active', label: 'Restructured Active' },
+    { value: 'pending', label: 'Pending' },
+  ];
+  options.forEach(opt => {
+    const el = document.createElement('span');
+    el.className = 'filter-chip' + (opt.value === restructureScope ? ' active' : '');
+    el.textContent = opt.label;
+    el.onclick = () => {
+      if (restructureScope === opt.value) return;
+      restructureScope = opt.value;
+      container.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      // The scope only changes which slice of the already-computed stats the
+      // second table reads — no need to recompute columns/stats via renderAll.
+      if (lastColumns) renderRestructureBucketTable(lastColumns);
+    };
+    container.appendChild(el);
+  });
+}
 function resetFilters() {
   filterState.financier.clear();
   netOfRepo = false;
+  restructureScope = 'all';
   document.querySelectorAll('#filter-financier .filter-chip').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('#filter-repo .filter-chip').forEach((el, i) => el.classList.toggle('active', i === 0));
+  document.querySelectorAll('#filter-restructure-scope .filter-chip').forEach((el, i) => el.classList.toggle('active', i === 0));
   renderAll(selectedDate);
 }
 function onDateChange(v) {
