@@ -1,0 +1,999 @@
+Dealership Name,Drawdown ID,Restructuring ID,Dealer Repayment Type,Dealer Payment Date,[Grouping] Effectivity Date,Dealer Mode of Payment,"Finsso 
+Receiving Bank",Finsso Received Amount from Dealer,Payment Crediting Date (Carmudi Bank),Transaction ID,Interest,Renewal Fee,Penalty Fee,Total amount,Financier,,Posted (Yes/No),Remarks,Other Remarks,,,,Drawdown Status,Dealer Name,Email,Business Address,Latest CLA Date,Latest CLA Amount,PNCM Date,Drawdown Original Principal,Drawdown Maturity,Drawdown Original OB,Restructure Outstanding Balance,OB @ Restructuring,Addt. Principal for Restructuring,Year,MMV,Plate Number,SC1 Due Date,SC1 Due Amount,P1 Due Date,P1 Due Amount,SC2 Due Date,SC2 Due Amount,P2 Due Date,P2 Due Amount,SC3 Due Date,SC3 Due Amount,P3 Due Date,P3 Due Amount,SC4 Due Date,SC4 Due Amount,P4 Due Date,P4 Due Amount
+AUTOCOTTO CAR TRADING,ACT38,ACT-N-R1,Restructuring - Partial,46273,46273,Bank Transfer / RTGS,Finsso BDO - 6935,65733.37,46273,FT CA-CA DIGIFI POB DBFT 026251479493,27003.38,14580,24150,65733.38,Netbank,-0.009999999995,Yes,"Applicable Payment - September 8 , with penalty waiver, new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Active,Annline Calcita Borleo,lineborleo@gmail.com,"39 MABILIS ST., BRGY PINYAHAN, QUEZON CITY, 1100",45835,5000000,46079,450000,46169,0,364500,364500,,2022,ISUZU TRAVIZ L,NEQ6110
+AUTOCOTTO CAR TRADING,ACT41,ACT-F-R1,Restructuring - Partial,46273,46273,Bank Transfer / RTGS,Finsso BDO - 6935,58693.5,46273,FT CA-CA DIGIFI POB DBFT 026251479493,26323.5,12420,19950,58693.5,Finsso,0,Yes,"Applicable Payment - September 8 , with penalty waiver, new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Active,Annline Calcita Borleo,lineborleo@gmail.com,"39 MABILIS ST., BRGY PINYAHAN, QUEZON CITY, 1100",46066,7500000,46090,460000,46181,0,414000,414000,,2019,FORD RANGER 2.2L XLS,CAT8225
+AUTOCOTTO CAR TRADING,ACT46,ACT-F-R1,Restructuring - Partial,46273,46273,Bank Transfer / RTGS,Finsso BDO - 6935,51365.93,46273,FT CA-CA DIGIFI POB DBFT 026251479493,21344.93,10071,19950,51365.93,Finsso,0,Yes,"Applicable Payment - September 8 , with penalty waiver, new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Active,Annline Calcita Borleo,lineborleo@gmail.com,"39 MABILIS ST., BRGY PINYAHAN, QUEZON CITY, 1100",46066,7500000,46090,373000,46181,0,335700,335700,,2022,MITSUBISHI L300 CC 2.2D M,NIB8719
+AUTOCOTTO CAR TRADING,ACT47,ACT-N-R1,Restructuring - Partial,46273,46273,Bank Transfer / RTGS,Finsso BDO - 6935,11710.61,46273,FT CA-CA DIGIFI POB DBFT 026251479493,7420.61,3240,1050,11710.61,Netbank,0,Yes,"Applicable Payment - September 8 , with penalty waiver, new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Active,Annline Calcita Borleo,lineborleo@gmail.com,"39 MABILIS ST., BRGY PINYAHAN, QUEZON CITY, 1100",45835,5000000,46226,324000,46316,0,324000,324000,,2024,MITSUBISHI MIRAGE G4 GLX 1.2G CVT,DBQ5882/GR420A
+PMB CAR EXCHANGE,,,Restructuring - Partial,46295,,Bank Transfer / RTGS,Finsso BDO - 6935,0,46275,FT CA-CA DIGIFI POB DBFT 026253169972,28203.53,15228,26950,70381.53,,-70381.53,Yes,"Applicable Payment - September 8 , with penalty waiver, new renewal model, interest and renewal fee stop at 31st August",Pending funds from CF,,,,,,pborleo@gmail.com,"14 MAUNAWAIN ST., BRGY PINYAHAN, QUEZON CITY, 1100",,,,,,,0
+PMB CAR EXCHANGE,,,Restructuring - Partial,46275,,Bank Transfer / RTGS,Finsso BDO - 6935,210731.05,46275,FT CA-CA DIGIFI POB DBFT 026253169972,22432.2,10584,22050,55066.2,,155664.85,Yes,"Applicable Payment - September 8 , with penalty waiver, new renewal model, interest and renewal fee stop at 31st August",,,,,,,pborleo@gmail.com,"14 MAUNAWAIN ST., BRGY PINYAHAN, QUEZON CITY, 1100",,,,,,,0
+PMB CAR EXCHANGE,PMB167,PMB-N-R1,Restructuring - Partial,46295,46295,Bank Transfer / RTGS,Finsso BDO - 6935,110808.33,46275,FT CA-CA DIGIFI POB DBFT 026253169972,45208.33,25000,40600,110808.33,Netbank,0,Yes,"Applicable Payment - September 8 , with penalty waiver, new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Pending,Philip Masiddo Borleo,pborleo@gmail.com,"14 MAUNAWAIN ST., BRGY PINYAHAN, QUEZON CITY, 1100",45631,10000000,46111,625000,46202,625000,625000,625000,,2024,HYUNDAI STARGAZER 1.5 GLS IVT,EAG9870
+PMB CAR EXCHANGE,PMB170,PMB-N-R1,Restructuring - Partial,46295,46295,Bank Transfer / RTGS,Finsso BDO - 6935,65744.55,46275,FT CA-CA DIGIFI POB DBFT 026253169972,24474.35,12220.2,29050,65744.55,Netbank,0,Yes,"Applicable Payment - September 8 , with penalty waiver, new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Pending,Philip Masiddo Borleo,pborleo@gmail.com,"14 MAUNAWAIN ST., BRGY PINYAHAN, QUEZON CITY, 1100",45631,10000000,46163,407340,46253,407340,407340,407340,,2025,MITSUBISHI MIRAGE G4 GLS 1.2G CVT,LAQ3899
+PMB CAR EXCHANGE,PMB171,PMB-N-R1,Restructuring - Partial,46295,46295,Bank Transfer / RTGS,Finsso BDO - 6935,115530,46275,FT CA-CA DIGIFI POB DBFT 026253169972,57680,28800,29050,115530,Netbank,0,Yes,"Applicable Payment - September 8 , with penalty waiver, new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Pending,Philip Masiddo Borleo,pborleo@gmail.com,"14 MAUNAWAIN ST., BRGY PINYAHAN, QUEZON CITY, 1100",45631,10000000,46163,960000,46253,960000,960000,960000,,2023,TOYOTA FORTUNER 2.4L G,NHC5336
+PMB CAR EXCHANGE,PMB172,PMB-N-R1,Restructuring - Partial,46275,46295,Bank Transfer / RTGS,Finsso BDO - 6935,12744.55,46275,FT CA-CA DIGIFI POB DBFT 026253169972,6678.55,2916,3150,12744.55,Netbank,0,Yes,"Applicable Payment - September 8 , with penalty waiver, new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Pending,Philip Masiddo Borleo,pborleo@gmail.com,"14 MAUNAWAIN ST., BRGY PINYAHAN, QUEZON CITY, 1100",45631,10000000,46226,291600,46316,291600,291600,291600,,2022,MITSUBISHI MIRAGE G4 GLX 1,NFK1162/B9Y483
+PMB CAR EXCHANGE,PMB173,PMB-N-R1,Restructuring - Partial,46275,46295,Bank Transfer / RTGS,Finsso BDO - 6935,12646.75,46275,FT CA-CA DIGIFI POB DBFT 026253169972,6608.02,2888.73,3150,12646.75,Netbank,0,Yes,"Applicable Payment - September 8 , with penalty waiver, new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Pending,Philip Masiddo Borleo,pborleo@gmail.com,"14 MAUNAWAIN ST., BRGY PINYAHAN, QUEZON CITY, 1100",45631,10000000,46226,288873,46316,288873,288873,288873,,2024,MITSUBISHI MIRAGE G4 GLX 1.2G CVT,NKJ6562/HA216A
+PMB CAR EXCHANGE,PMB174,PMB-N-R1,Restructuring - Partial,46275,46295,Bank Transfer / RTGS,Finsso BDO - 6935,13222.74,46275,FT CA-CA DIGIFI POB DBFT 026253169972,7008.58,3064.16,3150,13222.74,Netbank,0,Yes,"Applicable Payment - September 8 , with penalty waiver, new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Pending,Philip Masiddo Borleo,pborleo@gmail.com,"14 MAUNAWAIN ST., BRGY PINYAHAN, QUEZON CITY, 1100",45631,10000000,46226,306416.07,46316,306416.07,306416.07,306416.07,,2024,TOYOTA VIOS 1.3 XLE CVT,NEY6506
+PMB CAR EXCHANGE,PMB175,PMB-N-R1,Restructuring - Partial,46275,46295,Bank Transfer / RTGS,Finsso BDO - 6935,13224,46275,FT CA-CA DIGIFI POB DBFT 026253169972,6762,3312,3150,13224,Netbank,0,Yes,"Applicable Payment - September 8 , with penalty waiver, new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Pending,Philip Masiddo Borleo,pborleo@gmail.com,"14 MAUNAWAIN ST., BRGY PINYAHAN, QUEZON CITY, 1100",45631,10000000,46231,331200,46321,331200,331200,331200,,2024,MITSUBISHI MIRAGE G4 GLX 1.2G CVT,NHG4485
+JMTS CARFINDERS TELEMARKETING SERVICES,JMTS74,JMTS-N-R1,Restructuring - Partial,46273,46273,Bank Transfer / RTGS,Finsso BDO - 6935,44897.03,46273,ONLINE TRANSFER BOB FROM ********6740 Reference # 2937770767,4980.15,15066,24850,44896.15,Netbank,0.88,Yes,"Applicable Payment - September 8 , new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Active,Jay Nogoy Manabat,jhay.manabat.02@gmail.com,"#4 BAGONG ANYO, DE CASTRO SUBD., BRGY SANTA LUCIA, PASIG CITY, 1608",45852,4500000,46112,620000,46202,0,502200,502200,,2017,MITSUBISHI MONTERO SPT GLX,EAB2328
+JMTS CARFINDERS TELEMARKETING SERVICES,JMTS76,JMTS-N-R1,Restructuring - Partial,46273,46273,Bank Transfer / RTGS,Finsso BDO - 6935,23208.1,46273,ONLINE TRANSFER BOB FROM ********6740 Reference # 2937770767,1892.1,3816,17500,23208.1,Netbank,0,Yes,"Applicable Payment - September 8 , new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Active,Jay Nogoy Manabat,jhay.manabat.02@gmail.com,"#4 BAGONG ANYO, DE CASTRO SUBD., BRGY SANTA LUCIA, PASIG CITY, 1608",45852,4500000,46147,212000,46237,0,190800,190800,,2016,MITSUBISHI MIRAGE G4 GLX 1,130102/NCZ5442
+JMTS CARFINDERS TELEMARKETING SERVICES,JMTS77,JMTS-N-R1,Restructuring - Partial,46273,46273,Bank Transfer / RTGS,Finsso BDO - 6935,27489.18,46273,ONLINE TRANSFER BOB FROM ********6740 Reference # 2937770767,3311.18,6678,17500,27489.18,Netbank,0,Yes,"Applicable Payment - September 8 , new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Active,Jay Nogoy Manabat,jhay.manabat.02@gmail.com,"#4 BAGONG ANYO, DE CASTRO SUBD., BRGY SANTA LUCIA, PASIG CITY, 1608",45852,4500000,46153,371000,46244,0,333900,333900,,2018,TOYOTA RUSH 1.5G AT,NAO8011
+JMTS CARFINDERS TELEMARKETING SERVICES,JMTS78,JMTS-N-R1,Restructuring - Partial,46273,46273,Bank Transfer / RTGS,Finsso BDO - 6935,16169.69,46273,ONLINE TRANSFER BOB FROM ********6740 Reference # 2937770767,7028.44,3060,6081.25,16169.69,Netbank,0,Yes,"Applicable Payment - September 8 , new renewal model, interest and renewal fee stop at 31st August",,,,,Restructuring Active,Jay Nogoy Manabat,jhay.manabat.02@gmail.com,"#4 BAGONG ANYO, DE CASTRO SUBD., BRGY SANTA LUCIA, PASIG CITY, 1608",45852,4500000,46226,306000,46316,0,306000,306000,,2019,SUZUKI ERTIGA 1.5-GL-M,NDK9763
+GONZAPCARS CAR TRADING,GCT38,GCT-F-R1,Restructuring - Partial,46276,46276,Bank Transfer / RTGS,Finsso BDO - 6935,26880.95,46276,FT CA-CA DIGIFI POB DBFT 026254951187 / FT CA-CA DIGIFI POB DBFT 026260866696,4201.75,20580,16800,41581.75,Finsso,-14700.8,Yes,"Applicable Payment - September 9, new renewal model, interest and renewal fee stop at 31st August - Pending Penalty payment",Remaining Penalty waived as per Paola,,,,Restructuring Active,Niño Joseph Gonzales,gonzapcars@hotmail.com,"27 JP LAUREL SR, BRGY SAN ROQUE, MARIKINA CITY, 1800",45924,5700000,46136,1029000,46226,0,1029000,1029000,,2018,BMW 520D LIMOUSINE,NGR6969
+GONZAPCARS CAR TRADING,GCT40,GCT-F-R1,Restructuring - Partial,46276,46276,Bank Transfer / RTGS,Finsso BDO - 6935,19263.1,46276,FT CA-CA DIGIFI POB DBFT 026254951187 / FT CA-CA DIGIFI POB DBFT 026260866696,1367.1,6696,11200,19263.1,Finsso,0,Yes,"Applicable Payment - September 9, new renewal model, interest and renewal fee stop at 31st August - Pending Penalty payment",,,,,Restructuring Active,Niño Joseph Gonzales,gonzapcars@hotmail.com,"27 JP LAUREL SR, BRGY SAN ROQUE, MARIKINA CITY, 1800",45924,5700000,46139,372000,46230,0,334800,334800,,2014,MERCEDES-BENZ B 200 SPORT,JIM586
+GONZAPCARS CAR TRADING,GCT41,GCT-N-R1,Restructuring - Partial,46276,46276,Bank Transfer / RTGS,Finsso BDO - 6935,39693.05,46276,FT CA-CA DIGIFI POB DBFT 026254951187 / FT CA-CA DIGIFI POB DBFT 026260866696,22624.65,8560,8508.4,39693.05,Netbank,0,Yes,"Applicable Payment - September 9, new renewal model, interest and renewal fee stop at 31st August - Pending Penalty payment",,,,,Restructuring Active,Niño Joseph Gonzales,gonzapcars@hotmail.com,"27 JP LAUREL SR, BRGY SAN ROQUE, MARIKINA CITY, 1800",45699,5700000,46220,856000,46310,0,856000,856000,,2016,BMW X3 2.0D,NCZ5095
+GONZAPCARS CAR TRADING,GCT42,GCT-N-R2,Restructuring - Partial,46276,46279,Bank Transfer / RTGS,Finsso BDO - 6935,20193.3,46276,FT CA-CA DIGIFI POB DBFT 026254951187 / FT CA-CA DIGIFI POB DBFT 026260866696,9651.07,4242.23,6300,20193.3,Netbank,0,Yes,"Applicable Payment - September 9, new renewal model, interest and renewal fee stop at 31st August - Pending Penalty payment",,,,,Restructuring Active,Niño Joseph Gonzales,gonzapcars@hotmail.com,"27 JP LAUREL SR, BRGY SAN ROQUE, MARIKINA CITY, 1800",45699,5700000,46227,424223.01,46317,0,424223.01,424223.01,,2013,BMW 520D,UEO941
+MANILA A DEAL CAR TRADING,MDC18,MDC-F-R1,Restructuring - Partial,46276,46276,Cash,Finsso BDO - 6935,42281.66,46276,01003 CD,11433.33,19600,10850,41883.33,Finsso,398.33,Yes,"Applicable Payment - September 11, new renewal model, interest and renewal fee stop at 31st August",,"₱11,433.33","₱19,600.00","₱10,850.00",Restructuring Active,Joshua Dela Peña Raymundo,raymundo27joshua@gmail.com,"250 LUNAS CMPD ST, BRGY STA ANA, PATEROS, 1621",45982,6750000,46133,980000,46223,0,980000,980000,,2016,BMW X4 2.0D,NCZ6711
+MANILA A DEAL CAR TRADING,MDC19,MDC-F-R1,Restructuring - Partial,46276,46276,Cash,Finsso BDO - 6935,66266.67,46276,01003 CD,20416.67,35000,10850,66266.67,Finsso,0,Yes,"Applicable Payment - September 11, new renewal model, interest and renewal fee stop at 31st August",,"₱20,416.67","₱35,000.00","₱10,850.00",Restructuring Active,Joshua Dela Peña Raymundo,raymundo27joshua@gmail.com,"250 LUNAS CMPD ST, BRGY STA ANA, PATEROS, 1621",45982,6750000,46135,1750000,46225,0,1750000,1750000,,2025,NISSAN Z 3.0L PREMIUM COUPE AT,NJJ5532
+MANILA A DEAL CAR TRADING,MDC20,MDC-F-R1,Restructuring - Partial,46276,46276,Cash,Finsso BDO - 6935,34220,46276,01003 CD,8610,14760,10850,34220,Finsso,0,Yes,"Applicable Payment - September 11, new renewal model, interest and renewal fee stop at 31st August",,"₱8,610.00","₱14,760.00","₱10,850.00",Restructuring Active,Joshua Dela Peña Raymundo,raymundo27joshua@gmail.com,"250 LUNAS CMPD ST, BRGY STA ANA, PATEROS, 1621",45982,6750000,46136,738000,46226,0,738000,738000,,2020,NISSAN TERRA 2.5 VL A,NFW1114
+MANILA A DEAL CAR TRADING,MDC21,MDC-F-R1,Restructuring - Partial,46276,46276,Cash,Finsso BDO - 6935,74183.33,46276,01003 CD,23333.33,40000,10850,74183.33,Finsso,0,Yes,"Applicable Payment - September 11, new renewal model, interest and renewal fee stop at 31st August",,"₱23,333.33","₱40,000.00","₱10,850.00",Restructuring Active,Joshua Dela Peña Raymundo,raymundo27joshua@gmail.com,"250 LUNAS CMPD ST, BRGY STA ANA, PATEROS, 1621",45982,6750000,46136,2000000,46226,0,2000000,2000000,,2017,PORSCHE 718 BOXSTER 2.0 CONVERTIBLE,NBX6420
+MANILA A DEAL CAR TRADING,MDC22,MDC-F-R1,Restructuring - Partial,46276,46276,Cash,Finsso BDO - 6935,27031.67,46276,01003 CD,5961.67,10220,10850,27031.67,Finsso,0,Yes,"Applicable Payment - September 11, new renewal model, interest and renewal fee stop at 31st August",,"₱5,961.67","₱10,220.00","₱10,850.00",Restructuring Active,Joshua Dela Peña Raymundo,raymundo27joshua@gmail.com,"250 LUNAS CMPD ST, BRGY STA ANA, PATEROS, 1621",45982,6750000,46139,511000,46230,0,511000,511000,,2016,TOYOTA FORTUNER 4X2 2.4 G,ALY127
+MANILA A DEAL CAR TRADING,MDC23,MDC-F-R1,Restructuring - Partial,46276,46276,Cash,Finsso BDO - 6935,26016.67,46276,01003 CD,8166.67,7000,10850,26016.67,Finsso,0,Yes,"Applicable Payment - September 11, new renewal model, interest and renewal fee stop at 31st August",,"₱8,166.67","₱7,000.00","₱10,850.00",Restructuring Active,Joshua Dela Peña Raymundo,raymundo27joshua@gmail.com,"250 LUNAS CMPD ST, BRGY STA ANA, PATEROS, 1621",45982,6750000,46147,700000,46237,0,700000,700000,,2023,FORD RANGER WILDTRAK 2.0L 4X4 AT,DBH6044
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP199,DCP-N-R0,Restructuring - Partial,,,,,,,,13523.86,12331.79,35700,61555.65,Netbank,-61555.65,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱13,523.86","₱12,331.79","₱35,700.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46052,392000,46142,246635.7845,246635.7845,246635.7845,,2021,SUZUKI ERTIGA 1.5 GLX,LAH6807
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP206,DCP-N-R0,Restructuring - Partial,,,,,,,,21704.76,16038,33250,70992.76,Netbank,-70992.76,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱21,704.76","₱16,038.00","₱33,250.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46059,440000,46149,320760,320760,320760,,2017,PEUGEOT 308 GTI,NCS7093
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP207,DCP-N-R1,Restructuring - Partial,46275,46275,On-Us BDO Cheque,Finsso BDO - 6935,71030.35,46275,00157 Fr OUS,22194.65,16985.7,31850,71030.35,Netbank,0,Yes,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,₱0.00,"₱14,643.00","₱31,850.00",Restructuring Active,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46063,466000,46153,0,339714,339714,,2023,TOYOTA VIOS 1.3 XLE CVT,GAP1846
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP208,DCP-N-R0,Restructuring - Partial,,,,,,,,43544.54,33625.12,31500,108669.66,Netbank,-108669.66,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱43,544.54","₱33,625.12","₱31,500.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46064,922500,46154,672502.4963,672502.4963,672502.4963,,2024,MITSUBISHI TRITON GLX 2WD,CAZ9923
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP217,DCP-N-R0,Restructuring - Partial,,,,,,,,66798.27,38491.2,24500,129789.47,Netbank,-129789.47,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱66,798.27","₱38,491.20","₱24,500.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46084,1188000,46174,962280,962280,962280,,2016,MAZDA MX-5 2.0 AT,NDW9306
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP218,DCP-N-R0,Restructuring - Partial,,,,,,,,47231.1,27216,24150,98597.1,Netbank,-98597.1,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱47,231.10","₱27,216.00","₱24,150.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46085,840000,46175,680400,680400,680400,,2021,TOYOTA COROLLA CROSS 1,DAV1436
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP219,DCP-N-R0,Restructuring - Partial,,,,,,,,62075.16,35769.6,23800,121644.76,Netbank,-121644.76,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱62,075.16","₱35,769.60","₱23,800.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46086,1104000,46176,894240,894240,894240,,2021,TOYOTA FORTUNER 2.8L 4,NEO4744
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP220,DCP-N-R0,Restructuring - Partial,,,,,,,,36997.7,21319.2,23800,82116.9,Netbank,-82116.9,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱36,997.70","₱21,319.20","₱23,800.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46086,658000,46176,532980,532980,532980,,2011,LEXUS LEXUS ES350 3.5,PTQ183
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP221,DCP-N-R0,Restructuring - Partial,,,,,,,,43295.18,24948,23800,92043.18,Netbank,-92043.18,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱43,295.18","₱24,948.00","₱23,800.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46086,770000,46176,623700,623700,623700,,2013,BMW 318D,RNZ06
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP222,DCP-N-R0,Restructuring - Partial,,,,,,,,54034.63,31136.4,23450,108621.03,Netbank,-108621.03,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱54,034.63","₱31,136.40","₱23,450.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46087,961000,46177,778410,778410,778410,,2022,HONDA CRV,NFA6581
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP223,DCP-N-R0,Restructuring - Partial,,,,,,,,22362.48,13219.2,22050,57631.68,Netbank,-57631.68,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱22,362.48","₱13,219.20","₱22,050.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46090,408000,46181,330480,330480,330480,,2024,MITSUBISHI L300 CC 2.2D MT,NFS4398
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP224,DCP-N-R0,Restructuring - Partial,,,,,,,,30113.37,18273.6,21350,69736.97,Netbank,-69736.97,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱30,113.37","₱18,273.60","₱21,350.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46093,564000,46183,456840,456840,456840,,2018,TOYOTA INNOVA 2.0 E GA,NCA5978
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP227,DCP-N-R0,Restructuring - Partial,,,,,,,,54077.63,25515,19600,99192.63,Netbank,-99192.63,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱54,077.63","₱25,515.00","₱19,600.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46097,1050000,46188,850500,850500,850500,,2021,TOYOTA FORTUNER 2.4L 4,NGO5344
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP228,DCP-N-R0,Restructuring - Partial,,,,,,,,22058.4,11232,17150,50440.4,Netbank,-50440.4,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱22,058.40","₱11,232.00","₱17,150.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46105,416000,46195,374400,374400,374400,,2019,HONDA CITY,NBQ3558
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP229,DCP-N-R0,Restructuring - Partial,,,,,,,,41094.38,20925,17150,79169.38,Netbank,-79169.38,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱41,094.38","₱20,925.00","₱17,150.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46105,775000,46195,697500,697500,697500,,2020,TOYOTA HILUX 2.4L 4X2,NEG9417
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP230,DCP-N-R0,Restructuring - Partial,,,,,,,,47192.25,24030,17150,88372.25,Netbank,-88372.25,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱47,192.25","₱24,030.00","₱17,150.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46105,890000,46195,801000,801000,801000,,2024,TOYOTA YARIS CROSS 1.5 V CVT PC,NKB6722
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP231,DCP-N-R0,Restructuring - Partial,,,,,,,,30345,15606,16800,62751,Netbank,-62751,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱30,345.00","₱15,606.00","₱16,800.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46106,578000,46196,520200,520200,520200,,2023,TOYOTA RUSH G GR-S 1.5,DBG9716
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP232,DCP-N-R0,Restructuring - Partial,,,,,,,,44577.96,30265.09,43750,118593.05,Netbank,-118593.05,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱44,577.96","₱30,265.09","₱43,750.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46107,858000,46197,756627.3,756627.3,756627.3,,2014,SUBARU BRZ 2.0CVT,AAM5015
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP233,DCP-N-R0,Restructuring - Partial,,,,,,,,35589.63,24162.69,43750,103502.32,Netbank,-103502.32,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱35,589.63","₱24,162.69","₱43,750.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46107,685000,46197,604067.25,604067.25,604067.25,,2018,HONDA CIVIC,DAC9474
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP234,DCP-N-R0,Restructuring - Partial,,,,,,,,24731.5,17304.84,43050,85086.34,Netbank,-85086.34,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱24,731.50","₱17,304.84","₱43,050.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46108,490000,46198,432621,432621,432621,,2018,HONDA JAZZ,DAC2768
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP235,DCP-N-R0,Restructuring - Partial,,,,,,,,36592.53,25604.1,43050,105246.63,Netbank,-105246.63,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱36,592.53","₱25,604.10","₱43,050.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46108,725000,46198,640102.5,640102.5,640102.5,,2017,FORD EXPLORER 4 DOOR,130107/NAU5998
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP236,DCP-N-R0,Restructuring - Partial,,,,,,,,48754.65,28332,35700,112786.65,Netbank,-112786.65,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱48,754.65","₱28,332.00","₱35,700.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46118,787000,46209,708300,708300,708300,,2019,2019 TOYOTA CAMRY 2.5G,NBQ2618
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP237,DCP-N-R0,Restructuring - Partial,46275,,On-Us BDO Cheque,Finsso BDO - 6935,78898.98,46275,00157 Fr OUS,27456.98,16092,35350,78898.98,Netbank,0,Yes,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,₱0.00,"₱14,128.19","₱35,350.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46119,447000,46209,402300,402300,402300,,2020,MG RX5,NAN3698
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP238,DCP-N-R0,Restructuring - Partial,,,,,,,,45173.33,26400,19250,90823.33,Netbank,-90823.33,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱45,173.33","₱26,400.00","₱19,250.00",Overdue,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46178,880000,46268,880000,880000,880000,,2020,HONDA ODYSSEY,NEP3873
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP239,DCP-N-R0,Restructuring - Partial,,,,,,,,9466.59,4917.71,3150,17534.3,Netbank,-17534.3,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱9,466.59","₱4,917.71","₱3,150.00",Open,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46233,491770.65,46323,491770.65,491770.65,491770.65,,2018,FORD EVEREST TITANIU,NBK3002
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP240,DCP-N-R0,Restructuring - Partial,,,,,,,,8483.96,4407.25,3150,16041.21,Netbank,-16041.21,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱8,483.96","₱4,407.25","₱3,150.00",Open,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46233,440725.12,46323,440725.12,440725.12,440725.12,,2016,TOYOTA INNOVA 2.0V GAS,NDR3220
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP241,DCP-N-R0,Restructuring - Partial,,,,,,,,9277.54,4819.5,3150,17247.04,Netbank,-17247.04,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱9,277.54","₱4,819.50","₱3,150.00",Open,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46233,481950,46323,481950,481950,481950,,2023,FORD TERRITORY 1.5L,NHB7868
+DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),DCP242,DCP-N-R0,Restructuring - Partial,,,,,,,,1614.43,0,0,1614.43,Netbank,-1614.43,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱1,614.43",₱0.00,₱0.00,Open,Sheena Co,sheenaco.dashcarrpro@gmail.com,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",45793,20000000,46254,244035.55,46314,244035.55,244035.55,244035.55,,2018,TOYOTA WIGO 1.0 G AT,DAG7996
+DASHMOTORS INC,DASH46,DASH-N-R0,Restructuring - Partial,,,,,,,,77606.26,64582.19,39200,181388.45,Netbank,-181388.45,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱77,606.26","₱64,582.19","₱39,200.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",45839,5000000,46041,1925000,46132,1291643.713,1291643.713,1291643.713,,2020,FORD F150 3.5L PLATI,NFN6540
+DASHMOTORS INC,DASH51,DASH-F-R0,Restructuring - Partial,,,,,,,,31534.92,23301.67,33250,88086.59,Finsso,-88086.59,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱31,534.92","₱23,301.67","₱33,250.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",46006,11600000,46059,611200,46149,466033.362,466033.362,466033.362,,2017,TOYOTA INNOVA 2.8 V DS,NCY4913
+DASHMOTORS INC,DASH53,DASH-F-R0,Restructuring - Partial,,,,,,,,71523.19,55732.35,30800,158055.54,Finsso,-158055.54,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱71,523.19","₱55,732.35","₱30,800.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",46006,11600000,46066,1530000,46156,1114647.07,1114647.07,1114647.07,,2020,NISSAN 370Z 3.7-L PREM,FAL5664
+DASHMOTORS INC,DASH54,DASH-F-R0,Restructuring - Partial,,,,,,,,19289.34,12597.12,29400,61286.46,Finsso,-61286.46,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱19,289.34","₱12,597.12","₱29,400.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",46006,11600000,46069,432000,46160,314928,314928,314928,,2024,MITSUBISHI L300 CC 2.2 MT,NFM6182
+DASHMOTORS INC,DASH55,DASH-F-R0,Restructuring - Partial,,,,,,,,19289.34,12597.12,29400,61286.46,Finsso,-61286.46,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱19,289.34","₱12,597.12","₱29,400.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",46006,11600000,46069,432000,46160,314928,314928,314928,,2024,MITSUBISHI L300 CC 2.2D MT,NKD4415
+DASHMOTORS INC,DASH56,DASH-F-R0,Restructuring - Partial,,,,,,,,22295.86,15600.6,26950,64846.46,Finsso,-64846.46,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱22,295.86","₱15,600.60","₱26,950.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",46006,11600000,46076,535000,46167,390015,390015,390015,,2017,HONDA CR-V,NAD5125
+DASHMOTORS INC,DASH57,DASH-F-R0,Restructuring - Partial,,,,,,,,25004.7,17496,26950,69450.7,Finsso,-69450.7,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱25,004.70","₱17,496.00","₱26,950.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",46006,11600000,46076,600000,46167,437400,437400,437400,,2024,HONDA CITY S CVT,NHQ5335
+DASHMOTORS INC,DASH58,DASH-F-R0,Restructuring - Partial,,,,,,,,18336.78,12830.4,26950,58117.18,Finsso,-58117.18,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱18,336.78","₱12,830.40","₱26,950.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",46006,11600000,46076,440000,46167,320760,320760,320760,,2024,HYUNDAI STRAGAZER 1.5 GL IVT,NKA9249
+DASHMOTORS INC,DASH64,DASH-N-R0,Restructuring - Partial,,,,,,,,20412,11664,23800,55876,Netbank,-55876,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱20,412.00","₱11,664.00","₱23,800.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",45839,5000000,46086,360000,46176,291600,291600,291600,,2025,TOYOTA VIOS 1.3 XLE CVT,NEY7602
+DASHMOTORS INC,DASH65,DASH-N-R0,Restructuring - Partial,,,,,,,,31037.58,17884.8,23450,72372.38,Netbank,-72372.38,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱31,037.58","₱17,884.80","₱23,450.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",45839,5000000,46087,552000,46177,447120,447120,447120,,2019,NISSAN TERRA 2.5L EL M,NEJ6111
+DASHMOTORS INC,DASH66,DASH-N-R0,Restructuring - Partial,,,,,,,,25189.92,14515.2,23450,63155.12,Netbank,-63155.12,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱25,189.92","₱14,515.20","₱23,450.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",45839,5000000,46087,448000,46177,362880,362880,362880,,2012,MAZDA CX-9,TQC624
+DASHMOTORS INC,DASH67,DASH-N-R0,Restructuring - Partial,,,,,,,,18854.64,11145.6,22050,52050.24,Netbank,-52050.24,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱18,854.64","₱11,145.60","₱22,050.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",45839,5000000,46090,344000,46181,278640,278640,278640,,2017,NISSAN NV350 URVAN,GAB9447
+DASHMOTORS INC,DASH68,DASH-F-R0,Restructuring - Partial,,,,,,,,14553,8910,21000,44463,Finsso,-44463,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱14,553.00","₱8,910.00","₱21,000.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",46006,11600000,46094,275000,46184,222750,222750,222750,,2020,MITSUBISHI MIRAGE G4 GLX 1,CAU7440
+DASHMOTORS INC,DASH69,DASH-F-R0,Restructuring - Partial,,,,,,,,15928.92,9752.4,21000,46681.32,Finsso,-46681.32,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱15,928.92","₱9,752.40","₱21,000.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",46006,11600000,46094,301000,46184,243810,243810,243810,,2015,TOYOTA VIOS 1.5 GAS A,ABJ3663
+DASHMOTORS INC,DASH72,DASH-N-R0,Restructuring - Partial,,,,,,,,29199.08,19823.99,43750,92773.07,Netbank,-92773.07,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱29,199.08","₱19,823.99","₱43,750.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",45839,5000000,46107,562000,46197,495599.7,495599.7,495599.7,,2018,MITSUBISHI STRADA GLS 2.4D,NDO4803
+DASHMOTORS INC,DASH74,DASH-F-R0,Restructuring - Partial,,,,,,,,16987.34,12391.98,40250,69629.32,Finsso,-69629.32,,"Applicable Payment - September 10, new renewal model, interest stop at 31st August",,"₱16,987.34","₱12,391.98","₱40,250.00",Overdue,Renz Joseph Almazan Duat,dashmotoinc@gmail.com,"UNIT 270 E NS AMORANTO STREET, BRGY SALVACION, QUEZON CITY, 1114",46006,11600000,46112,374290,46202,309799.5975,309799.5975,309799.5975,,2017,NISSAN NV350 URVAN,NAR1823
+D 3RD AUTODISPLAY AUTO SHOP,DRD175,DRD-N-R0,Restructuring - Partial,46281,,Bank Transfer / RTGS,Finsso BDO - 6935,47173.63,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,13521.29,0,47600,13521.29,Netbank,33652.34,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",Multiple payment,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46029,413609,46119,234134.9409,234134.9409,234134.9409,,2017,SUZUKI ERTIGA GLX-AT,130108/NAV8551
+D 3RD AUTODISPLAY AUTO SHOP,DRD179,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,23143.17,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,23143.17,0,56350,23143.17,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46035,239000,46125,239000,239000,239000,,2014,SUZUKI DZIRE AT,AEA1541
+D 3RD AUTODISPLAY AUTO SHOP,DRD180,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,18429.06,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,18429.06,0,56350,18429.06,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46035,216685,46125,195016.5,195016.5,195016.5,,2015,NISSAN ALMERA BASE MT,ABO9752
+D 3RD AUTODISPLAY AUTO SHOP,DRD181,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,20505.33,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,20505.33,0,56000,20505.33,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46036,208000,46126,208000,208000,208000,,2018,TOYOTA WIGO 1.0 G,NCX4201
+D 3RD AUTODISPLAY AUTO SHOP,DRD182,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,34091.75,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,34091.75,0,55650,34091.75,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46037,363000,46127,363000,363000,363000,,2019,TOYOTA VIOS 1.3 E AT,DAM5413
+D 3RD AUTODISPLAY AUTO SHOP,DRD183,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,17025.2,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,17025.2,0,53900,17025.2,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46041,325000,46132,231635.4167,231635.4167,231635.4167,,2017,MITSUBISHI L300 DELUXE C/C,NCV9939
+D 3RD AUTODISPLAY AUTO SHOP,DRD184,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,61880,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,61880,0,53900,61880,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46041,663000,46132,663000,663000,663000,,2020,FORD RANGER 2.0L WIL,DAZ4314
+D 3RD AUTODISPLAY AUTO SHOP,DRD185,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,28373.33,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,28373.33,0,53550,28373.33,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46043,304000,46133,304000,304000,304000,,2014,MAZDA 3 SDN 1.5,AAP6871
+D 3RD AUTODISPLAY AUTO SHOP,DRD186,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,25898.83,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,25898.83,0,51450,25898.83,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46048,281000,46139,281000,281000,281000,,2014,NISSAN SYLPHY 1.6 CVT,ABH8855
+D 3RD AUTODISPLAY AUTO SHOP,DRD187,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,23114,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,23114,0,51450,23114,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46049,254000,46139,254000,254000,254000,,2017,NISSAN ALMERA 1.2L BAS,GAB9784
+D 3RD AUTODISPLAY AUTO SHOP,DRD188,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,30599.33,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,30599.33,0,51450,30599.33,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46048,332000,46139,332000,332000,332000,,2017,TOYOTA VIOS 1.3E GAS A,NDG8117
+D 3RD AUTODISPLAY AUTO SHOP,DRD189,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,20475,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,20475,0,51450,20475,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46049,225000,46139,225000,225000,225000,,2015,TOYOTA WIGO 1.0G AT,ABO6850
+D 3RD AUTODISPLAY AUTO SHOP,DRD190,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,30992.5,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,30992.5,0,51450,30992.5,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46049,345000,46139,345000,345000,345000,,2016,HONDA MOBILIO,DEB2670
+D 3RD AUTODISPLAY AUTO SHOP,DRD193,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,18601.92,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,18601.92,0,46550,18601.92,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46062,223000,46153,223000,223000,223000,,2015,MITSUBISHI MIRAGE GLS 1.2G,NDT4407
+D 3RD AUTODISPLAY AUTO SHOP,DRD195,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,37191,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,37191,0,45500,37191,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46066,462000,46156,462000,462000,462000,,2021,HYUNDAI KONA 2.0GLS 6A,NEL2505
+D 3RD AUTODISPLAY AUTO SHOP,DRD196,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,27692,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,27692,0,45850,27692,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46065,344000,46155,344000,344000,344000,,2016,KIA FORTE EX AT,GAB6324
+D 3RD AUTODISPLAY AUTO SHOP,DRD198,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,26162.5,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,26162.5,0,45500,26162.5,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46066,325000,46156,325000,325000,325000,,2016,HONDA CITY,NDY5458
+D 3RD AUTODISPLAY AUTO SHOP,DRD199,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,20906.67,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,20906.67,0,43400,20906.67,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46072,280000,46162,280000,280000,280000,,2014,NISSAN X TRAIL,AAA5042
+D 3RD AUTODISPLAY AUTO SHOP,DRD200,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,28597.33,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,28597.33,0,41300,28597.33,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46078,383000,46168,383000,383000,383000,,2024,MG MG5 1.5L CVT,NKI9391
+D 3RD AUTODISPLAY AUTO SHOP,DRD201,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,19264,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,19264,0,41650,19264,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46077,258000,46167,258000,258000,258000,,2015,KIA RIO EX AT,130108/ABS4547
+D 3RD AUTODISPLAY AUTO SHOP,DRD203,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,16684.5,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,16684.5,0,40600,16684.5,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46080,227000,46170,227000,227000,227000,,2017,SUZUKI CELERIO CVT,NAF9838
+D 3RD AUTODISPLAY AUTO SHOP,DRD204,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,26280.95,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,26280.95,0,40600,26280.95,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46080,357564,46170,357564,357564,357564,,2019,HONDA BRIO,NDM4371
+D 3RD AUTODISPLAY AUTO SHOP,DRD205,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,29299.5,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,26239.5,3060,88550,29299.5,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46085,306000,46175,306000,306000,306000,,2019,MITSUBISHI MIRAGE G4 GLX 1,NDP4395
+D 3RD AUTODISPLAY AUTO SHOP,DRD206,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,38108.5,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,34128.5,3980,87850,38108.5,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46086,398000,46176,398000,398000,398000,,2019,HYUNDAI KONA 2.0 GLS 6A,DAM8456
+D 3RD AUTODISPLAY AUTO SHOP,DRD208,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,29510,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,26390,3120,84350,29510,Netbank,0,Not yet,"Applicable Payment - September 8, old renewal model, interest and renewal fee stop at 31st August, penalty to be added in the principal",,,,,Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46091,312000,46181,312000,312000,312000,,2020,HYUNDAI REINA 1.4 GL 4A,NFW9451
+NXGEN CAR TRADING,NXG34,NXG-F-R1,Restructuring - Partial,46283,46283,On-Us BDO Cheque,Finsso BDO - 6935,84245.37,46283,01071 FR Ous,48195,0,36050,84245,Finsso,0.37,Yes,"Interest, Renewal and Penalty computed as of August 31, 2026. Renewal follows new model",,,,,Restructuring Pending,Eugene Morales Fabia,rolay8red@gmail.com,"L7 B38 MALIGAYA PARK SUBD., BRGY 177, CAMARIN, CALOOCAN CITY, 1423",45953,7000000,46049,600000,46139,540000,540000,540000,,2023,MITSUBISHI STRADA ATHLETE,LAM7415
+NXGEN CAR TRADING,NXG38,NXG-F-R1,Restructuring - Partial,46283,46283,On-Us BDO Cheque,Finsso BDO - 6935,54802.83,46283,01071 FR Ous,28552.83,0,26250,54802.83,Finsso,0,Yes,"Interest, Renewal and Penalty computed as of August 31, 2026. Renewal follows new model",,,,,Restructuring Pending,Eugene Morales Fabia,rolay8red@gmail.com,"L7 B38 MALIGAYA PARK SUBD., BRGY 177, CAMARIN, CALOOCAN CITY, 1423",45953,7000000,46077,382404,46167,382404,382404,382404,,2025,MITSUBISHI MIRAGE G4 GLS 1.2G CVT,NJF4986
+NXGEN CAR TRADING,NXG41,NXG-N-R1,Restructuring - Partial,46283,46283,On-Us BDO Cheque,Finsso BDO - 6935,50452.5,46283,01071 FR Ous,32252.5,0,18200,50452.5,Netbank,0,Yes,"Interest, Renewal and Penalty computed as of August 31, 2026. Renewal follows new model",,,,,Restructuring Pending,Eugene Morales Fabia,rolay8red@gmail.com,"L7 B38 MALIGAYA PARK SUBD., BRGY 177, CAMARIN, CALOOCAN CITY, 1423",45863,3000000,46100,570000,46190,570000,570000,570000,,2025,NISSAN LIVINA 1.5 VE AT,NJA9986
+NXGEN CAR TRADING,NXG45,NXG-F-R1,Restructuring - Partial,46283,46283,On-Us BDO Cheque,Finsso BDO - 6935,58373.3,46283,01071 FR Ous,24919.3,4404,29050,58373.3,Finsso,0,Yes,"Interest, Renewal and Penalty computed as of August 31, 2026. Renewal follows new model",,,,,Restructuring Pending,Eugene Morales Fabia,rolay8red@gmail.com,"L7 B38 MALIGAYA PARK SUBD., BRGY 177, CAMARIN, CALOOCAN CITY, 1423",45953,7000000,46126,440400,46216,440400,440400,440400,,2024,NISSAN LIVINA 1.5 VE AT,NHQ4404
+JEMM CAR TRADING,JEM113,JEM-N-R0,Restructuring - Partial,,,,,,,,47015.5,24240,39200,110455.5,Netbank,-110455.5,Not yet,,,,,,Overdue,Ramir Merin Fabia,ramirfabia503@gmail.com,"28 INTERIOR GERONIMO ST., BRGY STA MONICA, NOVALICHES, QUEZON CITY, 1117",45835,14000000,46072,606000,46162,606000,606000,606000,,2023,TOYOTA AVANZA 1.3E CVT,NFE9986
+JEMM CAR TRADING,JEM114,JEM-N-R0,Restructuring - Partial,,,,,,,,49110.25,25320,39200,113630.25,Netbank,-113630.25,Not yet,,,,,,Overdue,Ramir Merin Fabia,ramirfabia503@gmail.com,"28 INTERIOR GERONIMO ST., BRGY STA MONICA, NOVALICHES, QUEZON CITY, 1117",45835,14000000,46072,633000,46162,633000,633000,633000,,2023,HONDA CITY HATCHBACK,NHN2770
+JEMM CAR TRADING,JEM115,JEM-N-R0,Restructuring - Partial,,,,,,,,32106.67,17200,37450,86756.67,Netbank,-86756.67,Not yet,,,,,,Overdue,Ramir Merin Fabia,ramirfabia503@gmail.com,"28 INTERIOR GERONIMO ST., BRGY STA MONICA, NOVALICHES, QUEZON CITY, 1117",45835,14000000,46077,430000,46167,430000,430000,430000,,2024,ISUZU TRAVIZ L VT02 EURO IV,NIO5408
+JEMM CAR TRADING,JEM116,JEM-N-R0,Restructuring - Partial,,,,,,,,42560,22800,37450,102810,Netbank,-102810,Not yet,,,,,,Overdue,Ramir Merin Fabia,ramirfabia503@gmail.com,"28 INTERIOR GERONIMO ST., BRGY STA MONICA, NOVALICHES, QUEZON CITY, 1117",45835,14000000,46077,570000,46167,570000,570000,570000,,2025,NISSAN LIVINA 1.5 VE AT,NKT8158
+JEMM CAR TRADING,JEM118,JEM-N-R0,Restructuring - Partial,,,,,,,,47863.2,29304,36750,113917.2,Netbank,-113917.2,Not yet,,,,,,Overdue,Ramir Merin Fabia,ramirfabia503@gmail.com,"28 INTERIOR GERONIMO ST., BRGY STA MONICA, NOVALICHES, QUEZON CITY, 1117",45835,14000000,46079,814000,46169,732600,732600,732600,,2020,SUZUKI JIMNY 1.5 GLX-A,GAL9211
+JEMM CAR TRADING,JEM119,JEM-N-R0,Restructuring - Partial,,,,,,,,27224.4,16668,36750,80642.4,Netbank,-80642.4,Not yet,,,,,,Overdue,Ramir Merin Fabia,ramirfabia503@gmail.com,"28 INTERIOR GERONIMO ST., BRGY STA MONICA, NOVALICHES, QUEZON CITY, 1117",45835,14000000,46079,463000,46169,416700,416700,416700,,2022,SUZUKI ERTIGA 1.5-GL-A,NID4124
+JEMM CAR TRADING,JEM120,JEM-N-R0,Restructuring - Partial,,,,,,,,57285.47,36711.65,35000,128997.12,Netbank,-128997.12,Not yet,,,,,,Overdue,Ramir Merin Fabia,ramirfabia503@gmail.com,"28 INTERIOR GERONIMO ST., BRGY STA MONICA, NOVALICHES, QUEZON CITY, 1117",45835,14000000,46084,1019768,46174,917791.2,917791.2,917791.2,,2022,TOYOTA HILUX 4X4,CAX5420
+JEMM CAR TRADING,JEM125,JEM-N-R0,Restructuring - Partial,,,,,,,,38791.67,20000,69650,128441.67,Netbank,-128441.67,Not yet,,,,,,Overdue,Ramir Merin Fabia,ramirfabia503@gmail.com,"28 INTERIOR GERONIMO ST., BRGY STA MONICA, NOVALICHES, QUEZON CITY, 1117",45835,14000000,46100,500000,46190,500000,500000,500000,,2025,NISSAN LIVINA 1.5 VE AT,NKP8094
+JEMM CAR TRADING,JEM127,JEM-N-R0,Restructuring - Partial,,,,,,,,19007.76,10077.75,29400,58485.51,Netbank,-58485.51,Not yet,,,,,,Overdue,Ramir Merin Fabia,ramirfabia503@gmail.com,"28 INTERIOR GERONIMO ST., BRGY STA MONICA, NOVALICHES, QUEZON CITY, 1117",45835,14000000,46100,335925,46190,335925,335925,335925,,2024,MITSUBISHI L300 C/C 2.2D MT,NHL8463
+JEMM CAR TRADING,JEM131,JEM-F-R0,Restructuring - Partial,,,,,,,,74124.17,39300,51450,164874.17,Finsso,-164874.17,Not yet,,,,,,Overdue,Ramir Merin Fabia,ramirfabia503@gmail.com,"28 INTERIOR GERONIMO ST., BRGY STA MONICA, NOVALICHES, QUEZON CITY, 1117",45923,15000000,46126,1310000,46216,1310000,1310000,1310000,,2025,FORD RANGER 2.0L BIT WILDTRAK 4X4 10AT,NLA5889
+START N' GO CAR TRADING,SNG50,SNG-F-R1,Restructuring - Partial,46287,46287,On-Us BDO Cheque,Finsso BDO - 6935,67958.22,46287,01221 Fr OUS,32618.25,15390,19950,67958.25,Finsso,-0.03000000003,Yes,"Applicable Payment - September 4 , with penalty waiver (August), new renewal model, interest and renewal fee stop at 31st August",,"₱32,618.25","₱15,390.00","₱19,950.00",Restructuring Active,John Raphael Calcita Borleo,borleojohn@yahoo.com,"45 MATAPANG ST, BRGY BARANGAY CENTRAL, QUEZON CITY, 1100",46066,10000000,46090,570000,46181,0,513000,513000,,2024,HYUNDAI STARGAZER 1.5 GLS IVT,FAS8627
+START N' GO CAR TRADING,SNG51,SNG-F-R1,Restructuring - Partial,46287,46287,On-Us BDO Cheque,Finsso BDO - 6935,52966.2,46287,01221 Fr OUS,22432.2,10584,19950,52966.2,Finsso,0,Yes,"Applicable Payment - September 4 , with penalty waiver (August), new renewal model, interest and renewal fee stop at 31st August",,"₱22,432.20","₱10,584.00","₱19,950.00",Restructuring Active,John Raphael Calcita Borleo,borleojohn@yahoo.com,"45 MATAPANG ST, BRGY BARANGAY CENTRAL, QUEZON CITY, 1100",46066,10000000,46090,392000,46181,0,352800,352800,,2025,MITSUBISHI MIRAGE GLX 1.2G CVT,CCJ6679
+START N' GO CAR TRADING,SNG52,SNG-F-R1,Restructuring - Partial,46287,46287,On-Us BDO Cheque,Finsso BDO - 6935,78991.73,46287,01221 Fr OUS,40114.73,18927,19950,78991.73,Finsso,0,Yes,"Applicable Payment - September 4 , with penalty waiver (August), new renewal model, interest and renewal fee stop at 31st August",,"₱40,114.73","₱18,927.00","₱19,950.00",Restructuring Active,John Raphael Calcita Borleo,borleojohn@yahoo.com,"45 MATAPANG ST, BRGY BARANGAY CENTRAL, QUEZON CITY, 1100",46066,10000000,46090,701000,46181,0,630900,630900,,2025,ISUZU XL7 GLX AT,MBD3132
+START N' GO CAR TRADING,SNG53,SNG-F-R1,Restructuring - Partial,46287,46287,On-Us BDO Cheque,Finsso BDO - 6935,86066.63,46287,01221 Fr OUS,44921.63,21195,19950,86066.63,Finsso,0,Yes,"Applicable Payment - September 4 , with penalty waiver (August), new renewal model, interest and renewal fee stop at 31st August",,"₱44,921.63","₱21,195.00","₱19,950.00",Restructuring Active,John Raphael Calcita Borleo,borleojohn@yahoo.com,"45 MATAPANG ST, BRGY BARANGAY CENTRAL, QUEZON CITY, 1100",46066,10000000,46090,785000,46181,0,706500,706500,,2025,NISSAN NAVARA 2.5 VE CALIBRE MT,CCJ5533
+START N' GO CAR TRADING,SNG54,SNG-F-R1,Restructuring - Partial,46287,46287,On-Us BDO Cheque,Finsso BDO - 6935,60630.68,46287,01221 Fr OUS,27639.68,13041,19950,60630.68,Finsso,0,Yes,"Applicable Payment - September 4 , with penalty waiver (August), new renewal model, interest and renewal fee stop at 31st August",,"₱27,639.68","₱13,041.00","₱19,950.00",Restructuring Active,John Raphael Calcita Borleo,borleojohn@yahoo.com,"45 MATAPANG ST, BRGY BARANGAY CENTRAL, QUEZON CITY, 1100",46066,10000000,46090,483000,46181,0,434700,434700,,2026,TOYOTA VIOS 1.3 XLE CVT,NJK1594
+START N' GO CAR TRADING,SNG55,SNG-F-R1,Restructuring - Partial,46287,46287,On-Us BDO Cheque,Finsso BDO - 6935,57261.68,46287,01221 Fr OUS,25350.68,11961,19950,57261.68,Finsso,0,Yes,"Applicable Payment - September 4 , with penalty waiver (August), new renewal model, interest and renewal fee stop at 31st August",,"₱25,350.68","₱11,961.00","₱19,950.00",Restructuring Active,John Raphael Calcita Borleo,borleojohn@yahoo.com,"45 MATAPANG ST, BRGY BARANGAY CENTRAL, QUEZON CITY, 1100",46066,10000000,46090,443000,46181,0,398700,398700,,2024,TOYOTA VIOS 1.3 XLE CVT,IAF4701
+START N' GO CAR TRADING,SNG56,SNG-F-R1,Restructuring - Partial,46287,46287,On-Us BDO Cheque,Finsso BDO - 6935,78991.73,46287,01221 Fr OUS,40114.73,18927,19950,78991.73,Finsso,0,Yes,"Applicable Payment - September 4 , with penalty waiver (August), new renewal model, interest and renewal fee stop at 31st August",,"₱40,114.73","₱18,927.00","₱19,950.00",Restructuring Active,John Raphael Calcita Borleo,borleojohn@yahoo.com,"45 MATAPANG ST, BRGY BARANGAY CENTRAL, QUEZON CITY, 1100",46066,10000000,46090,701000,46181,0,630900,630900,,2025,SUZUKI XL7 GLX AT,FAS7440
+START N' GO CAR TRADING,SNG57,SNG-N-R1,Restructuring - Partial,46287,46287,On-Us BDO Cheque,Finsso BDO - 6935,57049.05,46287,01221 Fr OUS,26947.15,12951.9,17150,57049.05,Netbank,0,Yes,"Applicable Payment - September 4 , with penalty waiver (August), new renewal model, interest and renewal fee stop at 31st August",,"₱26,947.15","₱12,951.90","₱17,150.00",Restructuring Active,John Raphael Calcita Borleo,borleojohn@yahoo.com,"45 MATAPANG ST, BRGY BARANGAY CENTRAL, QUEZON CITY, 1100",45987.62569,10000000,46099,533000,46189,0,431730,431730,,2023,TOYOTA AVANZA CV,HAG6239
+START N' GO CAR TRADING,SNG61,SNG-N-R1,Restructuring - Partial,46287,46287,On-Us BDO Cheque,Finsso BDO - 6935,134354.67,46287,01221 Fr OUS,63074.67,34880,36400,134354.67,Netbank,0,Yes,"Applicable Payment - September 4 , with penalty waiver (August), new renewal model, interest and renewal fee stop at 31st August",,"₱63,074.67","₱34,880.00","₱36,400.00",Restructuring Active,John Raphael Calcita Borleo,borleojohn@yahoo.com,"45 MATAPANG ST, BRGY BARANGAY CENTRAL, QUEZON CITY, 1100",45987.62569,10000000,46111,872000,46202,0,872000,872000,,2026,NISSAN LIVINA 1.5 VE AT,GBL2829
+START N' GO CAR TRADING,SNG62,SNG-N-R1,Restructuring - Partial,46287,46287,On-Us BDO Cheque,Finsso BDO - 6935,70998.67,46287,01221 Fr OUS,22278.67,12320,36400,70998.67,Netbank,0,Yes,"Applicable Payment - September 4 , with penalty waiver (August), new renewal model, interest and renewal fee stop at 31st August",,"₱22,278.67","₱12,320.00","₱36,400.00",Restructuring Active,John Raphael Calcita Borleo,borleojohn@yahoo.com,"45 MATAPANG ST, BRGY BARANGAY CENTRAL, QUEZON CITY, 1100",45987.62569,10000000,46111,308000,46202,0,308000,308000,,2015,MITSUBISHI STRADA GLS SPT,ADI3304 / IDI3304
+START N' GO CAR TRADING,SNG63,SNG-N-R1,Restructuring - Partial,46287,46287,On-Us BDO Cheque,Finsso BDO - 6935,106258.33,46287,01221 Fr OUS,45208.33,25000,36050,106258.33,Netbank,0,Yes,"Applicable Payment - September 4 , with penalty waiver (August), new renewal model, interest and renewal fee stop at 31st August",,"₱45,208.33","₱25,000.00","₱36,050.00",Restructuring Active,John Raphael Calcita Borleo,borleojohn@yahoo.com,"45 MATAPANG ST, BRGY BARANGAY CENTRAL, QUEZON CITY, 1100",45987.62569,10000000,46112,625000,46202,0,625000,625000,,2024,HYUNDAI STARGAZER 1.5 GLS IVT,NIU8676
+START N' GO CAR TRADING,SNG64,SNG-N-R1,Restructuring - Partial,46287,46287,On-Us BDO Cheque,Finsso BDO - 6935,76153,46287,01221 Fr OUS,25823,14280,36050,76153,Netbank,0,Yes,"Applicable Payment - September 4 , with penalty waiver (August), new renewal model, interest and renewal fee stop at 31st August",,"₱25,823.00","₱14,280.00","₱36,050.00",Restructuring Active,John Raphael Calcita Borleo,borleojohn@yahoo.com,"45 MATAPANG ST, BRGY BARANGAY CENTRAL, QUEZON CITY, 1100",45987.62569,10000000,46112,357000,46202,0,357000,357000,,2020,NISSAN ALMERA 1.5-L E,NFW4215
+D 3RD AUTODISPLAY AUTO SHOP,DRD175,DRD-N-R0,Restructuring - Partial,46281,,Bank Transfer / RTGS,Finsso BDO - 6935,-286761.53,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,13521.29,11706.75,43050,25228.04,Netbank,-311989.57,,,,"₱13,521.29","₱11,706.75","₱43,050.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46029,413609,46119,234134.9409,0,,,2017,SUZUKI ERTIGA GLX-AT,130108/NAV8551
+D 3RD AUTODISPLAY AUTO SHOP,DRD179,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,35093.17,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,23143.17,11950,51800,35093.17,Netbank,0,,,,"₱23,143.17","₱11,950.00","₱51,800.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46035,239000,46125,239000,0,,,2014,SUZUKI DZIRE AT,AEA1541
+D 3RD AUTODISPLAY AUTO SHOP,DRD180,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,28179.89,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,18429.06,9750.83,51800,28179.89,Netbank,0,,,,"₱18,429.06","₱9,750.83","₱51,800.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46035,216685,46125,195016.5,0,,,2015,NISSAN ALMERA BASE MT,ABO9752
+D 3RD AUTODISPLAY AUTO SHOP,DRD181,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,30905.33,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,20505.33,10400,51450,30905.33,Netbank,0,,,,"₱20,505.33","₱10,400.00","₱51,450.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46036,208000,46126,208000,0,,,2018,TOYOTA WIGO 1.0 G,NCX4201
+D 3RD AUTODISPLAY AUTO SHOP,DRD182,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,52241.75,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,34091.75,18150,51100,52241.75,Netbank,0,,,,"₱34,091.75","₱18,150.00","₱51,100.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46037,363000,46127,363000,0,,,2019,TOYOTA VIOS 1.3 E AT,DAM5413
+D 3RD AUTODISPLAY AUTO SHOP,DRD183,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,28606.97,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,17025.2,11581.77,49350,28606.97,Netbank,0,,,,"₱17,025.20","₱11,581.77","₱49,350.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46041,325000,46132,231635.4167,0,,,2017,MITSUBISHI L300 DELUXE C/C,NCV9939
+D 3RD AUTODISPLAY AUTO SHOP,DRD184,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,95030,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,61880,33150,49350,95030,Netbank,0,,,,"₱61,880.00","₱33,150.00","₱49,350.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46041,663000,46132,663000,0,,,2020,FORD RANGER 2.0L WIL,DAZ4314
+D 3RD AUTODISPLAY AUTO SHOP,DRD185,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,43573.33,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,28373.33,15200,49000,43573.33,Netbank,0,,,,"₱28,373.33","₱15,200.00","₱49,000.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46043,304000,46133,304000,0,,,2014,MAZDA 3 SDN 1.5,AAP6871
+D 3RD AUTODISPLAY AUTO SHOP,DRD186,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,39948.83,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,25898.83,14050,46900,39948.83,Netbank,0,,,,"₱25,898.83","₱14,050.00","₱46,900.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46048,281000,46139,281000,0,,,2014,NISSAN SYLPHY 1.6 CVT,ABH8855
+D 3RD AUTODISPLAY AUTO SHOP,DRD187,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,35814,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,23114,12700,46900,35814,Netbank,0,,,,"₱23,114.00","₱12,700.00","₱46,900.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46049,254000,46139,254000,0,,,2017,NISSAN ALMERA 1.2L BAS,GAB9784
+D 3RD AUTODISPLAY AUTO SHOP,DRD188,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,47199.33,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,30599.33,16600,46900,47199.33,Netbank,0,,,,"₱30,599.33","₱16,600.00","₱46,900.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46048,332000,46139,332000,0,,,2017,TOYOTA VIOS 1.3E GAS A,NDG8117
+D 3RD AUTODISPLAY AUTO SHOP,DRD189,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,31725,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,20475,11250,46900,31725,Netbank,0,,,,"₱20,475.00","₱11,250.00","₱46,900.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46049,225000,46139,225000,0,,,2015,TOYOTA WIGO 1.0G AT,ABO6850
+D 3RD AUTODISPLAY AUTO SHOP,DRD190,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,48242.5,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,30992.5,17250,46900,48242.5,Netbank,0,,,,"₱30,992.50","₱17,250.00","₱46,900.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46049,345000,46139,345000,0,,,2016,HONDA MOBILIO,DEB2670
+D 3RD AUTODISPLAY AUTO SHOP,DRD193,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,27521.92,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,18601.92,8920,42000,27521.92,Netbank,0,,,,"₱18,601.92","₱8,920.00","₱42,000.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46062,223000,46153,223000,0,,,2015,MITSUBISHI MIRAGE GLS 1.2G,NDT4407
+D 3RD AUTODISPLAY AUTO SHOP,DRD195,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,55671,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,37191,18480,40950,55671,Netbank,0,,,,"₱37,191.00","₱18,480.00","₱40,950.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46066,462000,46156,462000,0,,,2021,HYUNDAI KONA 2.0GLS 6A,NEL2505
+D 3RD AUTODISPLAY AUTO SHOP,DRD196,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,41452,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,27692,13760,41300,41452,Netbank,0,,,,"₱27,692.00","₱13,760.00","₱41,300.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46065,344000,46155,344000,0,,,2016,KIA FORTE EX AT,GAB6324
+D 3RD AUTODISPLAY AUTO SHOP,DRD198,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,39162.5,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,26162.5,13000,40950,39162.5,Netbank,0,,,,"₱26,162.50","₱13,000.00","₱40,950.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46066,325000,46156,325000,0,,,2016,HONDA CITY,NDY5458
+D 3RD AUTODISPLAY AUTO SHOP,DRD199,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,32106.67,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,20906.67,11200,38850,32106.67,Netbank,0,,,,"₱20,906.67","₱11,200.00","₱38,850.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46072,280000,46162,280000,0,,,2014,NISSAN X TRAIL,AAA5042
+D 3RD AUTODISPLAY AUTO SHOP,DRD200,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,43917.33,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,28597.33,15320,36750,43917.33,Netbank,0,,,,"₱28,597.33","₱15,320.00","₱36,750.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46078,383000,46168,383000,0,,,2024,MG MG5 1.5L CVT,NKI9391
+D 3RD AUTODISPLAY AUTO SHOP,DRD201,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,29584,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,19264,10320,37100,29584,Netbank,0,,,,"₱19,264.00","₱10,320.00","₱37,100.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46077,258000,46167,258000,0,,,2015,KIA RIO EX AT,130108/ABS4547
+D 3RD AUTODISPLAY AUTO SHOP,DRD203,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,25764.5,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,16684.5,9080,36050,25764.5,Netbank,0,,,,"₱16,684.50","₱9,080.00","₱36,050.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46080,227000,46170,227000,0,,,2017,SUZUKI CELERIO CVT,NAF9838
+D 3RD AUTODISPLAY AUTO SHOP,DRD204,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,40583.51,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,26280.95,14302.56,36050,40583.51,Netbank,0,,,,"₱26,280.95","₱14,302.56","₱36,050.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46080,357564,46170,357564,0,,,2019,HONDA BRIO,NDM4371
+D 3RD AUTODISPLAY AUTO SHOP,DRD205,DRD-N-R0,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,41539.5,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,26239.5,15300,79450,41539.5,Netbank,0,,,,"₱26,239.50","₱15,300.00","₱79,450.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46085,306000,46175,306000,0,,,2019,MITSUBISHI MIRAGE G4 GLX 1,NDP4395
+D 3RD AUTODISPLAY AUTO SHOP,DRD206,,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,54028.5,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,34128.5,19900,78750,54028.5,Netbank,0,,,,"₱34,128.50","₱19,900.00","₱78,750.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46086,398000,46176,398000,0,,,2019,HYUNDAI KONA 2.0 GLS 6A,DAM8456
+D 3RD AUTODISPLAY AUTO SHOP,DRD208,,Restructuring - Partial,,,Bank Transfer / RTGS,Finsso BDO - 6935,38870,Various,FT SA-CA DIGIFI POB DBFT 026253079427 / FT SA-CA DIGIFI POB DBFT 026259726033 / FT SA-CA DIGIFI POB DBFT 026260646569 / FT SA-CA DIGIFI POB DBFT 026261374421,26390,12480,75250,38870,Netbank,0,,,,"₱26,390.00","₱12,480.00","₱75,250.00",Overdue,Florentino Rivera Dig,cheenarazon@gmail.com,"9112 APT 4 VILLA AMPARO SUBD, BRGY BAYAN LUMA IV, IMUS, CAVITE, 4103",45852,14000000,46091,312000,46181,312000,0,,,2020,HYUNDAI REINA 1.4 GL 4A,NFW9451
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0,,,,,,,,,,,,,,,,,0
+,,,,,,,,,,,,,,,,0
