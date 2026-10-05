@@ -80,7 +80,7 @@
 ,IF0079,DANIEL CAR TRADING,Albert Dalupang,Albert Dalupang,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,45959,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0080,CARBREEZY CAR TRADING,Albert Dalupang,Zhesa Resurrecion,0,9,0,0,0,0,0,0,24.88888889,,9,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46157,,3,1,2,0,0,0,,0,0,0,0,No
 ,IF0081,D 3RD AUTODISPLAY AUTO SHOP,Albert Dalupang,Zhesa Resurrecion,2,181,0,27,8556086.858,8556086.858,0,8556086.858,89.05769231,,47.61764706,46091,Blacklisted,15 DPD,46091,,,398,296,102,0.03256035787,209,130,46231,103,57,46,5,Yes,,,,46190.65122
-,IF0082,JERICO S. CRUZ-JSC AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,30,0,1,807000,807000,0,807000,37.5483871,,66,46177,Blacklisted,15 DPD,46177,,,22,18,4,0.003071054471,123,123,46184,3,3,0,0,No,,,,46195.66593
+,IF0082,JERICO S. CRUZ-JSC AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,30,0,1,807000,807000,0,807000,37.5483871,,66,46177,Blacklisted,15 DPD,46177,,,23,18,5,0.003071054471,123,123,46300,4,3,1,0,No,,,,46195.66593
 ,IF0083,KAMCARS ENTERPRISE,Albert Dalupang,Albert Dalupang,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,45959,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0084,KRT AUTO CARE SERVICES,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,45978,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0085,BMQ CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,2,0,0,0,0,0,0,55,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46121,,3,3,0,0,0,0,,0,0,0,0,No
@@ -413,7 +413,7 @@
 ,IF0412,JRDC CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,1,250000,250000,0,250000,152,,123,46177,Blacklisted,15 DPD,46177,,,2,0,2,0.0009513799478,123,123,46184,2,0,2,0,Yes,,,,46195.66593
 ,IF0413,ABBY CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0414,M3AUTO VEHICLE TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0415,RT061977 AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,1,1,2,0,383700,383700,383700,0,44.33333333,,,,Open,,,,,2,1,1,0.001460177944,0,0,46300,1,1,0,0,No
+,IF0415,RT061977 AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,1,1,2,0,383700,383700,383700,0,44.33333333,,,,Open,,,,,3,1,2,0.001460177944,0,0,46300,2,1,1,0,No
 ,IF0416,JOEL AUTO TRADING,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46177.57639,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0417,REY AUTO TRADING,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46177.57986,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0418,4.BROTHERS AUTO TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46177.59167,,0,0,0,0,0,0,,0,0,0,0,No
@@ -454,7 +454,7 @@
 ,IF0453,JNZ CAR TRADING,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0454,BEARD CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0455,JDRED.GARAGE CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,1,0,500000,500000,500000,0,12,,,,Open,,,,,0,0,0,,0,0,,0,0,0,0,No
-,IF0456,KAPATID AUTO TRADING,Albert Dalupang,Albert Dalupang,0,5,3,0,1350000,1350000,1350000,0,29.625,,,,Open,,,,,6,4,2,,0,0,46289,4,3,1,0,No
+,IF0456,KAPATID AUTO TRADING,Albert Dalupang,Albert Dalupang,0,5,3,0,1350000,1350000,1350000,0,29.625,,,,Open,,,,,8,6,2,,0,0,46300,6,5,1,0,No
 ,IF0457,JOHNMARK EDORA CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0458,LEOROMMEL AUTO SHOP,Albert Dalupang,Albert Dalupang,0,3,3,0,1231500,1231500,1231500,0,28.33333333,,,,Open,,,,,4,4,0,,0,0,,0,0,0,0,No
 ,IF0459,ONICHAN CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CLA Signature | Netbank: Pending CL,,46195.42569,,0,0,0,,0,0,,0,0,0,0,No
