@@ -49,7 +49,7 @@
 ,IF0048,TAURUS CAR EXCHANGE,,,0,3,0,0,0,0,0,0,28.33333333,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,45881,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0049,DM CARS NON-SPECIALIZED WHOLESALE TRADING(Former as DM QUALITY USED CARS),Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,45870,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0050,UGEAGI CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,39,4,0,1268784,1268784,1268784,0,51.34883721,,5,,Open,,,,,62,44,18,0.004838788433,0,0,46297,16,12,4,4,No
-,IF0051,HATCHBACK-MONSTER CAR DISPLAY CENTER,Marah Luriely A. Villaruz,Rhoyland Alagon,3,167,10,0,7359505,7359505,7359505,0,47.50847458,,6,,Hold,Multiple Failure Audits,,46301.55924,46301.55924,120,102,18,0.02806710021,0,0,46301,25,21,4,8,Yes
+,IF0051,HATCHBACK-MONSTER CAR DISPLAY CENTER,Marah Luriely A. Villaruz,Rhoyland Alagon,3,167,10,0,7359505,7359505,7359505,0,47.50847458,,6,,Hold,Multiple Failure Audits,,46301.55924,46301.55924,121,103,18,0.02806710021,0,0,46301,26,22,4,8,Yes
 ,IF0052,AUTO-NEXUS CAR TRADING,Albert Dalupang,Albert Dalupang,0,49,3,0,10361000,10361000,10361000,0,58.21153846,,1,,Hold,Multiple Failure Audits,,46276.68425,46276.68425,86,61,25,0.03951396531,0,0,46282,13,5,8,0,Yes
 ,IF0053,TRIPLE R VEHICLE TRADING,Albert Dalupang,Albert Dalupang,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,45901,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0054,SHV AUTOBASE,Malou Alfonso,Myrnalyn Bankingkito,0,10,1,0,270000,270000,270000,0,47.54545455,,1,,Open,,,,,8,6,2,0.001029704723,0,0,46282,2,1,1,0,No
@@ -94,7 +94,7 @@
 ,IF0093,MACLOUIE CARS VEHICLE TRADING,Malou Alfonso,Rose Batacan,1,128,0,1,610000,610000,0,610000,57.68992248,,21.55263158,46162,Blacklisted,15 DPD,46162,,,189,80,109,0.002326369929,139,139,46224,5,1,4,6,No,,,,46190.65122
 ,IF0094,GONZAPCARS CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,1,37,1,0,590150,590150,590150,0,92.88095238,,15.34375,46281,Blacklisted,15 DPD,46281,,,123,62,61,0.002250667564,20,20,46297,4,3,1,5,No,,,,46190.65122
 ,IF0095,MACABEBEST CAR SHOP,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Pending CLA Signature,,45631,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0096,VICTORYMIND CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,38,4,0,1063611,1063611,1063611,0,68.5952381,,3,,Open,Finsso: Open | Netbank: Expired CL,,46225,,49,43,6,0.004056315815,0,0,46287,13,9,4,0,No
+,IF0096,VICTORYMIND CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,38,4,0,1063611,1063611,1063611,0,68.5952381,,3,,Open,Finsso: Open | Netbank: Expired CL,,46225,,53,47,6,0.004056315815,0,0,46301,17,13,4,0,No
 ,IF0097,JEMM CAR TRADING,Malou Alfonso,Rose Batacan,0,115,0,16,9284444.2,9284444.2,0,9284444.2,96.0610687,,55,46132,Blacklisted,15 DPD,46132,,,284,220,64,0.03540828163,169,104,46217,47,27,20,1,Yes,,,,46190.65122
 ,IF0098,BRO'S AUTODEALERS AUTO TRADING,Albert Dalupang,Albert Dalupang,0,13,0,0,0,0,0,0,36.92307692,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,45666.70417,,10,8,2,0,0,0,,0,0,0,0,No
 ,IF0099,KELVEN CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46044,,0,0,0,0,0,0,,0,0,0,0,No
@@ -373,14 +373,14 @@
 ,IF0372,A.M CAR.S CAR AND TRUCK TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46174.57292,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0373,DALYO CAR PAINT SERVICES,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Open,,,,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0374,CROWNMOTORCARS AUTO TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46164.42014,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0375,JCP VEHICLE TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,7,4,0,1500000,1500000,1500000,0,45.90909091,,,,Open,,,,,10,8,2,0.005720581793,0,0,46275,3,3,0,0,No
+,IF0375,JCP VEHICLE TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,7,4,0,1500000,1500000,1500000,0,45.90909091,,,,Open,,,,,14,12,2,0.005720581793,0,0,46301,7,7,0,0,No
 ,IF0376,CARS-R-US AUTO TRADING,Malou Alfonso,Candyce Aguete,0,0,0,0,0,0,0,0,,,,,Hold,Pending CLA Signature,,46164.42361,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0377,K/L CAR TRADING,Albert Dalupang,Ricmar Magboo,0,1,0,0,0,0,0,0,99,,9,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46170.57222,,2,2,0,0,0,0,,0,0,0,0,No
 ,IF0378,CARMAX SALES AND SERVICE INC.,Albert Dalupang,Albert Dalupang,0,0,0,0,0,0,0,0,,,,,Hold,Pending CLA Signature,,46191.61458,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0379,J AND J CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46175.44583,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0380,R&A COUSIN CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46164.43194,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0381,CARATE AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,1,6,2,0,540000,540000,540000,0,52,,4.816435185,46299.55069,Open,,,,,20,8,12,0.002059409446,1.449305556,1.449305556,46294,8,3,5,1,No
-,IF0382,C.B AUTOWORKS VEHICLE TRADING,Malou Alfonso,Rose Batacan,0,3,2,0,906520,906520,906520,0,69.8,,1,,Open,,,,,5,4,1,0.003457214538,0,0,46240,1,1,0,0,No
+,IF0382,C.B AUTOWORKS VEHICLE TRADING,Malou Alfonso,Rose Batacan,0,3,2,0,906520,906520,906520,0,69.8,,1,,Open,,,,,7,6,1,0.003457214538,0,0,46301,3,3,0,0,No
 ,IF0383,BIGBOY CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,1,2,0,697000,697000,697000,0,27,,,,Open,,,,,3,2,1,0.002658163673,0,0,46296,3,2,1,0,No
 ,IF0384,R.C CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46175.45833,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0385,LR G.A.R.A.G.E CAR TRADING,Albert Dalupang,Ricmar Magboo,0,2,1,0,400000,400000,400000,0,59.33333333,,,,Open,,,,,2,2,0,0.001525488478,0,0,46282,1,1,0,0,No
