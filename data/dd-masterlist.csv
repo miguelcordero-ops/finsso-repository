@@ -1,4 +1,4 @@
-UJO615,Dealership/Business Name, Dealer Name,Date of Birth,Business/Showroom Address,Mobile Number ,ID Type (Primary Borrower),ID No (Primary Borrower),Assigned Sales POC,Assigned SM ,DD Processor ,New or Redrawdown ,Drawdown Submission Router,Brand ,Variant,Type of Body,Year Model,OR Number,Motor Engine Number,Chassis Number,Plate Number,MV FILE,CR Number,Type of Vehicle,Transmission,Documents Submitted,Documents Pending ,With Video Recording of the Unit?,Drawdown Submission Date by Sales (Captured from Gform),Date of Unit Inspection by Sales,Has Complete Requirements for Drawdown Processing? ,Last Date of ORCR Report,ORCR Verification Request Sent to Agency?,ORCR Verification Request Date to Agency,ORCR Service Provider,ORCR Verification Report Received?,ORCR Receipt Date from Agency,ORCR Status,Drawdown Status,Credit Remarks ,Additional Docs needed for Credit Evaluation ,Name of Co-Borrower,Email Address of the Co-Borrower,PNCM Date,Date of FMV Assessment,Email Address,Loan Amount in Figures,Motor Vehicle Amount (FMV) ,Credit Limit,FMV Assessment Result,Date of Carmudi CA issuance to Financier,PNCM Population by the Ops Team (Previously by Financier),PNCM Issuance Date to Dealer ,PNCM / Disclosure Statement /Amortization Schedule  Execution Date,Physical Docs Received?,Disbursed to the Dealer? ,Physical Docs Received from the Sales Officer,Receipt Date of Physical ORCR Documents ,Docs Returned o Delear? ,Release Date of Original Collateral Documents to the Dealer,Documents Released to the Dealer,Link to PNCM/Disclosure Docs,New / Dup (Plate),Financier,Drawdown ID,,FMV Assessment Timestamp
+Assigned Ops POC,Dealership/Business Name, Dealer Name,Date of Birth,Business/Showroom Address,Mobile Number ,ID Type (Primary Borrower),ID No (Primary Borrower),Assigned Sales POC,Assigned SM ,DD Processor ,New or Redrawdown ,Drawdown Submission Router,Brand ,Variant,Type of Body,Year Model,OR Number,Motor Engine Number,Chassis Number,Plate Number,MV FILE,CR Number,Type of Vehicle,Transmission,Documents Submitted,Documents Pending ,With Video Recording of the Unit?,Drawdown Submission Date by Sales (Captured from Gform),Date of Unit Inspection by Sales,Has Complete Requirements for Drawdown Processing? ,Last Date of ORCR Report,ORCR Verification Request Sent to Agency?,ORCR Verification Request Date to Agency,ORCR Service Provider,ORCR Verification Report Received?,ORCR Receipt Date from Agency,ORCR Status,Drawdown Status,Credit Remarks ,Additional Docs needed for Credit Evaluation ,Name of Co-Borrower,Email Address of the Co-Borrower,PNCM Date,Date of FMV Assessment,Email Address,Loan Amount in Figures,Motor Vehicle Amount (FMV) ,Credit Limit,FMV Assessment Result,Date of Carmudi CA issuance to Financier,PNCM Population by the Ops Team (Previously by Financier),PNCM Issuance Date to Dealer ,PNCM / Disclosure Statement /Amortization Schedule  Execution Date,Physical Docs Received?,Disbursed to the Dealer? ,Physical Docs Received from the Sales Officer,Receipt Date of Physical ORCR Documents ,Docs Returned o Delear? ,Release Date of Original Collateral Documents to the Dealer,Documents Released to the Dealer,Link to PNCM/Disclosure Docs,New / Dup (Plate),Financier,Drawdown ID,,FMV Assessment Timestamp
 Mary Grace Pascual,EMC Prado Auto Inc,Enrique Miguel Prado,Enrique Miguel Prado,66 Maayusin St. U.P Village Quezon City,273404665,Philhealth,03-025426924-3,Albert Dalupang,Albert Dalupang,Sales POC,New,Manual,LEXUS,LX570,SUV/MUV,2009,0380-000000145529,3UR3049092,JTJHY00W9A4035370,NBQ546,130800000412278,17973940,,AT,"1. ORCR
 2. DEED OF SALE
 3. MOTOR VEHICLE INSPECTION REPORT
@@ -64546,12 +64546,25 @@ Shielyka Curate,Z2.GARAGE CAR TRADING,JOEL GUMAPAC MOTIL,30176,Blk 7 Lot 7 Hills
 5. VALID IDS - TOPACIO, RODOLFO",,Yes,46297.63194,,Yes,,Yes,46297.65625,Internal TT Team,Yes,46297.73244,Encumbered,,"- Sec. Cert and ID's from Incorporator's (SBC)
 - Open DOS from Mr. Topacio
 - LTO Verification",,,,46297,46297,,416000,594856.97,,Approved,46297.69306,,,,,,,,,,,,,,,46297.72329
-,DIONY CAR TRADING,Diony Jr Jacinto Inocentes,32197,102 Kingfisher St Moonville Subd Paranaque City,9061485060,SSS ID,34-0014798-4,Albert Dalupang,Albert Dalupang,,,,SUBARU,FORESTER 2.0XT,Wagon,2014,1324-000000801227,H839781,JF1SJGL85DG052619,AAD4826,44800000217273,101852760,,,,,,,,,,No,,,No,,,,"-PDC
+,DIONY CAR TRADING,Diony Jr Jacinto Inocentes,32197,102 Kingfisher St Moonville Subd Paranaque City,9061485060,SSS ID,34-0014798-4,Albert Dalupang,Albert Dalupang,Chrisjohn Basco Basco,Redrawdown,SFA / Loanbox,SUBARU,FORESTER 2.0XT,Wagon,2014,1324-000000801227,H839781,JF1SJGL85DG052619,AAD4826,44800000217273,101852760,,AT,"1.ORCR
+2.SELFIE PHOTO WITH THE UNIT/MVIR
+3.OPEN DEED OF SALE
+4.PASSPORT-CASTRO
+5.RELEASE OF MORTGAGE
+6.SEC
+7.PNCM
+8.PHILHEALTH & NATIONAL ID-KIARA HERNANDEZ
+9.DOAS
+10.SECRETARY'S CERTIFICATE
+11.VOLUNTARY SURRENDER
+12.PHILHEALTH & TIN ID-ELMER SERRANO
+13.LATEST GEO-TAGGED PHOTO OF THE UNIT
+14.UNIT VIDEO",,Yes,46300.50486,,Yes,,Yes,46300.45431,Internal TT Team,Yes,46300.57024,Encumbered,,"-PDC
 -Updated LTO Verification
 -Failed SI for Stock Inspection DION11, DION12, & DION13 prior disbursement
 -Payment Confirmation DION13 prior disbursement (Renewal Overdue)
 -Docs at OPS",,,,46300,46300,,270450,453593.82,,Approved,46300.49514,,,,,,,,,,,,,,,46301.40289
-,KAPATID AUTO TRADING,,,,,,,,,Alvin Cano,New,SFA / Loanbox,FORD,EVEREST TITANIU,Wagon,2018,1396-000000626780,P5AT2525131,MNCAXXMAWAHC45040,CAI2105,0301-00000582454,337174213,,,,,,,,,,,46298.46747,Internal TT Team,,46300.5008,Cleaned ORCR,,"-For Stock Inspection KAPA6 prior disbursement
+,KAPATID AUTO TRADING,,,,,,,,,Alvin Cano,New,SFA / Loanbox,FORD,EVEREST TITANIU,Wagon,2018,1396-000000626780,P5AT2525131,MNCAXXMAWAHC45040,CAI2105,0301-00000582454,337174213,,,,,,,,Yes,,,46298.46747,Internal TT Team,,46300.5008,Cleaned ORCR,,"-For Stock Inspection KAPA6 prior disbursement
 -Docs on hand by Ian with PDC",,,,46300,46300,,529200,839143.58,,Approved,46300.5875,,,,,,,,,,,,,,,46301.40069
 ,GENZ CAR TRADING,Catalino Bosi Dayag,28244,"B2 L14 Merryland St., Merry Homes Subd. Brgy. Sauyo Quezon City",9065707978,Driver's License,J04-03-119150,Elvira Ladea,Marah Luriely A. Villaruz,,,,TOYOTA,FORTUNER 2.8L 4,SUV/MUV,2022,1337-000000278917,1GD5058559,MHFAA8GS8MO770366,NEV5890,1301-00001735007,436849033,,,,,,,,,,No,,,No,,,,"- Updated LTO Verification 
 - Docs is still on OPS Vault",,,,46300,46300,,1000000,1628739.09,,Approved,46300.60903,,,,,,,,,,,,,,,46301.4001
@@ -64586,3 +64599,5 @@ Shielyka Curate,Z2.GARAGE CAR TRADING,JOEL GUMAPAC MOTIL,30176,Blk 7 Lot 7 Hills
 ,KARL CAR TRADING,Roger Robles Tardaguila,29159,B86 L3 Eucalyptus Street Robinson Homes East Brgy San Jose Antipolo City,9772573462,Driver's License,D04-98-120869,Rhoyland Alagon,Marah Luriely A. Villaruz,,,,MITSUBISHI,MONTERO SPT GLS,SUV/MUV,2016,1380-000000477900,4N15UAJ9240,MMBGUKR10GH004146,NDY4559,130100000632531,131951730,,,,,,,,,,Yes,46301.69306,,No,,,,"- LTO Verification
 - PDC",,,,46301,46301,,520000,739746.35,,Approved,46301.70486,,,,,,,,,,,,,,,46301.70759
 ,JTRS AUTO TRADING,Rodolfo Oralde Retes,26004,65 Ruhale St Brgy Calzada Tipas Taguig,9667518468,Driver's License,N03-15-037723,Albert Dalupang,Albert Dalupang,,,,VOLKSWAGEN,GOLFGTS2.0TDIDS,Wagon,2018,1368-000000227060,DEJ003071,3VWCA7AU9GM502157,NCV9443,133600000456965,47408238,,,,,,,,,,Yes,46301.69514,,No
+,WHEELS AND DEALS CAR TRADING,Jonah Narvaez Caraan,31506,Blk 5 Green Lane Executive Village Lot 14 Buen Mar Ave Cainta Rizal,9063887199,Driver's License,N03-08-027414,Albert Dalupang,Albert Dalupang,,,,,,,,,,,NJK8594,,,,,,,,,,,,No,,,No
+,WHEELS AND DEALS CAR TRADING,Jonah Narvaez Caraan,31506,Blk 5 Green Lane Executive Village Lot 14 Buen Mar Ave Cainta Rizal,9063887199,Driver's License,N03-08-027414,Albert Dalupang,Albert Dalupang,,,,,,,,,,,NKB4634,,,,,,,,,,,,No,,,No
