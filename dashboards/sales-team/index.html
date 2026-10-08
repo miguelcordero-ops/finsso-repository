@@ -563,10 +563,15 @@ function parseCSV(text) {
   if (field.length || row.length) { row.push(field); rows.push(row); }
   return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
 }
+// Columns are ALWAYS looked up by header name, never by position — the sheet
+// can gain or lose columns at any time. Header text is whitespace-normalized
+// on both sides (some headers carry doubled spaces, NBSPs or embedded
+// newlines, e.g. "R2  Payment Status", "Plate Number\n(as on ORCR)").
+function normHeader(h) { return String(h == null ? '' : h).replace(/[\s\u00a0]+/g, ' ').trim(); }
 function buildColumnMap(headerRow) {
   const idx = {};
-  headerRow.forEach((h, i) => { const key = String(h).trim(); if (key && !(key in idx)) idx[key] = i; });
-  return function (name) { return idx[name] !== undefined ? idx[name] : -1; };
+  headerRow.forEach((h, i) => { const key = normHeader(h); if (key && !(key in idx)) idx[key] = i; });
+  return function (name) { const k = normHeader(name); return idx[k] !== undefined ? idx[k] : -1; };
 }
 function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
 // Normalizes a person-name field for matching: Google Sheets sometimes stores
@@ -596,9 +601,11 @@ async function loadData() {
   const errEl = document.getElementById('error-box');
   loadingEl.classList.remove('hidden');
   try {
-    const [ddGrid, rpGrid, visitGrid, dcGrid, obGrid, mapGrid] = await Promise.all([
+    const [ddGrid, rpGrid, dd3Grid, rp3Grid, visitGrid, dcGrid, obGrid, mapGrid] = await Promise.all([
       fetchCSV('drawdown.csv'),
       fetchCSV('repayment.csv'),
+      fetchCSV('drawdownv3.csv', true),     // "[Raw] Drawdown v3" — 180-day product (optional)
+      fetchCSV('repaymentv3.csv', true),    // "[Raw] Repayment v3" (optional)
       fetchCSV('visits.csv', true),         // full "[Raw] Visits" sheet
       fetchCSV('dealer-checker.csv', true), // full "[Raw] Dealer Checker" sheet
       fetchCSV('ob-masterlist.csv', true),  // full "[Raw] OB Masterlist" sheet
@@ -668,6 +675,50 @@ async function loadData() {
         paymentDate: parseSheetDate(get(r, rpCol('Dealer Payment Date'))),
         paidPrincipal: parseNum(get(r, rpCol('Dealer Paid Principal'))),
       });
+    }
+
+    // ── Drawdown v3 (180-day product) — same shape as v2, merged into the
+    // same drawdownRows so GMV, Total Disbursals, Drawdowns (Sales/Runners),
+    // AUM, AUM Active Dealer and First/Same-Month Activation all see the whole
+    // book. Every column is read by header name. v3 has no separate "SO"
+    // (current book owner) or "Blacklisted Date" column, so those fall back to
+    // "Assigned SO" / blank via the same lookups used for v2. ──
+    if (dd3Grid && dd3Grid.length > 1) {
+      const d3Col = buildColumnMap(dd3Grid[0]);
+      for (let i = 1; i < dd3Grid.length; i++) {
+        const r = dd3Grid[i];
+        const id = get(r, d3Col('Drawdown ID')).trim();
+        if (!id) continue;
+        const assigned = normName(get(r, d3Col('Assigned SO')));
+        drawdownRows.push({
+          id,
+          dealerId: get(r, d3Col('Dealer ID')).trim(),
+          creditDate: parseSheetDate(get(r, d3Col('Credit Date to Dealer Bank Account'))),
+          originalPrincipal: parseNum(get(r, d3Col('Original Principal'))),
+          loanStatus: get(r, d3Col('Loan Status')).trim(),
+          assignedSO: assigned,
+          so: normName(get(r, d3Col('SO'))) || assigned,
+          requestedVia: get(r, d3Col('Requested Via')).trim(),
+          blacklistedDate: parseSheetDate(get(r, d3Col('Blacklisted Date'))),
+        });
+      }
+    }
+
+    // ── Repayment v3 — merged into repaymentRows so outstandingAsOf() sees
+    // every loan's repayments regardless of schema. v3's principal column is
+    // "Principal Applied" (v2 uses "Dealer Paid Principal"). ──
+    if (rp3Grid && rp3Grid.length > 1) {
+      const rp3Col = buildColumnMap(rp3Grid[0]);
+      for (let i = 1; i < rp3Grid.length; i++) {
+        const r = rp3Grid[i];
+        const drawdownId = get(r, rp3Col('Drawdown ID')).trim();
+        if (!drawdownId) continue;
+        repaymentRows.push({
+          drawdownId,
+          paymentDate: parseSheetDate(get(r, rp3Col('Dealer Payment Date'))),
+          paidPrincipal: parseNum(get(r, rp3Col('Principal Applied'))),
+        });
+      }
     }
 
     // ── Visits — full "[Raw] Visits" sheet (optional: degrades to blank
