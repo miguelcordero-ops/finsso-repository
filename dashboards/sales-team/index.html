@@ -250,8 +250,9 @@ td.metric-label{color:var(--text);font-weight:500}
 .dc-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 22px;padding:12px 16px 6px}
 .dc-controls label{font-weight:700;font-size:12px}
 .dc-controls select,.dc-controls input{font:inherit;font-size:12px;padding:4px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface-d);color:var(--text)}
-.dc-controls select#dc-dealer{min-width:280px;max-width:100%;font-weight:700;text-align:center}
-.dc-controls input{width:150px}
+.dc-controls select#dc-dealer{width:320px;max-width:100%;font-weight:700;text-overflow:ellipsis}
+.dc-controls input{width:180px}
+.dc-controls select#dc-hist{width:120px}
 .dc-scope{font-size:11px;font-style:italic;color:var(--text3);text-align:center;padding:0 16px 6px}
 .dc-grid{display:grid;grid-template-columns:1fr;gap:0 40px;padding:6px 20px 14px}
 @media(min-width:760px){.dc-grid{grid-template-columns:1fr 1fr}}
@@ -260,12 +261,20 @@ td.metric-label{color:var(--text);font-weight:500}
 .dc-kv .k.sub{font-style:italic;font-weight:400;color:var(--text3);text-align:right}
 .dc-kv .v{color:var(--text2)}
 .dc-empty{padding:18px;text-align:center;font-size:12px;color:var(--text3);font-style:italic}
-.dc-table-wrap{overflow:auto;max-height:340px;padding:0 8px 10px}
+.dc-table-wrap{overflow:auto;max-height:340px;padding:0 0 10px}
 .dc-table-wrap table{font-size:11px;min-width:1100px}
-.dc-table-wrap th{background:var(--tbl-hdr);color:var(--text);text-transform:none;letter-spacing:0;font-size:11px;text-align:center;border:1px solid var(--tbl-bdr2);position:sticky;top:0;z-index:2}
+.dc-table-wrap th{background:#eef0f6;color:var(--text);text-transform:none;letter-spacing:0;font-size:11px;text-align:center;border:1px solid var(--tbl-bdr2);position:sticky;top:0;z-index:2}
 .dc-table-wrap td{border:1px solid var(--tbl-bdr);padding:3px 8px;text-align:center}
 .dc-table-wrap td.l{text-align:left}.dc-table-wrap td.rr{text-align:right}
 .dc-table-wrap tr.hist td{color:var(--text3);font-style:italic}
+/* Frozen Drawdown ID column — opaque so scrolled cells never show through. */
+.dc-table-wrap th.fz,.dc-table-wrap td.fz{position:sticky;left:0;box-shadow:1px 0 0 var(--tbl-bdr2)}
+.dc-table-wrap td.fz{z-index:1;background:#fbfbfd;font-weight:600}
+.dc-table-wrap th.fz{z-index:3;background:#eef0f6}
+:root[data-theme="dark"] .dc-table-wrap th{background:#232838}
+:root[data-theme="dark"] .dc-table-wrap td.fz{background:#161a26}
+:root[data-theme="dark"] .dc-table-wrap th.fz{background:#232838}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dc-table-wrap td.fz{background:#161a26}:root:not([data-theme="light"]) .dc-table-wrap th.fz{background:#232838}}
 
 .lock-overlay{
   position:fixed;inset:0;
@@ -706,6 +715,7 @@ async function loadData() {
         plate: get(r, ddCol('Plate Number (as on ORCR)')).trim(),
         yearModel: get(r, ddCol('Year Model')).trim(),
         financingType: get(r, ddCol('Type of Financing')).trim(),
+        loanTenure: get(r, ddCol('Total Loan Tenure (in days)')).trim(),
         maturityDate: parseSheetDate(get(r, ddCol('Final Maturity Date'))),
         loanAging: get(r, ddCol('Overall Loan Aging based on PNCM Date')).trim(),
         outstandingSheet: parseNum(get(r, ddCol('Total Outstanding Principal'))),
@@ -757,6 +767,7 @@ async function loadData() {
           plate: get(r, d3Col('Plate Number (as on ORCR)')).trim(),
           yearModel: get(r, d3Col('Year Model')).trim(),
           financingType: get(r, d3Col('Type of Financing')).trim(),
+          loanTenure: get(r, d3Col('Loan Tenure')).trim() || get(r, d3Col('Total Loan Tenure Days')).trim(),
           maturityDate: parseSheetDate(get(r, d3Col('Maturity Date'))),
           loanAging: get(r, d3Col('Loan Aging')).trim(),
           outstandingSheet: parseNum(get(r, d3Col('Outstanding Principal'))),
@@ -1451,22 +1462,22 @@ function renderDealerBody() {
     const dpdDays = od ? (parseFloat(l.dpdAgingSheet) || 0) : 0;
     const dpdStatus = od ? (l.dpdStatusSheet || dcBucket(dpdDays)) : '';
     return '<tr' + (dcIsOpen(l) ? '' : ' class="hist"') + '>' +
-      '<td class="l">' + dcEsc(l.id) + '</td><td>' + dcEsc(l.loanStatus) + '</td>' +
+      '<td class="l fz">' + dcEsc(l.id) + '</td><td>' + dcEsc(l.loanTenure) + '</td><td>' + dcEsc(l.loanStatus) + '</td>' +
       '<td class="l">' + dcEsc(l.makeModel) + '</td><td>' + dcEsc(l.plate) + '</td><td>' + dcEsc(l.yearModel) + '</td>' +
       '<td>' + dcEsc(l.financingType) + '</td><td>' + dcDate(l.creditDate) + '</td>' +
-      '<td>' + (od ? 'Yes' : '') + '</td><td>' + dcEsc(dpdStatus) + '</td><td>' + (od && dpdDays ? dcEsc(dpdDays) : '') + '</td>' +
+      '<td>' + dcEsc(dpdStatus) + '</td><td>' + (od && dpdDays ? dcEsc(dpdDays) : '') + '</td>' +
       '<td>' + dcEsc(l.loanAging) + '</td><td>' + dcDate(l.maturityDate) + '</td>' +
       '<td class="rr">' + dcPeso(dcIsOpen(l) ? l.outstandingSheet : 0) + '</td>' +
       '<td>' + (latest ? dcDate(latest.date) : '') + '</td><td>' + (latest ? dcEsc(latest.status) : 'No Entry Yet') + '</td>' +
-      '<td>' + ins.length + '</td><td>' + passed + '</td><td>' + failed + '</td><td>' + dcEsc(sold) + '</td></tr>';
+      '<td>' + passed + '</td><td>' + failed + '</td><td>' + dcEsc(sold) + '</td></tr>';
   }).join('');
-  const heads = ['Drawdown ID','Loan Status','Make Model','Plate','Year Model','Financing Type','Credit Date','in DPD?','DPD Status','DPD Aging','Loan Aging','Final Maturity Date','Outstanding Principal','Latest Act. Inspection','Inspection Remarks','Total # Inspections','Inspections Passed','Inspections Failed','Sold Tagging'];
+  const heads = ['Drawdown ID','Loan Tenure','Loan Status','Make Model','Plate','Year Model','Financing Type','Credit Date','DPD Status','DPD Aging','Loan Aging','Final Maturity Date','Outstanding Principal','Latest Act. Inspection','Inspection Remarks','Inspections Passed','Inspections Failed','Sold Tagging'];
 
   body.innerHTML =
     '<div class="dc-grid"><div>' + left1 + '</div><div>' + right1 + '</div></div>' +
     '<div class="dc-grid" style="padding-top:0"><div>' + left2 + '</div><div>' + right2 + '</div></div>' +
     '<div class="dc-band" style="font-size:15px">' + (includeHist ? 'All Accounts (incl. historical)' : 'Open Accounts') + '</div>' +
-    '<div class="dc-table-wrap"><table><thead><tr>' + heads.map(h => '<th>' + h + '</th>').join('') + '</tr></thead><tbody>' +
+    '<div class="dc-table-wrap"><table><thead><tr>' + heads.map((h, i) => '<th' + (i === 0 ? ' class="fz"' : '') + '>' + h + '</th>').join('') + '</tr></thead><tbody>' +
     (trs || '<tr><td colspan="' + heads.length + '" style="font-style:italic;color:var(--text3)">No ' + (includeHist ? '' : 'open ') + 'accounts for this dealer.</td></tr>') +
     '</tbody></table></div>';
 }
