@@ -243,6 +243,30 @@ td.metric-label{color:var(--text);font-weight:500}
 
 .data-status{font-size:11px;color:var(--text3);text-align:right;margin-top:4px}
 
+/* ── Dealer Status card (top of page) — styled after the Dealer Status
+   sheet: black title bands, serif type, label/value grid. ── */
+.dealer-card{padding:0;overflow:hidden;font-family:'Times New Roman',Times,serif;color:var(--text)}
+.dc-band{background:#000;color:#fff;text-align:center;font-size:17px;letter-spacing:.04em;padding:10px 12px;text-transform:uppercase}
+.dc-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 22px;padding:12px 16px 6px}
+.dc-controls label{font-weight:700;font-size:12px}
+.dc-controls select,.dc-controls input{font:inherit;font-size:12px;padding:4px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface-d);color:var(--text)}
+.dc-controls select#dc-dealer{min-width:280px;max-width:100%;font-weight:700;text-align:center}
+.dc-controls input{width:150px}
+.dc-scope{font-size:11px;font-style:italic;color:var(--text3);text-align:center;padding:0 16px 6px}
+.dc-grid{display:grid;grid-template-columns:1fr;gap:0 40px;padding:6px 20px 14px}
+@media(min-width:760px){.dc-grid{grid-template-columns:1fr 1fr}}
+.dc-kv{display:grid;grid-template-columns:minmax(150px,auto) 1fr;gap:3px 14px;font-size:12px;align-content:start;margin-top:8px}
+.dc-kv .k{font-weight:700}
+.dc-kv .k.sub{font-style:italic;font-weight:400;color:var(--text3);text-align:right}
+.dc-kv .v{color:var(--text2)}
+.dc-empty{padding:18px;text-align:center;font-size:12px;color:var(--text3);font-style:italic}
+.dc-table-wrap{overflow:auto;max-height:340px;padding:0 8px 10px}
+.dc-table-wrap table{font-size:11px;min-width:1100px}
+.dc-table-wrap th{background:var(--tbl-hdr);color:var(--text);text-transform:none;letter-spacing:0;font-size:11px;text-align:center;border:1px solid var(--tbl-bdr2);position:sticky;top:0;z-index:2}
+.dc-table-wrap td{border:1px solid var(--tbl-bdr);padding:3px 8px;text-align:center}
+.dc-table-wrap td.l{text-align:left}.dc-table-wrap td.rr{text-align:right}
+.dc-table-wrap tr.hist td{color:var(--text3);font-style:italic}
+
 .lock-overlay{
   position:fixed;inset:0;
   background:var(--lock-tint);
@@ -323,7 +347,7 @@ td.metric-label{color:var(--text);font-weight:500}
   <div class="topbar-top">
     <div style="flex:1">
       <div class="report-title">Sales Team Performance</div>
-      <div class="report-subtitle">Team Marah · Team Albert · Team Malou — computed live from drawdown, visit, onboarding &amp; application data</div>
+      <div class="report-subtitle">computed live from drawdown, visit, onboarding &amp; application data</div>
       <div class="data-status" id="data-status-global" style="text-align:left">Loading…</div>
     </div>
     <div class="header-right">
@@ -333,6 +357,21 @@ td.metric-label{color:var(--text);font-weight:500}
 </div>
 
 <div class="main">
+  <!-- Dealer Status — top card. Dealer list is scoped to the selected
+       team / officer below (and, for team-tagged users, to their own team). -->
+  <div class="card dealer-card" id="dealer-card">
+    <div class="dc-band">Dealer Status</div>
+    <div class="dc-controls">
+      <label for="dc-search">Dealer Name:</label>
+      <input id="dc-search" type="search" placeholder="Search name or ID…" autocomplete="off">
+      <select id="dc-dealer"></select>
+      <label for="dc-hist">Historical Loans?</label>
+      <select id="dc-hist"><option value="no">Dont Include</option><option value="yes">Include</option></select>
+    </div>
+    <div class="dc-scope" id="dc-scope"></div>
+    <div id="dc-body"><div class="dc-empty">Loading…</div></div>
+  </div>
+
   <div class="section-title" id="entity-title">–</div>
   <div class="section-sub" id="entity-sub">–</div>
 
@@ -462,6 +501,7 @@ const METRIC_TYPES = {
 VISIT_PURPOSE_KEYS.forEach(k => { METRIC_TYPES['Visits: ' + k] = 'Count'; });
 
 let drawdownRows = [], repaymentRows = [], visitRows = [], onboardingRows = [], applicationRows = [];
+let dealerRows = [], inspectionsByLoan = {};
 let dataLoadedAt = null, unmappedCount = 0;
 let currencyMode = 'PHP';
 let selectedTeam = 'Marah';
@@ -601,7 +641,7 @@ async function loadData() {
   const errEl = document.getElementById('error-box');
   loadingEl.classList.remove('hidden');
   try {
-    const [ddGrid, rpGrid, dd3Grid, rp3Grid, visitGrid, dcGrid, obGrid, mapGrid] = await Promise.all([
+    const [ddGrid, rpGrid, dd3Grid, rp3Grid, visitGrid, dcGrid, obGrid, mapGrid, siGrid] = await Promise.all([
       fetchCSV('drawdown.csv'),
       fetchCSV('repayment.csv'),
       fetchCSV('drawdownv3.csv', true),     // "[Raw] Drawdown v3" — 180-day product (optional)
@@ -610,6 +650,7 @@ async function loadData() {
       fetchCSV('dealer-checker.csv', true), // full "[Raw] Dealer Checker" sheet
       fetchCSV('ob-masterlist.csv', true),  // full "[Raw] OB Masterlist" sheet
       fetchCSV('mapping.csv', true),        // "[Raw] Mapping": L0/L1/L2 org rows
+      fetchCSV('stock-inspection.csv', true), // "[Raw] Stock Inspection" — Dealer Status card
     ]);
 
     // ── SO → Team mapping — the ONLY source of truth. Sheet format is
@@ -660,6 +701,17 @@ async function loadData() {
         so: so,                                            // current book owner — used for AUM / AUM Active Dealer
         requestedVia: get(r, ddCol('Requested Via')).trim(),
         blacklistedDate: parseSheetDate(get(r, ddCol('Blacklisted Date'))),
+        // — Dealer Status card fields (all by header name) —
+        makeModel: get(r, ddCol('Make Model Variant')).trim(),
+        plate: get(r, ddCol('Plate Number (as on ORCR)')).trim(),
+        yearModel: get(r, ddCol('Year Model')).trim(),
+        financingType: get(r, ddCol('Type of Financing')).trim(),
+        maturityDate: parseSheetDate(get(r, ddCol('Final Maturity Date'))),
+        loanAging: get(r, ddCol('Overall Loan Aging based on PNCM Date')).trim(),
+        outstandingSheet: parseNum(get(r, ddCol('Total Outstanding Principal'))),
+        soldFlag: get(r, ddCol('Sold Flagging')).trim(),
+        dpdStatusSheet: get(r, ddCol('Bucket 2 as per Loan Aging Considering Renewal')).trim(),
+        dpdAgingSheet: get(r, ddCol('Loan Aging Considering Renewal Payment')).trim(),
       });
     }
 
@@ -700,6 +752,20 @@ async function loadData() {
           so: normName(get(r, d3Col('SO'))) || assigned,
           requestedVia: get(r, d3Col('Requested Via')).trim(),
           blacklistedDate: parseSheetDate(get(r, d3Col('Blacklisted Date'))),
+          // — Dealer Status card fields (all by header name) —
+          makeModel: get(r, d3Col('Make Model Variant')).trim(),
+          plate: get(r, d3Col('Plate Number (as on ORCR)')).trim(),
+          yearModel: get(r, d3Col('Year Model')).trim(),
+          financingType: get(r, d3Col('Type of Financing')).trim(),
+          maturityDate: parseSheetDate(get(r, d3Col('Maturity Date'))),
+          loanAging: get(r, d3Col('Loan Aging')).trim(),
+          outstandingSheet: parseNum(get(r, d3Col('Outstanding Principal'))),
+          soldFlag: '',
+          // v3 has per-checkpoint DPD columns, not one rolled-up bucket — the
+          // card shows the worst (max) of them.
+          dpdAgingSheet: String(Math.max.apply(null, ['R1 DPD','R2 DPD','R3 DPD','P1 DPD','R4 DPD','P2 DPD','R5 DPD','P3 DPD','Maturity DPD']
+            .map(function (n) { return parseNum(get(r, d3Col(n))) || 0; }))),
+          dpdStatusSheet: '',
         });
       }
     }
@@ -782,6 +848,58 @@ async function loadData() {
         const completionDate = parseSheetDate(get(r, obCol('Date of Completion of Onboarding Documents by Sales')));
         if (!so && !applicationDate && !completionDate) continue; // fully blank row
         applicationRows.push({ dealerId, so, applicationDate, completionDate });
+      }
+    }
+
+    // ── Dealer master (full "[Raw] Dealer Checker" sheet) for the Dealer
+    // Status card. First occurrence of a repeated header wins (the sheet has
+    // three "Credit Line Status" columns — the first is the overall one). ──
+    dealerRows = [];
+    if (dcGrid) {
+      const dcC = buildColumnMap(dcGrid[0]);
+      const g = (r, n) => get(r, dcC(n)).trim();
+      for (let i = 1; i < dcGrid.length; i++) {
+        const r = dcGrid[i];
+        const dealerId = g(r, 'Dealer ID');
+        if (!dealerId) continue;
+        dealerRows.push({
+          dealerId,
+          name: g(r, 'Dealership Name') || '(unnamed)',
+          gcd: g(r, 'GCD Code'),
+          so: normName(g(r, 'Assigned Sales Officer')),
+          familyGroup: g(r, 'Same Group'),
+          openLoansSheet: g(r, 'No. of open Loans'),
+          lifetimeTxn: g(r, "Lifetime TXN's"),
+          creditLimit: parseNum(g(r, 'Current Approved Credit Limit')),
+          drawingPower: parseNum(g(r, 'Current Approved Drawing Power')),
+          availDrawingPower: parseNum(g(r, 'Total Available Drawing Power')),
+          outstandingSheet: parseNum(g(r, 'Total Outstanding Amount')),
+          utilization: g(r, '% Utilization'),
+          repayment: g(r, '% Repayment'),
+          repaymentEff: g(r, '% Repayment Efficiency'),
+          clIncrease: g(r, 'Qualified for Automatic CL Increase'),
+          onboardingDate: parseSheetDate(g(r, 'Original Onboarding Date')),
+          clStatus: g(r, 'Credit Line Status'),
+          holdReason: g(r, 'Reason for Hold / Blacklisting'),
+          onboardingType: g(r, 'Onboarding (Regular / Express)'),
+          lastTxn: parseSheetDate(g(r, 'Last TXN')),
+        });
+      }
+    }
+
+    // ── Stock inspections, grouped by Drawdown ID (optional) ──
+    inspectionsByLoan = {};
+    if (siGrid && siGrid.length > 1) {
+      const siC = buildColumnMap(siGrid[0]);
+      for (let i = 1; i < siGrid.length; i++) {
+        const r = siGrid[i];
+        const id = get(r, siC('Drawdown ID')).trim();
+        if (!id) continue;
+        (inspectionsByLoan[id] = inspectionsByLoan[id] || []).push({
+          date: parseSheetDate(get(r, siC('Date'))),
+          status: get(r, siC('Stock Inspection Status')).trim(),
+          dateSold: parseSheetDate(get(r, siC('Date Vehicle Sold'))),
+        });
       }
     }
 
@@ -1212,8 +1330,151 @@ function renderEntity() {
   // computeMonth()) still records name -> record-count for anyone who
   // wants to check the browser console, without surfacing it in the UI.
 
+  renderDealerCard();
   updateStickyOffset(); // filter-bar height can change (chip wrapping) on every render
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DEALER STATUS CARD — top card. Dealer list = dealers whose Assigned Sales
+// Officer maps (via [Raw] Mapping) to the selected team, or to the selected
+// officer when one is picked. Whole Sales Team (unrestricted users only)
+// lists every dealer, including ones whose SO isn't in the Mapping sheet.
+// Team-tagged users can never reach any dealer outside their own team(s).
+// ═══════════════════════════════════════════════════════════════════════════
+const DC_MONTHS = MONTH_ABBR;
+function dcEsc(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function dcDate(d) { return d ? String(d.getDate()).padStart(2, '0') + '-' + DC_MONTHS[d.getMonth()] + '-' + d.getFullYear() : '—'; }
+function dcPeso(n) { return '₱' + Math.round(n || 0).toLocaleString('en-US'); }
+function dcPct(v) {
+  if (v === '' || v == null) return '—';
+  if (/%/.test(v)) return v;
+  const n = parseFloat(v);
+  return isFinite(n) ? (n * 100).toFixed(2) + '%' : dcEsc(v);
+}
+function dcVal(v) { return v === '' || v == null ? '—' : dcEsc(v); }
+function dcIsOpen(loan) { const st = (loan.loanStatus || '').toLowerCase(); return st !== 'closed' && st !== 'cancelled'; }
+function dcIsOverdue(loan) { return (loan.loanStatus || '').toLowerCase() === 'overdue'; }
+function dcBucket(days) { return days <= 0 ? '' : days <= 30 ? 'DPD 1-30' : days <= 60 ? 'DPD 31-60' : days <= 90 ? 'DPD 61-90' : 'DPD 91+'; }
+
+let dcScopeKey = null, dcScopeDealers = [];
+function dcAllowedTeamLowers() {
+  return (!ACCESS || ACCESS.unrestricted) ? null : ACCESS.teams.map(t => t.toLowerCase());
+}
+function dcDealersInScope() {
+  const lowers = dcAllowedTeamLowers();
+  return dealerRows.filter(d => {
+    const team = teamOf(d.so);
+    if (lowers && (!team || lowers.indexOf(team.toLowerCase()) < 0)) return false; // hard guard for team-tagged users
+    if (selectedEntity && selectedEntity !== '__TEAM__') return d.so === selectedEntity;
+    if (selectedTeam === ALL_TEAMS) return true;
+    return team === selectedTeam;
+  }).sort((a, b) => a.name.localeCompare(b.name));
+}
+function dcPopulateOptions() {
+  const q = (document.getElementById('dc-search').value || '').trim().toLowerCase();
+  const sel = document.getElementById('dc-dealer');
+  const prev = sel.value;
+  const list = dcScopeDealers.filter(d => !q || d.name.toLowerCase().indexOf(q) >= 0 || d.dealerId.toLowerCase().indexOf(q) >= 0);
+  const nameCount = {};
+  dcScopeDealers.forEach(d => { nameCount[d.name] = (nameCount[d.name] || 0) + 1; });
+  sel.innerHTML = '<option value="">' + (list.length ? '— Select a dealer (' + list.length + ') —' : 'No matching dealers') + '</option>' +
+    list.map(d => '<option value="' + dcEsc(d.dealerId) + '">' + dcEsc(d.name) + (nameCount[d.name] > 1 ? ' · ' + dcEsc(d.dealerId) : '') + '</option>').join('');
+  if (prev && list.some(d => d.dealerId === prev)) sel.value = prev;
+  else if (list.length === 1) sel.value = list[0].dealerId;
+}
+function renderDealerCard(forceRebuild) {
+  const key = selectedTeam + '|' + selectedEntity + '|' + (ACCESS && !ACCESS.unrestricted ? ACCESS.teams.join(',') : '*');
+  if (forceRebuild || key !== dcScopeKey) {
+    dcScopeKey = key;
+    dcScopeDealers = dcDealersInScope();
+    document.getElementById('dc-search').value = '';
+    document.getElementById('dc-dealer').value = '';
+    const scopeLabel = selectedEntity && selectedEntity !== '__TEAM__' ? selectedEntity
+      : selectedTeam === ALL_TEAMS ? 'all teams' : 'Team ' + selectedTeam;
+    document.getElementById('dc-scope').textContent = dcScopeDealers.length + ' dealers in scope — ' + scopeLabel;
+    dcPopulateOptions();
+  }
+  renderDealerBody();
+}
+function renderDealerBody() {
+  const body = document.getElementById('dc-body');
+  const id = document.getElementById('dc-dealer').value;
+  const d = dcScopeDealers.find(x => x.dealerId === id);
+  if (!d) { body.innerHTML = '<div class="dc-empty">Select a dealer to see its status and accounts.</div>'; return; }
+
+  const includeHist = document.getElementById('dc-hist').value === 'yes';
+  const loans = drawdownRows.filter(l => l.dealerId === d.dealerId);
+  const openLoans = loans.filter(dcIsOpen);
+  const atRisk = openLoans.filter(dcIsOverdue);
+  const atRiskAmt = atRisk.reduce((a, l) => a + (l.outstandingSheet || 0), 0);
+  const kv = rows => '<div class="dc-kv">' + rows.map(r => r.sub
+    ? '<div class="k sub">' + r[0] + '</div><div class="v"><i>' + r[1] + '</i></div>'
+    : '<div class="k">' + r[0] + '</div><div class="v">' + r[1] + '</div>').join('') + '</div>';
+
+  const left1 = kv([
+    ['Dealer ID', dcVal(d.dealerId)], ['GCD Code', dcVal(d.gcd)], ['SO Assigned', dcVal(d.so)], ['Family Group', dcVal(d.familyGroup)],
+    ['Number of Open Accounts', dcVal(d.openLoansSheet !== '' ? d.openLoansSheet : String(openLoans.length))],
+    ['at Risk (in DPD):', String(atRisk.length), true],
+  ]);
+  const right1 = kv([
+    ['Lifetime Transactions:', d.lifetimeTxn ? dcEsc(d.lifetimeTxn) + ' transactions' : '—'],
+    ['Current Approved Credit Limit:', dcPeso(d.creditLimit)],
+    ['Current Approved Drawing Power:', dcPeso(d.drawingPower)],
+    ['Total Available Drawing Power:', dcPeso(d.availDrawingPower)],
+    ['Total Outstanding Principal:', dcPeso(d.outstandingSheet)],
+    ['at Risk (in DPD):', dcPeso(atRiskAmt), true],
+  ]);
+  const left2 = kv([
+    ['% Utilization:', dcPct(d.utilization)], ['% Repayment:', dcPct(d.repayment)],
+    ['% Repayment Efficiency:', dcPct(d.repaymentEff)], ['CL Increase Qualification:', dcVal(d.clIncrease)],
+  ]);
+  const right2 = kv([
+    ['Onboarding Date:', dcDate(d.onboardingDate)], ['Credit Line Status:', dcVal(d.clStatus)],
+    ['Reason for Hold/BL:', dcVal(d.holdReason)], ['Onboarding Type:', dcVal(d.onboardingType)],
+    ['Last Transaction:', dcDate(d.lastTxn)],
+  ]);
+
+  // ── accounts table ──
+  const rowsSrc = (includeHist ? loans : openLoans).slice().sort((a, b) => {
+    const ao = dcIsOpen(a) ? 0 : 1, bo = dcIsOpen(b) ? 0 : 1;
+    if (ao !== bo) return ao - bo;
+    return (b.creditDate ? b.creditDate.getTime() : 0) - (a.creditDate ? a.creditDate.getTime() : 0);
+  });
+  const now = new Date();
+  const trs = rowsSrc.map(l => {
+    const ins = (inspectionsByLoan[l.id] || []).slice().sort((x, y) => (y.date ? y.date.getTime() : 0) - (x.date ? x.date.getTime() : 0));
+    const passed = ins.filter(x => /^pass/i.test(x.status)).length;
+    const failed = ins.filter(x => /^fail/i.test(x.status)).length;
+    const latest = ins[0];
+    const sold = l.soldFlag || (ins.some(x => x.dateSold) ? 'Sold' : '');
+    const od = dcIsOverdue(l);
+    const dpdDays = od ? (parseFloat(l.dpdAgingSheet) || 0) : 0;
+    const dpdStatus = od ? (l.dpdStatusSheet || dcBucket(dpdDays)) : '';
+    return '<tr' + (dcIsOpen(l) ? '' : ' class="hist"') + '>' +
+      '<td class="l">' + dcEsc(l.id) + '</td><td>' + dcEsc(l.loanStatus) + '</td>' +
+      '<td class="l">' + dcEsc(l.makeModel) + '</td><td>' + dcEsc(l.plate) + '</td><td>' + dcEsc(l.yearModel) + '</td>' +
+      '<td>' + dcEsc(l.financingType) + '</td><td>' + dcDate(l.creditDate) + '</td>' +
+      '<td>' + (od ? 'Yes' : '') + '</td><td>' + dcEsc(dpdStatus) + '</td><td>' + (od && dpdDays ? dcEsc(dpdDays) : '') + '</td>' +
+      '<td>' + dcEsc(l.loanAging) + '</td><td>' + dcDate(l.maturityDate) + '</td>' +
+      '<td class="rr">' + dcPeso(dcIsOpen(l) ? l.outstandingSheet : 0) + '</td>' +
+      '<td>' + (latest ? dcDate(latest.date) : '') + '</td><td>' + (latest ? dcEsc(latest.status) : 'No Entry Yet') + '</td>' +
+      '<td>' + ins.length + '</td><td>' + passed + '</td><td>' + failed + '</td><td>' + dcEsc(sold) + '</td></tr>';
+  }).join('');
+  const heads = ['Drawdown ID','Loan Status','Make Model','Plate','Year Model','Financing Type','Credit Date','in DPD?','DPD Status','DPD Aging','Loan Aging','Final Maturity Date','Outstanding Principal','Latest Act. Inspection','Inspection Remarks','Total # Inspections','Inspections Passed','Inspections Failed','Sold Tagging'];
+
+  body.innerHTML =
+    '<div class="dc-grid"><div>' + left1 + '</div><div>' + right1 + '</div></div>' +
+    '<div class="dc-grid" style="padding-top:0"><div>' + left2 + '</div><div>' + right2 + '</div></div>' +
+    '<div class="dc-band" style="font-size:15px">' + (includeHist ? 'All Accounts (incl. historical)' : 'Open Accounts') + '</div>' +
+    '<div class="dc-table-wrap"><table><thead><tr>' + heads.map(h => '<th>' + h + '</th>').join('') + '</tr></thead><tbody>' +
+    (trs || '<tr><td colspan="' + heads.length + '" style="font-style:italic;color:var(--text3)">No ' + (includeHist ? '' : 'open ') + 'accounts for this dealer.</td></tr>') +
+    '</tbody></table></div>';
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('dc-dealer').addEventListener('change', renderDealerBody);
+  document.getElementById('dc-hist').addEventListener('change', renderDealerBody);
+  document.getElementById('dc-search').addEventListener('input', () => { dcPopulateOptions(); renderDealerBody(); });
+});
 
 // ═══════════════════════════════════════════════════════════════════════════
 // FILTER UI
@@ -1221,7 +1482,7 @@ function renderEntity() {
 function buildTeamChips() {
   const container = document.getElementById('filter-team');
   container.querySelectorAll('.filter-chip').forEach(el => el.remove());
-  const options = [ALL_TEAMS].concat(TEAMS);
+  const options = allowedTeamOptions();
   options.forEach(t => {
     const el = document.createElement('span');
     el.className = 'filter-chip' + (t === selectedTeam ? ' active' : '');
@@ -1298,6 +1559,37 @@ window.addEventListener('resize', updateStickyOffset);
 // ═══════════════════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════════════════
+// ACCESS: null until sign-in resolves; then {unrestricted:true} or
+// {unrestricted:false, teams:['Malou', ...]} from the Allowlist tab ("Team
+// Malou" in the Dashboards column = that SM sees ONLY Malou's team). Nothing
+// is rendered until both the data AND the access scope are known, so a
+// team-tagged user's page never briefly holds other teams' figures.
+let ACCESS = null, _dataReady = false, _rendered = false;
+function allowedTeamOptions() {
+  if (!ACCESS || ACCESS.unrestricted) return [ALL_TEAMS].concat(TEAMS);
+  const lowers = ACCESS.teams.map(t => t.toLowerCase());
+  return TEAMS.filter(t => lowers.indexOf(t.toLowerCase()) >= 0);
+}
+function tryRender() {
+  if (_rendered || !_dataReady || !ACCESS) return;
+  _rendered = true;
+  const options = allowedTeamOptions();
+  const sub = document.querySelector('.report-subtitle');
+  if (!options.length) {
+    // Team tag doesn't match any Sales Manager first name in [Raw] Mapping.
+    document.querySelector('.main').innerHTML = '<div class="warn-banner">Your access is tagged "Team ' +
+      dcEsc(ACCESS.teams.join(', ')) + '", but no team by that name exists in the Mapping sheet right now. Ask the admin to check your Allowlist tag.</div>';
+    if (sub) sub.textContent = 'No team access';
+    return;
+  }
+  if (sub) sub.textContent = options.filter(t => t !== ALL_TEAMS).map(t => 'Team ' + t).join(' · ') +
+    ' — computed live from drawdown, visit, onboarding & application data';
+  selectedTeam = ACCESS.unrestricted ? (TEAMS.length ? TEAMS[0] : ALL_TEAMS) : options[0]; // guard against an empty/not-yet-run Mapping export
+  selectedEntity = '__TEAM__';
+  buildTeamChips();
+  buildEntityChips();
+  renderEntity(); // also calls updateStickyOffset() internally
+}
 async function init() {
   buildCurrencyToggle();
   const ok = await loadData();
@@ -1305,12 +1597,8 @@ async function init() {
 
   monthColumns = buildMonthColumns();
   unmappedCount = monthColumns.reduce((a, c) => a + c.unmapped, 0);
-
-  selectedTeam = TEAMS.length ? TEAMS[0] : ALL_TEAMS; // guard against an empty/not-yet-run Mapping export
-  selectedEntity = '__TEAM__';
-  buildTeamChips();
-  buildEntityChips();
-  renderEntity(); // also calls updateStickyOffset() internally
+  _dataReady = true;
+  tryRender();
 }
 
 init();
@@ -1340,8 +1628,14 @@ async function _loadAllowlist() {
         var r = await fetch(url);
         var j = await r.json();
         var list = (j.emails || []).map(function (s) { return String(s).toLowerCase().trim(); }).filter(Boolean);
-        ALLOWLIST = list;
-        return list;
+        // "entries" (email/domain + unrestricted flag + team tags) comes from the
+        // updated Apps Script; an older deployment only sends "emails", in which
+        // case everyone on the list is treated as unrestricted.
+        var entries = Array.isArray(j.entries) ? j.entries.map(function (e) {
+          return { email: String(e.email || '').toLowerCase().trim(), unrestricted: !!e.unrestricted, teams: (e.teams || []).map(String) };
+        }) : null;
+        ALLOWLIST = { emails: list, entries: entries };
+        return ALLOWLIST;
       } catch (e) { /* retry */ }
     }
     return null;
@@ -1350,13 +1644,24 @@ async function _loadAllowlist() {
   finally { _allowlistLoading = null; }
 }
 async function _isAllowed(email) {
-  var list = await _loadAllowlist();
-  if (!list) return { ok: false, reason: 'load-failed' };
+  var data = await _loadAllowlist();
+  if (!data) return { ok: false, reason: 'load-failed' };
   email = String(email).toLowerCase().trim();
-  if (list.indexOf(email) >= 0) return { ok: true };
   var at = email.indexOf('@'), dom = at >= 0 ? email.slice(at) : '';
-  if (dom && list.indexOf(dom) >= 0) return { ok: true };
-  return { ok: false, reason: 'not-listed' };
+  if (!data.entries) { // legacy response: plain email/domain list, no scoping
+    if (data.emails.indexOf(email) >= 0 || (dom && data.emails.indexOf(dom) >= 0)) return { ok: true, access: { unrestricted: true, teams: [] } };
+    return { ok: false, reason: 'not-listed' };
+  }
+  // An exact-email row always beats a whole-domain row ("@finsso.com"), so a
+  // team-tagged SM isn't silently widened by a blanket domain entry.
+  var exact = data.entries.filter(function (e) { return e.email === email; });
+  var pool = exact.length ? exact : data.entries.filter(function (e) { return dom && e.email === dom; });
+  if (!pool.length) return { ok: false, reason: 'not-listed' };
+  if (pool.some(function (e) { return e.unrestricted; })) return { ok: true, access: { unrestricted: true, teams: [] } };
+  var teams = [];
+  pool.forEach(function (e) { e.teams.forEach(function (t) { if (teams.indexOf(t) < 0) teams.push(t); }); });
+  if (!teams.length) return { ok: false, reason: 'not-listed' };
+  return { ok: true, access: { unrestricted: false, teams: teams } };
 }
 function _decodeJwt(t) {
   try {
@@ -1373,7 +1678,9 @@ function _logAccess(email) {
     fetch(url, { mode: 'no-cors' }).catch(function () {});
   } catch (e) {}
 }
-function _grantAccess(profile) {
+function _grantAccess(profile, access) {
+  ACCESS = access || { unrestricted: true, teams: [] };
+  tryRender();
   var s = document.getElementById('lock-overlay');
   if (s) { s.classList.add('unlocking'); setTimeout(function () { s.classList.add('hidden'); }, 400); }
   _logAccess(profile.email);
@@ -1385,7 +1692,7 @@ async function _onGoogleCredential(resp) {
   if (data.email_verified === false) { _authError('Your Google email is not verified.'); return; }
   var result = await _isAllowed(data.email);
   if (result.ok) {
-    _grantAccess({ email: String(data.email).toLowerCase(), name: data.name || '' });
+    _grantAccess({ email: String(data.email).toLowerCase(), name: data.name || '' }, result.access);
   } else if (result.reason === 'load-failed') {
     _authError('Could not verify access right now — check your connection and try again.');
   } else {
