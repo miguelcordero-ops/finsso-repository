@@ -274,6 +274,15 @@ td.metric-label{color:var(--text);font-weight:500}
 .dc-table-wrap td{border:1px solid var(--tbl-bdr);text-align:center}
 .dc-table-wrap td.l{text-align:left}.dc-table-wrap td.rr{text-align:right}
 .dc-table-wrap tr.hist td{color:var(--text3);font-style:italic}
+.dc-tbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:8px 14px;font-size:12px;color:var(--text2)}
+.dc-tbar button{font:inherit;font-size:12px;padding:3px 10px;border-radius:6px;border:1px solid var(--border2);background:var(--surface-d);color:var(--text2);cursor:pointer}
+.dc-tbar button:hover{background:var(--chip-hover)}
+.dc-tbar .dc-hint{color:var(--text3);font-style:italic;margin-left:auto}
+.dc-table-wrap th.srt{cursor:pointer;user-select:none}
+.dc-table-wrap th.srt:hover{filter:brightness(.96)}
+.dc-table-wrap th.flt{padding:3px 4px;z-index:2}
+.dc-table-wrap th.flt input{width:100%;min-width:52px;font:inherit;font-size:12px;font-weight:400;padding:2px 5px;border:1px solid var(--border2);border-radius:4px;background:var(--surface-hi);color:var(--text)}
+.dc-table-wrap th.flt.fz{z-index:3}
 /* Frozen Drawdown ID column — opaque so scrolled cells never show through. */
 .dc-table-wrap th.fz,.dc-table-wrap td.fz{position:sticky;left:0;box-shadow:1px 0 0 var(--tbl-bdr2)}
 .dc-table-wrap td.fz{z-index:1;background:#fbfbfd;font-weight:600}
@@ -373,6 +382,14 @@ td.metric-label{color:var(--text);font-weight:500}
 </div>
 
 <div class="main">
+  <!-- Team / officer / currency filters sit above everything: they scope the
+       Dealer Status card below AND the Key Metrics table. Sticky while scrolling. -->
+  <div class="filter-bar" id="filter-bar">
+    <div class="filter-group" id="filter-team"><span class="filter-group-label">Team</span></div>
+    <div class="filter-group" id="filter-entity"><span class="filter-group-label">Officer</span></div>
+    <div class="filter-group" id="filter-currency"><span class="filter-group-label">Currency</span></div>
+  </div>
+
   <!-- Dealer Status — top card. Dealer list is scoped to the selected
        team / officer below (and, for team-tagged users, to their own team). -->
   <div class="card dealer-card" id="dealer-card">
@@ -392,16 +409,6 @@ td.metric-label{color:var(--text);font-weight:500}
 
   <div class="section-title" id="entity-title">–</div>
   <div class="section-sub" id="entity-sub">–</div>
-
-  <!-- Moved down next to the table it filters, so once you scroll it locks
-       in place directly above the frozen month-header row — the two form
-       one contiguous frozen block instead of the filter bar sitting far up
-       the page, separate from the data it controls. -->
-  <div class="filter-bar" id="filter-bar">
-    <div class="filter-group" id="filter-team"><span class="filter-group-label">Team</span></div>
-    <div class="filter-group" id="filter-entity"><span class="filter-group-label">Officer</span></div>
-    <div class="filter-group" id="filter-currency"><span class="filter-group-label">Currency</span></div>
-  </div>
 
   <div class="card metrics-card">
     <div class="card-title">Key Metrics <span class="card-unit" id="currency-note"></span></div>
@@ -1465,14 +1472,16 @@ function renderDealerBody() {
     ['Last Transaction:', dcDate(d.lastTxn)],
   ]);
 
-  // ── accounts table ──
+  // ── accounts table — rows are built once per dealer render as records with
+  // a raw sort value + display text per column; sorting and per-column
+  // filtering then only repaint the <tbody> (so typing in a filter box never
+  // loses focus). ──
   const rowsSrc = (includeHist ? loans : openLoans).slice().sort((a, b) => {
     const ao = dcIsOpen(a) ? 0 : 1, bo = dcIsOpen(b) ? 0 : 1;
     if (ao !== bo) return ao - bo;
     return (b.creditDate ? b.creditDate.getTime() : 0) - (a.creditDate ? a.creditDate.getTime() : 0);
   });
-  const now = new Date();
-  const trs = rowsSrc.map(l => {
+  dcRows = rowsSrc.map(l => {
     const ins = (inspectionsByLoan[l.id] || []).slice().sort((x, y) => (y.date ? y.date.getTime() : 0) - (x.date ? x.date.getTime() : 0));
     const passed = ins.filter(x => /^pass/i.test(x.status)).length;
     const failed = ins.filter(x => /^fail/i.test(x.status)).length;
@@ -1481,31 +1490,110 @@ function renderDealerBody() {
     const od = dcIsOverdue(l);
     const dpdDays = od ? (parseFloat(l.dpdAgingSheet) || 0) : 0;
     const dpdStatus = od ? (l.dpdStatusSheet || dcBucket(dpdDays)) : '';
-    return '<tr' + (dcIsOpen(l) ? '' : ' class="hist"') + '>' +
-      '<td class="l fz">' + dcEsc(l.id) + '</td><td>' + dcEsc(l.loanTenure) + '</td><td>' + dcEsc(l.loanStatus) + '</td>' +
-      '<td class="l">' + dcEsc(l.makeModel) + '</td><td>' + dcEsc(l.plate) + '</td><td>' + dcEsc(l.yearModel) + '</td>' +
-      '<td>' + dcEsc(l.financingType) + '</td><td>' + dcDate(l.creditDate) + '</td>' +
-      '<td>' + dcEsc(dpdStatus) + '</td><td>' + (od && dpdDays ? dcEsc(dpdDays) : '') + '</td>' +
-      '<td>' + dcEsc(isFinite(parseFloat(l.loanAging)) ? Math.round(parseFloat(l.loanAging)) : l.loanAging) + '</td><td>' + dcDate(l.maturityDate) + '</td>' +
-      '<td class="rr">' + dcPeso(dcIsOpen(l) ? l.outstandingSheet : 0) + '</td>' +
-      '<td>' + (latest ? dcDate(latest.date) : '') + '</td><td>' + (latest ? dcEsc(latest.status) : 'No Entry Yet') + '</td>' +
-      '<td>' + passed + '</td><td>' + failed + '</td><td>' + dcEsc(sold) + '</td></tr>';
-  }).join('');
+    const aging = parseFloat(l.loanAging);
+    const out = dcIsOpen(l) ? (l.outstandingSheet || 0) : 0;
+    const t = d => d ? d.getTime() : null;
+    const n = v => { const x = parseFloat(v); return isFinite(x) ? x : null; };
+    return {
+      hist: !dcIsOpen(l),
+      cells: [
+        { v: l.id, t: l.id },
+        { v: n(l.loanTenure), t: l.loanTenure },
+        { v: l.loanStatus, t: l.loanStatus },
+        { v: l.makeModel, t: l.makeModel },
+        { v: l.plate, t: l.plate },
+        { v: n(l.yearModel), t: l.yearModel },
+        { v: l.financingType, t: l.financingType },
+        { v: t(l.creditDate), t: l.creditDate ? dcDate(l.creditDate) : '' },
+        { v: dpdStatus, t: dpdStatus },
+        { v: od && dpdDays ? dpdDays : null, t: od && dpdDays ? String(dpdDays) : '' },
+        { v: isFinite(aging) ? Math.round(aging) : null, t: isFinite(aging) ? String(Math.round(aging)) : l.loanAging },
+        { v: t(l.maturityDate), t: l.maturityDate ? dcDate(l.maturityDate) : '' },
+        { v: out, t: dcPeso(out) },
+        { v: latest ? t(latest.date) : null, t: latest ? dcDate(latest.date) : '' },
+        { v: latest ? latest.status : 'No Entry Yet', t: latest ? latest.status : 'No Entry Yet' },
+        { v: passed, t: String(passed) },
+        { v: failed, t: String(failed) },
+        { v: sold, t: sold },
+      ],
+    };
+  });
   const heads = ['Drawdown ID','Loan Tenure','Loan Status','Make Model','Plate','Year Model','Financing Type','Credit Date','DPD Status','DPD Aging','Loan Aging','Final Maturity Date','Outstanding Principal','Latest Act. Inspection','Inspection Remarks','Inspections Passed','Inspections Failed','Sold Tagging'];
+  dcHeads = heads;
+  const leftCols = { 0: 1, 3: 1 }, rightCols = { 12: 1 };
 
   body.innerHTML =
     '<div class="dc-grid"><div>' + left1 + '</div><div>' + right1 + '</div></div>' +
     '<div class="dc-grid" style="padding-top:0"><div>' + left2 + '</div><div>' + right2 + '</div></div>' +
     '<div class="dc-band" style="font-size:15px">' + (includeHist ? 'All Accounts (incl. historical)' : 'Open Accounts') + '</div>' +
-    '<div class="dc-table-wrap"><table><thead><tr>' + heads.map((h, i) => '<th' + (i === 0 ? ' class="fz"' : '') + '>' + h + '</th>').join('') + '</tr></thead><tbody>' +
-    (trs || '<tr><td colspan="' + heads.length + '" style="font-style:italic;color:var(--text3)">No ' + (includeHist ? '' : 'open ') + 'accounts for this dealer.</td></tr>') +
-    '</tbody></table></div>';
+    '<div class="dc-tbar"><span id="dc-count"></span><button type="button" id="dc-clear">Clear sort &amp; filters</button>' +
+    '<span class="dc-hint">click a header to sort · type under a header to filter (numbers accept &gt; &lt; &gt;= &lt;= =)</span></div>' +
+    '<div class="dc-table-wrap"><table><thead>' +
+    '<tr id="dc-hrow">' + heads.map((h, i) => '<th data-c="' + i + '" class="srt' + (i === 0 ? ' fz' : '') + '">' + h + '<span class="ar"></span></th>').join('') + '</tr>' +
+    '<tr id="dc-frow">' + heads.map((h, i) => '<th class="flt' + (i === 0 ? ' fz' : '') + '"><input data-c="' + i + '" type="text" placeholder="filter" value="' + dcEsc(dcFilters[i] || '') + '"></th>').join('') + '</tr>' +
+    '</thead><tbody id="dc-tbody"></tbody></table></div>';
+
+  dcCols = heads.map((h, i) => ({ left: !!leftCols[i], right: !!rightCols[i], fz: i === 0 }));
+  body.querySelectorAll('#dc-hrow th').forEach(th => th.addEventListener('click', () => {
+    const c = +th.dataset.c;
+    if (dcSort.col !== c) dcSort = { col: c, dir: 1 };
+    else if (dcSort.dir === 1) dcSort.dir = -1;
+    else dcSort = { col: null, dir: 1 };
+    dcPaintRows();
+  }));
+  body.querySelectorAll('#dc-frow input').forEach(inp => inp.addEventListener('input', () => {
+    dcFilters[+inp.dataset.c] = inp.value;
+    dcPaintRows();
+  }));
+  document.getElementById('dc-clear').addEventListener('click', () => {
+    dcSort = { col: null, dir: 1 }; dcFilters = {};
+    body.querySelectorAll('#dc-frow input').forEach(i => { i.value = ''; });
+    dcPaintRows();
+  });
+  // keep the second (filter) header row stuck right under the first
+  const h1 = document.getElementById('dc-hrow');
+  document.querySelectorAll('#dc-frow th').forEach(th => { th.style.top = h1.offsetHeight + 'px'; });
+  dcPaintRows();
+}
+let dcRows = [], dcHeads = [], dcCols = [], dcSort = { col: null, dir: 1 }, dcFilters = {};
+function dcResetTableState() { dcSort = { col: null, dir: 1 }; dcFilters = {}; }
+function dcMatch(cell, q) {
+  q = q.trim();
+  if (!q) return true;
+  const m = q.match(/^(>=|<=|>|<|=)\s*(-?[\d,.]+)$/);
+  if (m && typeof cell.v === 'number') {
+    const x = parseFloat(m[2].replace(/,/g, '')), v = cell.v;
+    return m[1] === '>' ? v > x : m[1] === '<' ? v < x : m[1] === '>=' ? v >= x : m[1] === '<=' ? v <= x : v === x;
+  }
+  return String(cell.t).toLowerCase().indexOf(q.toLowerCase()) >= 0;
+}
+function dcPaintRows() {
+  let rows = dcRows.filter(r => Object.keys(dcFilters).every(c => dcMatch(r.cells[c], dcFilters[c] || '')));
+  if (dcSort.col !== null) {
+    const c = dcSort.col, dir = dcSort.dir;
+    rows = rows.slice().sort((a, b) => {
+      const x = a.cells[c].v, y = b.cells[c].v;
+      if (x === null || x === '' || x === undefined) return (y === null || y === '' || y === undefined) ? 0 : 1; // blanks last
+      if (y === null || y === '' || y === undefined) return -1;
+      if (typeof x === 'number' && typeof y === 'number') return (x - y) * dir;
+      return String(x).localeCompare(String(y), undefined, { numeric: true, sensitivity: 'base' }) * dir;
+    });
+  }
+  document.getElementById('dc-tbody').innerHTML = rows.length ? rows.map(r =>
+    '<tr' + (r.hist ? ' class="hist"' : '') + '>' + r.cells.map((cell, i) =>
+      '<td class="' + (dcCols[i].fz ? 'fz ' : '') + (dcCols[i].left ? 'l ' : '') + (dcCols[i].right ? 'rr' : '') + '">' + dcEsc(cell.t) + '</td>').join('') + '</tr>'
+  ).join('') : '<tr><td colspan="' + dcHeads.length + '" style="font-style:italic;color:var(--text3)">No accounts match.</td></tr>';
+  document.getElementById('dc-count').textContent = 'Showing ' + rows.length + ' of ' + dcRows.length + ' accounts';
+  document.querySelectorAll('#dc-hrow th').forEach(th => {
+    const on = dcSort.col === +th.dataset.c;
+    th.querySelector('.ar').textContent = on ? (dcSort.dir === 1 ? ' ▲' : ' ▼') : '';
+  });
 }
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('dc-dealer').addEventListener('change', renderDealerBody);
+  document.getElementById('dc-dealer').addEventListener('change', () => { dcResetTableState(); renderDealerBody(); });
   document.getElementById('dc-hist').addEventListener('change', renderDealerBody);
-  document.getElementById('dc-group').addEventListener('change', () => { dcPopulateOptions(); renderDealerBody(); });
-  document.getElementById('dc-search').addEventListener('input', () => { dcPopulateOptions(); renderDealerBody(); });
+  document.getElementById('dc-group').addEventListener('change', () => { dcPopulateOptions(); dcResetTableState(); renderDealerBody(); });
+  document.getElementById('dc-search').addEventListener('input', () => { dcPopulateOptions(); dcResetTableState(); renderDealerBody(); });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
