@@ -518,7 +518,7 @@ const METRIC_SECTIONS = [
   { title: 'Dealer Activation', metrics: ['AUM Active Dealer', 'First-time Activation', 'Same Month Activation'] },
 ];
 const METRIC_TYPES = {
-  'Total Visit': 'Count', 'Unique Visits': 'Count', 'Visits to Application': 'Ratio', 'Visits to Onboard': 'Ratio', 'Average Visit': 'Ratio',
+  'Total Visit': 'Count', 'Unique Visits': 'Count', 'Visits to Application': 'Percent', 'Visits to Onboard': 'Ratio', 'Average Visit': 'Ratio',
   'New Dealer Applications': 'Count', 'Dealer Application Completed': 'Count', 'Onboarded Dealers': 'Count', 'Total Disbursals': 'Count', 'Drawdowns (Sales)': 'Count', 'Drawdowns (Runners request)': 'Count',
   'GMV': 'Currency', 'AUM': 'Currency', 'AUM (Net Blacklisted)': 'Currency', 'GMV Growth': 'Percent', 'AUM Growth': 'Percent',
   'AUM Active Dealer': 'Count', 'First-time Activation': 'Count', 'Same Month Activation': 'Count',
@@ -983,7 +983,7 @@ function teamOf(so) { return SO_TEAM_MAP[so] || null; }
 // ═══════════════════════════════════════════════════════════════════════════
 function emptyBucket() {
   return {
-    totalVisit: 0, uniqueVisitDealers: new Set(), purposeCounts: {},
+    totalVisit: 0, appPitchVisits: 0, uniqueVisitDealers: new Set(), purposeCounts: {},
     newApplications: 0, applicationsCompleted: 0, onboardedDealers: 0,
     totalDisbursals: 0, drawdownsSales: 0, drawdownsRunners: 0,
     gmv: 0, aum: 0, aumNetBlacklisted: 0, aumActiveDealers: new Set(),
@@ -1055,6 +1055,10 @@ function computeMonth(mStart, mEnd) {
     b.totalVisit += 1;
     if (v.dealerKey) b.uniqueVisitDealers.add(v.dealerKey);
     v.purposeBuckets.forEach(pb => { b.purposeCounts[pb] = (b.purposeCounts[pb] || 0) + 1; });
+    // Denominator for "Visits to Application": visits whose purpose is
+    // Application and/or Product Pitch — each visit counted once even if it
+    // lists both purposes.
+    if (v.purposeBuckets.indexOf('Application') >= 0 || v.purposeBuckets.indexOf('Product Pitch') >= 0) b.appPitchVisits += 1;
   });
 
   // Applications & completions
@@ -1090,6 +1094,7 @@ function rollUpTeam(soBuckets, soNames) {
     const b = soBuckets[so];
     if (!b) return;
     t.totalVisit += b.totalVisit;
+    t.appPitchVisits += b.appPitchVisits;
     b.uniqueVisitDealers.forEach(d => t.uniqueVisitDealers.add(d));
     Object.keys(b.purposeCounts).forEach(k => { t.purposeCounts[k] = (t.purposeCounts[k] || 0) + b.purposeCounts[k]; });
     t.newApplications += b.newApplications;
@@ -1114,7 +1119,7 @@ function bucketToMetrics(b) {
     'Total Visit': b.totalVisit,
     'Unique Visits': b.uniqueVisitDealers.size,
     'Average Visit': div(b.totalVisit, b.uniqueVisitDealers.size),
-    'Visits to Application': div(b.newApplications, b.totalVisit),
+    'Visits to Application': div(b.newApplications, b.appPitchVisits), // % = New Dealer Applications ÷ (Application + Product Pitch visits)
     'Visits to Onboard': div(b.onboardedDealers, b.newApplications),
     'New Dealer Applications': b.newApplications,
     'Dealer Application Completed': b.applicationsCompleted,
