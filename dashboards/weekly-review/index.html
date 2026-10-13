@@ -351,27 +351,31 @@ td.metric-label{color:var(--text);font-weight:500}
 .wr-bar select,.wr-bar input[type=search]{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--border2);border-radius:var(--rctrl);background:var(--surface-d);color:var(--text)}
 .wr-bar input[type=search]{width:220px}
 .wr-count{font-size:12px;color:var(--text3);margin-left:auto}
-.wr-wrap{overflow:auto;max-height:calc(100vh - 260px);border:1px solid var(--tbl-bdr2);border-radius:12px;background:var(--surface-a)}
-table.wr{border-collapse:separate;border-spacing:0;font-size:12.5px;width:max-content;min-width:100%}
-table.wr th,table.wr td{padding:6px 8px;border-bottom:1px solid var(--tbl-bdr);border-right:1px solid var(--tbl-bdr);white-space:nowrap;text-align:center;background:var(--wr-cell,#fff)}
-table.wr thead th{position:sticky;top:0;z-index:4;background:var(--wr-head,#eef0f6);color:var(--text);font-size:11.5px;font-weight:700;text-transform:none;letter-spacing:0}
-table.wr thead tr.sub th{top:var(--wr-h1,30px);z-index:4;font-weight:600;color:var(--text2)}
+.wr-wrap{overflow:auto;max-height:calc(100vh - 260px);border:1px solid var(--tbl-bdr2);border-radius:12px;background:var(--wr-cell,#fff);contain:layout paint;overscroll-behavior:contain}
+body{background-attachment:scroll}
+table.wr{border-collapse:separate;border-spacing:0;font-size:12.5px;table-layout:fixed}
+table.wr th,table.wr td{padding:0 8px;border-bottom:1px solid var(--tbl-bdr);border-right:1px solid var(--tbl-bdr);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;background:var(--wr-cell,#fff)}
+table.wr tbody tr.r td{height:38px}
+table.wr tbody tr.sp td{padding:0;border:0;background:transparent}
+table.wr thead th{position:sticky;top:0;z-index:4;height:30px;background:var(--wr-head,#eef0f6);color:var(--text);font-size:11.5px;font-weight:700;text-transform:none;letter-spacing:0;white-space:normal;line-height:1.15}
+table.wr thead tr.sub th{top:30px;z-index:4;font-weight:600;color:var(--text2)}
 table.wr thead th.wk{background:var(--wr-wk,#e3e8f7)}
 table.wr thead tr.sub th.wk{background:var(--wr-wk2,#edf0fa)}
 table.wr td.l,table.wr th.l{text-align:left}
 table.wr td.rr{text-align:right}
-table.wr .fz{position:sticky;left:0;z-index:3;box-shadow:1px 0 0 var(--tbl-bdr2);background:var(--wr-fz,#fbfbfd);font-weight:600;min-width:230px;max-width:230px;overflow:hidden;text-overflow:ellipsis}
+table.wr .fz{position:sticky;z-index:3;background:var(--wr-fz,#fbfbfd)}
+table.wr td.fz.name{font-weight:600}
+table.wr .c0{left:0}table.wr .c1{left:210px}table.wr .c2{left:360px}table.wr .c3{left:464px}table.wr .c4{left:568px}table.wr .c5{left:688px;box-shadow:2px 0 0 var(--tbl-bdr2)}
 table.wr thead th.fz{z-index:6;background:var(--wr-head,#eef0f6)}
 table.wr td.wkstart,table.wr th.wkstart{border-left:2px solid var(--tbl-bdr2)}
 table.wr td.act{font-weight:700}
 table.wr td.act.future{color:var(--text3);font-weight:400}
-table.wr td.in{padding:3px 4px;background:var(--wr-in,#fffdf5)}
-table.wr td.in input{font:inherit;font-size:12.5px;border:1px solid var(--border2);border-radius:5px;padding:3px 5px;background:var(--surface-hi);color:var(--text)}
-table.wr td.in input.num{width:58px;text-align:right}
-table.wr td.in input.rem{width:190px;text-align:left}
+table.wr td.in{padding:0 4px;background:var(--wr-in,#fffdf5)}
+table.wr td.in input{font:inherit;font-size:12.5px;width:100%;border:1px solid var(--border2);border-radius:5px;padding:3px 5px;background:var(--surface-hi);color:var(--text)}
+table.wr td.in input.num{text-align:right}
 table.wr td.in input.dirty{border-color:var(--primary);background:rgba(232,70,30,.10)}
 table.wr td.in input:focus{outline:2px solid var(--primary);outline-offset:0}
-table.wr tfoot td{position:sticky;bottom:0;z-index:3;font-weight:700;background:var(--wr-head,#eef0f6)}
+table.wr tfoot td{position:sticky;bottom:0;z-index:3;font-weight:700;height:34px;background:var(--wr-head,#eef0f6)}
 table.wr tfoot td.fz{z-index:5;background:var(--wr-head,#eef0f6)}
 .wr-savebar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:none;align-items:center;justify-content:center;gap:14px;padding:10px 16px;background:var(--surface-hi);border-top:1px solid var(--border2);box-shadow:0 -4px 16px rgba(0,0,0,.10);backdrop-filter:blur(8px);font-size:13px}
 .wr-savebar.show{display:flex}
@@ -590,16 +594,21 @@ async function loadData() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// WEEKS — calendar blocks: 1–7, 8–14, 15–21, 22–28, 29–end
+// WEEKS — calendar rows (Sunday–Saturday) that touch the selected month
 // ═══════════════════════════════════════════════════════════════════════════
 function buildWeeks(year, month) {
-  const last = new Date(year, month + 1, 0).getDate();
+  // Calendar rows, Sunday–Saturday: Week 1 is the row that contains the 1st of the month,
+  // so it can start in the previous month (e.g. Oct 2026 Week 1 = 27 Sep – 3 Oct) and the
+  // last week can run into the next month. A month has 4–6 such rows.
+  const first = new Date(year, month, 1), lastDay = new Date(year, month + 1, 0);
+  let from = new Date(year, month, 1 - first.getDay());
   const out = [];
-  [[1,7],[8,14],[15,21],[22,28],[29,last]].forEach((r, i) => {
-    if (r[0] > last) return;
-    const from = new Date(year, month, r[0]), to = new Date(year, month, Math.min(r[1], last));
-    out.push({ n: i + 1, from, to, label: 'Week ' + (i + 1), range: r[0] + '–' + Math.min(r[1], last) + ' ' + MONTH_ABBR[month] });
-  });
+  for (let n = 1; from <= lastDay; n++) {
+    const to = new Date(from.getFullYear(), from.getMonth(), from.getDate() + 6);
+    const f = d => d.getDate() + ' ' + MONTH_ABBR[d.getMonth()];
+    out.push({ n, from, to, label: 'Week ' + n, range: f(from) + ' – ' + f(to) });
+    from = new Date(from.getFullYear(), from.getMonth(), from.getDate() + 7);
+  }
   return out;
 }
 function actualCount(dealerId, wk) {
@@ -655,51 +664,110 @@ function cur(key) { return edits[key] || saved[key] || { fresh: '', redraw: '', 
 // ═══════════════════════════════════════════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════════════════════════════════════════
+// Table layout is fixed-width (fast) and rows are VIRTUALIZED: only the rows
+// near the visible area exist in the DOM, so scrolling stays smooth even with
+// hundreds of dealers x many input cells.
+const WR_ROW_H = 38, WR_BUF = 10;
+const WR_FROZEN = [ ['Dealer', 210, 'l name'], ['Assigned Officer', 150, 'l'], ['Onboarding Date', 104, ''], ['Last Txn', 104, ''], ['Total Available Credit Limit', 120, 'rr'], ['Credit Line Status', 84, ''] ];
+const WR_WK_W = [96, 96, 96, 210];
+let curList = [], curActs = {}, rsStart = -1, rsEnd = -1, wrTodayStart = null;
+
 function render() {
   weeks = buildWeeks(selectedMonth.y, selectedMonth.m);
-  const list = dealersInScope();
-  const today = todayStart();
-  const head = document.getElementById('wr-head');
-  let h1 = '<tr><th class="fz l" rowspan="2">Dealer</th><th rowspan="2">Dealer ID</th><th rowspan="2">Assigned Officer</th><th rowspan="2">Onboarding Date</th><th rowspan="2">First Txn</th><th rowspan="2">Last Txn</th><th rowspan="2">Total Available Credit Limit</th><th rowspan="2">Credit Line Status</th>';
+  curList = dealersInScope();
+  wrTodayStart = todayStart();
+  curActs = {};
+  curList.forEach(d => { curActs[d.dealerId] = weeks.map(w => w.from > wrTodayStart ? null : actualCount(d.dealerId, w)); });
+
+  const table = document.getElementById('wr-table');
+  const totalW = WR_FROZEN.reduce((a, c) => a + c[1], 0) + weeks.length * WR_WK_W.reduce((a, c) => a + c, 0);
+  table.style.width = totalW + 'px';
+  let cg = '<colgroup>' + WR_FROZEN.map(c => '<col style="width:' + c[1] + 'px">').join('');
+  weeks.forEach(() => { cg += WR_WK_W.map(w => '<col style="width:' + w + 'px">').join(''); });
+  cg += '</colgroup>';
+  let h1 = '<tr>' + WR_FROZEN.map((c, i) => '<th class="fz c' + i + (i === 0 ? ' l' : '') + '" rowspan="2">' + c[0] + '</th>').join('');
   let h2 = '<tr class="sub">';
   weeks.forEach(w => {
     h1 += '<th class="wk wkstart" colspan="4">' + w.label + ' <span style="font-weight:400;color:var(--text3)">(' + w.range + ')</span></th>';
     h2 += '<th class="wk wkstart">Actual Drawdowns</th><th class="wk">Planned Fresh Drawdown</th><th class="wk">Planned Re-Drawdown</th><th class="wk">Remarks</th>';
   });
-  head.innerHTML = h1 + '</tr>' + h2 + '</tr>';
+  document.getElementById('wr-head').innerHTML = h1 + '</tr>' + h2 + '</tr>';
+  // colgroup must sit directly under <table>, before thead
+  const old = table.querySelector('colgroup'); if (old) old.remove();
+  table.insertAdjacentHTML('afterbegin', cg);
 
-  const tot = weeks.map(() => ({ act: 0, fresh: 0, redraw: 0 }));
-  let html = '';
-  list.forEach(d => {
-    html += '<tr data-d="' + esc(d.dealerId) + '"><td class="fz l" title="' + esc(d.name) + '">' + esc(d.name) + '</td>' +
-      '<td>' + esc(d.dealerId) + '</td><td class="l">' + esc(d.so || '—') + '</td><td>' + fmtDate(d.onboardingDate) + '</td><td>' + fmtDate(d.first) + '</td><td>' + fmtDate(d.last) + '</td>' +
-      '<td class="rr">' + peso(d.availCredit) + '</td><td>' + esc(d.clStatus || '—') + '</td>';
-    weeks.forEach((w, wi) => {
-      const key = w.n + '|' + d.dealerId, v = cur(key);
-      const future = w.from > today;
-      const a = future ? null : actualCount(d.dealerId, w);
-      if (a) tot[wi].act += a;
-      const f = parseFloat(v.fresh), rd = parseFloat(v.redraw);
-      if (isFinite(f)) tot[wi].fresh += f; if (isFinite(rd)) tot[wi].redraw += rd;
-      const ed = edits[key], sv = saved[key] || {};
-      const dirty = (fld) => ed && String(ed[fld]) !== String(sv[fld] == null ? '' : sv[fld]) ? ' dirty' : '';
-      const who = sv.by ? 'Last saved by ' + sv.by + (sv.at ? ' · ' + sv.at : '') : '';
-      html += '<td class="act wkstart' + (future ? ' future' : '') + '">' + (future ? '–' : a) + '</td>' +
-        '<td class="in"><input class="num' + dirty('fresh') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="fresh" value="' + esc(v.fresh) + '" title="' + esc(who) + '"></td>' +
-        '<td class="in"><input class="num' + dirty('redraw') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="redraw" value="' + esc(v.redraw) + '" title="' + esc(who) + '"></td>' +
-        '<td class="in"><input class="rem' + dirty('remarks') + '" type="text" maxlength="2000" data-k="' + key + '" data-f="remarks" value="' + esc(v.remarks) + '" title="' + esc(who) + '"></td>';
-    });
-    html += '</tr>';
+  document.getElementById('wr-count').textContent = curList.length + ' dealers · ' + MONTH_ABBR[selectedMonth.m] + ' ' + selectedMonth.y;
+  rsStart = rsEnd = -1;
+  document.getElementById('wr-wrap').scrollTop = 0;
+  paintRows(true);
+  requestAnimationFrame(() => paintRows(false)); // viewport height is known after layout: top up the window
+  renderFoot();
+  updateSaveBar();
+}
+
+function rowHtml(d) {
+  const acts = curActs[d.dealerId];
+  let html = '<tr class="r" data-d="' + esc(d.dealerId) + '">' +
+    '<td class="fz c0 l name" title="' + esc(d.name) + ' · ' + esc(d.dealerId) + '">' + esc(d.name) + '</td>' +
+    '<td class="fz c1 l" title="' + esc(d.so) + '">' + esc(d.so || '—') + '</td>' +
+    '<td class="fz c2">' + fmtDate(d.onboardingDate) + '</td><td class="fz c3">' + fmtDate(d.last) + '</td>' +
+    '<td class="fz c4 rr">' + peso(d.availCredit) + '</td><td class="fz c5">' + esc(d.clStatus || '—') + '</td>';
+  weeks.forEach((w, wi) => {
+    const key = w.n + '|' + d.dealerId, v = cur(key);
+    const a = acts[wi], future = a === null;
+    const ed = edits[key], sv = saved[key] || {};
+    const dirty = (fld) => ed && String(ed[fld]) !== String(sv[fld] == null ? '' : sv[fld]) ? ' dirty' : '';
+    const who = sv.by ? 'Last saved by ' + sv.by + (sv.at ? ' · ' + sv.at : '') : '';
+    html += '<td class="act wkstart' + (future ? ' future' : '') + '">' + (future ? '–' : a) + '</td>' +
+      '<td class="in"><input class="num' + dirty('fresh') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="fresh" value="' + esc(v.fresh) + '" title="' + esc(who) + '"></td>' +
+      '<td class="in"><input class="num' + dirty('redraw') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="redraw" value="' + esc(v.redraw) + '" title="' + esc(who) + '"></td>' +
+      '<td class="in"><input class="rem' + dirty('remarks') + '" type="text" maxlength="2000" data-k="' + key + '" data-f="remarks" value="' + esc(v.remarks) + '" title="' + esc(who) + '"></td>';
   });
-  if (!list.length) html = '<tr><td class="l" colspan="' + (8 + weeks.length * 4) + '" style="padding:18px;text-align:center;color:var(--text3);font-style:italic">No onboarded dealers match the current filters.</td></tr>';
-  document.getElementById('wr-body').innerHTML = html;
+  return html + '</tr>';
+}
 
-  let foot = '<tr><td class="fz l">Total (' + list.length + ' dealers)</td><td colspan="7"></td>';
+// Paint only the rows around the viewport. force=true repaints even if the window is unchanged.
+function paintRows(force) {
+  const body = document.getElementById('wr-body'), wrap = document.getElementById('wr-wrap');
+  const n = curList.length, ncols = WR_FROZEN.length + weeks.length * 4;
+  if (!n) { body.innerHTML = '<tr><td colspan="' + ncols + '" style="padding:18px;text-align:center;color:var(--text3);font-style:italic">No onboarded dealers match the current filters.</td></tr>'; rsStart = rsEnd = -1; return; }
+  const headH = 60;
+  const first = Math.max(0, Math.floor((wrap.scrollTop - headH) / WR_ROW_H));
+  const vis = Math.ceil(wrap.clientHeight / WR_ROW_H) + 1;
+  // keep the existing window if the viewport is still comfortably inside it
+  if (!force && rsStart >= 0 && first >= rsStart + 2 && first + vis <= rsEnd - 2) return;
+  if (!force && rsStart === 0 && first + vis <= rsEnd - 2) return;
+  const start = Math.max(0, first - WR_BUF), end = Math.min(n, first + vis + WR_BUF);
+  if (!force && start === rsStart && end === rsEnd) return;
+  // remember focus so typing isn't interrupted by a repaint
+  const ae = document.activeElement; let keep = null;
+  if (ae && ae.dataset && ae.dataset.k && body.contains(ae)) keep = { k: ae.dataset.k, f: ae.dataset.f, s: ae.selectionStart, e: ae.selectionEnd };
+  let html = '<tr class="sp"><td colspan="' + ncols + '" style="height:' + (start * WR_ROW_H) + 'px"></td></tr>';
+  for (let i = start; i < end; i++) html += rowHtml(curList[i]);
+  html += '<tr class="sp"><td colspan="' + ncols + '" style="height:' + ((n - end) * WR_ROW_H) + 'px"></td></tr>';
+  body.innerHTML = html;
+  rsStart = start; rsEnd = end;
+  if (keep) {
+    const el = body.querySelector('input[data-k="' + keep.k + '"][data-f="' + keep.f + '"]');
+    if (el) { el.focus(); try { el.setSelectionRange(keep.s, keep.e); } catch (x) {} }
+  }
+}
+let _scrollRaf = 0;
+document.getElementById('wr-wrap').addEventListener('scroll', () => {
+  if (_scrollRaf) return;
+  _scrollRaf = requestAnimationFrame(() => { _scrollRaf = 0; paintRows(false); });
+}, { passive: true });
+
+function renderFoot() {
+  const tot = weeks.map(() => ({ act: 0, fresh: 0, redraw: 0 }));
+  curList.forEach(d => weeks.forEach((w, wi) => {
+    const a = curActs[d.dealerId][wi]; if (a) tot[wi].act += a;
+    const v = cur(w.n + '|' + d.dealerId), f = parseFloat(v.fresh), rd = parseFloat(v.redraw);
+    if (isFinite(f)) tot[wi].fresh += f; if (isFinite(rd)) tot[wi].redraw += rd;
+  }));
+  let foot = '<tr><td class="fz c0 l" colspan="6" style="box-shadow:2px 0 0 var(--tbl-bdr2)">Total (' + curList.length + ' dealers)</td>';
   weeks.forEach((w, wi) => { foot += '<td class="wkstart">' + tot[wi].act + '</td><td>' + tot[wi].fresh + '</td><td>' + tot[wi].redraw + '</td><td></td>'; });
   document.getElementById('wr-foot').innerHTML = foot + '</tr>';
-  document.getElementById('wr-count').textContent = list.length + ' dealers · ' + MONTH_ABBR[selectedMonth.m] + ' ' + selectedMonth.y;
-  const h = head.querySelector('tr').offsetHeight; document.getElementById('wr-table').style.setProperty('--wr-h1', h + 'px');
-  updateSaveBar();
 }
 
 function updateSaveBar() {
@@ -725,16 +793,7 @@ function onInput(e) {
   recomputeFootPlanned();
   updateSaveBar();
 }
-function recomputeFootPlanned() {
-  const list = dealersInScope();
-  const foot = document.getElementById('wr-foot').querySelector('tr'); if (!foot) return;
-  weeks.forEach((w, wi) => {
-    let f = 0, rd = 0;
-    list.forEach(d => { const v = cur(w.n + '|' + d.dealerId); const a = parseFloat(v.fresh), b = parseFloat(v.redraw); if (isFinite(a)) f += a; if (isFinite(b)) rd += b; });
-    const cells = foot.children; const base = 2 + wi * 4; // fz + colspan cell + (act,fresh,redraw,rem)*wi
-    cells[base + 1].textContent = f; cells[base + 2].textContent = rd;
-  });
-}
+function recomputeFootPlanned() { renderFoot(); }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SAVE
@@ -831,6 +890,7 @@ document.getElementById('wr-month').onchange = async function () {
 document.getElementById('wr-so').onchange = function () { selectedSO = this.value; render(); };
 let _sT = null;
 document.getElementById('wr-search').oninput = function () { searchQ = this.value; clearTimeout(_sT); _sT = setTimeout(render, 180); };
+window.addEventListener('resize', () => { if (curList.length) paintRows(false); });
 window.addEventListener('beforeunload', e => { if (dirtyCount()) { e.preventDefault(); e.returnValue = ''; } });
 
 async function init() {
