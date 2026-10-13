@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Weekly Review</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{
+  --primary:#E8461E;
+  --accent:#F97316;
+  --bg:#F0F4FD;
+  --surface:rgba(255,255,255,0.68);
+  --border:rgba(255,255,255,0.75);
+  --border2:rgba(0,0,0,0.08);
+  --text:#111827;
+  --text2:#4B5563;
+  --text3:#9CA3AF;
+  --tbl-hdr:rgba(255,255,255,0.50);
+  --tbl-bdr:rgba(0,0,0,0.05);
+  --tbl-bdr2:rgba(0,0,0,0.09);
+  --total-bg:rgba(232,70,30,0.07);
+  --warn-bg:rgba(245,158,11,0.12);
+  --warn-text:#92400E;
+  --pad:24px;
+  --gap:16px;
+  --rcard:16px;
+  --rctrl:8px;
+
+  --surface-a:rgba(255,255,255,0.72);
+  --surface-b:rgba(255,255,255,0.65);
+  --surface-c:rgba(255,255,255,0.55);
+  --surface-d:rgba(255,255,255,0.80);
+  --surface-hi:rgba(255,255,255,0.95);
+  --chip-hover:rgba(255,255,255,0.9);
+  --overlay-tint:rgba(240,244,253,0.82);
+  --lock-tint:rgba(220,230,255,0.60);
+  --lock-card-bg:rgba(255,255,255,0.82);
+  --spinner-track:rgba(0,0,0,0.08);
+  --grad-1:#FFE8D6;
+  --grad-2:#DDE8FF;
+  --grad-3:#F5F0FF;
+  --tr-hover:rgba(255,248,245,0.7);
+  --section-bg:rgba(232,70,30,0.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0B0F1A;
+  --surface:rgba(30,35,50,0.65);
+  --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.10);
+  --text:#E5E7EB;
+  --text2:#9CA3AF;
+  --text3:#6B7280;
+  --tbl-hdr:rgba(255,255,255,0.04);
+  --tbl-bdr:rgba(255,255,255,0.06);
+  --tbl-bdr2:rgba(255,255,255,0.10);
+  --total-bg:rgba(232,70,30,0.16);
+  --warn-bg:rgba(245,158,11,0.14);
+  --warn-text:#FBBF24;
+
+  --surface-a:rgba(24,28,40,0.78);
+  --surface-b:rgba(24,28,40,0.65);
+  --surface-c:rgba(24,28,40,0.55);
+  --surface-d:rgba(24,28,40,0.82);
+  --surface-hi:rgba(255,255,255,0.06);
+  --chip-hover:rgba(255,255,255,0.10);
+  --overlay-tint:rgba(11,15,26,0.88);
+  --lock-tint:rgba(11,15,26,0.78);
+  --lock-card-bg:rgba(24,28,40,0.88);
+  --spinner-track:rgba(255,255,255,0.10);
+  --grad-1:#3A2A1E;
+  --grad-2:#1B2438;
+  --grad-3:#241E33;
+  --tr-hover:rgba(255,255,255,0.05);
+  --section-bg:rgba(232,70,30,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:light dark}
+html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="light"]{color-scheme:light}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:
+    radial-gradient(ellipse at 15% 10%, var(--grad-1) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 90%, var(--grad-2) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, var(--grad-3) 0%, transparent 80%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--text);
+  font-size:13px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  transition:background-color 0.2s, color 0.2s;
+}
+a{color:inherit;text-decoration:none}
+
+.topbar{
+  background:var(--surface-a);
+  border-bottom:1px solid var(--border2);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 8px 32px rgba(99,102,241,0.08),0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
+  backdrop-filter:blur(28px) saturate(180%);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);
+  padding:14px var(--pad);
+  display:flex;flex-direction:column;gap:0;
+  position:sticky;top:0;z-index:300;
+}
+.report-title{font-size:20px;font-weight:600;color:var(--primary);letter-spacing:-0.3px}
+.report-subtitle{font-size:12px;color:var(--text3);margin-top:3px}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.topbar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
+.theme-toggle{
+  font-size:12px;padding:5px 10px;border-radius:var(--rctrl);
+  border:1px solid var(--border2);background:var(--surface-d);
+  color:var(--text2);cursor:pointer;transition:all 0.15s;
+}
+.theme-toggle:hover{background:var(--chip-hover)}
+
+.main{padding:20px var(--pad);max-width:1100px;margin:0 auto}
+.section-title{font-size:16px;font-weight:600;color:var(--primary);text-align:center;margin-bottom:4px}
+.section-sub{font-size:11px;color:var(--text3);text-align:center;margin-bottom:20px}
+
+.warn-banner{
+  max-width:1100px;margin:0 auto 14px;padding:8px 16px;border-radius:10px;
+  background:var(--warn-bg);color:var(--warn-text);font-size:11px;text-align:center;
+}
+.warn-banner.hidden{display:none}
+
+.card{
+  background:var(--surface-b);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 8px 32px rgba(99,102,241,0.08),0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
+  backdrop-filter:blur(16px) saturate(150%);
+  -webkit-backdrop-filter:blur(16px) saturate(150%);
+  border-radius:var(--rcard);padding:16px;overflow-x:auto;
+  margin-bottom:var(--gap);
+}
+.card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px}
+.card-unit{font-size:10px;color:var(--text3);font-weight:400;margin-left:4px}
+
+.charts-section{display:grid;grid-template-columns:1fr;gap:var(--gap)}
+.charts-section.hidden{display:none}
+@media (min-width:820px){ .charts-section{grid-template-columns:1fr 1fr} }
+.chart-svg{width:100%;height:220px;display:block;overflow:visible}
+.chart-bar,.chart-dot{cursor:pointer;transition:opacity 0.12s}
+.chart-bar:hover,.chart-dot:hover{opacity:0.72}
+.chart-tooltip{
+  position:fixed;pointer-events:none;z-index:1000;
+  background:var(--surface-d);border:1px solid var(--border2);
+  padding:4px 9px;border-radius:6px;font-size:11px;color:var(--text);
+  box-shadow:0 4px 12px rgba(0,0,0,0.14);white-space:nowrap;
+}
+.chart-tooltip.hidden{display:none}
+
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+  text-align:left;padding:6px 10px;
+  color:var(--text3);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;
+  background:var(--tbl-hdr);
+  border-bottom:1px solid var(--tbl-bdr2);
+  white-space:nowrap;
+}
+th.r,td.r{text-align:right}
+td{padding:6px 10px;color:var(--text2);border-bottom:1px solid var(--tbl-bdr);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--tr-hover)}
+tr.section-row td{font-weight:700;color:var(--primary);background:var(--section-bg);font-size:10px;text-transform:uppercase;letter-spacing:0.05em}
+td.metric-label{color:var(--text);font-weight:500}
+
+/* Locks the month header row in place while scrolling down through the
+   metrics table — stays visible below the sticky topbar + filter bar.
+   --sticky-offset is computed in JS (updateStickyOffset()) from those two
+   elements' actual rendered height, so it stays correct if their content
+   ever wraps to more lines (e.g. many team chips on a narrow screen).
+   IMPORTANT: position:sticky only tracks the page scroll if nothing between
+   the <th> and the page sets a non-"visible" overflow — .card's own
+   overflow-x:auto silently forces overflow-y to "auto" too (a CSS spec
+   quirk: an axis left as "visible" gets converted to "auto" the moment the
+   other axis isn't "visible"), which turns .card itself into the sticky
+   element's reference frame instead of the page — and since .card never
+   actually scrolls internally, the header just never appears to stick.
+   .metrics-card below overrides that back to overflow-x:visible so the
+   page is what the header sticks against; the trade-off is this table no
+   longer gets its own horizontal scrollbar on very narrow screens (it'll
+   scroll the whole page horizontally instead if it doesn't fit). */
+.metrics-card{ overflow-x:visible; }
+#metrics-head th{
+  position:sticky;top:var(--sticky-offset, 96px);z-index:200;
+  /* Two background layers: a light brand-tinted wash (--section-bg, already
+     used elsewhere for the same tint) painted over the opaque --surface-d,
+     so the frozen month labels read as a clearly distinct band rather than
+     blending into whatever data row is currently scrolled underneath. */
+  background:linear-gradient(var(--section-bg), var(--section-bg)), var(--surface-d);
+  color:var(--text);font-weight:700;
+  backdrop-filter:blur(12px) saturate(150%);
+  -webkit-backdrop-filter:blur(12px) saturate(150%);
+  box-shadow:0 2px 0 var(--primary);
+}
+
+.filter-bar{
+  background:var(--surface-c);
+  border:1px solid var(--border2);
+  border-radius:var(--rcard);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  padding:10px 16px;
+  display:flex;flex-wrap:wrap;align-items:center;gap:14px;
+  position:sticky;top:54px;z-index:250;
+  margin-bottom:var(--gap);
+}
+.filter-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.filter-group-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;margin-right:2px}
+.filter-chip{
+  font-size:11px;padding:4px 10px;border-radius:9999px;
+  border:1px solid var(--border2);background:var(--surface-b);
+  color:var(--text2);cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.filter-chip:hover{background:var(--chip-hover)}
+.filter-chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+.loading-overlay{
+  position:fixed;inset:0;
+  background:var(--overlay-tint);
+  backdrop-filter:blur(32px) saturate(180%);
+  -webkit-backdrop-filter:blur(32px) saturate(180%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:999;gap:14px;
+}
+.loading-overlay.hidden{display:none}
+.spinner{width:36px;height:36px;border:3px solid var(--spinner-track);border-top-color:var(--primary);border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--text2)}
+.error-box{
+  background:var(--surface-d);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 8px 32px rgba(99,102,241,0.10),0 2px 8px rgba(0,0,0,0.06);
+  backdrop-filter:blur(32px);
+  border-radius:var(--rcard);padding:20px 28px;text-align:center;max-width:380px;
+}
+.error-box h3{color:#A32D2D;margin-bottom:8px;font-size:14px}
+.error-box p{color:var(--text2);font-size:12px;line-height:1.6}
+.error-box button{margin-top:12px;padding:8px 18px;background:var(--primary);color:#fff;border:none;border-radius:var(--rctrl);cursor:pointer;font-size:13px}
+
+.data-status{font-size:11px;color:var(--text3);text-align:right;margin-top:4px}
+
+/* ── Dealer Status card (top of page) — styled after the Dealer Status
+   sheet: black title bands, serif type, label/value grid. ── */
+.dealer-card{padding:0;overflow:hidden;font-family:'Times New Roman',Times,serif;color:var(--text);
+  /* wider than the 1100px content column so the accounts table needs far less side-scrolling */
+  width:min(1680px,calc(100vw - 40px));position:relative;left:50%;transform:translateX(-50%);font-size:14px}
+@media(max-width:1180px){.dealer-card{width:100%;left:0;transform:none}}
+.dc-band{background:#000;color:#fff;text-align:center;font-size:19px;letter-spacing:.04em;padding:10px 12px;text-transform:uppercase}
+.dc-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 22px;padding:12px 16px 6px}
+.dc-controls label{font-weight:700;font-size:14px}
+.dc-controls select,.dc-controls input{font:inherit;font-size:14px;padding:4px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface-d);color:var(--text)}
+.dc-controls select#dc-dealer{width:380px;max-width:100%;font-weight:700;text-overflow:ellipsis}
+.dc-controls input{width:180px}
+.dc-controls select#dc-hist{width:130px}
+.dc-controls select#dc-group{width:200px}
+.dc-scope{font-size:12px;font-style:italic;color:var(--text3);text-align:center;padding:0 16px 6px}
+.dc-grid{display:grid;grid-template-columns:1fr;gap:0 64px;padding:6px 56px 14px}
+@media(min-width:760px){.dc-grid{grid-template-columns:1fr 1fr}}
+.dc-kv{display:grid;grid-template-columns:250px 1fr;gap:4px 16px;font-size:14px;align-content:start;margin-top:8px}
+.dc-kv .k{font-weight:700}
+.dc-kv .k.sub{font-style:italic;font-weight:400;color:var(--text3);text-align:right}
+.dc-kv .v{color:var(--text2)}
+.dc-empty{padding:18px;text-align:center;font-size:12px;color:var(--text3);font-style:italic}
+.dc-table-wrap{overflow:auto;max-height:520px;padding:0 0 10px}
+.dc-table-wrap table{font-size:13px;min-width:0;width:100%}
+.dc-table-wrap th{white-space:normal;line-height:1.2;padding:6px 6px}
+.dc-table-wrap td{white-space:normal;padding:5px 6px}
+.dc-table-wrap td.l,.dc-table-wrap td.fz{white-space:nowrap}
+.dc-table-wrap th{background:#eef0f6;color:var(--text);text-transform:none;letter-spacing:0;font-size:12px;text-align:center;border:1px solid var(--tbl-bdr2);position:sticky;top:0;z-index:2}
+.dc-table-wrap td{border:1px solid var(--tbl-bdr);text-align:center}
+.dc-table-wrap td.l{text-align:left}.dc-table-wrap td.rr{text-align:right}
+.dc-table-wrap tr.hist td{color:var(--text3);font-style:italic}
+.dc-tbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:8px 14px;font-size:12px;color:var(--text2)}
+.dc-tbar button{font:inherit;font-size:12px;padding:3px 10px;border-radius:6px;border:1px solid var(--border2);background:var(--surface-d);color:var(--text2);cursor:pointer}
+.dc-tbar button:hover{background:var(--chip-hover)}
+.dc-tbar .dc-hint{color:var(--text3);font-style:italic;margin-left:auto}
+.dc-table-wrap th.srt{cursor:pointer;user-select:none}
+.dc-table-wrap th.srt:hover{filter:brightness(.96)}
+.dc-table-wrap th.flt{padding:3px 4px;z-index:2}
+.dc-table-wrap th.flt input{width:100%;min-width:52px;font:inherit;font-size:12px;font-weight:400;padding:2px 5px;border:1px solid var(--border2);border-radius:4px;background:var(--surface-hi);color:var(--text)}
+.dc-table-wrap th.flt.fz{z-index:3}
+/* Frozen Drawdown ID column — opaque so scrolled cells never show through. */
+.dc-table-wrap th.fz,.dc-table-wrap td.fz{position:sticky;left:0;box-shadow:1px 0 0 var(--tbl-bdr2)}
+.dc-table-wrap td.fz{z-index:1;background:#fbfbfd;font-weight:600}
+.dc-table-wrap th.fz{z-index:3;background:#eef0f6}
+:root[data-theme="dark"] .dc-table-wrap th{background:#232838}
+:root[data-theme="dark"] .dc-table-wrap td.fz{background:#161a26}
+:root[data-theme="dark"] .dc-table-wrap th.fz{background:#232838}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dc-table-wrap td.fz{background:#161a26}:root:not([data-theme="light"]) .dc-table-wrap th.fz{background:#232838}}
+
+.lock-overlay{
+  position:fixed;inset:0;
+  background:var(--lock-tint);
+  backdrop-filter:blur(48px) saturate(200%);
+  -webkit-backdrop-filter:blur(48px) saturate(200%);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;
+  transition:opacity 0.35s ease;
+}
+.lock-overlay.unlocking{opacity:0;pointer-events:none}
+.lock-overlay.hidden{display:none}
+.lock-card{
+  background:var(--lock-card-bg);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 80px 120px rgba(99,102,241,0.18),0 8px 32px rgba(0,0,0,0.08),inset 0 1px 0 var(--surface-hi);
+  backdrop-filter:blur(32px) saturate(200%);
+  -webkit-backdrop-filter:blur(32px) saturate(200%);
+  border-radius:28px;
+  padding:36px 32px 28px;
+  width:360px;max-width:90vw;
+  display:flex;flex-direction:column;align-items:center;
+}
+.lock-icon-box{
+  width:62px;height:62px;border-radius:18px;
+  background:linear-gradient(135deg,var(--accent),var(--primary));
+  border:1px solid rgba(232,70,30,0.35);
+  box-shadow:0 4px 16px rgba(232,70,30,0.30);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;
+}
+.lock-icon-box svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lock-title{font-size:17px;font-weight:600;color:var(--text);letter-spacing:-0.3px;margin-bottom:6px;text-align:center}
+.lock-sub{font-size:12px;color:var(--text3);margin-bottom:22px;text-align:center;line-height:1.6}
+.lock-signin{min-height:44px;display:flex;justify-content:center}
+.lock-error-msg{font-size:11px;color:#DC2626;margin-top:10px;min-height:16px;text-align:center}
+.lock-footer{font-size:10px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.06em;text-align:center;margin-top:20px}
+.lock-contact{font-size:11px;color:var(--text3);text-align:center;margin-top:6px}
+.lock-contact a{color:var(--primary);text-decoration:underline}
+
+@media(max-width:600px){
+  body{font-size:12px}
+  .topbar{padding:10px 14px}
+  .main{padding:12px 14px}
+  .report-title{font-size:15px}
+  .filter-bar{top:89px;padding:8px 14px;gap:10px}
+  .card{padding:12px}
+  table{font-size:9px}
+  th{padding:4px 6px;font-size:8px}
+  td{padding:4px 6px;font-size:9px}
+}
+</style>
+<style>
+.main{max-width:none}
+.wr-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:12px}
+.wr-bar label{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.wr-bar select,.wr-bar input[type=search]{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--border2);border-radius:var(--rctrl);background:var(--surface-d);color:var(--text)}
+.wr-bar input[type=search]{width:220px}
+.wr-count{font-size:12px;color:var(--text3);margin-left:auto}
+.wr-wrap{overflow:auto;max-height:calc(100vh - 260px);border:1px solid var(--tbl-bdr2);border-radius:12px;background:var(--surface-a)}
+table.wr{border-collapse:separate;border-spacing:0;font-size:12.5px;width:max-content;min-width:100%}
+table.wr th,table.wr td{padding:6px 8px;border-bottom:1px solid var(--tbl-bdr);border-right:1px solid var(--tbl-bdr);white-space:nowrap;text-align:center;background:var(--wr-cell,#fff)}
+table.wr thead th{position:sticky;top:0;z-index:4;background:var(--wr-head,#eef0f6);color:var(--text);font-size:11.5px;font-weight:700;text-transform:none;letter-spacing:0}
+table.wr thead tr.sub th{top:var(--wr-h1,30px);z-index:4;font-weight:600;color:var(--text2)}
+table.wr thead th.wk{background:var(--wr-wk,#e3e8f7)}
+table.wr thead tr.sub th.wk{background:var(--wr-wk2,#edf0fa)}
+table.wr td.l,table.wr th.l{text-align:left}
+table.wr td.rr{text-align:right}
+table.wr .fz{position:sticky;left:0;z-index:3;box-shadow:1px 0 0 var(--tbl-bdr2);background:var(--wr-fz,#fbfbfd);font-weight:600;min-width:230px;max-width:230px;overflow:hidden;text-overflow:ellipsis}
+table.wr thead th.fz{z-index:6;background:var(--wr-head,#eef0f6)}
+table.wr td.wkstart,table.wr th.wkstart{border-left:2px solid var(--tbl-bdr2)}
+table.wr td.act{font-weight:700}
+table.wr td.act.future{color:var(--text3);font-weight:400}
+table.wr td.in{padding:3px 4px;background:var(--wr-in,#fffdf5)}
+table.wr td.in input{font:inherit;font-size:12.5px;border:1px solid var(--border2);border-radius:5px;padding:3px 5px;background:var(--surface-hi);color:var(--text)}
+table.wr td.in input.num{width:58px;text-align:right}
+table.wr td.in input.rem{width:190px;text-align:left}
+table.wr td.in input.dirty{border-color:var(--primary);background:rgba(232,70,30,.10)}
+table.wr td.in input:focus{outline:2px solid var(--primary);outline-offset:0}
+table.wr tfoot td{position:sticky;bottom:0;z-index:3;font-weight:700;background:var(--wr-head,#eef0f6)}
+table.wr tfoot td.fz{z-index:5;background:var(--wr-head,#eef0f6)}
+.wr-savebar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:none;align-items:center;justify-content:center;gap:14px;padding:10px 16px;background:var(--surface-hi);border-top:1px solid var(--border2);box-shadow:0 -4px 16px rgba(0,0,0,.10);backdrop-filter:blur(8px);font-size:13px}
+.wr-savebar.show{display:flex}
+.wr-savebar button{font:inherit;font-size:13px;font-weight:600;padding:7px 16px;border-radius:8px;border:1px solid var(--border2);cursor:pointer;background:var(--surface-d);color:var(--text)}
+.wr-savebar button.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.wr-savebar button:disabled{opacity:.5;cursor:default}
+.wr-msg{font-size:12px;color:var(--text2)}
+.wr-msg.err{color:#B91C1C;font-weight:600}
+.wr-msg.ok{color:#047857;font-weight:600}
+.wr-tabs{display:flex;gap:6px;margin-bottom:12px}
+.wr-tab{padding:7px 16px;border-radius:999px;border:1px solid var(--border2);background:var(--surface-d);font-size:13px;font-weight:600;color:var(--text2);cursor:default}
+.wr-tab.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.wr-tab.soon{opacity:.45}
+:root{--wr-cell:#fff;--wr-fz:#fbfbfd;--wr-head:#eef0f6;--wr-wk:#e3e8f7;--wr-wk2:#edf0fa;--wr-in:#fffdf5}
+:root[data-theme="dark"]{--wr-cell:#12151f;--wr-fz:#161a26;--wr-head:#232838;--wr-wk:#2a3350;--wr-wk2:#242b42;--wr-in:#1a1d2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--wr-cell:#12151f;--wr-fz:#161a26;--wr-head:#232838;--wr-wk:#2a3350;--wr-wk2:#242b42;--wr-in:#1a1d2a}}
+</style>
+</head>
+<body>
+
+<div class="lock-overlay" id="lock-overlay">
+  <div class="lock-card">
+    <div class="lock-icon-box">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    </div>
+    <div class="lock-title">Sales Weekly Review</div>
+    <div class="lock-sub">Sign in with your Finsso account<br>to access this dashboard</div>
+    <div id="g-signin" class="lock-signin"></div>
+    <div class="lock-error-msg" id="lock-err"></div>
+    <div class="lock-footer">Restricted access</div>
+    <div class="lock-contact">Need access? Contact <a href="mailto:miguel.cordero@finsso.com">miguel.cordero@finsso.com</a></div>
+  </div>
+</div>
+
+<div class="loading-overlay hidden" id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text">Loading data…</div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-top">
+    <div style="flex:1">
+      <div class="report-title">Sales Weekly Review</div>
+      <div class="report-subtitle">onboarded dealers · actual drawdowns per week · planned drawdowns &amp; remarks</div>
+      <div class="data-status" id="data-status-global" style="text-align:left">Loading…</div>
+    </div>
+    <div class="header-right">
+      <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="wr-tabs">
+    <span class="wr-tab active">Dealer Weekly Plan</span>
+    <span class="wr-tab soon" title="Coming next">Tab 2</span>
+    <span class="wr-tab soon" title="Coming next">Tab 3</span>
+  </div>
+
+  <div class="filter-bar" id="filter-bar" style="position:static">
+    <div class="filter-group" id="filter-team"><span class="filter-group-label">Team</span></div>
+  </div>
+
+  <div class="wr-bar">
+    <label for="wr-month">Month</label><select id="wr-month"></select>
+    <label for="wr-so">Officer</label><select id="wr-so"></select>
+    <input id="wr-search" type="search" placeholder="Search dealer name or ID…" autocomplete="off">
+    <span class="wr-count" id="wr-count"></span>
+  </div>
+  <div class="wr-msg" id="wr-banner" style="margin-bottom:8px"></div>
+
+  <div class="wr-wrap" id="wr-wrap">
+    <table class="wr" id="wr-table"><thead id="wr-head"></thead><tbody id="wr-body"></tbody><tfoot id="wr-foot"></tfoot></table>
+  </div>
+  <div style="height:70px"></div>
+</div>
+
+<div class="wr-savebar" id="wr-savebar">
+  <span id="wr-dirty">0 unsaved changes</span>
+  <button type="button" class="primary" id="wr-save">Save changes</button>
+  <button type="button" id="wr-discard">Discard</button>
+  <span class="wr-msg" id="wr-savemsg"></span>
+</div>
+
+<div class="error-box" id="error-box" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9998">
+  <h3>Couldn't load data</h3>
+  <p id="error-msg">Something went wrong fetching the dashboard data.</p>
+  <button onclick="location.reload()">Retry</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════════════════
+const DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-repository/main/data/';
+const DAY_MS = 86400000;
+const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const ALL_TEAMS = '__ALL__';
+// Save/load endpoint = the WeeklyReview Apps Script web app (/exec URL).
+// Paste it here after deploying WeeklyReview-AppsScript.gs. Until then the
+// page works read-only (inputs can be typed but Save stays disabled).
+var WR_API = 'https://script.google.com/macros/s/AKfycbyHOc63Zt2hUFaGfiKPPX3vIm_9hUGlIvzRndgUZXqCG_C7rX1MqiQBdCxOFUIPNF5C/exec';
+function wrConfigured() { return /^https:\/\/script\.google\.com\/.+\/exec/.test(WR_API); }
+
+let SO_TEAM_MAP = {}, TEAMS = [];
+let dealerRows = [], loansByDealer = {};
+let dataLoadedAt = null;
+let ACCESS = null, ID_TOKEN = '', USER_EMAIL = '', _dataReady = false, _rendered = false;
+let selectedTeam = ALL_TEAMS, selectedSO = '', selectedMonth = null, searchQ = '';
+let saved = {};   // key "week|dealerId" -> {fresh, redraw, remarks, by, at}   (as last loaded from server)
+let edits = {};   // key -> {fresh, redraw, remarks}  (unsaved, full triple for that row)
+let weeks = [];
+
+function teamOf(so) { return SO_TEAM_MAP[so] || null; }
+function esc(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmtDate(d) { return d ? String(d.getDate()).padStart(2, '0') + '-' + MONTH_ABBR[d.getMonth()] + '-' + d.getFullYear() : '—'; }
+function peso(n) { return '₱' + Math.round(n || 0).toLocaleString('en-US'); }
+function monthKey(y, m) { return y + '-' + String(m + 1).padStart(2, '0'); }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LOAD DATA (drawdown v2 + v3 180-day, dealer checker, mapping — by header name)
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadData() {
+  const loadingEl = document.getElementById('loading-overlay');
+  const errEl = document.getElementById('error-box');
+  loadingEl.classList.remove('hidden');
+  try {
+    const [ddGrid, dd3Grid, dcGrid, obGrid, mapGrid] = await Promise.all([
+      fetchCSV('drawdown.csv'),
+      fetchCSV('drawdownv3.csv', true),
+      fetchCSV('dealer-checker.csv'),
+      fetchCSV('ob-masterlist.csv', true),
+      fetchCSV('mapping.csv', true),
+    ]);
+
+    if (mapGrid) {
+      const mCol = buildColumnMap(mapGrid[0]);
+      const loaded = {}, teamsFound = [];
+      for (let i = 1; i < mapGrid.length; i++) {
+        const r = mapGrid[i];
+        const so = normName(get(r, mCol('L2 - Sales Officer')));
+        const manager = normName(get(r, mCol('L1 - Sales Manager')));
+        if (!so || !manager) continue;
+        const team = manager.split(/\s+/)[0];
+        if (teamsFound.indexOf(team) < 0) teamsFound.push(team);
+        loaded[so] = team;
+      }
+      SO_TEAM_MAP = loaded; TEAMS = teamsFound;
+    }
+
+    // Loans (credited drawdowns) per dealer: v2 + v3 (180-day), header-name lookups.
+    loansByDealer = {};
+    const names = {};
+    function addLoans(grid) {
+      if (!grid || grid.length < 2) return;
+      const c = buildColumnMap(grid[0]);
+      for (let i = 1; i < grid.length; i++) {
+        const r = grid[i];
+        const id = get(r, c('Drawdown ID')).trim();
+        const dealerId = get(r, c('Dealer ID')).trim();
+        if (!id || !dealerId) continue;
+        const nm = get(r, c('Dealership Name')).trim();
+        if (nm && !names[dealerId]) names[dealerId] = nm;
+        const creditDate = parseSheetDate(get(r, c('Credit Date to Dealer Bank Account')));
+        if (!creditDate) continue; // not credited -> not a drawdown made
+        (loansByDealer[dealerId] = loansByDealer[dealerId] || []).push({ id, creditDate });
+      }
+    }
+    addLoans(ddGrid); addLoans(dd3Grid);
+
+    const obNames = {};
+    if (obGrid) {
+      const oc = buildColumnMap(obGrid[0]);
+      for (let i = 1; i < obGrid.length; i++) {
+        const id = get(obGrid[i], oc('Dealer ID')).trim(), nm = get(obGrid[i], oc('Dealership Name')).trim();
+        if (id && nm && !obNames[id]) obNames[id] = nm;
+      }
+    }
+
+    // Dealer master: only dealers WITH an Original Onboarding Date are "onboarded".
+    dealerRows = [];
+    const dc = buildColumnMap(dcGrid[0]);
+    const g = (r, n) => get(r, dc(n)).trim();
+    for (let i = 1; i < dcGrid.length; i++) {
+      const r = dcGrid[i];
+      const dealerId = g(r, 'Dealer ID');
+      if (!dealerId) continue;
+      const onboardingDate = parseSheetDate(g(r, 'Original Onboarding Date'));
+      if (!onboardingDate) continue;
+      const loans = loansByDealer[dealerId] || [];
+      let first = parseSheetDate(g(r, 'First TXN')), last = parseSheetDate(g(r, 'Last TXN'));
+      loans.forEach(l => { // widen with v2+v3 loan dates (Dealer Checker excludes 180-day loans)
+        if (!first || l.creditDate < first) first = l.creditDate;
+        if (!last || l.creditDate > last) last = l.creditDate;
+      });
+      dealerRows.push({
+        dealerId,
+        name: g(r, 'Dealership Name') || names[dealerId] || obNames[dealerId] || '(unnamed)',
+        so: normName(g(r, 'Assigned Sales Officer')),
+        onboardingDate, first, last,
+        availCredit: parseNum(g(r, 'Total Available Credit Limit')),
+        clStatus: g(r, 'Credit Line Status'),
+      });
+    }
+    dealerRows.sort((a, b) => a.name.localeCompare(b.name));
+    dataLoadedAt = new Date();
+    document.getElementById('data-status-global').textContent = 'Data loaded ' + dataLoadedAt.toLocaleTimeString() + ' · ' + dealerRows.length + ' onboarded dealers';
+    loadingEl.classList.add('hidden');
+    return true;
+  } catch (e) {
+    loadingEl.classList.add('hidden');
+    document.getElementById('error-msg').textContent = e.message || String(e);
+    errEl.style.display = 'block';
+    return false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// WEEKS — calendar blocks: 1–7, 8–14, 15–21, 22–28, 29–end
+// ═══════════════════════════════════════════════════════════════════════════
+function buildWeeks(year, month) {
+  const last = new Date(year, month + 1, 0).getDate();
+  const out = [];
+  [[1,7],[8,14],[15,21],[22,28],[29,last]].forEach((r, i) => {
+    if (r[0] > last) return;
+    const from = new Date(year, month, r[0]), to = new Date(year, month, Math.min(r[1], last));
+    out.push({ n: i + 1, from, to, label: 'Week ' + (i + 1), range: r[0] + '–' + Math.min(r[1], last) + ' ' + MONTH_ABBR[month] });
+  });
+  return out;
+}
+function actualCount(dealerId, wk) {
+  const loans = loansByDealer[dealerId] || [];
+  let n = 0;
+  loans.forEach(l => { if (l.creditDate >= wk.from && l.creditDate <= wk.to) n++; });
+  return n;
+}
+function todayStart() { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SCOPE (same Allowlist "Team <SM first name>" tags as Sales Team Performance)
+// ═══════════════════════════════════════════════════════════════════════════
+function allowedTeamOptions() {
+  if (!ACCESS || ACCESS.unrestricted) return [ALL_TEAMS].concat(TEAMS);
+  const lowers = ACCESS.teams.map(t => t.toLowerCase());
+  return TEAMS.filter(t => lowers.indexOf(t.toLowerCase()) >= 0);
+}
+function dealersInScope() {
+  const lowers = (!ACCESS || ACCESS.unrestricted) ? null : ACCESS.teams.map(t => t.toLowerCase());
+  const q = searchQ.trim().toLowerCase();
+  const mEnd = new Date(selectedMonth.y, selectedMonth.m + 1, 0);
+  return dealerRows.filter(d => {
+    if (d.onboardingDate > mEnd) return false; // not yet onboarded by the end of the selected month
+    const team = teamOf(d.so);
+    if (lowers && (!team || lowers.indexOf(team.toLowerCase()) < 0)) return false; // hard guard for team-tagged users
+    if (selectedTeam !== ALL_TEAMS && team !== selectedTeam) return false;
+    if (selectedSO && d.so !== selectedSO) return false;
+    if (q && d.name.toLowerCase().indexOf(q) < 0 && d.dealerId.toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SAVED INPUTS (live from the Apps Script, so everyone sees the latest)
+// ═══════════════════════════════════════════════════════════════════════════
+function dirtyCount() { return Object.keys(edits).length; }
+async function loadSaved() {
+  saved = {};
+  if (!wrConfigured() || !ID_TOKEN) { setBanner(wrConfigured() ? '' : 'Save endpoint not configured yet — inputs can be typed but not saved. (Set WR_API after deploying the Apps Script.)', wrConfigured() ? '' : 'err'); return; }
+  try {
+    const url = WR_API + '?action=load&month=' + encodeURIComponent(monthKey(selectedMonth.y, selectedMonth.m)) + '&token=' + encodeURIComponent(ID_TOKEN) + '&_=' + Date.now();
+    const r = await fetch(url);
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'load failed');
+    (j.rows || []).forEach(x => { saved[x.week + '|' + x.dealerId] = x; });
+    setBanner('');
+  } catch (e) { setBanner('Couldn\'t load saved inputs: ' + (e.message || e), 'err'); }
+}
+function setBanner(t, cls) { const b = document.getElementById('wr-banner'); b.textContent = t || ''; b.className = 'wr-msg' + (cls ? ' ' + cls : ''); }
+function cur(key) { return edits[key] || saved[key] || { fresh: '', redraw: '', remarks: '' }; }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════════════
+function render() {
+  weeks = buildWeeks(selectedMonth.y, selectedMonth.m);
+  const list = dealersInScope();
+  const today = todayStart();
+  const head = document.getElementById('wr-head');
+  let h1 = '<tr><th class="fz l" rowspan="2">Dealer</th><th rowspan="2">Dealer ID</th><th rowspan="2">Assigned Officer</th><th rowspan="2">Onboarding Date</th><th rowspan="2">First Txn</th><th rowspan="2">Last Txn</th><th rowspan="2">Total Available Credit Limit</th><th rowspan="2">Credit Line Status</th>';
+  let h2 = '<tr class="sub">';
+  weeks.forEach(w => {
+    h1 += '<th class="wk wkstart" colspan="4">' + w.label + ' <span style="font-weight:400;color:var(--text3)">(' + w.range + ')</span></th>';
+    h2 += '<th class="wk wkstart">Actual Drawdowns</th><th class="wk">Planned Fresh Drawdown</th><th class="wk">Planned Re-Drawdown</th><th class="wk">Remarks</th>';
+  });
+  head.innerHTML = h1 + '</tr>' + h2 + '</tr>';
+
+  const tot = weeks.map(() => ({ act: 0, fresh: 0, redraw: 0 }));
+  let html = '';
+  list.forEach(d => {
+    html += '<tr data-d="' + esc(d.dealerId) + '"><td class="fz l" title="' + esc(d.name) + '">' + esc(d.name) + '</td>' +
+      '<td>' + esc(d.dealerId) + '</td><td class="l">' + esc(d.so || '—') + '</td><td>' + fmtDate(d.onboardingDate) + '</td><td>' + fmtDate(d.first) + '</td><td>' + fmtDate(d.last) + '</td>' +
+      '<td class="rr">' + peso(d.availCredit) + '</td><td>' + esc(d.clStatus || '—') + '</td>';
+    weeks.forEach((w, wi) => {
+      const key = w.n + '|' + d.dealerId, v = cur(key);
+      const future = w.from > today;
+      const a = future ? null : actualCount(d.dealerId, w);
+      if (a) tot[wi].act += a;
+      const f = parseFloat(v.fresh), rd = parseFloat(v.redraw);
+      if (isFinite(f)) tot[wi].fresh += f; if (isFinite(rd)) tot[wi].redraw += rd;
+      const ed = edits[key], sv = saved[key] || {};
+      const dirty = (fld) => ed && String(ed[fld]) !== String(sv[fld] == null ? '' : sv[fld]) ? ' dirty' : '';
+      const who = sv.by ? 'Last saved by ' + sv.by + (sv.at ? ' · ' + sv.at : '') : '';
+      html += '<td class="act wkstart' + (future ? ' future' : '') + '">' + (future ? '–' : a) + '</td>' +
+        '<td class="in"><input class="num' + dirty('fresh') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="fresh" value="' + esc(v.fresh) + '" title="' + esc(who) + '"></td>' +
+        '<td class="in"><input class="num' + dirty('redraw') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="redraw" value="' + esc(v.redraw) + '" title="' + esc(who) + '"></td>' +
+        '<td class="in"><input class="rem' + dirty('remarks') + '" type="text" maxlength="2000" data-k="' + key + '" data-f="remarks" value="' + esc(v.remarks) + '" title="' + esc(who) + '"></td>';
+    });
+    html += '</tr>';
+  });
+  if (!list.length) html = '<tr><td class="l" colspan="' + (8 + weeks.length * 4) + '" style="padding:18px;text-align:center;color:var(--text3);font-style:italic">No onboarded dealers match the current filters.</td></tr>';
+  document.getElementById('wr-body').innerHTML = html;
+
+  let foot = '<tr><td class="fz l">Total (' + list.length + ' dealers)</td><td colspan="7"></td>';
+  weeks.forEach((w, wi) => { foot += '<td class="wkstart">' + tot[wi].act + '</td><td>' + tot[wi].fresh + '</td><td>' + tot[wi].redraw + '</td><td></td>'; });
+  document.getElementById('wr-foot').innerHTML = foot + '</tr>';
+  document.getElementById('wr-count').textContent = list.length + ' dealers · ' + MONTH_ABBR[selectedMonth.m] + ' ' + selectedMonth.y;
+  const h = head.querySelector('tr').offsetHeight; document.getElementById('wr-table').style.setProperty('--wr-h1', h + 'px');
+  updateSaveBar();
+}
+
+function updateSaveBar() {
+  const n = dirtyCount();
+  document.getElementById('wr-savebar').classList.toggle('show', n > 0);
+  document.getElementById('wr-dirty').textContent = n + ' unsaved row' + (n === 1 ? '' : 's');
+  document.getElementById('wr-save').disabled = !wrConfigured() || !ID_TOKEN;
+  document.getElementById('wr-save').title = wrConfigured() ? '' : 'Save endpoint not configured yet';
+}
+
+// edits: a row's FULL triple is tracked together, and dropped again if it
+// ends up equal to what's saved.
+function onInput(e) {
+  const el = e.target; if (!el.dataset || !el.dataset.k) return;
+  const key = el.dataset.k, fld = el.dataset.f;
+  const base = Object.assign({ fresh: '', redraw: '', remarks: '' }, saved[key] || {});
+  const row = Object.assign({}, edits[key] || { fresh: base.fresh, redraw: base.redraw, remarks: base.remarks });
+  row[fld] = el.value;
+  const same = ['fresh', 'redraw', 'remarks'].every(f => String(row[f]) === String(base[f] == null ? '' : base[f]));
+  if (same) delete edits[key]; else edits[key] = row;
+  el.classList.toggle('dirty', !!edits[key] && String(row[fld]) !== String(base[fld] == null ? '' : base[fld]));
+  // keep totals live without a full re-render (which would drop focus)
+  recomputeFootPlanned();
+  updateSaveBar();
+}
+function recomputeFootPlanned() {
+  const list = dealersInScope();
+  const foot = document.getElementById('wr-foot').querySelector('tr'); if (!foot) return;
+  weeks.forEach((w, wi) => {
+    let f = 0, rd = 0;
+    list.forEach(d => { const v = cur(w.n + '|' + d.dealerId); const a = parseFloat(v.fresh), b = parseFloat(v.redraw); if (isFinite(a)) f += a; if (isFinite(b)) rd += b; });
+    const cells = foot.children; const base = 2 + wi * 4; // fz + colspan cell + (act,fresh,redraw,rem)*wi
+    cells[base + 1].textContent = f; cells[base + 2].textContent = rd;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SAVE
+// ═══════════════════════════════════════════════════════════════════════════
+async function saveEdits() {
+  const msg = document.getElementById('wr-savemsg'), btn = document.getElementById('wr-save');
+  if (!wrConfigured() || !ID_TOKEN) return;
+  const rows = Object.keys(edits).map(k => {
+    const [week, dealerId] = k.split('|');
+    return { week: +week, dealerId, fresh: edits[k].fresh, redraw: edits[k].redraw, remarks: edits[k].remarks };
+  });
+  if (!rows.length) return;
+  btn.disabled = true; msg.className = 'wr-msg'; msg.textContent = 'Saving…';
+  try {
+    const r = await fetch(WR_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'save', idToken: ID_TOKEN, month: monthKey(selectedMonth.y, selectedMonth.m), rows }) });
+    const j = await r.json();
+    if (!j.ok) {
+      if (j.code === 'auth') { msg.className = 'wr-msg err'; msg.textContent = 'Sign-in expired — refreshing. Click Save again in a few seconds.'; if (window.google && google.accounts && google.accounts.id) google.accounts.id.prompt(); }
+      else { msg.className = 'wr-msg err'; msg.textContent = 'Not saved: ' + (j.error || 'unknown error'); }
+      btn.disabled = false; return;
+    }
+    edits = {};
+    await loadSaved();
+    render();
+    msg.className = 'wr-msg ok'; msg.textContent = 'Saved ' + j.saved + ' row' + (j.saved === 1 ? '' : 's') + ' ✓' + (j.github === false ? ' (GitHub mirror pending)' : '');
+    setTimeout(() => { if (!dirtyCount()) msg.textContent = ''; }, 4000);
+  } catch (e) { msg.className = 'wr-msg err'; msg.textContent = 'Not saved: ' + (e.message || e); }
+  btn.disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CONTROLS / INIT
+// ═══════════════════════════════════════════════════════════════════════════
+function buildMonthSelect() {
+  const sel = document.getElementById('wr-month'); sel.innerHTML = '';
+  const now = new Date(); let y = now.getFullYear(), m = now.getMonth();
+  let minD = null; dealerRows.forEach(d => { if (!minD || d.onboardingDate < minD) minD = d.onboardingDate; });
+  const stop = minD ? new Date(minD.getFullYear(), minD.getMonth(), 1) : new Date(y, m - 11, 1);
+  for (let i = 0; i < 36; i++) {
+    const d = new Date(y, m - i, 1); if (d < stop) break;
+    const o = document.createElement('option'); o.value = d.getFullYear() + '-' + d.getMonth();
+    o.textContent = MONTH_ABBR[d.getMonth()] + ' ' + d.getFullYear() + (i === 0 ? ' (current)' : '');
+    sel.appendChild(o);
+  }
+  selectedMonth = { y: now.getFullYear(), m: now.getMonth() };
+  sel.value = selectedMonth.y + '-' + selectedMonth.m;
+}
+function buildSOSelect() {
+  const sel = document.getElementById('wr-so'); const prev = selectedSO;
+  const lowers = (!ACCESS || ACCESS.unrestricted) ? null : ACCESS.teams.map(t => t.toLowerCase());
+  const sos = Object.keys(SO_TEAM_MAP).filter(so => {
+    const t = SO_TEAM_MAP[so];
+    if (lowers && lowers.indexOf(t.toLowerCase()) < 0) return false;
+    return selectedTeam === ALL_TEAMS || t === selectedTeam;
+  }).sort();
+  sel.innerHTML = '<option value="">All officers</option>' + sos.map(s => '<option value="' + esc(s) + '">' + esc(s) + '</option>').join('');
+  selectedSO = sos.indexOf(prev) >= 0 ? prev : ''; sel.value = selectedSO;
+}
+function buildTeamChips() {
+  const container = document.getElementById('filter-team');
+  container.querySelectorAll('.filter-chip').forEach(el => el.remove());
+  allowedTeamOptions().forEach(t => {
+    const el = document.createElement('span');
+    el.className = 'filter-chip' + (t === selectedTeam ? ' active' : '');
+    el.textContent = t === ALL_TEAMS ? 'Whole Sales Team' : 'Team ' + t;
+    el.onclick = () => { if (selectedTeam === t) return; selectedTeam = t; buildTeamChips(); buildSOSelect(); render(); };
+    container.appendChild(el);
+  });
+}
+function confirmDiscardIfDirty() { return !dirtyCount() || window.confirm('You have unsaved changes for this month. Discard them?'); }
+
+async function tryRender() {
+  if (_rendered || !_dataReady || !ACCESS) return;
+  _rendered = true;
+  const options = allowedTeamOptions();
+  if (!options.length) {
+    document.querySelector('.main').innerHTML = '<div class="warn-banner">Your access is tagged "Team ' + esc(ACCESS.teams.join(', ')) + '", but no team by that name exists in the Mapping sheet right now. Ask the admin to check your Allowlist tag.</div>';
+    return;
+  }
+  selectedTeam = ACCESS.unrestricted ? ALL_TEAMS : options[0];
+  buildMonthSelect(); buildTeamChips(); buildSOSelect();
+  await loadSaved();
+  render();
+}
+
+document.addEventListener('input', onInput);
+document.getElementById('wr-save').onclick = saveEdits;
+document.getElementById('wr-discard').onclick = () => { edits = {}; render(); document.getElementById('wr-savemsg').textContent = ''; };
+document.getElementById('wr-month').onchange = async function () {
+  if (!confirmDiscardIfDirty()) { this.value = selectedMonth.y + '-' + selectedMonth.m; return; }
+  const [y, m] = this.value.split('-').map(Number); selectedMonth = { y, m }; edits = {};
+  await loadSaved(); render();
+};
+document.getElementById('wr-so').onchange = function () { selectedSO = this.value; render(); };
+let _sT = null;
+document.getElementById('wr-search').oninput = function () { searchQ = this.value; clearTimeout(_sT); _sT = setTimeout(render, 180); };
+window.addEventListener('beforeunload', e => { if (dirtyCount()) { e.preventDefault(); e.returnValue = ''; } });
+
+async function init() {
+  const ok = await loadData();
+  if (!ok) return;
+  _dataReady = true;
+  tryRender();
+}
+init();
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('theme-toggle-btn');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  try { localStorage.setItem('finsso-theme', theme); } catch (e) {}
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+(function initTheme() {
+  let stored = null;
+  try { stored = localStorage.getItem('finsso-theme'); } catch (e) {}
+  const preferred = stored || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(preferred);
+})();
+
+function parseSheetDate(v) {
+  if (v === null || v === undefined) return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  if (/^\d+(\.\d+)?$/.test(s)) {
+    const serial = Math.floor(parseFloat(s));
+    if (serial < 20000 || serial > 60000) return null;
+    const utcMs = Math.round((serial - 25569) * DAY_MS);
+    const utcDate = new Date(utcMs);
+    return new Date(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate());
+  }
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[1]-1, +m[2]);
+  const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+function parseNum(v) {
+  if (v === null || v === undefined || v === '') return 0;
+  const s = String(v).replace(/[,₱%]/g,'').trim();
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i+1] === '"') { field += '"'; i++; }
+      else if (ch === '"') inQ = false;
+      else field += ch;
+    } else {
+      if (ch === '"') inQ = true;
+      else if (ch === ',') { row.push(field); field = ''; }
+      else if (ch === '\r') { /* skip */ }
+      else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else field += ch;
+    }
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
+}
+// Columns are ALWAYS looked up by header name, never by position — the sheet
+// can gain or lose columns at any time. Header text is whitespace-normalized
+// on both sides (some headers carry doubled spaces, NBSPs or embedded
+// newlines, e.g. "R2  Payment Status", "Plate Number\n(as on ORCR)").
+function normHeader(h) { return String(h == null ? '' : h).replace(/[\s\u00a0]+/g, ' ').trim(); }
+function buildColumnMap(headerRow) {
+  const idx = {};
+  headerRow.forEach((h, i) => { const key = normHeader(h); if (key && !(key in idx)) idx[key] = i; });
+  return function (name) { const k = normHeader(name); return idx[k] !== undefined ? idx[k] : -1; };
+}
+function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
+// Normalizes a person-name field for matching: Google Sheets sometimes stores
+// a non-breaking space (U+00A0) instead of a regular space between a first
+// and last name (seen in real data as "Ricmar Magboo"), and typed sheets
+// like "[Raw] Mapping" use a plain space for the same name — without this,
+// those two strings don't compare equal and the SO silently falls out of
+// every team total. Collapses any run of whitespace (regular or NBSP) to a
+// single regular space, so the two representations always match.
+function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
+
+async function fetchCSV(name, optional) {
+  const url = DATA_BASE + name + '?_=' + Date.now();
+  const r = await fetch(url);
+  if (!r.ok) {
+    if (optional) return null; // e.g. a new export not deployed yet — degrade gracefully
+    throw new Error('Failed to load ' + name + ' (HTTP ' + r.status + ')');
+  }
+  return parseCSV(await r.text());
+}
+
+/* ══════════════════════════════════════════════════
+   GOOGLE SIGN-IN + ALLOWLIST GATE
+   Requires HTTPS (won't work from file://). Uses the same
+   Access Control sheet/service as every other Finsso dashboard.
+   Allowlist label for this dashboard: 'SalesWeekly' (column B of the
+   Allowlist tab; blank = all dashboards; 'Team <SM first name>' = scoped).
+══════════════════════════════════════════════════ */
+var GOOGLE_CLIENT_ID = '263530903165-4nv0iueb5ftb5hjevr14mqug3rlraav5.apps.googleusercontent.com';
+var ALLOWLIST_API = 'https://script.google.com/a/macros/finsso.com/s/AKfycbznI2kQ8a0ApTS9xbDjY4oLoya5KQlqJ-xHm4X75BwkgIby4Cfqtz2xCupYOeFMBFik/exec';
+var ALLOWLIST_TAB = 'SalesWeekly';
+var ALLOWLIST = null;
+var _allowlistLoading = null;
+
+async function _loadAllowlist() {
+  if (ALLOWLIST !== null) return ALLOWLIST;
+  if (_allowlistLoading) return _allowlistLoading;
+  _allowlistLoading = (async function () {
+    for (var attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) await new Promise(function (res) { setTimeout(res, attempt * 500); });
+      try {
+        var url = ALLOWLIST_API + (ALLOWLIST_API.indexOf('?') >= 0 ? '&' : '?') + 'action=allowlist&tab=' + encodeURIComponent(ALLOWLIST_TAB) + '&_=' + Date.now();
+        var r = await fetch(url);
+        var j = await r.json();
+        var list = (j.emails || []).map(function (s) { return String(s).toLowerCase().trim(); }).filter(Boolean);
+        // "entries" (email/domain + unrestricted flag + team tags) comes from the
+        // updated Apps Script; an older deployment only sends "emails", in which
+        // case everyone on the list is treated as unrestricted.
+        var entries = Array.isArray(j.entries) ? j.entries.map(function (e) {
+          return { email: String(e.email || '').toLowerCase().trim(), unrestricted: !!e.unrestricted, teams: (e.teams || []).map(String) };
+        }) : null;
+        ALLOWLIST = { emails: list, entries: entries };
+        return ALLOWLIST;
+      } catch (e) { /* retry */ }
+    }
+    return null;
+  })();
+  try { return await _allowlistLoading; }
+  finally { _allowlistLoading = null; }
+}
+async function _isAllowed(email) {
+  var data = await _loadAllowlist();
+  if (!data) return { ok: false, reason: 'load-failed' };
+  email = String(email).toLowerCase().trim();
+  var at = email.indexOf('@'), dom = at >= 0 ? email.slice(at) : '';
+  if (!data.entries) { // legacy response: plain email/domain list, no scoping
+    if (data.emails.indexOf(email) >= 0 || (dom && data.emails.indexOf(dom) >= 0)) return { ok: true, access: { unrestricted: true, teams: [] } };
+    return { ok: false, reason: 'not-listed' };
+  }
+  // An exact-email row always beats a whole-domain row ("@finsso.com"), so a
+  // team-tagged SM isn't silently widened by a blanket domain entry.
+  var exact = data.entries.filter(function (e) { return e.email === email; });
+  var pool = exact.length ? exact : data.entries.filter(function (e) { return dom && e.email === dom; });
+  if (!pool.length) return { ok: false, reason: 'not-listed' };
+  if (pool.some(function (e) { return e.unrestricted; })) return { ok: true, access: { unrestricted: true, teams: [] } };
+  var teams = [];
+  pool.forEach(function (e) { e.teams.forEach(function (t) { if (teams.indexOf(t) < 0) teams.push(t); }); });
+  if (!teams.length) return { ok: false, reason: 'not-listed' };
+  return { ok: true, access: { unrestricted: false, teams: teams } };
+}
+function _decodeJwt(t) {
+  try {
+    var p = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(decodeURIComponent(escape(atob(p))));
+  } catch (e) { return null; }
+}
+function _authError(msg) { var e = document.getElementById('lock-err'); if (e) e.textContent = msg; }
+function _logAccess(email) {
+  try {
+    var url = ALLOWLIST_API + (ALLOWLIST_API.indexOf('?') >= 0 ? '&' : '?') + 'action=log&tab=' + encodeURIComponent(ALLOWLIST_TAB)
+      + '&email=' + encodeURIComponent(email) + '&ua=' + encodeURIComponent(navigator.userAgent)
+      + '&dashboard=' + encodeURIComponent(location.origin + location.pathname);
+    fetch(url, { mode: 'no-cors' }).catch(function () {});
+  } catch (e) {}
+}
+function _grantAccess(profile, access) {
+  ACCESS = access || { unrestricted: true, teams: [] };
+  if (profile && profile.idToken) ID_TOKEN = profile.idToken;
+  USER_EMAIL = profile && profile.email || '';
+  tryRender();
+  var s = document.getElementById('lock-overlay');
+  if (s) { s.classList.add('unlocking'); setTimeout(function () { s.classList.add('hidden'); }, 400); }
+  _logAccess(profile.email);
+}
+async function _onGoogleCredential(resp) {
+  _authError('');
+  var data = _decodeJwt(resp && resp.credential);
+  if (!data || !data.email) { _authError('Could not read your Google account. Try again.'); return; }
+  if (data.email_verified === false) { _authError('Your Google email is not verified.'); return; }
+  var result = await _isAllowed(data.email);
+  if (result.ok) {
+    _grantAccess({ email: String(data.email).toLowerCase(), name: data.name || '', idToken: resp.credential }, result.access);
+  } else if (result.reason === 'load-failed') {
+    _authError('Could not verify access right now — check your connection and try again.');
+  } else {
+    if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
+    _authError(data.email + ' is not on the access list. Ask the admin to add you.');
+  }
+}
+function _initGoogleAuth() {
+  if (!window.google || !google.accounts || !google.accounts.id) { return setTimeout(_initGoogleAuth, 200); }
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: _onGoogleCredential, auto_select: true, cancel_on_tap_outside: false });
+  google.accounts.id.renderButton(document.getElementById('g-signin'), { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'signin_with', logo_alignment: 'center', width: 260 });
+  google.accounts.id.prompt();
+}
+_loadAllowlist();
+if (document.readyState !== 'loading') _initGoogleAuth();
+else document.addEventListener('DOMContentLoaded', _initGoogleAuth);
+</script>
+</body></html>
