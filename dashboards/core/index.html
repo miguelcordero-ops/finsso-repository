@@ -569,10 +569,13 @@ async function loadData() {
   const errEl = document.getElementById('error-box');
   loadingEl.classList.remove('hidden');
   try {
-    const [ddGrid, rpGrid, obGrid] = await Promise.all([
+    const optCSV = n => fetchCSV(n).catch(() => null); // v3 (180-day) files are optional
+    const [ddGrid, rpGrid, obGrid, ddGrid3, rpGrid3] = await Promise.all([
       fetchCSV('drawdown.csv'),
       fetchCSV('repayment.csv'),
       fetchCSV('ob-masterlist.csv'),
+      optCSV('drawdownv3.csv'),
+      optCSV('repaymentv3.csv'),
     ]);
 
     // ── Drawdown (one row per loan) ──
@@ -600,6 +603,31 @@ async function loadData() {
       if (creditDate && (!earliestDisb || creditDate < earliestDisb)) earliestDisb = creditDate;
     }
 
+    // ── Drawdown v3 (180-day product) — merged into the same loan list ──
+    // Columns looked up by header name; v3 has no repossession / settlement fields.
+    if (ddGrid3 && ddGrid3.length > 1) {
+      const c3 = buildColumnMap(ddGrid3[0]);
+      for (let i = 1; i < ddGrid3.length; i++) {
+        const r = ddGrid3[i];
+        const id = get(r, c3('Drawdown ID')).trim();
+        if (!id) continue;
+        const creditDate = parseSheetDate(get(r, c3('Credit Date to Dealer Bank Account')));
+        drawdownRows.push({
+          id,
+          dealerId: get(r, c3('Dealer ID')).trim(),
+          creditDate,
+          originalPrincipal: parseNum(get(r, c3('Original Principal'))),
+          loanStatus: get(r, c3('Loan Status')).trim(),
+          financier: get(r, c3('Financier')).trim(),
+          fullSettlementDate: null,
+          repossessed: false,
+          repoDate: null,
+          outstandingAtRepo: 0,
+        });
+        if (creditDate && (!earliestDisb || creditDate < earliestDisb)) earliestDisb = creditDate;
+      }
+    }
+
     // ── Repayment (one row per repayment transaction, linked by Drawdown ID) ──
     const rpCol = buildColumnMap(rpGrid[0]);
     repaymentRows = [];
@@ -614,6 +642,21 @@ async function loadData() {
       });
     }
 
+    // ── Repayment v3 — principal column is "Principal Applied" ──
+    if (rpGrid3 && rpGrid3.length > 1) {
+      const r3 = buildColumnMap(rpGrid3[0]);
+      for (let i = 1; i < rpGrid3.length; i++) {
+        const r = rpGrid3[i];
+        const drawdownId = get(r, r3('Drawdown ID')).trim();
+        if (!drawdownId) continue;
+        repaymentRows.push({
+          drawdownId,
+          paymentDate: parseSheetDate(get(r, r3('Dealer Payment Date'))),
+          paidPrincipal: parseNum(get(r, r3('Principal Applied'))),
+        });
+      }
+    }
+
     // ── OB Masterlist (dealer onboarding dates) ──
     const obCol = buildColumnMap(obGrid[0]);
     onboardMap = {};
@@ -623,6 +666,20 @@ async function loadData() {
       if (!dealerId) continue;
       const d = parseSheetDate(get(r, obCol('Original Credit Line issuance Date')));
       if (d && (!onboardMap[dealerId] || d < onboardMap[dealerId])) onboardMap[dealerId] = d;
+    }
+
+    // 180-day (v3) loans have no Full Settlement Date column: when a v3 loan is
+    // Closed, use its last repayment date as the settlement date.
+    if (ddGrid3 && ddGrid3.length > 1) {
+      const v3ids = new Set();
+      for (let i = 1; i < ddGrid3.length; i++) v3ids.add(get(ddGrid3[i], buildColumnMap(ddGrid3[0])('Drawdown ID')).trim());
+      const lastPay = {};
+      repaymentRows.forEach(rp => {
+        if (rp.paymentDate && v3ids.has(rp.drawdownId) && (!lastPay[rp.drawdownId] || rp.paymentDate > lastPay[rp.drawdownId])) lastPay[rp.drawdownId] = rp.paymentDate;
+      });
+      drawdownRows.forEach(l => {
+        if (v3ids.has(l.id) && l.loanStatus === 'Closed' && !l.fullSettlementDate) l.fullSettlementDate = lastPay[l.id] || null;
+      });
     }
 
     minDataDate = earliestDisb;
