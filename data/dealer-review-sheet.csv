@@ -393,7 +393,7 @@
 ,IF0392,AYNS CARPRO AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,3,2,0,1100000,1100000,1100000,0,32.4,,11,,Open,,,,,4,3,1,0.004312718168,0,0,,0,0,0,0,No
 ,IF0393,AJYL CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,1,0,2,1000000,1000000,0,1000000,109,,49.66666667,46241,Blacklisted,15 DPD,46241,,,10,4,6,0.00392065288,68,67,46296,7,2,5,0,Yes,,,46213,46212
 ,IF0394,GLS-MNL CAR COVER AND MOTOR COVER TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46175.46458,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0395,FINESTCARS AUTO TRADING,Malou Alfonso,Candyce Aguete,0,1,2,0,810000,810000,810000,0,83,,,,Hold,Multiple Failure Audits,,46301.80924,46301.80924,7,1,6,0.003175728832,0,0,46302,6,1,5,0,Yes
+,IF0395,FINESTCARS AUTO TRADING,Malou Alfonso,Candyce Aguete,0,1,2,0,810000,810000,810000,0,83,,,,Hold,Multiple Failure Audits,,46301.80924,46301.80924,9,2,7,0.003175728832,0,0,46308,8,2,6,0,Yes
 ,IF0396,JAYC AUTO CARE CENTER,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Hold,Pending CLA Signature,,46175.46806,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0397,JCARS PREOWNED AUTO TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46175.475,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0398,PURPLEBLOOM CARZ CAR AGENT SERVICES,Albert Dalupang,Albert Dalupang,0,0,0,1,380000,380000,0,380000,168,,139,46170,Blacklisted,15 DPD,46170,,,2,0,2,0.001489848094,139,139,46178,2,0,2,0,Yes,,,,46190.65122
@@ -473,7 +473,7 @@
 ,IF0472,C2G CAR TRADING,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CLA Signature | Netbank: Pending CL,,46198.59722,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0473,TERRY AUTO TRADING,,,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0474,J&E CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CLA Signature | Netbank: Pending CL,,46199.62361,,0,0,0,,0,0,,0,0,0,0,No
-,IF0475,LIAM CARSS CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,1,1,1,951880,951880,346000,605880,49.33333333,,13,46296,Hold,w/ Due Repayments - >= 5DPD,,46296,,2,1,1,,13,13,46300,2,1,1,0,No
+,IF0475,LIAM CARSS CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,1,1,1,951880,951880,346000,605880,49.33333333,,13,46296,Hold,Multiple Failure Audits,,46309.47591,46309.47591,3,1,2,,13,13,46308,3,1,2,0,Yes
 ,IF0476,JND CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,1,243000,243000,0,243000,93,,2,46307,Hold,Multiple Failure Audits,,46304.47592,46304.47592,2,0,2,,2,2,46302,2,0,2,0,Yes
 ,IF0477,A DRIAN CAR TRADING,Malou Alfonso,Rose Batacan,0,1,1,0,360000,360000,360000,0,27.5,,,,Open,,,,,1,0,1,,0,0,46303,1,0,1,0,No
 ,IF0478,GERTHS AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,1,0,2,0,1031000,1031000,1031000,0,57.5,,,,Open,,,,,4,4,0,,0,0,46304,4,4,0,0,No
