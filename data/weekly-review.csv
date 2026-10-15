@@ -1,3 +1,4 @@
-Month,Week,Dealer ID,Planned Fresh Drawdown,Planned Re-Drawdown,Remarks,Updated By,Updated At
-2026-10,1,IF0057,11,,eldrin test,miguel.cordero@finsso.com,2026-10-13 17:29:31
-2026-10,1,IF0330,11,,eldrin test oct 13,miguel.cordero@finsso.com,2026-10-13 17:31:27
+Month,Week,Dealer ID,Planned Fresh Drawdown,Planned Re-Drawdown,Remarks,Updated By,Updated At,Confident?
+2026-10,1,IF0057,11,,eldrin test,miguel.cordero@finsso.com,2026-10-13 17:29:31,
+2026-10,1,IF0330,11,,eldrin test oct 13,miguel.cordero@finsso.com,2026-10-13 17:31:27,
+2026-10,4,IF0057,3,,Eldrin Test,miguel.cordero@finsso.com,2026-10-15 17:12:15,Yes
