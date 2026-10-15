@@ -525,7 +525,7 @@ async function loadData() {
       fetchCSV('dealer-checker.csv'),
       fetchCSV('ob-masterlist.csv', true),
       fetchCSV('mapping.csv', true),
-      fetchCSV('stock-inspection.csv', true), // "[Raw] Stock Inspection" — latest IF visit
+      fetchCSV('visits.csv', true), // "[Raw] Visits" — latest IF visit
     ]);
 
     if (mapGrid) {
@@ -594,23 +594,27 @@ async function loadData() {
         so: normName(g(r, 'Assigned Sales Officer')),
         onboardingDate, first, last,
         availCredit: parseNum(g(r, 'Total Available Credit Limit')),
-        clStatus: g(r, 'Credit Line Status'),
+        clStatus: g(r, 'Credit Line Status'), gcd: g(r, 'GCD Code'),
       });
     }
     dealerRows.sort((a, b) => a.name.localeCompare(b.name));
 
-    // Latest IF visit (stock inspection) per dealer: matched by Drawdown ID, else by dealership name.
+    // Latest IF visit per dealer from "[Raw] Visits" (Visit Type = IF Visit): matched on Clean GCD / GCD
+    // to the Dealer Checker "GCD Code", else on dealership name.
     latestVisit = {};
     if (siGrid && siGrid.length > 1) {
-      const sc = buildColumnMap(siGrid[0]);
-      const byName = {}; dealerRows.forEach(d => { byName[normName(d.name).toLowerCase()] = d.dealerId; });
+      const vc = buildColumnMap(siGrid[0]);
+      const byGcd = {}, byName = {};
+      dealerRows.forEach(d => { if (d.gcd) byGcd[d.gcd.toUpperCase()] = d.dealerId; byName[normName(d.name).toLowerCase()] = d.dealerId; });
       for (let i = 1; i < siGrid.length; i++) {
         const r = siGrid[i];
-        const dt = parseSheetDate(get(r, sc('Date'))); if (!dt) continue;
-        const did = loanDealer[get(r, sc('Drawdown ID')).trim()] || byName[normName(get(r, sc('Dealership Name'))).toLowerCase()];
+        if (get(r, vc('Visit Type')).trim().toLowerCase() !== 'if visit') continue;
+        const dt = parseSheetDate(get(r, vc('Visited Date'))); if (!dt) continue;
+        const gcd = (get(r, vc('Clean GCD')).trim() || get(r, vc('GCD')).trim() || get(r, vc('Dealer GCD')).trim()).toUpperCase();
+        const did = (gcd && byGcd[gcd]) || byName[normName(get(r, vc('Dealer Name')) || get(r, vc('DealerShip Name')) || get(r, vc('ID'))).toLowerCase()];
         if (!did) continue;
-        const by = get(r, sc('Inspector')).trim() || get(r, sc('User email')).trim();
-        if (!latestVisit[did] || dt > latestVisit[did].date) latestVisit[did] = { date: dt, by };
+        const by = normName(get(r, vc('Executive Name')));
+        if (!latestVisit[did] || dt > latestVisit[did].date) latestVisit[did] = { date: dt, by, remarks: get(r, vc('Remarks')).replace(/\s+/g, ' ').trim() };
       }
     }
     dataLoadedAt = new Date();
@@ -700,7 +704,7 @@ function cur(key) { return edits[key] || saved[key] || { fresh: '', redraw: '', 
 // Fixed-width table (fast) and VIRTUALIZED rows: only rows near the viewport exist in the DOM.
 const WR_ROW_H = 38, WR_BUF = 10, WR_HEAD_H = 94;
 const WR_FROZEN = [ ['Dealer', 190, 'l name'], ['Assigned Officer', 130, 'l'], ['Onboarding Date', 112, ''], ['Last Txn', 112, ''], ['Total Available Credit Limit', 112, 'rr'], ['Credit Line Status', 78, ''] ];
-const WR_SCROLL = [ ['Latest IF Visit', 112, ''], ['Visited By (IF)', 160, 'l'] ]; // not frozen — scroll with the weeks
+const WR_SCROLL = [ ['Latest IF Visit', 112, ''], ['Visited By (IF)', 160, 'l'], ['Visit Remarks', 260, 'l'] ]; // not frozen — scroll with the weeks
 const WR_INFO_W = () => WR_FROZEN.concat(WR_SCROLL).reduce((a, c) => a + c[1], 0);
 const WR_BLOCK_COLS = [['Actual Drawdowns', 'act'], ['Confident?', 'conf'], ['Planned Fresh Drawdown', 'fresh'], ['Planned Re-Drawdown', 'redraw'], ['Remarks', 'remarks']];
 const WR_W_PINNED = [76, 84, 84, 84, 120];   // frozen Week 1 (compact)
@@ -724,14 +728,17 @@ function layoutBlocks() {
     let widths = pinned ? WR_W_PINNED : WR_W_PAGED, lefts = [];
     if (!pinned) {
       const avail = (document.getElementById('wr-wrap').clientWidth || 1400) - x - 4;
-      widths = widths.slice(); widths[4] = Math.max(130, Math.min(420, avail - widths.slice(0, 4).reduce((a, c) => a + c, 0)));
+      widths = widths.slice();
+      const baseSum = widths.reduce((a, c) => a + c, 0);
+      if (avail > baseSum) { const k = avail / baseSum; widths = widths.map(w => Math.floor(w * k)); }   // wide screen: stretch every column to fill
+      else widths[4] = Math.max(130, avail - widths.slice(0, 4).reduce((a, c) => a + c, 0));          // narrower: Remarks takes what's left
     }
     widths.forEach(wd => { lefts.push(x); x += wd; });
     shown.push({ w, wi: weeks.indexOf(w), pinned, widths, lefts });
   };
   if (pinW1) mk(weeks[0], true);
   mk(pl[pageIdx], false);
-  tblW = x;
+  tblW = Math.max(x, (document.getElementById('wr-wrap').clientWidth || 0) - 2);
 }
 function frozenLefts() { let x = 0; return WR_FROZEN.map(c => { const l = x; x += c[1]; return l; }); }
 
@@ -845,7 +852,7 @@ function rowHtml(d) {
     '<td class="fz l" style="left:' + fl[1] + 'px" title="' + esc(d.so) + '">' + esc(d.so || '—') + '</td>' +
     '<td class="fz" style="left:' + fl[2] + 'px">' + fmtDate(d.onboardingDate) + '</td><td class="fz" style="left:' + fl[3] + 'px">' + fmtDate(d.last) + '</td>' +
     '<td class="fz rr" style="left:' + fl[4] + 'px">' + peso(d.availCredit) + '</td><td class="fz' + (pinW1 ? '' : ' fzend') + '" style="left:' + fl[last] + 'px">' + esc(d.clStatus || '—') + '</td>' +
-    (lv ? '<td>' + fmtDate(lv.date) + '</td><td class="l" title="' + esc(lv.by) + '">' + esc(lv.by || '—') + '</td>' : '<td>—</td><td class="l">—</td>');
+    (lv ? '<td>' + fmtDate(lv.date) + '</td><td class="l" title="' + esc(lv.by) + '">' + esc(lv.by || '—') + '</td><td class="l" title="' + esc(lv.remarks) + '">' + esc(lv.remarks || '—') + '</td>' : '<td>—</td><td class="l">—</td><td class="l">—</td>');
   shown.forEach(b => {
     const w = b.w, key = w.n + '|' + d.dealerId, v = cur(key);
     const a = acts[b.wi], future = a === null;
@@ -894,7 +901,7 @@ document.getElementById('wr-wrap').addEventListener('scroll', () => {
 
 function renderFoot() {
   const fl = frozenLefts();
-  let foot = '<tr><td class="fz l' + (pinW1 ? '' : ' fzend') + '" colspan="6" style="left:0">Total (' + curList.length + ' dealers)</td><td colspan="2"></td>';
+  let foot = '<tr><td class="fz l' + (pinW1 ? '' : ' fzend') + '" colspan="6" style="left:0">Total (' + curList.length + ' dealers)</td><td colspan="3"></td>';
   shown.forEach(b => {
     let act = 0, conf = 0, fresh = 0, redraw = 0;
     curList.forEach(d => {
