@@ -10,7 +10,7 @@
 ,IF0009,MIKMIK'S CAR TRADING,Albert Dalupang,Albert Dalupang,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Expired CL,,45728,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0010,GARAGE888 AUTO TRADING,Albert Dalupang,Albert Dalupang,0,5,0,0,0,0,0,0,24.6,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,45828,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0011,DAVE AND MELODY VEHICLE TRADING (Formerly as D.M Cars),Albert Dalupang,Albert Dalupang,0,20,1,0,667800,667800,667800,0,43.19047619,,6,,Open,Finsso: Expired CL | Netbank: Open,,46287,,10,9,1,0.002662977935,0,0,46296,1,1,0,0,No
-,IF0012,GCE VEHICLE TRADING (Formerly: LINIS SIKAT CARWASH & ACCESSORIES),Albert Dalupang,Albert Dalupang,0,46,3,0,1500000,1500000,1500000,0,48.32653061,,10,,Open,,,,,55,25,30,0.005981531751,0,0,,0,0,0,1,No,,,46132.58958
+,IF0012,GCE VEHICLE TRADING (Formerly: LINIS SIKAT CARWASH & ACCESSORIES),Albert Dalupang,Albert Dalupang,0,46,3,0,1500000,1500000,1500000,0,48.32653061,,10,,Open,,,,,59,29,30,0.005981531751,0,0,46310,4,4,0,1,No,,,46132.58958
 ,IF0013,DON/GIE 2ND HAND CAR TRADING,Albert Dalupang,Albert Dalupang,0,20,2,0,735000,735000,735000,0,63.09090909,,4.5,,Open,,,,,30,24,6,0.002930950558,0,0,,0,0,0,2,No
 ,IF0014,QRA AUTOSALE AND AUTOWORKS ENTERPRISES CORP.,Albert Dalupang,Jerome Cacayan,0,6,0,0,0,0,0,0,82.16666667,,25.33333333,,Hold,Finsso: Pending CL | Netbank: Expired CL,,45771,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0015,CARMATRIO AUTO TRADING,Albert Dalupang,Albert Dalupang,0,7,0,0,0,0,0,0,61.71428571,,8.75,,Hold,Finsso: Pending CL | Netbank: Expired CL,,45771,,20,9,11,0,0,0,,0,0,0,0,No
@@ -454,7 +454,7 @@
 ,IF0453,JNZ CAR TRADING,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0454,BEARD CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0455,JDRED.GARAGE CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,1,0,500000,500000,500000,0,22,,,,Open,,,,,0,0,0,,0,0,,0,0,0,0,No
-,IF0456,KAPATID AUTO TRADING,Albert Dalupang,Albert Dalupang,0,6,3,0,1306395,1306395,1306395,0,29.55555556,,,,Open,,,,,8,6,2,,0,0,46289,2,2,0,0,No
+,IF0456,KAPATID AUTO TRADING,Albert Dalupang,Albert Dalupang,0,6,3,0,1306395,1306395,1306395,0,29.55555556,,,,Open,,,,,11,7,4,,0,0,46310,5,3,2,0,No
 ,IF0457,JOHNMARK EDORA CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0458,LEOROMMEL AUTO SHOP,Albert Dalupang,Albert Dalupang,0,3,3,0,1231500,1231500,1231500,0,33.33333333,,,,Open,,,,,7,7,0,,0,0,46302,3,3,0,0,No
 ,IF0459,ONICHAN CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CLA Signature | Netbank: Pending CL,,46195.42569,,0,0,0,,0,0,,0,0,0,0,No
