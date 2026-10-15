@@ -278,16 +278,16 @@ td.metric-label{color:var(--text);font-weight:500}
 .dc-tbar button{font:inherit;font-size:12px;padding:3px 10px;border-radius:6px;border:1px solid var(--border2);background:var(--surface-d);color:var(--text2);cursor:pointer}
 .dc-tbar button:hover{background:var(--chip-hover)}
 .dc-tbar .dc-hint{color:var(--text3);font-style:italic;margin-left:auto}
-/* overdue = red, in DPD but not overdue = yellow (light / dark) */
-.dc-table-wrap tr.od td,.dc-table-wrap tr.od td.fz{background:#fecaca;color:#7f1d1d}
-.dc-table-wrap tr.dpd td,.dc-table-wrap tr.dpd td.fz{background:#fef08a;color:#713f12}
-:root[data-theme="dark"] .dc-table-wrap tr.od td,:root[data-theme="dark"] .dc-table-wrap tr.od td.fz{background:#5c1a1f;color:#fecdd3}
-:root[data-theme="dark"] .dc-table-wrap tr.dpd td,:root[data-theme="dark"] .dc-table-wrap tr.dpd td.fz{background:#4d3f0a;color:#fde68a}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dc-table-wrap tr.od td,:root:not([data-theme="light"]) .dc-table-wrap tr.od td.fz{background:#5c1a1f;color:#fecdd3}:root:not([data-theme="light"]) .dc-table-wrap tr.dpd td,:root:not([data-theme="light"]) .dc-table-wrap tr.dpd td.fz{background:#4d3f0a;color:#fde68a}}
+/* overdue = red, in DPD but not overdue = yellow (light / dark) — high-contrast text */
+.dc-table-wrap tr.od td,.dc-table-wrap tr.od td.fz{background:#fca5a5;color:#000;font-weight:600}
+.dc-table-wrap tr.dpd td,.dc-table-wrap tr.dpd td.fz{background:#fde047;color:#000;font-weight:600}
+:root[data-theme="dark"] .dc-table-wrap tr.od td,:root[data-theme="dark"] .dc-table-wrap tr.od td.fz{background:#7f1d1d;color:#fff;font-weight:600}
+:root[data-theme="dark"] .dc-table-wrap tr.dpd td,:root[data-theme="dark"] .dc-table-wrap tr.dpd td.fz{background:#854d0e;color:#fff;font-weight:600}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dc-table-wrap tr.od td,:root:not([data-theme="light"]) .dc-table-wrap tr.od td.fz{background:#7f1d1d;color:#fff;font-weight:600}:root:not([data-theme="light"]) .dc-table-wrap tr.dpd td,:root:not([data-theme="light"]) .dc-table-wrap tr.dpd td.fz{background:#854d0e;color:#fff;font-weight:600}}
 .dc-tbar .dc-key{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--text2)}
 .dc-tbar .dc-key i{width:12px;height:12px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.15)}
-.dc-tbar .dc-key i.k-od{background:#fecaca}.dc-tbar .dc-key i.k-dpd{background:#fef08a}
-:root[data-theme="dark"] .dc-tbar .dc-key i.k-od{background:#5c1a1f}:root[data-theme="dark"] .dc-tbar .dc-key i.k-dpd{background:#4d3f0a}
+.dc-tbar .dc-key i.k-od{background:#fca5a5}.dc-tbar .dc-key i.k-dpd{background:#fde047}
+:root[data-theme="dark"] .dc-tbar .dc-key i.k-od{background:#7f1d1d}:root[data-theme="dark"] .dc-tbar .dc-key i.k-dpd{background:#854d0e}
 .dc-table-wrap th.srt{cursor:pointer;user-select:none}
 .dc-table-wrap th.srt:hover{filter:brightness(.96)}
 .dc-table-wrap th.flt{padding:3px 4px;z-index:2}
@@ -1516,6 +1516,7 @@ function renderDealerBody() {
     // (v2: "Bucket 2 as per Loan Aging Considering Renewal" starts with "DPD"; v3: any checkpoint DPD > 0).
     const inDpd = dcIsOpen(l) && !od && (l.isV3 ? (parseFloat(l.dpdAgingSheet) || 0) > 0 : /^dpd/i.test(l.dpdStatusSheet || ''));
     const state = od ? 'od' : (inDpd ? 'dpd' : '');
+    const dpdDays = od ? (parseFloat(l.dpdAgingSheet) || 0) : 0; // DPD Aging: days, shown for overdue loans
     const aging = parseFloat(l.loanAging);
     const out = dcIsOpen(l) ? (l.outstandingSheet || 0) : 0;
     const t = d => d ? d.getTime() : null;
@@ -1532,6 +1533,7 @@ function renderDealerBody() {
         { v: n(l.yearModel), t: l.yearModel },
         { v: l.financingType, t: l.financingType },
         { v: t(l.creditDate), t: l.creditDate ? dcDate(l.creditDate) : '' },
+        { v: od && dpdDays ? dpdDays : null, t: od && dpdDays ? String(dpdDays) : '' },
         { v: isFinite(aging) ? Math.round(aging) : null, t: isFinite(aging) ? String(Math.round(aging)) : l.loanAging },
         { v: t(l.maturityDate), t: l.maturityDate ? dcDate(l.maturityDate) : '' },
         { v: out, t: dcPeso(out) },
@@ -1543,9 +1545,9 @@ function renderDealerBody() {
       ],
     };
   });
-  const heads = ['Drawdown ID','Loan Tenure','Loan Status','Make Model','Plate','Year Model','Financing Type','Credit Date','Loan Aging','Final Maturity Date','Outstanding Principal','Latest Act. Inspection','Inspection Remarks','Inspections Passed','Inspections Failed','Sold Tagging'];
+  const heads = ['Drawdown ID','Loan Tenure','Loan Status','Make Model','Plate','Year Model','Financing Type','Credit Date','DPD Aging','Loan Aging','Final Maturity Date','Outstanding Principal','Latest Act. Inspection','Inspection Remarks','Inspections Passed','Inspections Failed','Sold Tagging'];
   dcHeads = heads;
-  const leftCols = { 0: 1, 3: 1 }, rightCols = { 10: 1 }; dcOutCol = heads.indexOf('Outstanding Principal');
+  const leftCols = { 0: 1, 3: 1 }, rightCols = { 11: 1 }; dcOutCol = heads.indexOf('Outstanding Principal');
 
   body.innerHTML =
     '<div class="dc-grid"><div>' + left1 + '</div><div>' + right1 + '</div></div>' +
