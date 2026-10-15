@@ -365,7 +365,7 @@ table.wr td.l,table.wr th.l{text-align:left}
 table.wr td.rr{text-align:right}
 table.wr .fz{position:sticky;z-index:3;background:var(--wr-fz,#fbfbfd)}
 table.wr td.fz.name{font-weight:600}
-table.wr .c0{left:0}table.wr .c1{left:210px}table.wr .c2{left:360px}table.wr .c3{left:464px}table.wr .c4{left:568px}table.wr .c5{left:688px;box-shadow:2px 0 0 var(--tbl-bdr2)}
+table.wr .c0{left:0}table.wr .c1{left:210px}table.wr .c2{left:360px}table.wr .c3{left:464px}table.wr .c4{left:568px}table.wr .fzend{box-shadow:2px 0 0 var(--tbl-bdr2)}
 table.wr thead th.fz{z-index:6;background:var(--wr-head,#eef0f6)}
 table.wr td.wkstart,table.wr th.wkstart{border-left:2px solid var(--tbl-bdr2)}
 table.wr td.act{font-weight:700}
@@ -377,6 +377,20 @@ table.wr td.in input.dirty{border-color:var(--primary);background:rgba(232,70,30
 table.wr td.in input:focus{outline:2px solid var(--primary);outline-offset:0}
 table.wr tfoot td{position:sticky;bottom:0;z-index:3;font-weight:700;height:34px;background:var(--wr-head,#eef0f6)}
 table.wr tfoot td.fz{z-index:5;background:var(--wr-head,#eef0f6)}
+.wr-pager{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.wr-pager button,#wr-clear{font:inherit;font-size:13px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--rctrl);background:var(--surface-hi);color:var(--text);cursor:pointer}
+.wr-pager button:disabled{opacity:.35;cursor:default}
+.wr-pager button:not(:disabled):hover,#wr-clear:hover{border-color:var(--primary);color:var(--primary)}
+#wr-pglabel{min-width:190px;text-align:center}
+.wr-bar label.wr-pin{text-transform:none;letter-spacing:0;font-weight:500;display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+table.wr thead th.fz.wk{background:var(--wr-wk,#e3e8f7)}
+table.wr thead tr.sub th.fz.wk{background:var(--wr-wk2,#edf0fa)}
+table.wr thead tr.flt th{top:60px;height:34px;padding:2px 4px;background:var(--wr-wk2,#edf0fa);z-index:4}
+table.wr thead tr.flt th.fz{z-index:6}
+table.wr thead tr.flt input,table.wr thead tr.flt select{font:inherit;font-size:11px;width:100%;padding:3px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--surface-hi);color:var(--text)}
+table.wr td.ck{text-align:center}
+table.wr td.ck input.ckb{width:17px;height:17px;cursor:pointer;accent-color:var(--primary);vertical-align:middle}
+table.wr td.ck input.ckb.dirty{outline:2px solid var(--primary);outline-offset:1px}
 .wr-savebar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:none;align-items:center;justify-content:center;gap:14px;padding:10px 16px;background:var(--surface-hi);border-top:1px solid var(--border2);box-shadow:0 -4px 16px rgba(0,0,0,.10);backdrop-filter:blur(8px);font-size:13px}
 .wr-savebar.show{display:flex}
 .wr-savebar button{font:inherit;font-size:13px;font-weight:600;padding:7px 16px;border-radius:8px;border:1px solid var(--border2);cursor:pointer;background:var(--surface-d);color:var(--text)}
@@ -443,6 +457,9 @@ table.wr tfoot td.fz{z-index:5;background:var(--wr-head,#eef0f6)}
     <label for="wr-month">Month</label><select id="wr-month"></select>
     <label for="wr-so">Officer</label><select id="wr-so"></select>
     <input id="wr-search" type="search" placeholder="Search dealer name or ID…" autocomplete="off">
+    <span class="wr-pager"><button type="button" id="wr-prev" title="Previous week (Alt+←)">◀</button><span id="wr-pglabel"></span><button type="button" id="wr-next" title="Next week (Alt+→)">▶</button></span>
+    <label class="wr-pin"><input type="checkbox" id="wr-pin"> Pin Week 1</label>
+    <button type="button" id="wr-clear" style="display:none">Clear filters</button>
     <span class="wr-count" id="wr-count"></span>
   </div>
   <div class="wr-msg" id="wr-banner" style="margin-bottom:8px"></div>
@@ -486,7 +503,7 @@ let dataLoadedAt = null;
 let ACCESS = null, ID_TOKEN = '', USER_EMAIL = '', _dataReady = false, _rendered = false;
 let selectedTeam = ALL_TEAMS, selectedSO = '', selectedMonth = null, searchQ = '';
 let saved = {};   // key "week|dealerId" -> {fresh, redraw, remarks, by, at}   (as last loaded from server)
-let edits = {};   // key -> {fresh, redraw, remarks}  (unsaved, full triple for that row)
+let edits = {};   // key -> {fresh, redraw, remarks, conf}  (unsaved, full set for that row)
 let weeks = [];
 
 function teamOf(so) { return SO_TEAM_MAP[so] || null; }
@@ -654,74 +671,172 @@ async function loadSaved() {
     const r = await fetch(url);
     const j = await r.json();
     if (!j.ok) throw new Error(j.error || 'load failed');
-    (j.rows || []).forEach(x => { saved[x.week + '|' + x.dealerId] = x; });
+    (j.rows || []).forEach(x => { x.conf = x.conf ? '1' : ''; saved[x.week + '|' + x.dealerId] = x; });
     setBanner('');
   } catch (e) { setBanner('Couldn\'t load saved inputs: ' + (e.message || e), 'err'); }
 }
 function setBanner(t, cls) { const b = document.getElementById('wr-banner'); b.textContent = t || ''; b.className = 'wr-msg' + (cls ? ' ' + cls : ''); }
-function cur(key) { return edits[key] || saved[key] || { fresh: '', redraw: '', remarks: '' }; }
+function cur(key) { return edits[key] || saved[key] || { fresh: '', redraw: '', remarks: '', conf: '' }; }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════════════════════════════════════════
-// Table layout is fixed-width (fast) and rows are VIRTUALIZED: only the rows
-// near the visible area exist in the DOM, so scrolling stays smooth even with
-// hundreds of dealers x many input cells.
-const WR_ROW_H = 38, WR_BUF = 10;
-const WR_FROZEN = [ ['Dealer', 210, 'l name'], ['Assigned Officer', 150, 'l'], ['Onboarding Date', 104, ''], ['Last Txn', 104, ''], ['Total Available Credit Limit', 120, 'rr'], ['Credit Line Status', 84, ''] ];
-const WR_WK_W = [96, 96, 96, 210];
-let curList = [], curActs = {}, rsStart = -1, rsEnd = -1, wrTodayStart = null;
+// Layout: info columns (frozen) + Week 1 (frozen, optional) + ONE paged week (◀ ▶ to move).
+// Fixed-width table (fast) and VIRTUALIZED rows: only rows near the viewport exist in the DOM.
+const WR_ROW_H = 38, WR_BUF = 10, WR_HEAD_H = 94;
+const WR_FROZEN = [ ['Dealer', 190, 'l name'], ['Assigned Officer', 130, 'l'], ['Onboarding Date', 96, ''], ['Last Txn', 96, ''], ['Total Available Credit Limit', 112, 'rr'], ['Credit Line Status', 78, ''] ];
+const WR_BLOCK_COLS = [['Actual Drawdowns', 'act'], ['Confident?', 'conf'], ['Planned Fresh Drawdown', 'fresh'], ['Planned Re-Drawdown', 'redraw'], ['Remarks', 'remarks']];
+const WR_W_PINNED = [76, 84, 84, 84, 120];   // frozen Week 1 (compact)
+const WR_W_PAGED  = [76, 84, 112, 112, 320]; // remarks stretches to the room that's left (150–420px)
+let curList = [], baseCount = 0, curActs = {}, rsStart = -1, rsEnd = -1, wrTodayStart = null;
+let pinW1 = window.innerWidth >= 1500, pageIdx = null, filters = {}, shown = [], tblW = 0;
+
+function pageList() { return pinW1 ? weeks.slice(1) : weeks; }
+function defaultPageIdx() {
+  const pl = pageList(), t = todayStart();
+  const i = pl.findIndex(w => t >= w.from && t <= w.to);
+  return i >= 0 ? i : 0;
+}
+// shown = the week blocks on screen, with their column widths and (for the pinned one) sticky offsets
+function layoutBlocks() {
+  const pl = pageList();
+  if (pageIdx === null || pageIdx >= pl.length) pageIdx = Math.max(0, Math.min(pageIdx === null ? defaultPageIdx() : pl.length - 1, pl.length - 1));
+  let x = WR_FROZEN.reduce((a, c) => a + c[1], 0);
+  shown = [];
+  const mk = (w, pinned) => {
+    let widths = pinned ? WR_W_PINNED : WR_W_PAGED, lefts = [];
+    if (!pinned) {
+      const avail = (document.getElementById('wr-wrap').clientWidth || 1400) - x - 4;
+      widths = widths.slice(); widths[4] = Math.max(130, Math.min(420, avail - widths.slice(0, 4).reduce((a, c) => a + c, 0)));
+    }
+    widths.forEach(wd => { lefts.push(x); x += wd; });
+    shown.push({ w, wi: weeks.indexOf(w), pinned, widths, lefts });
+  };
+  if (pinW1) mk(weeks[0], true);
+  mk(pl[pageIdx], false);
+  tblW = x;
+}
+function frozenLefts() { let x = 0; return WR_FROZEN.map(c => { const l = x; x += c[1]; return l; }); }
+
+function renderHead() {
+  layoutBlocks();
+  const table = document.getElementById('wr-table');
+  table.style.width = tblW + 'px';
+  let cg = '<colgroup>' + WR_FROZEN.map(c => '<col style="width:' + c[1] + 'px">').join('');
+  shown.forEach(b => { cg += b.widths.map(w => '<col style="width:' + w + 'px">').join(''); });
+  cg += '</colgroup>';
+  const fl = frozenLefts();
+  let h1 = '<tr>' + WR_FROZEN.map((c, i) => '<th class="fz' + (i === 0 ? ' l' : '') + (i === WR_FROZEN.length - 1 && !pinW1 ? ' fzend' : '') + '" rowspan="3" style="left:' + fl[i] + 'px">' + c[0] + '</th>').join('');
+  let h2 = '<tr class="sub">', h3 = '<tr class="flt">';
+  shown.forEach(b => {
+    const fz = b.pinned ? ' fz' : '';
+    h1 += '<th class="wk wkstart' + fz + '" colspan="5"' + (b.pinned ? ' style="left:' + b.lefts[0] + 'px"' : '') + '>' + b.w.label + ' <span style="font-weight:400;color:var(--text3)">(' + b.w.range + ')</span>' + (b.pinned ? ' <span title="Pinned" style="font-weight:400">📌</span>' : '') + '</th>';
+    WR_BLOCK_COLS.forEach((c, i) => {
+      const cls = 'wk' + (i === 0 ? ' wkstart' : '') + fz + (b.pinned && i === 4 ? ' fzend' : '');
+      const st = b.pinned ? ' style="left:' + b.lefts[i] + 'px"' : '';
+      h2 += '<th class="' + cls + '"' + st + '>' + c[0] + '</th>';
+      const fk = b.w.n + '|' + c[1], fv = filters[fk] || '';
+      let inner = '';
+      if (c[1] === 'conf') inner = '<select data-fk="' + fk + '" title="Filter Confident?"><option value="">Any</option><option value="yes"' + (fv === 'yes' ? ' selected' : '') + '>✔ Yes</option><option value="no"' + (fv === 'no' ? ' selected' : '') + '>Not yet</option></select>';
+      else if (c[1] === 'fresh' || c[1] === 'redraw') inner = '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="&gt;0, empty" title="Filter: &gt;0, &gt;=2, &lt;5, =3, empty, any">';
+      else if (c[1] === 'remarks') inner = '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="contains…" title="Filter: text contained in remarks, or: empty / any">';
+      h3 += '<th class="' + cls + '"' + st + '>' + inner + '</th>';
+    });
+  });
+  document.getElementById('wr-head').innerHTML = h1 + '</tr>' + h2 + '</tr>' + h3 + '</tr>';
+  const old = table.querySelector('colgroup'); if (old) old.remove();
+  table.insertAdjacentHTML('afterbegin', cg);
+  updatePager();
+}
+
+function updatePager() {
+  const pl = pageList(), w = pl[pageIdx];
+  document.getElementById('wr-pglabel').textContent = w ? w.label + ' · ' + w.range + '  (' + (pageIdx + 1) + ' of ' + pl.length + ')' : '';
+  document.getElementById('wr-prev').disabled = pageIdx <= 0;
+  document.getElementById('wr-next').disabled = pageIdx >= pl.length - 1;
+  document.getElementById('wr-pin').checked = pinW1;
+  document.getElementById('wr-clear').style.display = activeFilterKeys().length ? '' : 'none';
+}
+function goPage(delta) {
+  const pl = pageList(), n = Math.max(0, Math.min(pl.length - 1, pageIdx + delta));
+  if (n === pageIdx) return;
+  pageIdx = n; renderHead(); refreshBody(false);
+}
+
+// ── filters (apply to the week blocks currently on screen) ───────────────────
+function activeFilterKeys() {
+  const vis = {}; shown.forEach(b => { vis[b.w.n] = 1; });
+  return Object.keys(filters).filter(k => filters[k] && vis[k.split('|')[0]]);
+}
+function numTest(expr) {
+  const s = String(expr).trim().toLowerCase(); if (!s) return null;
+  if (s === 'empty' || s === 'blank') return v => v === '' || !isFinite(parseFloat(v));
+  if (s === 'any' || s === 'has') return v => v !== '' && isFinite(parseFloat(v));
+  const m = s.match(/^(>=|<=|!=|>|<|=)?\s*(-?\d+(?:\.\d+)?)$/); if (!m) return () => false;
+  const op = m[1] || '=', n = parseFloat(m[2]);
+  return v => {
+    const x = parseFloat(v); if (!isFinite(x)) return false;
+    return op === '>' ? x > n : op === '>=' ? x >= n : op === '<' ? x < n : op === '<=' ? x <= n : op === '!=' ? x !== n : x === n;
+  };
+}
+function applyFilters(list) {
+  const tests = [];
+  activeFilterKeys().forEach(k => {
+    const [n, f] = k.split('|'), val = filters[k];
+    let t;
+    if (f === 'conf') t = v => (val === 'yes') === (v.conf === '1');
+    else if (f === 'remarks') {
+      const q = val.trim().toLowerCase();
+      t = q === 'empty' || q === 'blank' ? v => !String(v.remarks).trim() : q === 'any' ? v => !!String(v.remarks).trim() : v => String(v.remarks).toLowerCase().indexOf(q) >= 0;
+    } else { const nt = numTest(val); if (!nt) return; t = v => nt(v[f]); }
+    tests.push({ n, t });
+  });
+  if (!tests.length) return list;
+  return list.filter(d => tests.every(x => x.t(cur(x.n + '|' + d.dealerId))));
+}
 
 function render() {
   weeks = buildWeeks(selectedMonth.y, selectedMonth.m);
-  curList = dealersInScope();
   wrTodayStart = todayStart();
+  renderHead();
+  refreshBody(true);
+}
+function refreshBody(resetScroll) {
+  const base = dealersInScope();
+  baseCount = base.length;
+  curList = applyFilters(base);
   curActs = {};
   curList.forEach(d => { curActs[d.dealerId] = weeks.map(w => w.from > wrTodayStart ? null : actualCount(d.dealerId, w)); });
-
-  const table = document.getElementById('wr-table');
-  const totalW = WR_FROZEN.reduce((a, c) => a + c[1], 0) + weeks.length * WR_WK_W.reduce((a, c) => a + c, 0);
-  table.style.width = totalW + 'px';
-  let cg = '<colgroup>' + WR_FROZEN.map(c => '<col style="width:' + c[1] + 'px">').join('');
-  weeks.forEach(() => { cg += WR_WK_W.map(w => '<col style="width:' + w + 'px">').join(''); });
-  cg += '</colgroup>';
-  let h1 = '<tr>' + WR_FROZEN.map((c, i) => '<th class="fz c' + i + (i === 0 ? ' l' : '') + '" rowspan="2">' + c[0] + '</th>').join('');
-  let h2 = '<tr class="sub">';
-  weeks.forEach(w => {
-    h1 += '<th class="wk wkstart" colspan="4">' + w.label + ' <span style="font-weight:400;color:var(--text3)">(' + w.range + ')</span></th>';
-    h2 += '<th class="wk wkstart">Actual Drawdowns</th><th class="wk">Planned Fresh Drawdown</th><th class="wk">Planned Re-Drawdown</th><th class="wk">Remarks</th>';
-  });
-  document.getElementById('wr-head').innerHTML = h1 + '</tr>' + h2 + '</tr>';
-  // colgroup must sit directly under <table>, before thead
-  const old = table.querySelector('colgroup'); if (old) old.remove();
-  table.insertAdjacentHTML('afterbegin', cg);
-
-  document.getElementById('wr-count').textContent = curList.length + ' dealers · ' + MONTH_ABBR[selectedMonth.m] + ' ' + selectedMonth.y;
+  document.getElementById('wr-count').textContent = (curList.length === baseCount ? baseCount : curList.length + ' of ' + baseCount) + ' dealers · ' + MONTH_ABBR[selectedMonth.m] + ' ' + selectedMonth.y;
   rsStart = rsEnd = -1;
-  document.getElementById('wr-wrap').scrollTop = 0;
+  if (resetScroll) document.getElementById('wr-wrap').scrollTop = 0;
   paintRows(true);
-  requestAnimationFrame(() => paintRows(false)); // viewport height is known after layout: top up the window
+  requestAnimationFrame(() => paintRows(false));
   renderFoot();
   updateSaveBar();
+  updatePager();
 }
 
 function rowHtml(d) {
-  const acts = curActs[d.dealerId];
+  const acts = curActs[d.dealerId], fl = frozenLefts(), last = WR_FROZEN.length - 1;
   let html = '<tr class="r" data-d="' + esc(d.dealerId) + '">' +
-    '<td class="fz c0 l name" title="' + esc(d.name) + ' · ' + esc(d.dealerId) + '">' + esc(d.name) + '</td>' +
-    '<td class="fz c1 l" title="' + esc(d.so) + '">' + esc(d.so || '—') + '</td>' +
-    '<td class="fz c2">' + fmtDate(d.onboardingDate) + '</td><td class="fz c3">' + fmtDate(d.last) + '</td>' +
-    '<td class="fz c4 rr">' + peso(d.availCredit) + '</td><td class="fz c5">' + esc(d.clStatus || '—') + '</td>';
-  weeks.forEach((w, wi) => {
-    const key = w.n + '|' + d.dealerId, v = cur(key);
-    const a = acts[wi], future = a === null;
+    '<td class="fz l name" style="left:' + fl[0] + 'px" title="' + esc(d.name) + ' · ' + esc(d.dealerId) + '">' + esc(d.name) + '</td>' +
+    '<td class="fz l" style="left:' + fl[1] + 'px" title="' + esc(d.so) + '">' + esc(d.so || '—') + '</td>' +
+    '<td class="fz" style="left:' + fl[2] + 'px">' + fmtDate(d.onboardingDate) + '</td><td class="fz" style="left:' + fl[3] + 'px">' + fmtDate(d.last) + '</td>' +
+    '<td class="fz rr" style="left:' + fl[4] + 'px">' + peso(d.availCredit) + '</td><td class="fz' + (pinW1 ? '' : ' fzend') + '" style="left:' + fl[last] + 'px">' + esc(d.clStatus || '—') + '</td>';
+  shown.forEach(b => {
+    const w = b.w, key = w.n + '|' + d.dealerId, v = cur(key);
+    const a = acts[b.wi], future = a === null;
     const ed = edits[key], sv = saved[key] || {};
-    const dirty = (fld) => ed && String(ed[fld]) !== String(sv[fld] == null ? '' : sv[fld]) ? ' dirty' : '';
+    const dirty = fld => ed && String(ed[fld] == null ? '' : ed[fld]) !== String(sv[fld] == null ? '' : sv[fld]) ? ' dirty' : '';
     const who = sv.by ? 'Last saved by ' + sv.by + (sv.at ? ' · ' + sv.at : '') : '';
-    html += '<td class="act wkstart' + (future ? ' future' : '') + '">' + (future ? '–' : a) + '</td>' +
-      '<td class="in"><input class="num' + dirty('fresh') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="fresh" value="' + esc(v.fresh) + '" title="' + esc(who) + '"></td>' +
-      '<td class="in"><input class="num' + dirty('redraw') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="redraw" value="' + esc(v.redraw) + '" title="' + esc(who) + '"></td>' +
-      '<td class="in"><input class="rem' + dirty('remarks') + '" type="text" maxlength="2000" data-k="' + key + '" data-f="remarks" value="' + esc(v.remarks) + '" title="' + esc(who) + '"></td>';
+    const P = (i, extra) => (b.pinned ? ' fz' : '') + (b.pinned && i === 4 ? ' fzend' : '') + (extra || '');
+    const S = i => b.pinned ? ' style="left:' + b.lefts[i] + 'px"' : '';
+    html += '<td class="act wkstart' + (future ? ' future' : '') + P(0) + '"' + S(0) + '>' + (future ? '–' : a) + '</td>' +
+      '<td class="in ck' + P(1) + '"' + S(1) + '><input class="ckb' + dirty('conf') + '" type="checkbox" data-k="' + key + '" data-f="conf"' + (v.conf === '1' ? ' checked' : '') + ' title="' + esc(who || 'Confident this plan will happen?') + '"></td>' +
+      '<td class="in' + P(2) + '"' + S(2) + '><input class="num' + dirty('fresh') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="fresh" value="' + esc(v.fresh) + '" title="' + esc(who) + '"></td>' +
+      '<td class="in' + P(3) + '"' + S(3) + '><input class="num' + dirty('redraw') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="redraw" value="' + esc(v.redraw) + '" title="' + esc(who) + '"></td>' +
+      '<td class="in' + P(4) + '"' + S(4) + '><input class="rem' + dirty('remarks') + '" type="text" maxlength="2000" data-k="' + key + '" data-f="remarks" value="' + esc(v.remarks) + '" title="' + esc(who) + '"></td>';
   });
   return html + '</tr>';
 }
@@ -729,17 +844,14 @@ function rowHtml(d) {
 // Paint only the rows around the viewport. force=true repaints even if the window is unchanged.
 function paintRows(force) {
   const body = document.getElementById('wr-body'), wrap = document.getElementById('wr-wrap');
-  const n = curList.length, ncols = WR_FROZEN.length + weeks.length * 4;
-  if (!n) { body.innerHTML = '<tr><td colspan="' + ncols + '" style="padding:18px;text-align:center;color:var(--text3);font-style:italic">No onboarded dealers match the current filters.</td></tr>'; rsStart = rsEnd = -1; return; }
-  const headH = 60;
-  const first = Math.max(0, Math.floor((wrap.scrollTop - headH) / WR_ROW_H));
+  const n = curList.length, ncols = WR_FROZEN.length + shown.length * 5;
+  if (!n) { body.innerHTML = '<tr><td colspan="' + ncols + '" style="padding:18px;text-align:left;color:var(--text3);font-style:italic">No dealers match the current filters.</td></tr>'; rsStart = rsEnd = -1; return; }
+  const first = Math.max(0, Math.floor((wrap.scrollTop - WR_HEAD_H) / WR_ROW_H));
   const vis = Math.ceil(wrap.clientHeight / WR_ROW_H) + 1;
-  // keep the existing window if the viewport is still comfortably inside it
   if (!force && rsStart >= 0 && first >= rsStart + 2 && first + vis <= rsEnd - 2) return;
   if (!force && rsStart === 0 && first + vis <= rsEnd - 2) return;
   const start = Math.max(0, first - WR_BUF), end = Math.min(n, first + vis + WR_BUF);
   if (!force && start === rsStart && end === rsEnd) return;
-  // remember focus so typing isn't interrupted by a repaint
   const ae = document.activeElement; let keep = null;
   if (ae && ae.dataset && ae.dataset.k && body.contains(ae)) keep = { k: ae.dataset.k, f: ae.dataset.f, s: ae.selectionStart, e: ae.selectionEnd };
   let html = '<tr class="sp"><td colspan="' + ncols + '" style="height:' + (start * WR_ROW_H) + 'px"></td></tr>';
@@ -759,14 +871,19 @@ document.getElementById('wr-wrap').addEventListener('scroll', () => {
 }, { passive: true });
 
 function renderFoot() {
-  const tot = weeks.map(() => ({ act: 0, fresh: 0, redraw: 0 }));
-  curList.forEach(d => weeks.forEach((w, wi) => {
-    const a = curActs[d.dealerId][wi]; if (a) tot[wi].act += a;
-    const v = cur(w.n + '|' + d.dealerId), f = parseFloat(v.fresh), rd = parseFloat(v.redraw);
-    if (isFinite(f)) tot[wi].fresh += f; if (isFinite(rd)) tot[wi].redraw += rd;
-  }));
-  let foot = '<tr><td class="fz c0 l" colspan="6" style="box-shadow:2px 0 0 var(--tbl-bdr2)">Total (' + curList.length + ' dealers)</td>';
-  weeks.forEach((w, wi) => { foot += '<td class="wkstart">' + tot[wi].act + '</td><td>' + tot[wi].fresh + '</td><td>' + tot[wi].redraw + '</td><td></td>'; });
+  const fl = frozenLefts();
+  let foot = '<tr><td class="fz l' + (pinW1 ? '' : ' fzend') + '" colspan="6" style="left:0">Total (' + curList.length + ' dealers)</td>';
+  shown.forEach(b => {
+    let act = 0, conf = 0, fresh = 0, redraw = 0;
+    curList.forEach(d => {
+      const a = curActs[d.dealerId][b.wi]; if (a) act += a;
+      const v = cur(b.w.n + '|' + d.dealerId), f = parseFloat(v.fresh), rd = parseFloat(v.redraw);
+      if (v.conf === '1') conf++;
+      if (isFinite(f)) fresh += f; if (isFinite(rd)) redraw += rd;
+    });
+    const P = i => (b.pinned ? ' fz' : '') + (b.pinned && i === 4 ? ' fzend' : ''), S = i => b.pinned ? ' style="left:' + b.lefts[i] + 'px"' : '';
+    foot += '<td class="wkstart' + P(0) + '"' + S(0) + '>' + act + '</td><td class="' + P(1).trim() + '"' + S(1) + '>' + conf + ' ✔</td><td class="' + P(2).trim() + '"' + S(2) + '>' + fresh + '</td><td class="' + P(3).trim() + '"' + S(3) + '>' + redraw + '</td><td class="' + P(4).trim() + '"' + S(4) + '></td>';
+  });
   document.getElementById('wr-foot').innerHTML = foot + '</tr>';
 }
 
@@ -778,22 +895,29 @@ function updateSaveBar() {
   document.getElementById('wr-save').title = wrConfigured() ? '' : 'Save endpoint not configured yet';
 }
 
-// edits: a row's FULL triple is tracked together, and dropped again if it
+// edits: a row's FULL set of fields is tracked together, and dropped again if it
 // ends up equal to what's saved.
+const WR_FIELDS = ['fresh', 'redraw', 'remarks', 'conf'];
 function onInput(e) {
   const el = e.target; if (!el.dataset || !el.dataset.k) return;
   const key = el.dataset.k, fld = el.dataset.f;
-  const base = Object.assign({ fresh: '', redraw: '', remarks: '' }, saved[key] || {});
-  const row = Object.assign({}, edits[key] || { fresh: base.fresh, redraw: base.redraw, remarks: base.remarks });
-  row[fld] = el.value;
-  const same = ['fresh', 'redraw', 'remarks'].every(f => String(row[f]) === String(base[f] == null ? '' : base[f]));
+  const base = Object.assign({ fresh: '', redraw: '', remarks: '', conf: '' }, saved[key] || {});
+  const row = Object.assign({}, edits[key] || { fresh: base.fresh, redraw: base.redraw, remarks: base.remarks, conf: base.conf });
+  row[fld] = fld === 'conf' ? (el.checked ? '1' : '') : el.value;
+  const same = WR_FIELDS.every(f => String(row[f]) === String(base[f] == null ? '' : base[f]));
   if (same) delete edits[key]; else edits[key] = row;
   el.classList.toggle('dirty', !!edits[key] && String(row[fld]) !== String(base[fld] == null ? '' : base[fld]));
-  // keep totals live without a full re-render (which would drop focus)
-  recomputeFootPlanned();
+  renderFoot();
   updateSaveBar();
 }
-function recomputeFootPlanned() { renderFoot(); }
+// filter controls in the header
+let _fT = null;
+function onFilter(e) {
+  const el = e.target; if (!el.dataset || !el.dataset.fk) return;
+  const k = el.dataset.fk, v = el.value.trim();
+  if (v) filters[k] = v; else delete filters[k];
+  clearTimeout(_fT); _fT = setTimeout(() => refreshBody(true), el.tagName === 'SELECT' ? 0 : 220);
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SAVE
@@ -803,7 +927,7 @@ async function saveEdits() {
   if (!wrConfigured() || !ID_TOKEN) return;
   const rows = Object.keys(edits).map(k => {
     const [week, dealerId] = k.split('|');
-    return { week: +week, dealerId, fresh: edits[k].fresh, redraw: edits[k].redraw, remarks: edits[k].remarks };
+    return { week: +week, dealerId, fresh: edits[k].fresh, redraw: edits[k].redraw, remarks: edits[k].remarks, conf: edits[k].conf === '1' };
   });
   if (!rows.length) return;
   btn.disabled = true; msg.className = 'wr-msg'; msg.textContent = 'Saving…';
@@ -880,11 +1004,24 @@ async function tryRender() {
 }
 
 document.addEventListener('input', onInput);
+document.getElementById('wr-head').addEventListener('input', onFilter);
+document.getElementById('wr-head').addEventListener('change', onFilter);
+document.getElementById('wr-prev').onclick = () => goPage(-1);
+document.getElementById('wr-next').onclick = () => goPage(1);
+document.getElementById('wr-pin').onchange = function () {
+  const cw = pageList()[pageIdx]; pinW1 = this.checked;
+  const pl = pageList(); const i = cw ? pl.findIndex(w => w.n === cw.n) : -1;
+  pageIdx = i >= 0 ? i : 0; renderHead(); refreshBody(false);
+};
+document.getElementById('wr-clear').onclick = () => { filters = {}; renderHead(); refreshBody(true); };
+document.addEventListener('keydown', e => {
+  if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { e.preventDefault(); goPage(e.key === 'ArrowRight' ? 1 : -1); }
+});
 document.getElementById('wr-save').onclick = saveEdits;
 document.getElementById('wr-discard').onclick = () => { edits = {}; render(); document.getElementById('wr-savemsg').textContent = ''; };
 document.getElementById('wr-month').onchange = async function () {
   if (!confirmDiscardIfDirty()) { this.value = selectedMonth.y + '-' + selectedMonth.m; return; }
-  const [y, m] = this.value.split('-').map(Number); selectedMonth = { y, m }; edits = {};
+  const [y, m] = this.value.split('-').map(Number); selectedMonth = { y, m }; edits = {}; filters = {}; pageIdx = null;
   await loadSaved(); render();
 };
 document.getElementById('wr-so').onchange = function () { selectedSO = this.value; render(); };
