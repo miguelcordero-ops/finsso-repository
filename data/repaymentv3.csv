@@ -1,6 +1,6 @@
 Dealership Name,Drawdown ID,Repayment ID,Financier,Netbank Booking Date,PNCM Date,Credit Date to Dealer Bank Account,Original Principal,Outstanding Principal,Interest Rate,Year Model,Make Model Variant,"Plate Number
 (as on ORCR)",Loan Status,Loan Age at Payment,Payment Aging,Dealer Mode of Payment,Link to Dealer Proof of Transaction,"Finsso 
 Receiving Bank",Finsso Received Amount from Dealer,Payment Crediting Date (Carmudi Bank),Transaction ID,Dealer Payment Date,Total Received Amount fr Dealer,Dealer Payment Type,Payment Due Date,Payment Days Past Due,Total Applied,Principal Applied,Interest Applied,Renewal Fee Applied,Late Fee Applied,Penalty Fee Applied,Total Expected,Expected Principal,Expected Interest,Expected Renewal Fee,Expected Late Fee,Expected Penalty Fee,Excess/Lacking,Waived,Extra Grace,Netbank - Loan Aging
-CROSSROAD 77,CRO85*,CRO85*-0,Finsso,,46290,46290.62564,376000,376000,0.0175,,,,,20,30,,,,,,,46310,,Final Repayment,46470,-160,,,,,,,,376000,6580,0
-CROSSROAD 77,CRO91*,CRO91*-0,Finsso,,46290,46290.62564,420000,420000,0.0175,,,,,,30,,,,,,,,,,,,,,,,,,,,7350
-CROSSROAD 77,CRO92*,CRO92*-0,Finsso,,46290,46290.62564,320000,320000,0.0175,,,,,,30,,,,,,,,,,,,,,,,,,,,5600
+CROSSROAD 77,CRO85*,CRO85*-0,Finsso,,46290,46290.62564,376000,376000,0.0175,,,,,19,30,Cash,,Finsso BDO - 6935,376000,46309,	01383 CD,46309,375999,Final Repayment,46470,-161,,376000,0,0,0,0,,376000,6580,0
+CROSSROAD 77,CRO91*,CRO91*-0,Finsso,,46290,46290.62564,420000,420000,0.0175,,,,,19,30,Cash,,Finsso BDO - 6935,420000,46309,	01383 CD,46309,420000,Final Repayment,46470,-161,,420000,0,0,0,0,,420000,7350,0
+CROSSROAD 77,CRO92*,CRO92*-0,Finsso,,46290,46290.62564,320000,320000,0.0175,,,,,19,30,Cash,,Finsso BDO - 6935,320000,46309,	01383 CD,46309,320001,Final Repayment,46470,-161,,320000,0,0,0,0,,320000,5600,0
