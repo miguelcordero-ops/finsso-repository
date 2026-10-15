@@ -65,7 +65,7 @@
 ,IF0064,J8 CAR TRADING,Albert Dalupang,Zhesa Resurrecion,0,3,0,0,0,0,0,0,128.6666667,,46,,Blacklisted,Manual,46006,,,4,4,0,0,0,0,,0,0,0,0,No,46006,Emailed Endorsement,,46190.65122
 ,IF0065,MJO CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,209,0,38,16859273.86,16859273.86,0,16859273.86,79.37651822,,104.6216216,46097,Blacklisted,15 DPD,46097,,,206,113,93,0.06678404349,213,182,46154,42,0,42,19,Yes,,,,46190.65122
 ,IF0066,AUTOCOTTO CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,1,42,0,0,0,0,0,0,101.7173913,,30.19047619,,Blacklisted,Locked by Timestamp,46190.65122,,,83,43,40,0,0,0,,0,0,0,5,No,,,46058,46190.65122
-,IF0067,DC CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,40,1,2,665820,665820,364500,301320,52.41860465,,10.09090909,46300,Blacklisted,Locked by Timestamp,46297.04094,,,58,37,21,0.002637489147,10,8,46303,17,11,6,3,Yes,,,,46297.04094
+,IF0067,DC CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,40,1,2,665820,665820,364500,301320,52.41860465,,10.09090909,46300,Blacklisted,Locked by Timestamp,46297.04094,,,59,38,21,0.002637489147,10,8,46310,18,12,6,3,Yes,,,,46297.04094
 ,IF0068,RJDM AUTO CARE SERVICES,Albert Dalupang,Albert Dalupang,1,22,7,0,2381471.992,2381471.992,2381471.992,0,40.03448276,,,,Open,,,,,37,26,11,0.009433640524,0,0,46293,4,2,2,0,No
 ,IF0069,ONETEN CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,9,2,0,873000,873000,873000,0,42.63636364,,,,Open,,,,,14,11,3,0.003458183932,0,0,46297,4,4,0,0,No
 ,IF0070,AUTO WEALTH MARKETING CONSULTANCY,Albert Dalupang,Malou Alfonzo,0,24,0,0,0,0,0,0,73.04166667,,62.5,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46030,,91,41,50,0,0,0,,0,0,0,1,No
@@ -265,7 +265,7 @@
 ,IF0264,ROSMEL AUTO TRADING,Albert Dalupang,Ricmar Magboo,0,5,2,0,575740,575740,575740,0,41,,,,Open,Finsso: Expired CL | Netbank: Open,,46303,,6,5,1,0.002280658439,0,0,46307,3,3,0,1,No
 ,IF0265,ELLA BELLA CAR TRADING,Malou Alfonso,Rose Batacan,0,3,0,0,0,0,0,0,29.33333333,,,,Open,Finsso: Expired CL | Netbank: Open,,46304,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0266,AIRCONDITION TRADING WIL-AIR,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Expired CL | Netbank: Pending CLA Signature,,46304,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0267,CJ FLOW OPC,Marah Luriely A. Villaruz,Rhoyland Alagon,0,19,2,0,0,581820.4,581820.4,0,29.94736842,,7,,Open,Finsso: Pending CLA Signature | Netbank: Open,,45943.54514,,7,7,0,0,0,0,,0,0,0,0,No
+,IF0267,CJ FLOW OPC,Marah Luriely A. Villaruz,Rhoyland Alagon,0,19,2,0,0,581820.4,581820.4,0,29.94736842,,7,,Open,,,,,7,7,0,0,0,0,,0,0,0,0,No
 ,IF0268,ANARY'S GENERAL MERCHANDISE,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Expired CL | Netbank: Pending CLA Signature,,46307,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0269,HEBRIO AUTO TRADING,Malou Alfonso,Rose Batacan,0,1,0,0,0,0,0,0,98,,8,,Hold,Finsso: Expired CL | Netbank: Pending CLA Signature,,46308,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0270,DRYVE CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,1,28,1,0,379890,379890,379890,0,52.44827586,,14,,Blacklisted,Locked by Timestamp,46251.62432,,,36,22,14,0.001504844781,0,0,46308,7,4,3,3,No,,,,46251.62432
