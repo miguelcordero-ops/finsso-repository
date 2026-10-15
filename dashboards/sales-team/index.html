@@ -278,6 +278,16 @@ td.metric-label{color:var(--text);font-weight:500}
 .dc-tbar button{font:inherit;font-size:12px;padding:3px 10px;border-radius:6px;border:1px solid var(--border2);background:var(--surface-d);color:var(--text2);cursor:pointer}
 .dc-tbar button:hover{background:var(--chip-hover)}
 .dc-tbar .dc-hint{color:var(--text3);font-style:italic;margin-left:auto}
+/* overdue = red, in DPD but not overdue = yellow (light / dark) */
+.dc-table-wrap tr.od td,.dc-table-wrap tr.od td.fz{background:#fecaca;color:#7f1d1d}
+.dc-table-wrap tr.dpd td,.dc-table-wrap tr.dpd td.fz{background:#fef08a;color:#713f12}
+:root[data-theme="dark"] .dc-table-wrap tr.od td,:root[data-theme="dark"] .dc-table-wrap tr.od td.fz{background:#5c1a1f;color:#fecdd3}
+:root[data-theme="dark"] .dc-table-wrap tr.dpd td,:root[data-theme="dark"] .dc-table-wrap tr.dpd td.fz{background:#4d3f0a;color:#fde68a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dc-table-wrap tr.od td,:root:not([data-theme="light"]) .dc-table-wrap tr.od td.fz{background:#5c1a1f;color:#fecdd3}:root:not([data-theme="light"]) .dc-table-wrap tr.dpd td,:root:not([data-theme="light"]) .dc-table-wrap tr.dpd td.fz{background:#4d3f0a;color:#fde68a}}
+.dc-tbar .dc-key{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--text2)}
+.dc-tbar .dc-key i{width:12px;height:12px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.15)}
+.dc-tbar .dc-key i.k-od{background:#fecaca}.dc-tbar .dc-key i.k-dpd{background:#fef08a}
+:root[data-theme="dark"] .dc-tbar .dc-key i.k-od{background:#5c1a1f}:root[data-theme="dark"] .dc-tbar .dc-key i.k-dpd{background:#4d3f0a}
 .dc-table-wrap th.srt{cursor:pointer;user-select:none}
 .dc-table-wrap th.srt:hover{filter:brightness(.96)}
 .dc-table-wrap th.flt{padding:3px 4px;z-index:2}
@@ -731,6 +741,7 @@ async function loadData() {
         plate: get(r, ddCol('Plate Number (as on ORCR)')).trim(),
         yearModel: get(r, ddCol('Year Model')).trim(),
         financingType: get(r, ddCol('Type of Financing')).trim(),
+        dealerName: get(r, ddCol('Dealership Name')).trim(),
         loanTenure: get(r, ddCol('Total Loan Tenure (in days)')).trim(),
         maturityDate: parseSheetDate(get(r, ddCol('Final Maturity Date'))),
         loanAging: get(r, ddCol('Overall Loan Aging based on PNCM Date')).trim(),
@@ -783,6 +794,7 @@ async function loadData() {
           plate: get(r, d3Col('Plate Number (as on ORCR)')).trim(),
           yearModel: get(r, d3Col('Year Model')).trim(),
           financingType: get(r, d3Col('Type of Financing')).trim(),
+          dealerName: get(r, d3Col('Dealership Name')).trim(),
           loanTenure: get(r, d3Col('Loan Tenure')).trim() || get(r, d3Col('Total Loan Tenure Days')).trim(),
           maturityDate: parseSheetDate(get(r, d3Col('Maturity Date'))),
           loanAging: get(r, d3Col('Loan Aging')).trim(),
@@ -793,6 +805,7 @@ async function loadData() {
           dpdAgingSheet: String(Math.max.apply(null, ['R1 DPD','R2 DPD','R3 DPD','P1 DPD','R4 DPD','P2 DPD','R5 DPD','P3 DPD','Maturity DPD']
             .map(function (n) { return parseNum(get(r, d3Col(n))) || 0; }))),
           dpdStatusSheet: '',
+          isV3: true,
         });
       }
     }
@@ -865,6 +878,7 @@ async function loadData() {
     // one assigned yet) — only truly empty rows (no SO and no dates at all,
     // e.g. trailing sheet padding) are skipped. ──
     applicationRows = [];
+    const obNames = {}; // dealer names from the OB Masterlist (fallback for the Dealer Status card)
     if (obGrid) {
       const obCol = buildColumnMap(obGrid[0]);
       for (let i = 1; i < obGrid.length; i++) {
@@ -875,6 +889,8 @@ async function loadData() {
         const completionDate = parseSheetDate(get(r, obCol('Date of Completion of Onboarding Documents by Sales')));
         if (!so && !applicationDate && !completionDate) continue; // fully blank row
         applicationRows.push({ dealerId, so, applicationDate, completionDate });
+        const nm = get(r, obCol('Dealership Name')).trim();
+        if (dealerId && nm && !obNames[dealerId]) obNames[dealerId] = nm;
       }
     }
 
@@ -882,6 +898,9 @@ async function loadData() {
     // Status card. First occurrence of a repeated header wins (the sheet has
     // three "Credit Line Status" columns — the first is the overall one). ──
     dealerRows = [];
+    // Fallback dealer names from the drawdown sheets' "Dealership Name" (used if the Dealer Checker name header is missing/renamed)
+    const nameFromLoans = {};
+    drawdownRows.forEach(l => { if (l.dealerId && l.dealerName && !nameFromLoans[l.dealerId]) nameFromLoans[l.dealerId] = l.dealerName; });
     if (dcGrid) {
       const dcC = buildColumnMap(dcGrid[0]);
       const g = (r, n) => get(r, dcC(n)).trim();
@@ -891,7 +910,7 @@ async function loadData() {
         if (!dealerId) continue;
         dealerRows.push({
           dealerId,
-          name: g(r, 'Dealership Name') || '(unnamed)',
+          name: g(r, 'Dealership Name') || nameFromLoans[dealerId] || obNames[dealerId] || '(unnamed)',
           gcd: g(r, 'GCD Code'),
           so: normName(g(r, 'Assigned Sales Officer')),
           familyGroup: g(r, 'Same Group'),
@@ -1493,14 +1512,17 @@ function renderDealerBody() {
     const latest = ins[0];
     const sold = l.soldFlag || (ins.some(x => x.dateSold) ? 'Sold' : '');
     const od = dcIsOverdue(l);
-    const dpdDays = od ? (parseFloat(l.dpdAgingSheet) || 0) : 0;
-    const dpdStatus = od ? (l.dpdStatusSheet || dcBucket(dpdDays)) : '';
+    // Row colouring: red = Loan Status Overdue; yellow = open but already in a DPD bucket
+    // (v2: "Bucket 2 as per Loan Aging Considering Renewal" starts with "DPD"; v3: any checkpoint DPD > 0).
+    const inDpd = dcIsOpen(l) && !od && (l.isV3 ? (parseFloat(l.dpdAgingSheet) || 0) > 0 : /^dpd/i.test(l.dpdStatusSheet || ''));
+    const state = od ? 'od' : (inDpd ? 'dpd' : '');
     const aging = parseFloat(l.loanAging);
     const out = dcIsOpen(l) ? (l.outstandingSheet || 0) : 0;
     const t = d => d ? d.getTime() : null;
     const n = v => { const x = parseFloat(v); return isFinite(x) ? x : null; };
     return {
       hist: !dcIsOpen(l),
+      state,
       cells: [
         { v: l.id, t: l.id },
         { v: n(l.loanTenure), t: l.loanTenure },
@@ -1510,8 +1532,6 @@ function renderDealerBody() {
         { v: n(l.yearModel), t: l.yearModel },
         { v: l.financingType, t: l.financingType },
         { v: t(l.creditDate), t: l.creditDate ? dcDate(l.creditDate) : '' },
-        { v: dpdStatus, t: dpdStatus },
-        { v: od && dpdDays ? dpdDays : null, t: od && dpdDays ? String(dpdDays) : '' },
         { v: isFinite(aging) ? Math.round(aging) : null, t: isFinite(aging) ? String(Math.round(aging)) : l.loanAging },
         { v: t(l.maturityDate), t: l.maturityDate ? dcDate(l.maturityDate) : '' },
         { v: out, t: dcPeso(out) },
@@ -1523,15 +1543,15 @@ function renderDealerBody() {
       ],
     };
   });
-  const heads = ['Drawdown ID','Loan Tenure','Loan Status','Make Model','Plate','Year Model','Financing Type','Credit Date','DPD Status','DPD Aging','Loan Aging','Final Maturity Date','Outstanding Principal','Latest Act. Inspection','Inspection Remarks','Inspections Passed','Inspections Failed','Sold Tagging'];
+  const heads = ['Drawdown ID','Loan Tenure','Loan Status','Make Model','Plate','Year Model','Financing Type','Credit Date','Loan Aging','Final Maturity Date','Outstanding Principal','Latest Act. Inspection','Inspection Remarks','Inspections Passed','Inspections Failed','Sold Tagging'];
   dcHeads = heads;
-  const leftCols = { 0: 1, 3: 1 }, rightCols = { 12: 1 };
+  const leftCols = { 0: 1, 3: 1 }, rightCols = { 10: 1 }; dcOutCol = heads.indexOf('Outstanding Principal');
 
   body.innerHTML =
     '<div class="dc-grid"><div>' + left1 + '</div><div>' + right1 + '</div></div>' +
     '<div class="dc-grid" style="padding-top:0"><div>' + left2 + '</div><div>' + right2 + '</div></div>' +
     '<div class="dc-band" style="font-size:15px">' + (includeHist ? 'All Accounts (incl. historical)' : 'Open Accounts') + '</div>' +
-    '<div class="dc-tbar"><span id="dc-count"></span><button type="button" id="dc-clear">Clear sort &amp; filters</button>' +
+    '<div class="dc-tbar"><span id="dc-count"></span><span class="dc-key"><i class="k-od"></i>Overdue</span><span class="dc-key"><i class="k-dpd"></i>In DPD, not overdue</span><button type="button" id="dc-clear">Clear sort &amp; filters</button>' +
     '<span class="dc-hint">click a header to sort · type under a header to filter (numbers accept &gt; &lt; &gt;= &lt;= =)</span></div>' +
     '<div class="dc-table-wrap"><table><thead>' +
     '<tr id="dc-hrow">' + heads.map((h, i) => '<th data-c="' + i + '" class="srt' + (i === 0 ? ' fz' : '') + '">' + h + '<span class="ar"></span></th>').join('') + '</tr>' +
@@ -1560,7 +1580,7 @@ function renderDealerBody() {
   document.querySelectorAll('#dc-frow th').forEach(th => { th.style.top = h1.offsetHeight + 'px'; });
   dcPaintRows();
 }
-let dcRows = [], dcHeads = [], dcCols = [], dcSort = { col: null, dir: 1 }, dcFilters = {};
+let dcOutCol = 10, dcRows = [], dcHeads = [], dcCols = [], dcSort = { col: null, dir: 1 }, dcFilters = {};
 function dcResetTableState() { dcSort = { col: null, dir: 1 }; dcFilters = {}; }
 function dcMatch(cell, q) {
   q = q.trim();
@@ -1585,10 +1605,11 @@ function dcPaintRows() {
     });
   }
   document.getElementById('dc-tbody').innerHTML = rows.length ? rows.map(r =>
-    '<tr' + (r.hist ? ' class="hist"' : '') + '>' + r.cells.map((cell, i) =>
+    '<tr class="' + (r.hist ? 'hist ' : '') + (r.state || '') + '">' + r.cells.map((cell, i) =>
       '<td class="' + (dcCols[i].fz ? 'fz ' : '') + (dcCols[i].left ? 'l ' : '') + (dcCols[i].right ? 'rr' : '') + '">' + dcEsc(cell.t) + '</td>').join('') + '</tr>'
   ).join('') : '<tr><td colspan="' + dcHeads.length + '" style="font-style:italic;color:var(--text3)">No accounts match.</td></tr>';
-  document.getElementById('dc-count').textContent = 'Showing ' + rows.length + ' of ' + dcRows.length + ' accounts';
+  const totOut = rows.reduce((a, r) => a + (+r.cells[dcOutCol].v || 0), 0);
+  document.getElementById('dc-count').innerHTML = 'Showing ' + rows.length + ' of ' + dcRows.length + ' accounts &nbsp;·&nbsp; Outstanding Principal: <b>' + dcPeso(totOut) + '</b>';
   document.querySelectorAll('#dc-hrow th').forEach(th => {
     const on = dcSort.col === +th.dataset.c;
     th.querySelector('.ar').textContent = on ? (dcSort.dir === 1 ? ' ▲' : ' ▼') : '';
