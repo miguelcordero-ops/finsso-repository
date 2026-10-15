@@ -362,7 +362,7 @@ table.wr thead tr.sub th{top:30px;z-index:4;font-weight:600;color:var(--text2)}
 table.wr thead th.wk{background:var(--wr-wk,#e3e8f7)}
 table.wr thead tr.sub th.wk{background:var(--wr-wk2,#edf0fa)}
 table.wr td.l,table.wr th.l{text-align:left}
-table.wr td.rr{text-align:right}
+table.wr td.rr,table.wr th.rr{text-align:right}
 table.wr .fz{position:sticky;z-index:3;background:var(--wr-fz,#fbfbfd)}
 table.wr td.fz.name{font-weight:600}
 table.wr .c0{left:0}table.wr .c1{left:210px}table.wr .c2{left:360px}table.wr .c3{left:464px}table.wr .c4{left:568px}table.wr .fzend{box-shadow:2px 0 0 var(--tbl-bdr2)}
@@ -458,7 +458,6 @@ table.wr td.ck input.ckb.dirty{outline:2px solid var(--primary);outline-offset:1
     <label for="wr-so">Officer</label><select id="wr-so"></select>
     <input id="wr-search" type="search" placeholder="Search dealer name or ID…" autocomplete="off">
     <span class="wr-pager"><button type="button" id="wr-prev" title="Previous week (Alt+←)">◀</button><span id="wr-pglabel"></span><button type="button" id="wr-next" title="Next week (Alt+→)">▶</button></span>
-    <label class="wr-pin"><input type="checkbox" id="wr-pin"> Pin Week 1</label>
     <button type="button" id="wr-clear" style="display:none">Clear filters</button>
     <span class="wr-count" id="wr-count"></span>
   </div>
@@ -504,7 +503,7 @@ let ACCESS = null, ID_TOKEN = '', USER_EMAIL = '', _dataReady = false, _rendered
 let selectedTeam = ALL_TEAMS, selectedSO = '', selectedMonth = null, searchQ = '';
 let saved = {};   // key "week|dealerId" -> {fresh, redraw, remarks, by, at}   (as last loaded from server)
 let edits = {};   // key -> {fresh, redraw, remarks, conf}  (unsaved, full set for that row)
-let weeks = [];
+let weeks = [], loanDealer = {}, latestVisit = {};
 
 function teamOf(so) { return SO_TEAM_MAP[so] || null; }
 function esc(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -520,12 +519,13 @@ async function loadData() {
   const errEl = document.getElementById('error-box');
   loadingEl.classList.remove('hidden');
   try {
-    const [ddGrid, dd3Grid, dcGrid, obGrid, mapGrid] = await Promise.all([
+    const [ddGrid, dd3Grid, dcGrid, obGrid, mapGrid, siGrid] = await Promise.all([
       fetchCSV('drawdown.csv'),
       fetchCSV('drawdownv3.csv', true),
       fetchCSV('dealer-checker.csv'),
       fetchCSV('ob-masterlist.csv', true),
       fetchCSV('mapping.csv', true),
+      fetchCSV('stock-inspection.csv', true), // "[Raw] Stock Inspection" — latest IF visit
     ]);
 
     if (mapGrid) {
@@ -544,7 +544,7 @@ async function loadData() {
     }
 
     // Loans (credited drawdowns) per dealer: v2 + v3 (180-day), header-name lookups.
-    loansByDealer = {};
+    loansByDealer = {}; loanDealer = {};
     const names = {};
     function addLoans(grid) {
       if (!grid || grid.length < 2) return;
@@ -558,7 +558,7 @@ async function loadData() {
         if (nm && !names[dealerId]) names[dealerId] = nm;
         const creditDate = parseSheetDate(get(r, c('Credit Date to Dealer Bank Account')));
         if (!creditDate) continue; // not credited -> not a drawdown made
-        (loansByDealer[dealerId] = loansByDealer[dealerId] || []).push({ id, creditDate });
+        (loansByDealer[dealerId] = loansByDealer[dealerId] || []).push({ id, creditDate }); loanDealer[id] = dealerId;
       }
     }
     addLoans(ddGrid); addLoans(dd3Grid);
@@ -598,6 +598,21 @@ async function loadData() {
       });
     }
     dealerRows.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Latest IF visit (stock inspection) per dealer: matched by Drawdown ID, else by dealership name.
+    latestVisit = {};
+    if (siGrid && siGrid.length > 1) {
+      const sc = buildColumnMap(siGrid[0]);
+      const byName = {}; dealerRows.forEach(d => { byName[normName(d.name).toLowerCase()] = d.dealerId; });
+      for (let i = 1; i < siGrid.length; i++) {
+        const r = siGrid[i];
+        const dt = parseSheetDate(get(r, sc('Date'))); if (!dt) continue;
+        const did = loanDealer[get(r, sc('Drawdown ID')).trim()] || byName[normName(get(r, sc('Dealership Name'))).toLowerCase()];
+        if (!did) continue;
+        const by = get(r, sc('Inspector')).trim() || get(r, sc('User email')).trim();
+        if (!latestVisit[did] || dt > latestVisit[did].date) latestVisit[did] = { date: dt, by };
+      }
+    }
     dataLoadedAt = new Date();
     document.getElementById('data-status-global').textContent = 'Data loaded ' + dataLoadedAt.toLocaleTimeString() + ' · ' + dealerRows.length + ' onboarded dealers';
     loadingEl.classList.add('hidden');
@@ -684,12 +699,14 @@ function cur(key) { return edits[key] || saved[key] || { fresh: '', redraw: '', 
 // Layout: info columns (frozen) + Week 1 (frozen, optional) + ONE paged week (◀ ▶ to move).
 // Fixed-width table (fast) and VIRTUALIZED rows: only rows near the viewport exist in the DOM.
 const WR_ROW_H = 38, WR_BUF = 10, WR_HEAD_H = 94;
-const WR_FROZEN = [ ['Dealer', 190, 'l name'], ['Assigned Officer', 130, 'l'], ['Onboarding Date', 96, ''], ['Last Txn', 96, ''], ['Total Available Credit Limit', 112, 'rr'], ['Credit Line Status', 78, ''] ];
+const WR_FROZEN = [ ['Dealer', 190, 'l name'], ['Assigned Officer', 130, 'l'], ['Onboarding Date', 112, ''], ['Last Txn', 112, ''], ['Total Available Credit Limit', 112, 'rr'], ['Credit Line Status', 78, ''] ];
+const WR_SCROLL = [ ['Latest IF Visit', 112, ''], ['Visited By (IF)', 160, 'l'] ]; // not frozen — scroll with the weeks
+const WR_INFO_W = () => WR_FROZEN.concat(WR_SCROLL).reduce((a, c) => a + c[1], 0);
 const WR_BLOCK_COLS = [['Actual Drawdowns', 'act'], ['Confident?', 'conf'], ['Planned Fresh Drawdown', 'fresh'], ['Planned Re-Drawdown', 'redraw'], ['Remarks', 'remarks']];
 const WR_W_PINNED = [76, 84, 84, 84, 120];   // frozen Week 1 (compact)
 const WR_W_PAGED  = [76, 84, 112, 112, 320]; // remarks stretches to the room that's left (150–420px)
 let curList = [], baseCount = 0, curActs = {}, rsStart = -1, rsEnd = -1, wrTodayStart = null;
-let pinW1 = window.innerWidth >= 1500, pageIdx = null, filters = {}, shown = [], tblW = 0;
+let pinW1 = false, pageIdx = null, filters = {}, shown = [], tblW = 0;
 
 function pageList() { return pinW1 ? weeks.slice(1) : weeks; }
 function defaultPageIdx() {
@@ -701,7 +718,7 @@ function defaultPageIdx() {
 function layoutBlocks() {
   const pl = pageList();
   if (pageIdx === null || pageIdx >= pl.length) pageIdx = Math.max(0, Math.min(pageIdx === null ? defaultPageIdx() : pl.length - 1, pl.length - 1));
-  let x = WR_FROZEN.reduce((a, c) => a + c[1], 0);
+  let x = WR_INFO_W();
   shown = [];
   const mk = (w, pinned) => {
     let widths = pinned ? WR_W_PINNED : WR_W_PAGED, lefts = [];
@@ -722,15 +739,16 @@ function renderHead() {
   layoutBlocks();
   const table = document.getElementById('wr-table');
   table.style.width = tblW + 'px';
-  let cg = '<colgroup>' + WR_FROZEN.map(c => '<col style="width:' + c[1] + 'px">').join('');
+  let cg = '<colgroup>' + WR_FROZEN.concat(WR_SCROLL).map(c => '<col style="width:' + c[1] + 'px">').join('');
   shown.forEach(b => { cg += b.widths.map(w => '<col style="width:' + w + 'px">').join(''); });
   cg += '</colgroup>';
   const fl = frozenLefts();
-  let h1 = '<tr>' + WR_FROZEN.map((c, i) => '<th class="fz' + (i === 0 ? ' l' : '') + (i === WR_FROZEN.length - 1 && !pinW1 ? ' fzend' : '') + '" rowspan="3" style="left:' + fl[i] + 'px">' + c[0] + '</th>').join('');
+  let h1 = '<tr>' + WR_FROZEN.map((c, i) => '<th class="fz' + (c[2].indexOf('l') >= 0 ? ' l' : '') + (c[2].indexOf('rr') >= 0 ? ' rr' : '') + (i === WR_FROZEN.length - 1 && !pinW1 ? ' fzend' : '') + '" rowspan="3" style="left:' + fl[i] + 'px">' + c[0] + '</th>').join('');
+  h1 += WR_SCROLL.map(c => '<th rowspan="3"' + (c[2].indexOf('l') >= 0 ? ' class="l"' : '') + '>' + c[0] + '</th>').join('');
   let h2 = '<tr class="sub">', h3 = '<tr class="flt">';
   shown.forEach(b => {
     const fz = b.pinned ? ' fz' : '';
-    h1 += '<th class="wk wkstart' + fz + '" colspan="5"' + (b.pinned ? ' style="left:' + b.lefts[0] + 'px"' : '') + '>' + b.w.label + ' <span style="font-weight:400;color:var(--text3)">(' + b.w.range + ')</span>' + (b.pinned ? ' <span title="Pinned" style="font-weight:400">📌</span>' : '') + '</th>';
+    h1 += '<th class="wk wkstart' + fz + '" colspan="5"' + (b.pinned ? ' style="left:' + b.lefts[0] + 'px"' : '') + '>' + b.w.label + ' <span style="font-weight:400;color:var(--text3)">(' + b.w.range + ')</span></th>';
     WR_BLOCK_COLS.forEach((c, i) => {
       const cls = 'wk' + (i === 0 ? ' wkstart' : '') + fz + (b.pinned && i === 4 ? ' fzend' : '');
       const st = b.pinned ? ' style="left:' + b.lefts[i] + 'px"' : '';
@@ -738,7 +756,7 @@ function renderHead() {
       const fk = b.w.n + '|' + c[1], fv = filters[fk] || '';
       let inner = '';
       if (c[1] === 'conf') inner = '<select data-fk="' + fk + '" title="Filter Confident?"><option value="">Any</option><option value="yes"' + (fv === 'yes' ? ' selected' : '') + '>✔ Yes</option><option value="no"' + (fv === 'no' ? ' selected' : '') + '>Not yet</option></select>';
-      else if (c[1] === 'fresh' || c[1] === 'redraw') inner = '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="&gt;0, empty" title="Filter: &gt;0, &gt;=2, &lt;5, =3, empty, any">';
+      else if (c[1] === 'act' || c[1] === 'fresh' || c[1] === 'redraw') inner = '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="&gt;0, empty" title="Filter: &gt;0, &gt;=2, &lt;5, =3, empty, any">';
       else if (c[1] === 'remarks') inner = '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="contains…" title="Filter: text contained in remarks, or: empty / any">';
       h3 += '<th class="' + cls + '"' + st + '>' + inner + '</th>';
     });
@@ -754,7 +772,6 @@ function updatePager() {
   document.getElementById('wr-pglabel').textContent = w ? w.label + ' · ' + w.range + '  (' + (pageIdx + 1) + ' of ' + pl.length + ')' : '';
   document.getElementById('wr-prev').disabled = pageIdx <= 0;
   document.getElementById('wr-next').disabled = pageIdx >= pl.length - 1;
-  document.getElementById('wr-pin').checked = pinW1;
   document.getElementById('wr-clear').style.display = activeFilterKeys().length ? '' : 'none';
 }
 function goPage(delta) {
@@ -788,11 +805,15 @@ function applyFilters(list) {
     else if (f === 'remarks') {
       const q = val.trim().toLowerCase();
       t = q === 'empty' || q === 'blank' ? v => !String(v.remarks).trim() : q === 'any' ? v => !!String(v.remarks).trim() : v => String(v.remarks).toLowerCase().indexOf(q) >= 0;
+    } else if (f === 'act') {
+      const nt = numTest(val); if (!nt) return;
+      const wk = weeks.find(w => String(w.n) === n);
+      t = (v, d) => nt(!wk || wk.from > wrTodayStart ? '' : String(actualCount(d.dealerId, wk)));
     } else { const nt = numTest(val); if (!nt) return; t = v => nt(v[f]); }
     tests.push({ n, t });
   });
   if (!tests.length) return list;
-  return list.filter(d => tests.every(x => x.t(cur(x.n + '|' + d.dealerId))));
+  return list.filter(d => tests.every(x => x.t(cur(x.n + '|' + d.dealerId), d)));
 }
 
 function render() {
@@ -818,12 +839,13 @@ function refreshBody(resetScroll) {
 }
 
 function rowHtml(d) {
-  const acts = curActs[d.dealerId], fl = frozenLefts(), last = WR_FROZEN.length - 1;
+  const acts = curActs[d.dealerId], fl = frozenLefts(), last = WR_FROZEN.length - 1, lv = latestVisit[d.dealerId];
   let html = '<tr class="r" data-d="' + esc(d.dealerId) + '">' +
     '<td class="fz l name" style="left:' + fl[0] + 'px" title="' + esc(d.name) + ' · ' + esc(d.dealerId) + '">' + esc(d.name) + '</td>' +
     '<td class="fz l" style="left:' + fl[1] + 'px" title="' + esc(d.so) + '">' + esc(d.so || '—') + '</td>' +
     '<td class="fz" style="left:' + fl[2] + 'px">' + fmtDate(d.onboardingDate) + '</td><td class="fz" style="left:' + fl[3] + 'px">' + fmtDate(d.last) + '</td>' +
-    '<td class="fz rr" style="left:' + fl[4] + 'px">' + peso(d.availCredit) + '</td><td class="fz' + (pinW1 ? '' : ' fzend') + '" style="left:' + fl[last] + 'px">' + esc(d.clStatus || '—') + '</td>';
+    '<td class="fz rr" style="left:' + fl[4] + 'px">' + peso(d.availCredit) + '</td><td class="fz' + (pinW1 ? '' : ' fzend') + '" style="left:' + fl[last] + 'px">' + esc(d.clStatus || '—') + '</td>' +
+    (lv ? '<td>' + fmtDate(lv.date) + '</td><td class="l" title="' + esc(lv.by) + '">' + esc(lv.by || '—') + '</td>' : '<td>—</td><td class="l">—</td>');
   shown.forEach(b => {
     const w = b.w, key = w.n + '|' + d.dealerId, v = cur(key);
     const a = acts[b.wi], future = a === null;
@@ -844,7 +866,7 @@ function rowHtml(d) {
 // Paint only the rows around the viewport. force=true repaints even if the window is unchanged.
 function paintRows(force) {
   const body = document.getElementById('wr-body'), wrap = document.getElementById('wr-wrap');
-  const n = curList.length, ncols = WR_FROZEN.length + shown.length * 5;
+  const n = curList.length, ncols = WR_FROZEN.length + WR_SCROLL.length + shown.length * 5;
   if (!n) { body.innerHTML = '<tr><td colspan="' + ncols + '" style="padding:18px;text-align:left;color:var(--text3);font-style:italic">No dealers match the current filters.</td></tr>'; rsStart = rsEnd = -1; return; }
   const first = Math.max(0, Math.floor((wrap.scrollTop - WR_HEAD_H) / WR_ROW_H));
   const vis = Math.ceil(wrap.clientHeight / WR_ROW_H) + 1;
@@ -872,7 +894,7 @@ document.getElementById('wr-wrap').addEventListener('scroll', () => {
 
 function renderFoot() {
   const fl = frozenLefts();
-  let foot = '<tr><td class="fz l' + (pinW1 ? '' : ' fzend') + '" colspan="6" style="left:0">Total (' + curList.length + ' dealers)</td>';
+  let foot = '<tr><td class="fz l' + (pinW1 ? '' : ' fzend') + '" colspan="6" style="left:0">Total (' + curList.length + ' dealers)</td><td colspan="2"></td>';
   shown.forEach(b => {
     let act = 0, conf = 0, fresh = 0, redraw = 0;
     curList.forEach(d => {
@@ -1008,11 +1030,6 @@ document.getElementById('wr-head').addEventListener('input', onFilter);
 document.getElementById('wr-head').addEventListener('change', onFilter);
 document.getElementById('wr-prev').onclick = () => goPage(-1);
 document.getElementById('wr-next').onclick = () => goPage(1);
-document.getElementById('wr-pin').onchange = function () {
-  const cw = pageList()[pageIdx]; pinW1 = this.checked;
-  const pl = pageList(); const i = cw ? pl.findIndex(w => w.n === cw.n) : -1;
-  pageIdx = i >= 0 ? i : 0; renderHead(); refreshBody(false);
-};
 document.getElementById('wr-clear').onclick = () => { filters = {}; renderHead(); refreshBody(true); };
 document.addEventListener('keydown', e => {
   if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { e.preventDefault(); goPage(e.key === 'ArrowRight' ? 1 : -1); }
