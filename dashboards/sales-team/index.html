@@ -743,6 +743,11 @@ async function loadData() {
         financingType: get(r, ddCol('Type of Financing')).trim(),
         dealerName: get(r, ddCol('Dealership Name')).trim(),
         loanTenure: get(r, ddCol('Total Loan Tenure (in days)')).trim(),
+        // missed-payment fields (by header name) — drive the yellow "in DPD, not overdue" row colour
+        ren1Status: get(r, ddCol('Renewal 1 Payment Status')).trim(),
+        ren2Status: get(r, ddCol('Renewal 2 Payment Status')).trim(),
+        ren1DaysLate: parseNum(get(r, ddCol('Renewal 1 Days Late'))),
+        ren2DaysLate: parseNum(get(r, ddCol('Renewal 2 Days Late'))),
         maturityDate: parseSheetDate(get(r, ddCol('Final Maturity Date'))),
         loanAging: get(r, ddCol('Overall Loan Aging based on PNCM Date')).trim(),
         outstandingSheet: parseNum(get(r, ddCol('Total Outstanding Principal'))),
@@ -1514,9 +1519,14 @@ function renderDealerBody() {
     const od = dcIsOverdue(l);
     // Row colouring: red = Loan Status Overdue; yellow = open but already in a DPD bucket
     // (v2: "Bucket 2 as per Loan Aging Considering Renewal" starts with "DPD"; v3: any checkpoint DPD > 0).
-    const inDpd = dcIsOpen(l) && !od && (l.isV3 ? (parseFloat(l.dpdAgingSheet) || 0) > 0 : /^dpd/i.test(l.dpdStatusSheet || ''));
+    // "In DPD" = an actual missed payment: v2 = a Renewal 1/2 Payment Status of "...Overdue"; v3 = any checkpoint DPD > 0.
+    // (The sheet's "Bucket" label is based on loan age, so it is NOT used — it flags loans that haven't missed anything.)
+    const v2Late = Math.max((/overdue/i.test(l.ren1Status || '') ? l.ren1DaysLate : 0) || 0, (/overdue/i.test(l.ren2Status || '') ? l.ren2DaysLate : 0) || 0);
+    const v2Missed = /overdue/i.test(l.ren1Status || '') || /overdue/i.test(l.ren2Status || '');
+    const inDpd = dcIsOpen(l) && !od && (l.isV3 ? (parseFloat(l.dpdAgingSheet) || 0) > 0 : v2Missed);
     const state = od ? 'od' : (inDpd ? 'dpd' : '');
-    const dpdDays = od ? (parseFloat(l.dpdAgingSheet) || 0) : 0; // DPD Aging: days, shown for overdue loans
+    // DPD Aging: overdue loans = sheet's aging value (as before); yellow loans = days late on the missed payment
+    const dpdDays = od ? (parseFloat(l.dpdAgingSheet) || 0) : (inDpd ? Math.round(l.isV3 ? (parseFloat(l.dpdAgingSheet) || 0) : v2Late) : 0);
     const aging = parseFloat(l.loanAging);
     const out = dcIsOpen(l) ? (l.outstandingSheet || 0) : 0;
     const t = d => d ? d.getTime() : null;
@@ -1533,7 +1543,7 @@ function renderDealerBody() {
         { v: n(l.yearModel), t: l.yearModel },
         { v: l.financingType, t: l.financingType },
         { v: t(l.creditDate), t: l.creditDate ? dcDate(l.creditDate) : '' },
-        { v: od && dpdDays ? dpdDays : null, t: od && dpdDays ? String(dpdDays) : '' },
+        { v: dpdDays || null, t: dpdDays ? String(dpdDays) : '' },
         { v: isFinite(aging) ? Math.round(aging) : null, t: isFinite(aging) ? String(Math.round(aging)) : l.loanAging },
         { v: t(l.maturityDate), t: l.maturityDate ? dcDate(l.maturityDate) : '' },
         { v: out, t: dcPeso(out) },
