@@ -25883,7 +25883,7 @@ IF Visit,MAVE BAUTISTA,Myrnalyn Bankingkito,GCD1866,GCD1866,Myrnalyn Bankingkito
 GCD1866",1
 IF Visit,JSM CAR TRADING,Gregorio Binay,,,Gregorio Binay,Sales Officer,Inventory Funding,Malou Alfonso,Sales Manager,New Dealer,,,,JSM CAR TRADING,JSM CAR TRADING,9338552771,,,,,,,,,,,Quezon City,Metro Manila,46310,0.6680555556,0.6722222222,Product Pitch,"Owner is not available
 Re sched",1
-Non IF Visit,Auto Boutiq Auto Trading - Julius Juan,Hannah Ibay,GCD1963,GCD1963,Hannah Ibay,Territory Head,New Intiatives,Robert Vincent Matias,Sales Head,Dealer,Auto Boutiq Auto Trading - Julius Juan,md,GCD1963,,,,,,,,,,,,,,Mabini (Dona Alicia),Compostela Valley,46310,0.6590277778,0.6604166667,Regular Visit (for Active Dealer),"No of Units: 22 units
+IF Visit,Auto Boutiq Auto Trading - Julius Juan,Hannah Ibay,GCD1963,GCD1963,Hannah Ibay,Territory Head,New Intiatives,Robert Vincent Matias,Sales Head,Dealer,Auto Boutiq Auto Trading - Julius Juan,md,GCD1963,,,,,,,,,,,,,,Mabini (Dona Alicia),Compostela Valley,46310,0.6590277778,0.6604166667,Regular Visit (for Active Dealer),"No of Units: 22 units
 Visited to raise concern about the auction financing. ",1,46341
 IF Visit,shao auto trading,Myrnalyn Bankingkito,,,Myrnalyn Bankingkito,Sales Officer,Inventory Funding,Malou Alfonso,Sales Manager,New Dealer,,,,shao auto trading,shao auto trding,9174134182,,,,,,,,,,,Quezon City,Metro Manila,46310,0.6541666667,0.6555555556,"Enrolling the dealer,Product Pitch","The showroom is closed
 the dealer is not on the showroom
@@ -25974,19 +25974,19 @@ Dealer is not around",1
 IF Visit,Joseph,Elvira Ladea,,,Elvira Ladea,Sales Officer,Inventory Funding,Marah Luriely  Villaruz,Sales Manager,Customer,,,,,,,,Joseph,Dalag@gmail.com,639057000000,,,,,,,Rodriguez (Montalban),Rizal,46308,0.6347222222,0.6354166667,Card or Bank Bill,Drawdown,1
 IF Visit,Garage D,Franco Baldemor,,,Franco Baldemor,Sales Officer,New Intiatives,Marah Luriely  Villaruz,Sales Manager,New Dealer,,,,Garage D,Garage D,9392219461,,,,,,,,,,,Manila,Metro Manila,46308,0.6277777778,0.6298611111,Product Pitch,To get back with the client,1
 Non IF Visit,North Edsa Cars - Ewart Tan,Jimboy Salandanan,GCD19,GCD19,Jimboy Salandanan,Sales Officer,Used Car Finance,Miguel Angelo Mendoza,Sales Manager,Dealer,North Edsa Cars - Ewart Tan,md,GCD19,,,,,,,,,,,,,,Malabon,Metro Manila,46308,0.6277777778,0.6493055556,Meeting,Visit,1,46308
-Non IF Visit,NVM Car Trading,Hannah Ibay,,,Hannah Ibay,Territory Head,New Intiatives,Robert Vincent Matias,Sales Head,Customer,,,,,,,,NVM Car Trading,hannah.ibay@carmudi.com,639565000000,,,,,,,Mabini (Dona Alicia),Compostela Valley,46308,0.6270833333,0.6298611111,RC Copy,"No of units: 6
+IF Visit,NVM Car Trading,Hannah Ibay,,,Hannah Ibay,Territory Head,New Intiatives,Robert Vincent Matias,Sales Head,Customer,,,,,,,,NVM Car Trading,hannah.ibay@carmudi.com,639565000000,,,,,,,Mabini (Dona Alicia),Compostela Valley,46308,0.6270833333,0.6298611111,RC Copy,"No of units: 6
 
 Old dealer who didnât sign the CLA. 400k is not enough for him since he is doing fastbreak transaction. For reassessment",1
 IF Visit,MCDcars Auto Trade,Franco Baldemor,,,Franco Baldemor,Sales Officer,New Intiatives,Marah Luriely  Villaruz,Sales Manager,New Dealer,,,,MCDcars Auto Trade,MCD cars auto trade,9773371156,,,,,,,,,,,Manila,Metro Manila,46308,0.61875,0.6208333333,Others,No one is around the house where the dealer was,1
 IF Visit,Nvm Car Trading - Niel Magbanua,Herbert Capistrano,GCD4616,GCD4616,Herbert Capistrano,Sales Officer,Inventory Funding,Marah Luriely  Villaruz,Sales Manager,Dealer,Nvm Car Trading - Niel Magbanua,md,GCD4616,,,,,,,,,,,,,,Cardona,Rizal,46308,0.6111111111,0.6125,Application,For repitch. 10 inventory,1,46310
 Non IF Visit,Cavite Auto Mall - Nelia Estrada/Arnold B. Rosales,Sammy Rico,GCD1163,GCD1163,Sammy Rico,Sales Officer,Used Car Finance,Jerry Brucelo,Sales Manager,Dealer,Cavite Auto Mall - Nelia Estrada/Arnold B. Rosales,sbd,GCD1163,,,,,,,,,,,,,,Imus,Cavite,46308,0.6048611111,0.3597222222,Regular Visit,Visit,1,46309
 IF Visit,Driveline deals,Herbert Capistrano,,,Herbert Capistrano,Sales Officer,Inventory Funding,Marah Luriely  Villaruz,Sales Manager,Customer,,,,,,,,Driveline deals,herb.capistrano@gmail.com,639565000000,,,,,,,Cardona,Rizal,46308,0.5965277778,0.6104166667,Income Proof,2 inventories,1
-Non IF Visit,Aya Maramara,Hannah Ibay,,,Hannah Ibay,Territory Head,New Intiatives,Robert Vincent Matias,Sales Head,Customer,,,,,,,,Aya Maramara,hannah.ibay@carmudi.com,639565000000,,,,,,,Mabini (Dona Alicia),Compostela Valley,46308,0.5965277778,0.5993055556,RC Copy,"No of units: 2 
+IF Visit,Aya Maramara,Hannah Ibay,,,Hannah Ibay,Territory Head,New Intiatives,Robert Vincent Matias,Sales Head,Customer,,,,,,,,Aya Maramara,hannah.ibay@carmudi.com,639565000000,,,,,,,Mabini (Dona Alicia),Compostela Valley,46308,0.5965277778,0.5993055556,RC Copy,"No of units: 2 
 
 dealer is not in his house during the visit
 ",1
 IF Visit,East wheels car trading,Herbert Capistrano,,,Herbert Capistrano,Sales Officer,Inventory Funding,Marah Luriely  Villaruz,Sales Manager,Customer,,,,,,,,East wheels car trading,herb.capistrano@gmail.com,639565000000,,,,,,,Cardona,Rizal,46308,0.5916666667,0.5930555556,Income Proof,10 inventories. For pitching,1
-Non IF Visit,East Wheels,Hannah Ibay,,,Hannah Ibay,Territory Head,New Intiatives,Robert Vincent Matias,Sales Head,Customer,,,,,,,,East Wheels,hannah.ibay@carmudi.com,639099000000,,,,,,,Mabini (Dona Alicia),Compostela Valley,46308,0.5902777778,0.5923611111,RC Copy,"GCD Code: 
+IF Visit,East Wheels,Hannah Ibay,,,Hannah Ibay,Territory Head,New Intiatives,Robert Vincent Matias,Sales Head,Customer,,,,,,,,East Wheels,hannah.ibay@carmudi.com,639099000000,,,,,,,Mabini (Dona Alicia),Compostela Valley,46308,0.5902777778,0.5923611111,RC Copy,"GCD Code: 
 No of units: 7 
 
 Visited the dealer for pitching. Dealer is still not around. 
@@ -25994,7 +25994,7 @@ Visited the dealer for pitching. Dealer is still not around.
 Non IF Visit,,Novie Grace Macasaet,,,Novie Grace Macasaet,Sales Officer,Used Car Finance,Jerry Brucelo,Sales Manager,Financier,,,,,,,,,,,,,,,Asialink Finance Corp (AFC),Batangas,Lipa City,Batangas,46308,0.5881944444,0.5902777778,,Follow up accounts,1
 Non IF Visit,Ernie auto supply,Daniel Chua,,,Daniel Chua,Sales Officer,Used Car Finance,Jerry Brucelo,Sales Manager,New Dealer,,,,Ernie auto supply,Ernie reyes,9274560646,,,,,,,,,,,Malabon,Metro Manila,46308,0.5840277778,0.7993055556,Product Pitch,Visited ernie for dealer accteditation however ernie told me that he will send application once he had one,1
 IF Visit,Big Boss Auto Garage Trading - Rodge Kyle Rivera,Herbert Capistrano,GCD4776,GCD4776,Herbert Capistrano,Sales Officer,Inventory Funding,Marah Luriely  Villaruz,Sales Manager,Dealer,Big Boss Auto Garage Trading - Rodge Kyle Rivera,bd,GCD4776,,,,,,,,,,,,,,Cardona,Rizal,46308,0.5826388889,0.5840277778,Application,Stop operation at this time. Minimal inventory . 2 units inventory,1,46309
-Non IF Visit,Big Boss Auto Garage,Hannah Ibay,,,Hannah Ibay,Territory Head,New Intiatives,Robert Vincent Matias,Sales Head,Customer,,,,,,,,Big Boss Auto Garage,hannah.ibay@carmudi.com,639507000000,,,,,,,Mabini (Dona Alicia),Compostela Valley,46308,0.5819444444,0.5854166667,RC Copy,"GCD Code: 4776
+IF Visit,Big Boss Auto Garage,Hannah Ibay,,,Hannah Ibay,Territory Head,New Intiatives,Robert Vincent Matias,Sales Head,Customer,,,,,,,,Big Boss Auto Garage,hannah.ibay@carmudi.com,639507000000,,,,,,,Mabini (Dona Alicia),Compostela Valley,46308,0.5819444444,0.5854166667,RC Copy,"GCD Code: 4776
 No of units: 2 
 
 Dealer is not around during visit. Not focusing on the business at the moment due to high price ",1
