@@ -38,7 +38,7 @@
 ,IF0037,RT MANIAGO AUTO CENTER CORPORATION,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,45842,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0038,RNS AUTO TRADING,Albert Dalupang,Albert Dalupang,0,20,0,0,0,0,0,0,49.7,,24.2,,Open,Finsso: Open | Netbank: Expired CL,,46155,,27,21,6,0,0,0,,0,0,0,0,No
 ,IF0039,BKG CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,35,1,0,180000,180000,180000,0,40.80555556,,7,,Open,Finsso: Expired CL | Netbank: Open,,46276,,26,15,11,0.0007213063949,0,0,46295,1,0,1,2,No,,,45614.66806
-,IF0040,FASTWHEELS CAR AGENT SERVICES,Marah Luriely A. Villaruz,Rhoyland Alagon,0,18,1,0,0,548000,548000,0,25.22222222,,,,Hold,Finsso: Pending CLA Signature | Netbank: Expired CL,,46157,,7,6,1,0,0,0,,0,0,0,0,No
+,IF0040,FASTWHEELS CAR AGENT SERVICES,Marah Luriely A. Villaruz,Rhoyland Alagon,0,18,1,0,0,548000,548000,0,25.22222222,,,,Open,Finsso: Open | Netbank: Expired CL,,46157,,7,6,1,0,0,0,,0,0,0,0,No
 ,IF0041,NEO'S AUTO TRADING,Albert Dalupang,Albert Dalupang,0,12,0,2,1191000,1191000,0,1191000,113.9285714,,71.7,45996,Blacklisted,15 DPD,45996,,,39,24,15,0.00477264398,315,302,46294,8,2,6,0,Yes,46006,Emailed Endorsement,,46190.65122
 ,IF0042,RSALVADOR CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,11,0,0,0,0,0,0,26.72727273,,,,Open,,,,,2,2,0,0,0,0,,0,0,0,0,No
 ,IF0043,ANDRAVEN CARS AUTO TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,3,0,0,0,0,0,0,22,,,,Hold,Finsso: Pending CL | Netbank: Expired CL,,46065,,1,1,0,0,0,0,,0,0,0,0,No
@@ -284,7 +284,7 @@
 ,IF0283,CRISJANE CAR TRADING,Albert Dalupang,Albert Dalupang,0,0,0,0,0,0,0,0,,,,,Hold,Pending CLA Signature,,46189.60625,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0284,PAWNAGE CAR TRADING,Malou Alfonso,Rose Batacan,1,1,0,0,0,0,0,0,71,,12,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46189.60903,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0285,RB AUTO BODY REPAIR SERVICE,Marah Luriely A. Villaruz,Rhoyland Alagon,0,1,1,0,343080,343080,343080,0,73,,7,,Open,,,,,0,0,0,0.001374809989,0,0,,0,0,0,0,No
-,IF0286,RLP TRADING INC,Malou Alfonso,Myrnalyn Bankingkito,1,9,2,0,4133169.807,4133169.807,4133169.807,0,82.36363636,,,,Open,Finsso: Open | Netbank: Pending CL,,,,13,2,11,0.01656267674,0,0,46290,3,1,2,0,No
+,IF0286,RLP TRADING INC,Malou Alfonso,Myrnalyn Bankingkito,1,9,2,0,4133169.807,4133169.807,4133169.807,0,82.36363636,,,,Open,Finsso: Open | Netbank: Pending CL,,,,15,4,11,0.01656267674,0,0,46311,5,3,2,0,No
 ,IF0287,BOSS CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,4,0,3,1050000,1050000,0,1050000,137.4285714,,165.5,46088,Blacklisted,15 DPD,46088,,,3,0,3,0.004207620637,223,213,46140,3,0,3,0,No,,,,46190.65122
 ,IF0288,PWESTO VEHICULO AUTO TRADING,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46189.74792,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0289,LMK-KJM TRADING,Albert Dalupang,Zhesa Resurrecion,0,1,0,0,0,0,0,0,29,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46184.44931,,0,0,0,0,0,0,,0,0,0,0,No
@@ -439,7 +439,7 @@
 ,IF0438,JOEMAY TRADING,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0439,JEAN ANDRIC CAR TRADING,Malou Alfonso,Candyce Aguete,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0440,X2RAUTODEALS CAR TRADING,Albert Dalupang,Albert Dalupang,0,0,1,0,700000,700000,700000,0,28,,,,Open,,,,,0,0,0,,0,0,,0,0,0,0,No
-,IF0441,A&J CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,5,2,0,400000,400000,400000,0,20.57142857,,,,Open,,,,,0,0,0,,0,0,,0,0,0,0,No
+,IF0441,A&J CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,5,2,0,400000,400000,400000,0,20.57142857,,,,Open,,,,,2,1,1,,0,0,46311,2,1,1,0,No
 ,IF0442,RSCARS PASIG AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46196.67778,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0443,FAMIL Y WHEE LS P. H CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0444,JOEMAR CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
