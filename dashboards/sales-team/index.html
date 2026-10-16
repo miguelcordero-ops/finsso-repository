@@ -167,14 +167,17 @@ tr.section-row td{font-weight:700;color:var(--primary);background:var(--section-
 td.metric-label{color:var(--text);font-weight:500}
 td.drill{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
 td.drill:hover{color:var(--primary);background:var(--section-bg)}
-.vd-ov{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:24px}
-.vd-box{background:var(--surface-hi,#fff);color:var(--text);border:1px solid var(--border2);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35);max-width:1100px;width:100%;max-height:85vh;display:flex;flex-direction:column}
+:root{--vd-bg:#ffffff}
+:root[data-theme="dark"]{--vd-bg:#161b2b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--vd-bg:#161b2b}}
+.vd-ov{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:24px}
+.vd-box{background:var(--vd-bg) !important;opacity:1;backdrop-filter:none;color:var(--text);border:1px solid var(--border2);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35);max-width:1100px;width:100%;max-height:85vh;display:flex;flex-direction:column}
 .vd-hd{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border2)}
 .vd-hd h3{margin:0;font-size:15px;flex:1}
 .vd-hd button{font:inherit;font-size:18px;line-height:1;border:0;background:transparent;color:var(--text2);cursor:pointer;padding:4px 8px}
 .vd-bd{overflow:auto;padding:0 6px 10px}
 .vd-bd table{width:100%;border-collapse:collapse;font-size:12px}
-.vd-bd th{position:sticky;top:0;background:var(--surface-hi,#fff);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border2);font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text2)}
+.vd-bd th{position:sticky;top:0;background:var(--vd-bg);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border2);font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text2)}
 .vd-bd td{padding:7px 10px;border-bottom:1px solid var(--border2);vertical-align:top}
 .vd-bd td.rem{max-width:420px;white-space:normal}
 
