@@ -165,6 +165,18 @@ tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--tr-hover)}
 tr.section-row td{font-weight:700;color:var(--primary);background:var(--section-bg);font-size:10px;text-transform:uppercase;letter-spacing:0.05em}
 td.metric-label{color:var(--text);font-weight:500}
+td.drill{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+td.drill:hover{color:var(--primary);background:var(--section-bg)}
+.vd-ov{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:24px}
+.vd-box{background:var(--surface-hi,#fff);color:var(--text);border:1px solid var(--border2);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.35);max-width:1100px;width:100%;max-height:85vh;display:flex;flex-direction:column}
+.vd-hd{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border2)}
+.vd-hd h3{margin:0;font-size:15px;flex:1}
+.vd-hd button{font:inherit;font-size:18px;line-height:1;border:0;background:transparent;color:var(--text2);cursor:pointer;padding:4px 8px}
+.vd-bd{overflow:auto;padding:0 6px 10px}
+.vd-bd table{width:100%;border-collapse:collapse;font-size:12px}
+.vd-bd th{position:sticky;top:0;background:var(--surface-hi,#fff);text-align:left;padding:8px 10px;border-bottom:1px solid var(--border2);font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text2)}
+.vd-bd td{padding:7px 10px;border-bottom:1px solid var(--border2);vertical-align:top}
+.vd-bd td.rem{max-width:420px;white-space:normal}
 
 /* Locks the month header row in place while scrolling down through the
    metrics table — stays visible below the sticky topbar + filter bar.
@@ -493,11 +505,9 @@ const VISIT_PURPOSE_BUCKETS = [
   { key: 'Regular Visit', tags: ['regular visit', 'regular visit (for active dealer)'] },
   { key: 'Product Pitch', tags: ['product pitch', 'product pitching', 'new product pitching', 'new dealer pitching', 'product upgradation', 'sold package'] },
   { key: 'Document Collection', tags: ['document collection', 'income proof', 'rc copy', 'driving license', 'rent agreement', 'electricity bill', 'passport', 'ration card', 'card or bank bill', 'gas connection', 'internet or mobile bill', 'telephone bill', 'loan doc collection'] },
-  { key: 'Onboarding & Training', tags: ['enrolling the dealer', 'new-dealer on-boarding', 'dealer training', 'master agreement signing', 'cla signing', 'training'] },
-  { key: 'Collections', tags: ['payment collection', 'cheque deposit', 'cash deposit', 'renewal collection', 'repayment & collections concern'] },
   { key: 'Stock & Inspection', tags: ['stock updation', 'inspection requested', 'unit releasing'] },
-  { key: 'Servicing & Follow-up', tags: ['called on leads', 'lead issue/query', 'updated enquries', 'documents follow-up', 'monthly review', 'problem resolution', "dealer complain visit.", 'rc issue', 'meeting', 'feedback meeting', 'verification', 'drawdown processing', 'finance case punched', 'insurance punched', 'insurance punch', 'warranty punched', 'rsa punched'] },
 ];
+// Onboarding & Training, Collections and Servicing & Follow-up are no longer shown separately — they roll into Others.
 const VISIT_PURPOSE_OTHER = 'Others';
 const VISIT_PURPOSE_KEYS = VISIT_PURPOSE_BUCKETS.map(b => b.key).concat([VISIT_PURPOSE_OTHER]);
 function purposeTagBucket(tag) {
@@ -521,14 +531,14 @@ const VISIT_NAME_ALIASES = {
 function resolveVisitAlias(name) { return VISIT_NAME_ALIASES[name] || name; }
 
 const METRIC_SECTIONS = [
-  { title: 'Visits & Conversion', metrics: ['Total Visit', 'Unique Visits', 'Visits to Application', 'Visits to Onboard', 'Average Visit'] },
+  { title: 'Visits & Conversion', metrics: ['Total Visit', 'Unique Visits', 'Visits to Application', 'Average Visit'] },
   { title: 'Visit Purpose Breakdown', metrics: VISIT_PURPOSE_KEYS.map(k => 'Visits: ' + k) },
   { title: 'Onboarding & Drawdowns', metrics: ['New Dealer Applications', 'Dealer Application Completed', 'Onboarded Dealers', 'Total Disbursals', 'Drawdowns (Sales)', 'Drawdowns (Runners request)'] },
   { title: 'GMV & AUM', metrics: ['GMV', 'AUM', 'AUM (Net Blacklisted)', 'GMV Growth', 'AUM Growth'] },
   { title: 'Dealer Activation', metrics: ['AUM Active Dealer', 'First-time Activation', 'Same Month Activation'] },
 ];
 const METRIC_TYPES = {
-  'Total Visit': 'Count', 'Unique Visits': 'Count', 'Visits to Application': 'Percent', 'Visits to Onboard': 'Ratio', 'Average Visit': 'Ratio',
+  'Total Visit': 'Count', 'Unique Visits': 'Count', 'Visits to Application': 'Percent', 'Average Visit': 'Ratio',
   'New Dealer Applications': 'Count', 'Dealer Application Completed': 'Count', 'Onboarded Dealers': 'Count', 'Total Disbursals': 'Count', 'Drawdowns (Sales)': 'Count', 'Drawdowns (Runners request)': 'Count',
   'GMV': 'Currency', 'AUM': 'Currency', 'AUM (Net Blacklisted)': 'Currency', 'GMV Growth': 'Percent', 'AUM Growth': 'Percent',
   'AUM Active Dealer': 'Count', 'First-time Activation': 'Count', 'Same Month Activation': 'Count',
@@ -858,6 +868,7 @@ async function loadData() {
           so, date,
           dealerKey: get(r, vCol('Clean GCD')).trim() || get(r, vCol('ID')).trim(),
           purposeBuckets,
+          vid: get(r, vCol('ID')).trim(), purpose: purposeRaw, remarks: get(r, vCol('Remarks')).replace(/\s+/g, ' ').trim(),
         });
       }
     }
@@ -1144,7 +1155,6 @@ function bucketToMetrics(b) {
     'Unique Visits': b.uniqueVisitDealers.size,
     'Average Visit': div(b.totalVisit, b.uniqueVisitDealers.size),
     'Visits to Application': div(b.newApplications, b.appPitchVisits), // % = New Dealer Applications ÷ (Application + Product Pitch visits)
-    'Visits to Onboard': div(b.onboardedDealers, b.newApplications),
     'New Dealer Applications': b.newApplications,
     'Dealer Application Completed': b.applicationsCompleted,
     'Onboarded Dealers': b.onboardedDealers,
@@ -1335,6 +1345,30 @@ function attachChartTooltip(svg, labels, values, opts) {
   });
 }
 
+// ── click a Visits cell -> list the underlying visits ──
+function showVisitDetail(ci, metric) {
+  const col = monthColumns[ci]; if (!col) return;
+  const sos = selectedEntity === '__TEAM__'
+    ? (selectedTeam === ALL_TEAMS ? Object.keys(SO_TEAM_MAP) : Object.keys(SO_TEAM_MAP).filter(so => SO_TEAM_MAP[so] === selectedTeam))
+    : [selectedEntity];
+  const key = metric.indexOf('Visits: ') === 0 ? metric.slice(8) : null;
+  const rows = visitRows.filter(v => v.date >= col.start && v.date <= col.end && sos.indexOf(v.so) >= 0 && teamOf(v.so) && (!key || v.purposeBuckets.indexOf(key) >= 0))
+    .sort((a, b) => b.date - a.date);
+  const ov = document.createElement('div'); ov.className = 'vd-ov';
+  const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); };
+  const onKey = e => { if (e.key === 'Escape') close(); };
+  ov.innerHTML = '<div class="vd-box"><div class="vd-hd"><h3>' + dcEsc(metric) + ' · ' + dcEsc(col.label) + ' — ' + rows.length + ' visit' + (rows.length === 1 ? '' : 's') + '</h3><button type="button" aria-label="Close">✕</button></div><div class="vd-bd"><table><thead><tr><th>Visitor</th><th>ID</th><th>Visit Date</th><th>Purpose</th><th>Remarks</th></tr></thead><tbody>' +
+    rows.map(v => '<tr><td>' + dcEsc(v.so) + '</td><td>' + dcEsc(v.vid || '—') + '</td><td>' + dcDate(v.date) + '</td><td>' + dcEsc(v.purpose || '—') + '</td><td class="rem">' + dcEsc(v.remarks || '—') + '</td></tr>').join('') + '</tbody></table></div></div>';
+  ov.addEventListener('click', e => { if (e.target === ov) close(); });
+  ov.querySelector('button').onclick = close;
+  document.addEventListener('keydown', onKey);
+  document.body.appendChild(ov);
+}
+document.getElementById('metrics-body').addEventListener('click', e => {
+  const td = e.target.closest && e.target.closest('td.drill'); if (!td) return;
+  showVisitDetail(+td.dataset.ci, td.dataset.m);
+});
+
 function renderEntity() {
   if (!selectedEntity) selectedEntity = '__TEAM__';
 
@@ -1365,7 +1399,10 @@ function renderEntity() {
   METRIC_SECTIONS.forEach(section => {
     html += '<tr class="section-row"><td colspan="' + (monthColumns.length + 1) + '">' + section.title + '</td></tr>';
     section.metrics.forEach(metric => {
-      const cells = series.map(s => '<td class="r">' + fmtByType(s[metric], METRIC_TYPES[metric]) + '</td>').join('');
+      const drill = metric === 'Total Visit' || metric.indexOf('Visits: ') === 0;
+      const cells = series.map((s, ci) => drill && s[metric] > 0
+        ? '<td class="r drill" data-ci="' + ci + '" data-m="' + dcEsc(metric) + '" title="Click to see these visits">' + fmtByType(s[metric], METRIC_TYPES[metric]) + '</td>'
+        : '<td class="r">' + fmtByType(s[metric], METRIC_TYPES[metric]) + '</td>').join('');
       html += '<tr><td class="metric-label">' + metric + '</td>' + cells + '</tr>';
       if (metric === 'AUM (Net Blacklisted)' && showCompanyWideAUM) {
         const cwCells = companyWideAUM.map(v => '<td class="r">' + fmtByType(v, 'Currency') + '</td>').join('');
