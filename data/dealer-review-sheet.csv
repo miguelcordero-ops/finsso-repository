@@ -300,7 +300,7 @@
 ,IF0299,AMJ AUTOMOTIVE CARE SERVICES,Malou Alfonso,Myrnalyn Bankingkito,0,1,0,0,0,0,0,0,117,,27,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0300,WHEELS AND DEALS CAR TRADING,Albert Dalupang,Albert Dalupang,0,4,2,0,924620.8,924620.8,924620.8,0,16,,,,Open,,,,,0,0,0,0.003963968275,0,0,,0,0,0,0,No
 ,IF0301,R.J USEDCAR AND ARMORING CAR AGENT SERVICES,Marah Luriely A. Villaruz,Elvira Ladea,0,5,0,0,0,0,0,0,91.4,,10,,Open,,,,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0302,RODCARS AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,1,0,0,200000,200000,0,0,182,,,,Blacklisted,Locked by Timestamp,46190.65122,,,2,0,2,0.0008574257197,0,0,,0,0,0,0,No,,,,46190.65122
+,IF0302,RODCARS AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,1,0,1,200000,200000,0,200000,182,,240,46076,Blacklisted,15 DPD,46076,,,2,0,2,0.0008574257197,240,240,46184,2,0,2,0,Yes,,,,46190.65122
 ,IF0303,EM-PIRE AUTO TRADING,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46160.62569,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0304,AUTOBERNZ CAR SERVICES,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46160.64514,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0305,RTR AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,2,0,1,162000,162000,0,162000,149.3333333,,136,46097,Blacklisted,15 DPD,46097,,,2,0,2,0.000694514833,219,219,46140,1,0,1,0,No,,,,46190.65122
@@ -365,7 +365,7 @@
 ,IF0364,RANDEL MARKETING,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,2,885000,885000,0,885000,234,,175,46139,Blacklisted,15 DPD,46139,,,2,0,2,0.00379410881,177,173,46154,2,0,2,0,No,,,,46190.65122
 ,IF0365,CAR TRADING RGARAGE,Marah Luriely A. Villaruz,Rhoyland Alagon,0,2,0,0,0,0,0,0,31,,,,Open,,,,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0366,DREAM CAR AUTO TRADING,Albert Dalupang,Albert Dalupang,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46174.5625,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0367,OTOMAZING AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,0,400000,400000,0,0,176,,,,Blacklisted,Locked by Timestamp,46190.65122,,,0,0,0,0.001714851439,0,0,,0,0,0,0,No,,,,46190.65122
+,IF0367,OTOMAZING AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,1,400000,400000,0,400000,176,,147,46169,Blacklisted,15 DPD,46169,,,0,0,0,0.001714851439,147,147,,0,0,0,0,No,,,,46190.65122
 ,IF0368,F&J VEHICLE TRADING,Albert Dalupang,Albert Dalupang,0,1,0,0,0,0,0,0,3,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46162.65278,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0369,KENNAR AUTO SHOP,Marah Luriely A. Villaruz,Herbert Capistrano,2,2,2,0,931500,931500,931500,0,60,,,,Open,,,,,6,6,0,0.00399346029,0,0,46307,4,4,0,0,No
 ,IF0370,IACARS AUTOCARE AND AUTOTRADING AUTO SERVICES,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Pending CLA Signature,,46162.72778,,0,0,0,0,0,0,,0,0,0,0,No
@@ -383,7 +383,7 @@
 ,IF0382,C.B AUTOWORKS VEHICLE TRADING,Malou Alfonso,Rose Batacan,0,3,2,0,906520,906520,906520,0,75.8,,1,,Open,,,,,7,6,1,0.003886367817,0,0,46301,3,3,0,0,No
 ,IF0383,BIGBOY CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,1,2,0,697000,697000,697000,0,37,,,,Open,,,,,5,4,1,0.002988128633,0,0,46307,5,4,1,0,No
 ,IF0384,R.C CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46175.45833,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0385,LR G.A.R.A.G.E CAR TRADING,Albert Dalupang,Ricmar Magboo,0,2,1,0,400000,400000,400000,0,64.33333333,,5.39375,46310.60625,Hold,w/ Due Repayments - >= 5DPD,,46310.60625,,3,3,0,0.001714851439,5.39375,5.39375,46309,2,2,0,0,No
+,IF0385,LR G.A.R.A.G.E CAR TRADING,Albert Dalupang,Ricmar Magboo,0,2,1,0,400000,400000,400000,0,64.33333333,,,,Open,,,,,3,3,0,0.001714851439,0,0,46309,2,2,0,0,No
 ,IF0386,NCD CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,8,0,0,0,0,0,0,88.75,,38.5,,Blacklisted,Locked by Timestamp,46190.65122,,,14,1,13,0,0,0,,0,0,0,6,No,,,,46190.65122
 ,IF0387,G CARS AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46164.47083,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0388,NCARS- CAR TRADING ,Marah Luriely A. Villaruz,Elvira Ladea,0,2,0,0,0,0,0,0,60,,7,,Open,,,,,0,0,0,0,0,0,,0,0,0,0,No
