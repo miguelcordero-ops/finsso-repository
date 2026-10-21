@@ -373,6 +373,26 @@ table.wr td.act.future{color:var(--text3);font-weight:400}
 table.wr td.in{padding:0 4px;background:var(--wr-in,#fffdf5)}
 table.wr td.in input{font:inherit;font-size:12.5px;width:100%;border:1px solid var(--border2);border-radius:5px;padding:3px 5px;background:var(--surface-hi);color:var(--text)}
 table.wr td.in input.num{text-align:right}
+table.wr td.in select.cs{font:inherit;font-size:12.5px;width:100%;border:1px solid var(--border2);border-radius:5px;padding:3px 4px;background:var(--surface-hi);color:var(--text)}
+table.wr td.in select.cs.dirty{border-color:var(--primary)}
+table.wr td.due{color:var(--text3)}table.wr td.due.has{font-weight:700;color:var(--text)}
+table.wr td.cg{background:#bbf7d0 !important;color:#14532d}
+table.wr td.cy{background:#fde68a !important;color:#713f12}
+table.wr td.cg.due.has,table.wr td.cg.act{color:#14532d}table.wr td.cy.due.has,table.wr td.cy.act{color:#713f12}
+table.wr td.cg input,table.wr td.cg select,table.wr td.cy input,table.wr td.cy select{background:rgba(255,255,255,.65);color:#111}
+.dotg,.doty{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle;margin:0 2px 0 6px}
+.dotg{background:#22c55e}.doty{background:#eab308}
+:root[data-theme="dark"] table.wr td.cg{background:#166534 !important;color:#f0fdf4}
+:root[data-theme="dark"] table.wr td.cy{background:#854d0e !important;color:#fef9c3}
+:root[data-theme="dark"] table.wr td.cg.due.has,:root[data-theme="dark"] table.wr td.cg.act{color:#f0fdf4}
+:root[data-theme="dark"] table.wr td.cy.due.has,:root[data-theme="dark"] table.wr td.cy.act{color:#fef9c3}
+:root[data-theme="dark"] table.wr td.cg input,:root[data-theme="dark"] table.wr td.cg select,:root[data-theme="dark"] table.wr td.cy input,:root[data-theme="dark"] table.wr td.cy select{background:rgba(0,0,0,.35);color:#fff}
+@media (prefers-color-scheme:dark){
+:root:not([data-theme="light"]) table.wr td.cg{background:#166534 !important;color:#f0fdf4}
+:root:not([data-theme="light"]) table.wr td.cy{background:#854d0e !important;color:#fef9c3}
+:root:not([data-theme="light"]) table.wr td.cg.due.has,:root:not([data-theme="light"]) table.wr td.cg.act{color:#f0fdf4}
+:root:not([data-theme="light"]) table.wr td.cy.due.has,:root:not([data-theme="light"]) table.wr td.cy.act{color:#fef9c3}
+:root:not([data-theme="light"]) table.wr td.cg input,:root:not([data-theme="light"]) table.wr td.cg select,:root:not([data-theme="light"]) table.wr td.cy input,:root:not([data-theme="light"]) table.wr td.cy select{background:rgba(0,0,0,.35);color:#fff}}
 table.wr td.in input.dirty{border-color:var(--primary);background:rgba(232,70,30,.10)}
 table.wr td.in input:focus{outline:2px solid var(--primary);outline-offset:0}
 table.wr tfoot td{position:sticky;bottom:0;z-index:3;font-weight:700;height:34px;background:var(--wr-head,#eef0f6)}
@@ -503,7 +523,7 @@ let ACCESS = null, ID_TOKEN = '', USER_EMAIL = '', _dataReady = false, _rendered
 let selectedTeam = ALL_TEAMS, selectedSO = '', selectedMonth = null, searchQ = '';
 let saved = {};   // key "week|dealerId" -> {fresh, redraw, remarks, by, at}   (as last loaded from server)
 let edits = {};   // key -> {fresh, redraw, remarks, conf}  (unsaved, full set for that row)
-let weeks = [], loanDealer = {}, latestVisit = {};
+let weeks = [], loanDealer = {}, latestVisit = {}, duesByDealer = {};
 
 function teamOf(so) { return SO_TEAM_MAP[so] || null; }
 function esc(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
@@ -546,7 +566,9 @@ async function loadData() {
     // Loans (credited drawdowns) per dealer: v2 + v3 (180-day), header-name lookups.
     loansByDealer = {}; loanDealer = {};
     const names = {};
-    function addLoans(grid) {
+    duesByDealer = {};
+    const isPending = (st, re) => { st = String(st || '').trim().toLowerCase(); return !!st && re.test(st); };
+    function addLoans(grid, isV3) {
       if (!grid || grid.length < 2) return;
       const c = buildColumnMap(grid[0]);
       for (let i = 1; i < grid.length; i++) {
@@ -559,9 +581,24 @@ async function loadData() {
         const creditDate = parseSheetDate(get(r, c('Credit Date to Dealer Bank Account')));
         if (!creditDate) continue; // not credited -> not a drawdown made
         (loansByDealer[dealerId] = loansByDealer[dealerId] || []).push({ id, creditDate }); loanDealer[id] = dealerId;
+        // Dues of OPEN loans only: renewals (R) and maturity (M) that are still unpaid
+        const lst = get(r, c('Loan Status')).trim().toLowerCase();
+        if (lst && lst !== 'closed' && lst !== 'cancelled') {
+          const add = (type, dateCol, ok) => { const dt = parseSheetDate(get(r, c(dateCol))); if (dt && ok) (duesByDealer[dealerId] = duesByDealer[dealerId] || []).push({ id, type, date: dt }); };
+          if (!isV3) {
+            add('R', 'Renewal 1 Due Date', isPending(get(r, c('Renewal 1 Payment Status')), /^(renewal not yet due|renewal overdue|not renewed)$/));
+            add('R', 'Renewal 2 Due Date', isPending(get(r, c('Renewal 2 Payment Status')), /^(renewal not yet due|renewal overdue|not renewed)$/));
+            add('M', 'Final Maturity Date', isPending(get(r, c('Full Payment Status')), /^(maturity not yet due|maturity overdue|pending maturity)$/));
+          } else {
+            const open = st => isPending(st, /^(?!.*(paid|closed|n\/a|not applicable)).+$/);
+            [['R1 Due Date', 'R1 Payment Status'], ['R2 Due Date', 'R2 Payment Status'], ['R3P1 Due Date', 'R3 Payment Status'], ['R4P2 Due Date', 'R4 Payment Status'], ['R5P3 Due Date', 'R5 Payment Status']]
+              .forEach(p => add('R', p[0], open(get(r, c(p[1])))));
+            add('M', c('Maturity Due Date') >= 0 ? 'Maturity Due Date' : 'Maturity Date', open(get(r, c('Maturity Payment Status'))));
+          }
+        }
       }
     }
-    addLoans(ddGrid); addLoans(dd3Grid);
+    addLoans(ddGrid, false); addLoans(dd3Grid, true);
 
     const obNames = {};
     if (obGrid) {
@@ -594,7 +631,7 @@ async function loadData() {
         so: normName(g(r, 'Assigned Sales Officer')),
         onboardingDate, first, last,
         availCredit: parseNum(g(r, 'Total Available Credit Limit')),
-        clStatus: g(r, 'Credit Line Status'), gcd: g(r, 'GCD Code'),
+        clStatus: g(r, 'Credit Line Status'), gcd: g(r, 'GCD Code'), drawPower: parseNum(g(r, 'Total Available Drawing Power')),
       });
     }
     dealerRows.sort((a, b) => a.name.localeCompare(b.name));
@@ -690,7 +727,7 @@ async function loadSaved() {
     const r = await fetch(url);
     const j = await r.json();
     if (!j.ok) throw new Error(j.error || 'load failed');
-    (j.rows || []).forEach(x => { x.conf = x.conf ? '1' : ''; saved[x.week + '|' + x.dealerId] = x; });
+    (j.rows || []).forEach(x => { x.conf = (x.conf === true || String(x.conf).toLowerCase() === 'yes') ? 'green' : (String(x.conf || '').toLowerCase() === 'green' || String(x.conf || '').toLowerCase() === 'yellow' ? String(x.conf).toLowerCase() : ''); saved[x.week + '|' + x.dealerId] = x; });
     setBanner('');
   } catch (e) { setBanner('Couldn\'t load saved inputs: ' + (e.message || e), 'err'); }
 }
@@ -703,44 +740,56 @@ function cur(key) { return edits[key] || saved[key] || { fresh: '', redraw: '', 
 // Layout: info columns (frozen) + Week 1 (frozen, optional) + ONE paged week (◀ ▶ to move).
 // Fixed-width table (fast) and VIRTUALIZED rows: only rows near the viewport exist in the DOM.
 const WR_ROW_H = 38, WR_BUF = 10, WR_HEAD_H = 94;
-const WR_FROZEN = [ ['Dealer', 190, 'l name'], ['Assigned Officer', 130, 'l'], ['Onboarding Date', 112, ''], ['Last Txn', 112, ''], ['Total Available Credit Limit', 112, 'rr'], ['Credit Line Status', 78, ''] ];
-const WR_SCROLL = [ ['Latest IF Visit', 112, ''], ['Visited By (IF)', 160, 'l'], ['Visit Remarks', 260, 'l'] ]; // not frozen — scroll with the weeks
+// [label, width, align classes, key]
+const WR_FROZEN = [ ['Dealer', 170, 'l name', 'dealer'], ['Assigned Officer', 120, 'l', 'so'], ['Onboarding Date', 96, '', 'onb'], ['Last Txn', 96, '', 'last'], ['Total Available Credit Limit', 104, 'rr', 'limit'], ['Available Drawing Power', 104, 'rr', 'dp'], ['Credit Line Status', 72, '', 'cls'] ];
+const WR_SCROLL = [ ['Latest IF Visit', 96, '', 'lvd'], ['Visited By (IF)', 130, 'l', 'lvb'], ['Visit Remarks', 170, 'l', 'lvr'] ]; // not frozen — scroll with the weeks
 const WR_INFO_W = () => WR_FROZEN.concat(WR_SCROLL).reduce((a, c) => a + c[1], 0);
-const WR_BLOCK_COLS = [['Actual Drawdowns', 'act'], ['Confident?', 'conf'], ['Planned Fresh Drawdown', 'fresh'], ['Planned Re-Drawdown', 'redraw'], ['Remarks', 'remarks']];
-const WR_W_PINNED = [76, 84, 84, 84, 120];   // frozen Week 1 (compact)
-const WR_W_PAGED  = [76, 84, 112, 112, 320]; // remarks stretches to the room that's left (150–420px)
+// one week block = 7 columns
+const WR_BLOCK_COLS = [['Actual Drawdowns', 'act'], ['Renewals Due', 'ren'], ['Maturities Due', 'mat'], ['Confidence', 'conf'], ['Planned Fresh Drawdown', 'fresh'], ['Planned Re-Drawdown', 'redraw'], ['Remarks', 'remarks']];
+const WR_W_PAGED = [76, 76, 84, 104, 112, 112, 320]; // Remarks stretches to the room that's left
+const WR_NC = WR_BLOCK_COLS.length;
 let curList = [], baseCount = 0, curActs = {}, rsStart = -1, rsEnd = -1, wrTodayStart = null;
-let pinW1 = false, pageIdx = null, filters = {}, shown = [], tblW = 0;
+let pageIdx = null, filters = {}, shown = [], tblW = 0;
 
-function pageList() { return pinW1 ? weeks.slice(1) : weeks; }
+// ── dues (renewal / maturity) per dealer per week, from the open loans' due dates ──
+let _dueCache = {};
+function dueItems(dealerId, wk, type) {
+  const list = duesByDealer[dealerId] || [], out = [];
+  for (let i = 0; i < list.length; i++) { const x = list[i]; if (x.type === type && x.date >= wk.from && x.date <= wk.to) out.push(x); }
+  return out;
+}
+function dueCount(dealerId, wk, type) {
+  const k = dealerId + '|' + wk.n + '|' + type;
+  return k in _dueCache ? _dueCache[k] : (_dueCache[k] = dueItems(dealerId, wk, type).length);
+}
+
+function pageList() { return weeks; }
 function defaultPageIdx() {
-  const pl = pageList(), t = todayStart();
-  const i = pl.findIndex(w => t >= w.from && t <= w.to);
+  const t = todayStart();
+  const i = weeks.findIndex(w => t >= w.from && t <= w.to);
   return i >= 0 ? i : 0;
 }
-// shown = the week blocks on screen, with their column widths and (for the pinned one) sticky offsets
 function layoutBlocks() {
-  const pl = pageList();
-  if (pageIdx === null || pageIdx >= pl.length) pageIdx = Math.max(0, Math.min(pageIdx === null ? defaultPageIdx() : pl.length - 1, pl.length - 1));
+  if (pageIdx === null) pageIdx = defaultPageIdx();
+  pageIdx = Math.max(0, Math.min(pageIdx, weeks.length - 1));
   let x = WR_INFO_W();
-  shown = [];
-  const mk = (w, pinned) => {
-    let widths = pinned ? WR_W_PINNED : WR_W_PAGED, lefts = [];
-    if (!pinned) {
-      const avail = (document.getElementById('wr-wrap').clientWidth || 1400) - x - 4;
-      widths = widths.slice();
-      const baseSum = widths.reduce((a, c) => a + c, 0);
-      if (avail > baseSum) { const k = avail / baseSum; widths = widths.map(w => Math.floor(w * k)); }   // wide screen: stretch every column to fill
-      else widths[4] = Math.max(130, avail - widths.slice(0, 4).reduce((a, c) => a + c, 0));          // narrower: Remarks takes what's left
-    }
-    widths.forEach(wd => { lefts.push(x); x += wd; });
-    shown.push({ w, wi: weeks.indexOf(w), pinned, widths, lefts });
-  };
-  if (pinW1) mk(weeks[0], true);
-  mk(pl[pageIdx], false);
-  tblW = Math.max(x, (document.getElementById('wr-wrap').clientWidth || 0) - 2);
+  let widths = WR_W_PAGED.slice();
+  const avail = (document.getElementById('wr-wrap').clientWidth || 1400) - x - 4;
+  const base = widths.reduce((a, c) => a + c, 0);
+  if (avail > base) { const k = avail / base; widths = widths.map(w => Math.floor(w * k)); }          // wide screen: stretch to fill
+  else widths[WR_NC - 1] = Math.max(130, avail - widths.slice(0, WR_NC - 1).reduce((a, c) => a + c, 0)); // narrower: Remarks takes the rest
+  shown = [{ w: weeks[pageIdx], wi: pageIdx, widths }];
+  tblW = Math.max(x + widths.reduce((a, c) => a + c, 0), (document.getElementById('wr-wrap').clientWidth || 0) - 2);
 }
 function frozenLefts() { let x = 0; return WR_FROZEN.map(c => { const l = x; x += c[1]; return l; }); }
+
+function infoFilterCell(key, kind) {
+  const fk = 'i|' + key, fv = filters[fk] || '';
+  if (kind === 'num') return '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="&gt;0, empty" title="Filter: &gt;0, &gt;=2000000, &lt;500000, =0, empty, any">';
+  if (kind === 'text') return '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="contains…">';
+  return '';
+}
+const WR_INFO_FILTER = { dealer: 'text', so: 'text', limit: 'num', dp: 'num', cls: 'text', lvb: 'text', lvr: 'text' };
 
 function renderHead() {
   layoutBlocks();
@@ -749,23 +798,24 @@ function renderHead() {
   let cg = '<colgroup>' + WR_FROZEN.concat(WR_SCROLL).map(c => '<col style="width:' + c[1] + 'px">').join('');
   shown.forEach(b => { cg += b.widths.map(w => '<col style="width:' + w + 'px">').join(''); });
   cg += '</colgroup>';
-  const fl = frozenLefts();
-  let h1 = '<tr>' + WR_FROZEN.map((c, i) => '<th class="fz' + (c[2].indexOf('l') >= 0 ? ' l' : '') + (c[2].indexOf('rr') >= 0 ? ' rr' : '') + (i === WR_FROZEN.length - 1 && !pinW1 ? ' fzend' : '') + '" rowspan="3" style="left:' + fl[i] + 'px">' + c[0] + '</th>').join('');
-  h1 += WR_SCROLL.map(c => '<th rowspan="3"' + (c[2].indexOf('l') >= 0 ? ' class="l"' : '') + '>' + c[0] + '</th>').join('');
-  let h2 = '<tr class="sub">', h3 = '<tr class="flt">';
+  const fl = frozenLefts(), lastF = WR_FROZEN.length - 1;
+  const thCls = c => (c[2].indexOf('l') >= 0 ? 'l' : '') + (c[2].indexOf('rr') >= 0 ? ' rr' : '');
+  let h1 = '<tr>' + WR_FROZEN.map((c, i) => '<th class="fz ' + thCls(c) + (i === lastF ? ' fzend' : '') + '" rowspan="2" style="left:' + fl[i] + 'px">' + c[0] + '</th>').join('');
+  h1 += WR_SCROLL.map(c => '<th class="' + thCls(c) + '" rowspan="2">' + c[0] + '</th>').join('');
+  let h2 = '<tr class="sub">';
+  let h3 = '<tr class="flt">' + WR_FROZEN.map((c, i) => '<th class="fz' + (i === lastF ? ' fzend' : '') + '" style="left:' + fl[i] + 'px">' + infoFilterCell(c[3], WR_INFO_FILTER[c[3]]) + '</th>').join('') +
+    WR_SCROLL.map(c => '<th>' + infoFilterCell(c[3], WR_INFO_FILTER[c[3]]) + '</th>').join('');
   shown.forEach(b => {
-    const fz = b.pinned ? ' fz' : '';
-    h1 += '<th class="wk wkstart' + fz + '" colspan="5"' + (b.pinned ? ' style="left:' + b.lefts[0] + 'px"' : '') + '>' + b.w.label + ' <span style="font-weight:400;color:var(--text3)">(' + b.w.range + ')</span></th>';
+    h1 += '<th class="wk wkstart" colspan="' + WR_NC + '">' + b.w.label + ' <span style="font-weight:400;color:var(--text3)">(' + b.w.range + ')</span></th>';
     WR_BLOCK_COLS.forEach((c, i) => {
-      const cls = 'wk' + (i === 0 ? ' wkstart' : '') + fz + (b.pinned && i === 4 ? ' fzend' : '');
-      const st = b.pinned ? ' style="left:' + b.lefts[i] + 'px"' : '';
-      h2 += '<th class="' + cls + '"' + st + '>' + c[0] + '</th>';
+      const cls = 'wk' + (i === 0 ? ' wkstart' : '');
+      h2 += '<th class="' + cls + '">' + c[0] + '</th>';
       const fk = b.w.n + '|' + c[1], fv = filters[fk] || '';
       let inner = '';
-      if (c[1] === 'conf') inner = '<select data-fk="' + fk + '" title="Filter Confident?"><option value="">Any</option><option value="yes"' + (fv === 'yes' ? ' selected' : '') + '>✔ Yes</option><option value="no"' + (fv === 'no' ? ' selected' : '') + '>Not yet</option></select>';
-      else if (c[1] === 'act' || c[1] === 'fresh' || c[1] === 'redraw') inner = '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="&gt;0, empty" title="Filter: &gt;0, &gt;=2, &lt;5, =3, empty, any">';
-      else if (c[1] === 'remarks') inner = '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="contains…" title="Filter: text contained in remarks, or: empty / any">';
-      h3 += '<th class="' + cls + '"' + st + '>' + inner + '</th>';
+      if (c[1] === 'conf') inner = '<select data-fk="' + fk + '" title="Filter by colour"><option value="">Any</option><option value="green"' + (fv === 'green' ? ' selected' : '') + '>Green</option><option value="yellow"' + (fv === 'yellow' ? ' selected' : '') + '>Yellow</option><option value="none"' + (fv === 'none' ? ' selected' : '') + '>No colour</option></select>';
+      else if (c[1] !== 'remarks') inner = '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="&gt;0, empty" title="Filter: &gt;0, &gt;=2, &lt;5, =3, empty, any">';
+      else inner = '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="contains…" title="Text contained in remarks, or: empty / any">';
+      h3 += '<th class="' + cls + '">' + inner + '</th>';
     });
   });
   document.getElementById('wr-head').innerHTML = h1 + '</tr>' + h2 + '</tr>' + h3 + '</tr>';
@@ -775,27 +825,28 @@ function renderHead() {
 }
 
 function updatePager() {
-  const pl = pageList(), w = pl[pageIdx];
-  document.getElementById('wr-pglabel').textContent = w ? w.label + ' · ' + w.range + '  (' + (pageIdx + 1) + ' of ' + pl.length + ')' : '';
+  const w = weeks[pageIdx];
+  document.getElementById('wr-pglabel').textContent = w ? w.label + ' · ' + w.range + '  (' + (pageIdx + 1) + ' of ' + weeks.length + ')' : '';
   document.getElementById('wr-prev').disabled = pageIdx <= 0;
-  document.getElementById('wr-next').disabled = pageIdx >= pl.length - 1;
+  document.getElementById('wr-next').disabled = pageIdx >= weeks.length - 1;
   document.getElementById('wr-clear').style.display = activeFilterKeys().length ? '' : 'none';
 }
 function goPage(delta) {
-  const pl = pageList(), n = Math.max(0, Math.min(pl.length - 1, pageIdx + delta));
+  const n = Math.max(0, Math.min(weeks.length - 1, pageIdx + delta));
   if (n === pageIdx) return;
   pageIdx = n; renderHead(); refreshBody(false);
 }
 
-// ── filters (apply to the week blocks currently on screen) ───────────────────
+// ── filters ──────────────────────────────────────────────────────────────────
+// Info-column filters ('i|key') always apply; week-column filters only for the week on screen.
 function activeFilterKeys() {
   const vis = {}; shown.forEach(b => { vis[b.w.n] = 1; });
-  return Object.keys(filters).filter(k => filters[k] && vis[k.split('|')[0]]);
+  return Object.keys(filters).filter(k => filters[k] && (k.charAt(0) === 'i' && k.charAt(1) === '|' || vis[k.split('|')[0]]));
 }
 function numTest(expr) {
   const s = String(expr).trim().toLowerCase(); if (!s) return null;
-  if (s === 'empty' || s === 'blank') return v => v === '' || !isFinite(parseFloat(v));
-  if (s === 'any' || s === 'has') return v => v !== '' && isFinite(parseFloat(v));
+  if (s === 'empty' || s === 'blank') return v => v === '' || v == null || !isFinite(parseFloat(v));
+  if (s === 'any' || s === 'has') return v => v !== '' && v != null && isFinite(parseFloat(v));
   const m = s.match(/^(>=|<=|!=|>|<|=)?\s*(-?\d+(?:\.\d+)?)$/); if (!m) return () => false;
   const op = m[1] || '=', n = parseFloat(m[2]);
   return v => {
@@ -803,29 +854,39 @@ function numTest(expr) {
     return op === '>' ? x > n : op === '>=' ? x >= n : op === '<' ? x < n : op === '<=' ? x <= n : op === '!=' ? x !== n : x === n;
   };
 }
+function textTest(q) {
+  q = String(q).trim().toLowerCase(); if (!q) return null;
+  if (q === 'empty' || q === 'blank') return s => !String(s || '').trim();
+  if (q === 'any') return s => !!String(s || '').trim();
+  return s => String(s || '').toLowerCase().indexOf(q) >= 0;
+}
 function applyFilters(list) {
   const tests = [];
   activeFilterKeys().forEach(k => {
-    const [n, f] = k.split('|'), val = filters[k];
-    let t;
-    if (f === 'conf') t = v => (val === 'yes') === (v.conf === '1');
-    else if (f === 'remarks') {
-      const q = val.trim().toLowerCase();
-      t = q === 'empty' || q === 'blank' ? v => !String(v.remarks).trim() : q === 'any' ? v => !!String(v.remarks).trim() : v => String(v.remarks).toLowerCase().indexOf(q) >= 0;
-    } else if (f === 'act') {
-      const nt = numTest(val); if (!nt) return;
-      const wk = weeks.find(w => String(w.n) === n);
-      t = (v, d) => nt(!wk || wk.from > wrTodayStart ? '' : String(actualCount(d.dealerId, wk)));
-    } else { const nt = numTest(val); if (!nt) return; t = v => nt(v[f]); }
-    tests.push({ n, t });
+    const parts = k.split('|'), val = filters[k];
+    if (parts[0] === 'i') {
+      const key = parts[1];
+      if (key === 'limit' || key === 'dp') { const nt = numTest(val); if (nt) tests.push(d => nt(key === 'limit' ? d.availCredit : d.drawPower)); return; }
+      const tt = textTest(val); if (!tt) return;
+      tests.push(d => key === 'dealer' ? tt(d.name + ' ' + d.dealerId) : key === 'so' ? tt(d.so) : key === 'cls' ? tt(d.clStatus) :
+        key === 'lvb' ? tt((latestVisit[d.dealerId] || {}).by) : tt((latestVisit[d.dealerId] || {}).remarks));
+      return;
+    }
+    const n = parts[0], f = parts[1], wk = weeks.find(w => String(w.n) === n);
+    if (f === 'conf') { tests.push(d => { const c = cur(n + '|' + d.dealerId).conf || ''; return val === 'none' ? !c : c === val; }); return; }
+    if (f === 'remarks') { const tt = textTest(val); if (tt) tests.push(d => tt(cur(n + '|' + d.dealerId).remarks)); return; }
+    const nt = numTest(val); if (!nt) return;
+    if (f === 'act') tests.push(d => nt(!wk || wk.from > wrTodayStart ? '' : String(actualCount(d.dealerId, wk))));
+    else if (f === 'ren' || f === 'mat') tests.push(d => nt(String(dueCount(d.dealerId, wk, f === 'ren' ? 'R' : 'M'))));
+    else tests.push(d => nt(cur(n + '|' + d.dealerId)[f]));
   });
   if (!tests.length) return list;
-  return list.filter(d => tests.every(x => x.t(cur(x.n + '|' + d.dealerId), d)));
+  return list.filter(d => tests.every(t => t(d)));
 }
 
 function render() {
   weeks = buildWeeks(selectedMonth.y, selectedMonth.m);
-  wrTodayStart = todayStart();
+  wrTodayStart = todayStart(); _dueCache = {};
   renderHead();
   refreshBody(true);
 }
@@ -845,13 +906,16 @@ function refreshBody(resetScroll) {
   updatePager();
 }
 
+function dueTitle(items) { return items.map(x => x.id + ' · ' + fmtDate(x.date)).join('\n'); }
 function rowHtml(d) {
   const acts = curActs[d.dealerId], fl = frozenLefts(), last = WR_FROZEN.length - 1, lv = latestVisit[d.dealerId];
   let html = '<tr class="r" data-d="' + esc(d.dealerId) + '">' +
     '<td class="fz l name" style="left:' + fl[0] + 'px" title="' + esc(d.name) + ' · ' + esc(d.dealerId) + '">' + esc(d.name) + '</td>' +
     '<td class="fz l" style="left:' + fl[1] + 'px" title="' + esc(d.so) + '">' + esc(d.so || '—') + '</td>' +
     '<td class="fz" style="left:' + fl[2] + 'px">' + fmtDate(d.onboardingDate) + '</td><td class="fz" style="left:' + fl[3] + 'px">' + fmtDate(d.last) + '</td>' +
-    '<td class="fz rr" style="left:' + fl[4] + 'px">' + peso(d.availCredit) + '</td><td class="fz' + (pinW1 ? '' : ' fzend') + '" style="left:' + fl[last] + 'px">' + esc(d.clStatus || '—') + '</td>' +
+    '<td class="fz rr" style="left:' + fl[4] + 'px">' + peso(d.availCredit) + '</td>' +
+    '<td class="fz rr" style="left:' + fl[5] + 'px">' + peso(d.drawPower) + '</td>' +
+    '<td class="fz fzend" style="left:' + fl[last] + 'px">' + esc(d.clStatus || '—') + '</td>' +
     (lv ? '<td>' + fmtDate(lv.date) + '</td><td class="l" title="' + esc(lv.by) + '">' + esc(lv.by || '—') + '</td><td class="l" title="' + esc(lv.remarks) + '">' + esc(lv.remarks || '—') + '</td>' : '<td>—</td><td class="l">—</td><td class="l">—</td>');
   shown.forEach(b => {
     const w = b.w, key = w.n + '|' + d.dealerId, v = cur(key);
@@ -859,13 +923,15 @@ function rowHtml(d) {
     const ed = edits[key], sv = saved[key] || {};
     const dirty = fld => ed && String(ed[fld] == null ? '' : ed[fld]) !== String(sv[fld] == null ? '' : sv[fld]) ? ' dirty' : '';
     const who = sv.by ? 'Last saved by ' + sv.by + (sv.at ? ' · ' + sv.at : '') : '';
-    const P = (i, extra) => (b.pinned ? ' fz' : '') + (b.pinned && i === 4 ? ' fzend' : '') + (extra || '');
-    const S = i => b.pinned ? ' style="left:' + b.lefts[i] + 'px"' : '';
-    html += '<td class="act wkstart' + (future ? ' future' : '') + P(0) + '"' + S(0) + '>' + (future ? '–' : a) + '</td>' +
-      '<td class="in ck' + P(1) + '"' + S(1) + '><input class="ckb' + dirty('conf') + '" type="checkbox" data-k="' + key + '" data-f="conf"' + (v.conf === '1' ? ' checked' : '') + ' title="' + esc(who || 'Confident this plan will happen?') + '"></td>' +
-      '<td class="in' + P(2) + '"' + S(2) + '><input class="num' + dirty('fresh') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="fresh" value="' + esc(v.fresh) + '" title="' + esc(who) + '"></td>' +
-      '<td class="in' + P(3) + '"' + S(3) + '><input class="num' + dirty('redraw') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="redraw" value="' + esc(v.redraw) + '" title="' + esc(who) + '"></td>' +
-      '<td class="in' + P(4) + '"' + S(4) + '><input class="rem' + dirty('remarks') + '" type="text" maxlength="2000" data-k="' + key + '" data-f="remarks" value="' + esc(v.remarks) + '" title="' + esc(who) + '"></td>';
+    const col = v.conf === 'green' ? ' cg' : v.conf === 'yellow' ? ' cy' : '';
+    const rI = dueItems(d.dealerId, w, 'R'), mI = dueItems(d.dealerId, w, 'M');
+    html += '<td class="act wkstart' + (future ? ' future' : '') + col + '">' + (future ? '–' : a) + '</td>' +
+      '<td class="due' + (rI.length ? ' has' : '') + col + '"' + (rI.length ? ' title="' + esc(dueTitle(rI)) + '"' : '') + '>' + (rI.length || '–') + '</td>' +
+      '<td class="due' + (mI.length ? ' has' : '') + col + '"' + (mI.length ? ' title="' + esc(dueTitle(mI)) + '"' : '') + '>' + (mI.length || '–') + '</td>' +
+      '<td class="in' + col + '"><select class="cs' + dirty('conf') + '" data-k="' + key + '" data-f="conf" title="' + esc(who || 'Mark how confident this plan is') + '"><option value="">—</option><option value="green"' + (v.conf === 'green' ? ' selected' : '') + '>Green</option><option value="yellow"' + (v.conf === 'yellow' ? ' selected' : '') + '>Yellow</option></select></td>' +
+      '<td class="in' + col + '"><input class="num' + dirty('fresh') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="fresh" value="' + esc(v.fresh) + '" title="' + esc(who) + '"></td>' +
+      '<td class="in' + col + '"><input class="num' + dirty('redraw') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="redraw" value="' + esc(v.redraw) + '" title="' + esc(who) + '"></td>' +
+      '<td class="in' + col + '"><input class="rem' + dirty('remarks') + '" type="text" maxlength="2000" data-k="' + key + '" data-f="remarks" value="' + esc(v.remarks) + '" title="' + esc(who) + '"></td>';
   });
   return html + '</tr>';
 }
@@ -873,7 +939,7 @@ function rowHtml(d) {
 // Paint only the rows around the viewport. force=true repaints even if the window is unchanged.
 function paintRows(force) {
   const body = document.getElementById('wr-body'), wrap = document.getElementById('wr-wrap');
-  const n = curList.length, ncols = WR_FROZEN.length + WR_SCROLL.length + shown.length * 5;
+  const n = curList.length, ncols = WR_FROZEN.length + WR_SCROLL.length + shown.length * WR_NC;
   if (!n) { body.innerHTML = '<tr><td colspan="' + ncols + '" style="padding:18px;text-align:left;color:var(--text3);font-style:italic">No dealers match the current filters.</td></tr>'; rsStart = rsEnd = -1; return; }
   const first = Math.max(0, Math.floor((wrap.scrollTop - WR_HEAD_H) / WR_ROW_H));
   const vis = Math.ceil(wrap.clientHeight / WR_ROW_H) + 1;
@@ -889,7 +955,7 @@ function paintRows(force) {
   body.innerHTML = html;
   rsStart = start; rsEnd = end;
   if (keep) {
-    const el = body.querySelector('input[data-k="' + keep.k + '"][data-f="' + keep.f + '"]');
+    const el = body.querySelector('[data-k="' + keep.k + '"][data-f="' + keep.f + '"]');
     if (el) { el.focus(); try { el.setSelectionRange(keep.s, keep.e); } catch (x) {} }
   }
 }
@@ -900,18 +966,22 @@ document.getElementById('wr-wrap').addEventListener('scroll', () => {
 }, { passive: true });
 
 function renderFoot() {
-  const fl = frozenLefts();
-  let foot = '<tr><td class="fz l' + (pinW1 ? '' : ' fzend') + '" colspan="6" style="left:0">Total (' + curList.length + ' dealers)</td><td colspan="3"></td>';
+  const fl = frozenLefts(), last = WR_FROZEN.length - 1;
+  let lim = 0, dp = 0;
+  curList.forEach(d => { lim += d.availCredit || 0; dp += d.drawPower || 0; });
+  let foot = '<tr><td class="fz l" colspan="4" style="left:0">Total (' + curList.length + ' dealers)</td>' +
+    '<td class="fz rr" style="left:' + fl[4] + 'px">' + peso(lim) + '</td><td class="fz rr" style="left:' + fl[5] + 'px">' + peso(dp) + '</td><td class="fz fzend" style="left:' + fl[last] + 'px"></td>' +
+    '<td colspan="' + WR_SCROLL.length + '"></td>';
   shown.forEach(b => {
-    let act = 0, conf = 0, fresh = 0, redraw = 0;
+    let act = 0, ren = 0, mat = 0, g = 0, y = 0, fresh = 0, redraw = 0;
     curList.forEach(d => {
       const a = curActs[d.dealerId][b.wi]; if (a) act += a;
+      ren += dueCount(d.dealerId, b.w, 'R'); mat += dueCount(d.dealerId, b.w, 'M');
       const v = cur(b.w.n + '|' + d.dealerId), f = parseFloat(v.fresh), rd = parseFloat(v.redraw);
-      if (v.conf === '1') conf++;
+      if (v.conf === 'green') g++; else if (v.conf === 'yellow') y++;
       if (isFinite(f)) fresh += f; if (isFinite(rd)) redraw += rd;
     });
-    const P = i => (b.pinned ? ' fz' : '') + (b.pinned && i === 4 ? ' fzend' : ''), S = i => b.pinned ? ' style="left:' + b.lefts[i] + 'px"' : '';
-    foot += '<td class="wkstart' + P(0) + '"' + S(0) + '>' + act + '</td><td class="' + P(1).trim() + '"' + S(1) + '>' + conf + ' ✔</td><td class="' + P(2).trim() + '"' + S(2) + '>' + fresh + '</td><td class="' + P(3).trim() + '"' + S(3) + '>' + redraw + '</td><td class="' + P(4).trim() + '"' + S(4) + '></td>';
+    foot += '<td class="wkstart">' + act + '</td><td>' + ren + '</td><td>' + mat + '</td><td>' + (g || y ? '<span class="dotg"></span>' + g + ' <span class="doty"></span>' + y : '') + '</td><td>' + fresh + '</td><td>' + redraw + '</td><td></td>';
   });
   document.getElementById('wr-foot').innerHTML = foot + '</tr>';
 }
@@ -932,10 +1002,14 @@ function onInput(e) {
   const key = el.dataset.k, fld = el.dataset.f;
   const base = Object.assign({ fresh: '', redraw: '', remarks: '', conf: '' }, saved[key] || {});
   const row = Object.assign({}, edits[key] || { fresh: base.fresh, redraw: base.redraw, remarks: base.remarks, conf: base.conf });
-  row[fld] = fld === 'conf' ? (el.checked ? '1' : '') : el.value;
+  row[fld] = el.value;
   const same = WR_FIELDS.every(f => String(row[f]) === String(base[f] == null ? '' : base[f]));
   if (same) delete edits[key]; else edits[key] = row;
   el.classList.toggle('dirty', !!edits[key] && String(row[fld]) !== String(base[fld] == null ? '' : base[fld]));
+  if (fld === 'conf') { // recolour this week's cells in the row straight away
+    const tr = el.closest('tr'), c = row.conf;
+    tr.querySelectorAll('td:nth-child(n+' + (WR_FROZEN.length + WR_SCROLL.length + 1) + ')').forEach(td => { td.classList.toggle('cg', c === 'green'); td.classList.toggle('cy', c === 'yellow'); });
+  }
   renderFoot();
   updateSaveBar();
 }
@@ -956,7 +1030,7 @@ async function saveEdits() {
   if (!wrConfigured() || !ID_TOKEN) return;
   const rows = Object.keys(edits).map(k => {
     const [week, dealerId] = k.split('|');
-    return { week: +week, dealerId, fresh: edits[k].fresh, redraw: edits[k].redraw, remarks: edits[k].remarks, conf: edits[k].conf === '1' };
+    return { week: +week, dealerId, fresh: edits[k].fresh, redraw: edits[k].redraw, remarks: edits[k].remarks, conf: edits[k].conf };
   });
   if (!rows.length) return;
   btn.disabled = true; msg.className = 'wr-msg'; msg.textContent = 'Saving…';
@@ -1033,6 +1107,7 @@ async function tryRender() {
 }
 
 document.addEventListener('input', onInput);
+document.addEventListener('change', e => { if (e.target.tagName === 'SELECT' && e.target.dataset && e.target.dataset.k) onInput(e); });
 document.getElementById('wr-head').addEventListener('input', onFilter);
 document.getElementById('wr-head').addEventListener('change', onFilter);
 document.getElementById('wr-prev').onclick = () => goPage(-1);
