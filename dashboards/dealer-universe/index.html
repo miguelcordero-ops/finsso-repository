@@ -769,11 +769,15 @@ async function loadData() {
       const onbByApp = u.apps.some(a => /dealer onboarded/i.test(a.status));
       u.onboarded = !!u.dc || onbByApp;
       u.activated = u.iftx > 0;
+      const last = u.lastDD || (u.dc && u.dc.last) || null;
+      const cut = m => { const t = new Date(); t.setMonth(t.getMonth() - m); t.setHours(0, 0, 0, 0); return t; };
+      u.act3 = u.activated && !!last && last >= cut(3); u.act6 = u.activated && !!last && last >= cut(6); u.act12 = u.activated && !!last && last >= cut(12);
+      u.tier = u.act3 ? 'L3M Active' : u.act6 ? 'L6M Active' : u.act12 ? 'L12M Active' : u.activated ? 'Lifetime Active (no transaction in 12M)' : '';
       u.docsComplete = u.applied && (u.apps.some(a => a.complete) || u.onboarded);
       u.docsPartial = u.applied && !u.docsComplete;
       u.ifTag = u.visited || u.applied || u.onboarded || u.activated;
       u.stage = u.activated ? 5 : u.onboarded ? 4 : u.docsComplete ? 3.5 : u.applied ? 3 : u.visited ? 2 : 0;
-      u.stageLabel = u.activated ? 'Activated' : u.onboarded ? 'Onboarded' : u.docsComplete ? 'Application – docs complete' : u.applied ? 'Application – docs partial' : u.visited ? 'Visited' : 'Not yet touched';
+      u.stageLabel = u.activated ? 'Activated' : u.onboarded ? 'Onboarded' : u.docsComplete ? 'Application – Documents Complete' : u.applied ? 'Application – Documents Partial' : u.visited ? 'Visited' : 'Not Yet Engaged';
       u.stageCls = u.activated ? 5 : u.onboarded ? 4 : u.docsComplete ? 3 : u.applied ? 2 : u.visited ? 1 : 0;
       u.lv = u.visits[0] || null;
       u.onbDate = (u.dc && u.dc.onb) || null;
@@ -798,9 +802,8 @@ const COLS = [
   { id: 'name', label: 'Dealership Name', w: 250, al: 'l', t: 'text', g: d => d.name, fz: 1 },
   { id: 'code', label: 'Code', w: 78, al: 'l', t: 'text', g: d => d.code, fz: 1 },
   { id: 'owner', label: 'Owner', w: 170, al: 'l', t: 'text', g: d => d.owner },
-  { id: 'ift', label: 'IF', w: 60, t: 'text', g: d => d.ifTag ? 'IF' : '', pill: d => d.ifTag ? '<span class="du-pill p-if">IF</span>' : '' },
-  { id: 'cft', label: 'CF', w: 72, t: 'text', g: d => d.cf ? (d.cf.tier === 'exact' ? 'CF' : 'CF (likely match)') : '', pill: d => d.cf ? (d.cf.tier === 'exact' ? '<span class="du-pill p-cf">CF</span>' : '<span class="du-pill p-cfl" title="Name-similarity match — please verify">CF?</span>') : '' },
-  { id: 'mpt', label: 'MP', w: 56, t: 'text', g: d => '', pill: d => '' },
+  { id: 'tags', label: 'Tags', w: 130, al: 'l', t: 'text', g: d => [d.ifTag ? 'IF' : '', d.cf ? (d.cf.tier === 'exact' ? 'CF' : 'CF (likely)') : ''].filter(Boolean).join(' · '),
+    pill: d => (d.ifTag ? '<span class="du-pill p-if">IF</span> ' : '') + (d.cf ? (d.cf.tier === 'exact' ? '<span class="du-pill p-cf">CF</span>' : '<span class="du-pill p-cfl" title="Name-similarity match — please verify">CF?</span>') : '') },
   { id: 'city', label: 'City', w: 130, al: 'l', t: 'text', g: d => d.city },
   { id: 'region', label: 'Region', w: 140, al: 'l', t: 'text', g: d => d.region },
   { id: 'size', label: 'Dealer Size', w: 170, al: 'l', t: 'text', g: d => d.size },
@@ -809,13 +812,13 @@ const COLS = [
   { id: 'iftx', label: 'IF Transactions', w: 96, al: 'rr', t: 'num', n: d => d.iftx, f: String },
   { id: 'cftx', label: 'CF Transactions', w: 96, al: 'rr', t: 'num', n: d => d.cftx, f: String },
   { id: 'uctx', label: 'UCRF Transactions', w: 104, al: 'rr', t: 'num', n: d => null, f: String },
-  { id: 'stage', label: 'IF Stage', w: 190, t: 'text', g: d => d.stageLabel, pill: d => '<span class="du-pill p-s' + d.stageCls + '">' + esc(d.stageLabel) + '</span>' },
+  { id: 'stage', label: 'IF Funnel Stage', w: 190, t: 'text', g: d => d.stageLabel, pill: d => '<span class="du-pill p-s' + d.stageCls + '">' + esc(d.stageLabel) + '</span>' },
+  { id: 'act', label: 'Activity Tier (Transactions)', w: 150, t: 'text', g: d => d.tier },
   { id: 'nv', label: 'IF Visits', w: 72, al: 'rr', t: 'num', n: d => d.visits.length || null, f: String },
   { id: 'lvd', label: 'Last IF Visit', w: 104, t: 'date', n: d => d.lv ? dtx(d.lv.date) : null },
   { id: 'lvb', label: 'Last Visited By', w: 140, al: 'l', t: 'text', g: d => d.lv ? d.lv.by : '' },
   { id: 'lvp', label: 'Last Visit Purpose', w: 140, al: 'l', t: 'text', g: d => d.lv ? d.lv.purpose : '' },
-  { id: 'lvr', label: 'Last Visit Remarks', w: 260, al: 'l', t: 'text', g: d => d.lv ? d.lv.remarks : '' },
-  { id: 'apd', label: 'Application Date', w: 110, t: 'date', n: d => d.app ? dtx(d.app.date) : null },
+    { id: 'apd', label: 'Application Date', w: 110, t: 'date', n: d => d.app ? dtx(d.app.date) : null },
   { id: 'aps', label: 'Application Status', w: 250, al: 'l', t: 'text', g: d => d.app ? d.app.status : '' },
   { id: 'docs', label: 'Documents', w: 100, t: 'text', g: d => d.docsComplete ? 'Complete' : d.docsPartial ? 'Partial' : '', pill: d => d.docsComplete ? '<span class="du-pill p-dc">Complete</span>' : d.docsPartial ? '<span class="du-pill p-dp">Partial</span>' : '' },
   { id: 'onb', label: 'Onboarded Date', w: 110, t: 'date', n: d => dtx(d.onbDate) },
@@ -846,9 +849,10 @@ const ROW_H = 36, BUF = 12, HEAD_H = 44;
 let rsStart = -1, rsEnd = -1;
 
 const STAGES = [
-  ['visited', 'Visited', d => d.visited], ['applied', 'Application submitted', d => d.applied],
-  ['partial', 'Docs partial', d => d.docsPartial, 1], ['complete', 'Docs complete', d => d.docsComplete, 1],
-  ['onboarded', 'Onboarded', d => d.onboarded], ['activated', 'Activated (lifetime)', d => d.activated]
+  ['visited', 'Visited', d => d.visited], ['applied', 'Application Submitted', d => d.applied],
+  ['partial', 'Documents Partial', d => d.docsPartial, 1], ['complete', 'Documents Complete', d => d.docsComplete, 1],
+  ['onboarded', 'Onboarded', d => d.onboarded], ['activated', 'Active – Lifetime', d => d.activated],
+  ['act12', 'Active – L12M', d => d.act12, 1], ['act6', 'Active – L6M', d => d.act6, 1], ['act3', 'Active – L3M', d => d.act3, 1]
 ];
 function funnelBase() {
   const q = searchQ.trim().toLowerCase();
@@ -867,11 +871,11 @@ function chip(id, label, count, pct, on, cls, extra) {
 }
 function renderChips() {
   const total = U.length, ifN = U.filter(d => d.ifTag).length, noneN = total - ifN;
-  const pc = n => ifN ? (Math.round(n / ifN * 1000) / 10) + '% of IF' : '';
+  const pc = n => ifN ? (Math.round(n / ifN * 1000) / 10) + '% of IF Engaged' : '';
   document.getElementById('du-scope').innerHTML = '<span class="du-lbl">Universe</span>' +
-    chip('scope:all', 'All dealers', total, '', scope === 'all') + chip('scope:if', 'IF tagged (touched)', ifN, (Math.round(ifN / total * 1000) / 10) + '% of universe', scope === 'if') +
-    chip('scope:none', 'Not yet touched', noneN, (Math.round(noneN / total * 1000) / 10) + '% of universe', scope === 'none');
-  let f = '<span class="du-lbl">IF funnel</span>';
+    chip('scope:all', 'All Dealers', total, '', scope === 'all') + chip('scope:if', 'IF Engaged', ifN, (Math.round(ifN / total * 1000) / 10) + '% of universe', scope === 'if') +
+    chip('scope:none', 'Not Yet Engaged', noneN, (Math.round(noneN / total * 1000) / 10) + '% of universe', scope === 'none');
+  let f = '<span class="du-lbl">IF Funnel</span>';
   STAGES.forEach((s, i) => {
     const n = U.filter(s[2]).length;
     if (i && !s[3]) f += '<span class="du-arrow">›</span>';
@@ -879,8 +883,8 @@ function renderChips() {
   });
   document.getElementById('du-funnel').innerHTML = f;
   const cfN = U.filter(d => d.cf).length;
-  document.getElementById('du-tags').innerHTML = '<span class="du-lbl">Other tags</span>' +
-    chip('tag:cf', 'CF tagged' + (notes.cf ? '' : ' (no data)'), cfN, '', tagCF) + chip('tag:mp', 'MP tagged (pending)', 0, 'MP Universe not loaded', tagMP, 'dis');
+  document.getElementById('du-tags').innerHTML = '<span class="du-lbl">Other Tags</span>' +
+    chip('tag:cf', 'CF Tagged' + (notes.cf ? '' : ' (no data)'), cfN, '', tagCF) + chip('tag:mp', 'MP Tagged', 0, 'Pending MP Universe data', tagMP, 'dis');
 }
 document.addEventListener('click', e => {
   const b = e.target.closest && e.target.closest('.du-chip'); if (!b) return;
@@ -1089,7 +1093,7 @@ function kv(label, val) { return '<div><span>' + esc(label) + '</span>' + (val =
 function showDetail(d) {
   let h = '<button class="du-x" title="Close">×</button><h2>' + esc(d.name || d.code) + '</h2><div class="du-sub">' + esc(d.code) + (d.owner ? ' · ' + esc(d.owner) : '') + ' · ' + esc([d.city, d.region].filter(Boolean).join(', ')) + '</div>';
   h += '<div>' + (d.ifTag ? '<span class="du-pill p-if">IF</span> ' : '') + (d.cf ? (d.cf.tier === 'exact' ? '<span class="du-pill p-cf">CF</span> ' : '<span class="du-pill p-cfl">CF? likely</span> ') : '') + '<span class="du-pill p-s' + d.stageCls + '">' + esc(d.stageLabel) + '</span></div>';
-  h += '<h3>Profile</h3><div class="du-kv">' + kv('Dealer size', d.size) + kv('Category', d.cat) + kv('Inventory size', d.inv) + kv('IF transactions', d.iftx) + kv('CF transactions', d.cftx) + kv('UCRF transactions', '') + '</div>';
+  h += '<h3>Profile</h3><div class="du-kv">' + kv('Dealer size', d.size) + kv('Category', d.cat) + kv('Inventory size', d.inv) + kv('IF transactions', d.iftx) + kv('Activity tier', d.tier) + kv('CF transactions', d.cftx) + kv('UCRF transactions', '') + '</div>';
   h += '<h3>IF visits (' + d.visits.length + ')</h3>';
   h += d.visits.length ? '<table class="du-tb"><tr><th>Date</th><th>Visited by</th><th>Purpose</th><th>Remarks</th></tr>' + d.visits.map(v => '<tr><td>' + fmtDate(v.date) + '</td><td>' + esc(v.by) + '</td><td>' + esc(v.purpose) + '</td><td>' + esc(v.remarks) + '</td></tr>').join('') + '</table>' : '<div class="du-none">No IF visits recorded.</div>';
   h += '<h3>Application' + (d.apps.length > 1 ? 's (' + d.apps.length + ')' : '') + '</h3>';
@@ -1118,7 +1122,7 @@ function renderNotes() {
   if (notes.apps) p.push('applications matched: ' + notes.apps.matched.toLocaleString() + ' of ' + notes.apps.total.toLocaleString());
   if (notes.dc) p.push('onboarded dealers matched: ' + notes.dc.matched + ' of ' + notes.dc.total);
   if (notes.dd) p.push('drawdowns matched: ' + notes.dd.matched.toLocaleString() + ' of ' + notes.dd.total.toLocaleString());
-  document.getElementById('du-notes').innerHTML = '<b>Data notes</b> — ' + esc(p.join(' · ')) + '. UCRF transactions and the MP tag will populate once those sources are added. “IF tagged” = any IF visit, application, onboarding or drawdown. Click a row for the full visit / application detail.';
+  document.getElementById('du-notes').innerHTML = '<b>Data notes</b> — ' + esc(p.join(' · ')) + '. UCRF transactions and the MP tag will populate once those sources are added. “IF Engaged” = any IF visit, application, onboarding or drawdown. Activity tiers use the latest credited drawdown date (L3M / L6M / L12M = within the last 3 / 6 / 12 months). Click a row for the full visit and application detail.';
 }
 async function tryRender() {
   if (_rendered || !_dataReady || !ACCESS) return;
