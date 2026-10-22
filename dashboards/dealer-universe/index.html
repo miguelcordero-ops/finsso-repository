@@ -478,6 +478,18 @@ table.wr.du thead th{height:44px}
 table.wr.du tbody tr.r td{height:36px;cursor:pointer}
 table.wr.du tbody tr.r:hover td{background:var(--tr-hover,#f6f7fb)}
 .wr-bar input[type=search]{width:300px}
+:root{--du-if:#fff7f3;--du-ifh:#fde3d8;--du-grp:#e3e8f7}
+:root[data-theme="dark"]{--du-if:#1a1513;--du-ifh:#4a2417;--du-grp:#2a3350}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--du-if:#1a1513;--du-ifh:#4a2417;--du-grp:#2a3350}}
+table.wr.du thead tr.g th{height:26px;top:0;z-index:5;background:var(--du-grp);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:0 10px;color:var(--text2)}
+table.wr.du thead tr.g th.fz{z-index:8}
+table.wr.du thead tr.g th.ifm{background:var(--du-ifh);color:var(--primary)}
+table.wr.du thead tr.h2 th{top:26px}
+table.wr.du thead tr.g th.grp{overflow:visible}
+table.wr.du thead tr.g .gl{position:sticky;display:inline-block;white-space:nowrap}
+table.wr.du thead th.ifm{background:var(--du-ifh)}
+table.wr.du td.ifm{background:var(--du-if)}
+table.wr.du .ifs{border-left:3px solid var(--primary)}
 .du-notes{font-size:11px;color:var(--text3);margin:6px 2px 0;line-height:1.5}
 .du-ov{position:fixed;inset:0;z-index:99998;background:rgba(10,14,25,.55);display:flex;align-items:center;justify-content:center;padding:16px}
 .du-box{background:var(--wf-bg) !important;color:var(--text);width:min(960px,96vw);max-height:90vh;overflow:auto;border-radius:14px;border:1px solid var(--border2);box-shadow:0 20px 60px rgba(0,0,0,.4);padding:20px 22px}
@@ -822,12 +834,12 @@ const COLS = [
   { id: 'aps', label: 'Application Status', w: 250, al: 'l', t: 'text', g: d => d.app ? d.app.status : '' },
   { id: 'docs', label: 'Documents', w: 100, t: 'text', g: d => d.docsComplete ? 'Complete' : d.docsPartial ? 'Partial' : '', pill: d => d.docsComplete ? '<span class="du-pill p-dc">Complete</span>' : d.docsPartial ? '<span class="du-pill p-dp">Partial</span>' : '' },
   { id: 'onb', label: 'Onboarded Date', w: 110, t: 'date', n: d => dtx(d.onbDate) },
-  { id: 'so', label: 'Assigned SO', w: 150, al: 'l', t: 'text', g: d => d.so },
   { id: 'cls', label: 'Credit Line Status', w: 112, t: 'text', g: d => d.dc ? d.dc.cls : '' },
   { id: 'fdd', label: 'First Drawdown', w: 110, t: 'date', n: d => dtx(d.firstDD) },
   { id: 'ldd', label: 'Last Drawdown', w: 110, t: 'date', n: d => dtx(d.lastDD) },
   { id: 'gmv', label: 'GMV (IF)', w: 120, al: 'rr', t: 'num', n: d => d.gmv || null, f: peso }
 ];
+{ let on = false; COLS.forEach(c => { if (c.id === 'stage') on = true; c.ifm = on; }); }
 const COLMAP = {}; COLS.forEach(c => { COLMAP[c.id] = c; });
 function colDef(id) {
   const c = COLMAP[id]; if (!c) return null;
@@ -845,7 +857,7 @@ function cellText(c, d) {
 // ═══════════════════════════════════════════════════════════════════════════
 let scope = 'all', stageF = '', tagCF = false, tagMP = false, searchQ = '';
 let filters = {}, sortSpec = null, curList = [], funnelList = [];
-const ROW_H = 36, BUF = 12, HEAD_H = 44;
+const ROW_H = 36, BUF = 12, HEAD_H = 70;
 let rsStart = -1, rsEnd = -1;
 
 const STAGES = [
@@ -1011,10 +1023,12 @@ function renderHead() {
   const table = document.getElementById('wr-table');
   table.style.width = total + 'px';
   document.getElementById('wr-cg').innerHTML = COLS.map(c => '<col style="width:' + c.w + 'px">').join('');
-  let h = '<tr>';
+  const nFz = COLS.filter(c => c.fz).length, nPre = COLS.findIndex(c => c.ifm);
+  const fzW = COLS.slice(0, nFz).reduce((s, c) => s + c.w, 0);
+  let h = '<tr class="g"><th class="grp fz" colspan="' + nFz + '" style="left:0">DEALER</th><th class="grp" colspan="' + (nPre - nFz) + '"><span class="gl" style="left:' + (fzW + 10) + 'px">DEALER PROFILE, TAGS &amp; TRANSACTIONS</span></th><th class="grp ifm ifs" colspan="' + (COLS.length - nPre) + '"><span class="gl" style="left:' + (fzW + 10) + 'px">IF METRICS ONLY — every column from IF Funnel Stage onward covers IF activity only</span></th></tr><tr class="h2">';
   const lastFz = COLS.filter(c => c.fz).pop().id;
   COLS.forEach(c => {
-    const cls = [c.al || '', c.fz ? 'fz' : '', c.id === lastFz ? 'fzend' : ''].join(' ');
+    const cls = [c.al || '', c.fz ? 'fz' : '', c.id === lastFz ? 'fzend' : '', c.ifm ? 'ifm' : '', c.id === 'stage' ? 'ifs' : ''].join(' ');
     const sa = sortSpec && sortSpec.id === c.id ? '<span class="sa">' + (sortSpec.dir > 0 ? '▲' : '▼') + '</span>' : '';
     h += '<th class="' + cls + '"' + (c.fz ? ' style="left:' + lefts[c.id] + 'px"' : '') + '><div class="hc"><span class="hl">' + esc(c.label) + '</span>' + sa + '<button type="button" class="fbtn' + (filterActive(c.id) ? ' on' : '') + '" data-col="' + c.id + '" title="Filter / sort">' + FUNNEL_SVG + '</button></div></th>';
   });
@@ -1027,7 +1041,7 @@ function rowHtml(d, idx) {
   const lastFz = COLS.filter(c => c.fz).pop().id;
   let h = '<tr class="r" data-i="' + idx + '">';
   COLS.forEach(c => {
-    const cls = [c.al || '', c.fz ? 'fz' : '', c.id === 'name' ? 'name' : '', c.id === lastFz ? 'fzend' : ''].join(' ');
+    const cls = [c.al || '', c.fz ? 'fz' : '', c.id === 'name' ? 'name' : '', c.id === lastFz ? 'fzend' : '', c.ifm ? 'ifm' : '', c.id === 'stage' ? 'ifs' : ''].join(' ');
     let inner;
     if (c.pill) inner = c.pill(d);
     else { const t = cellText(c, d); inner = esc(t || (c.t === 'text' ? '' : '')); }
