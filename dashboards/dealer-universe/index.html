@@ -498,6 +498,7 @@ table.wr.du thead tr.g .gl{position:sticky;display:inline-block;white-space:nowr
 table.wr.du thead th.ifm{background:var(--du-ifh)}
 table.wr.du td.ifm{background:var(--du-if)}
 table.wr.du .ifs{border-left:3px solid var(--primary)}
+.wr-wrap{overscroll-behavior-x:contain;overscroll-behavior-y:auto}
 .du-notes{font-size:11px;color:var(--text3);margin:6px 2px 0;line-height:1.5}
 .du-ov{position:fixed;inset:0;z-index:99998;background:rgba(10,14,25,.55);display:flex;align-items:center;justify-content:center;padding:16px}
 .du-box{background:var(--wf-bg) !important;color:var(--text);width:min(960px,96vw);max-height:90vh;overflow:auto;border-radius:14px;border:1px solid var(--border2);box-shadow:0 20px 60px rgba(0,0,0,.4);padding:20px 22px}
@@ -550,6 +551,8 @@ table.wr.du .ifs{border-left:3px solid var(--primary)}
 </div>
 
 <div class="main">
+  <div class="du-chips" id="du-rec"></div>
+  <div class="du-chips" id="du-type"></div>
   <div class="du-chips" id="du-scope"></div>
   <div class="du-chips" id="du-funnel"></div>
   <div class="du-chips" id="du-tags"></div>
@@ -640,7 +643,7 @@ async function loadData() {
       const inv = parseFloat(String(get(r, c('Inventory Size'))).replace(/,/g, ''));
       const u = {
         code, name, owner: normHeader(get(r, c('Dealer_Owner_Name'))), city: normHeader(get(r, c('City'))), region: normHeader(get(r, c('Region'))),
-        size: normHeader(get(r, c('Dealer Size'))), cat: normHeader(get(r, c('Dealership Category'))), inv: isNaN(inv) ? null : inv,
+        email: normHeader(get(r, c('E-mail'))).toLowerCase(), phone: String(get(r, c('Contact_No'))).replace(/\D/g, '').slice(-10), size: normHeader(get(r, c('Dealer Size'))), cat: normHeader(get(r, c('Dealership Category'))), inv: isNaN(inv) ? null : inv,
         visits: [], apps: [], dc: null, cf: null, drawdowns: 0, gmv: 0, firstDD: null, lastDD: null, ifTxFromDC: 0
       };
       U.push(u); if (code) byCode[code] = u;
@@ -803,7 +806,10 @@ async function loadData() {
       u.onbDate = (u.dc && u.dc.onb) || null;
       u.so = (u.dc && u.dc.so) || (u.app && u.app.sales) || '';
       u.search = (u.name + ' ' + u.owner + ' ' + u.code + ' ' + u.city + ' ' + u.region).toLowerCase();
+      const cat = u.cat.toLowerCase();
+      u.tg = /^used car dealer/.test(cat) ? 'dealer' : !cat ? 'unclass' : /agent|broker/.test(cat) ? 'agent' : 'other';
     });
+    flagRecords();
     return true;
   } catch (e) {
     console.error(e);
@@ -812,6 +818,42 @@ async function loadData() {
     status.textContent = 'Failed to load';
     return false;
   }
+}
+
+// ── record quality: not-a-dealer entries and duplicates of dealers we already engage ──
+const BRAND_RE = /\b(subaru|mitsubishi|toyota|honda|nissan|ford|isuzu|suzuki|hyundai|kia|mazda|chevrolet|bmw|mercedes|lexus|volkswagen|peugeot|geely|chery|foton|jac motors|byd|ssangyong|union motor|autocentral)\b/i;
+const USED_OK = /\b(used|pre[- ]?owned|second ?hand|trading)\b/i;
+function flagRecords() {
+  const eng = U.filter(d => d.ifTag);
+  const tokIdxE = {}, phoneE = {}, emailE = {};
+  eng.forEach((e, i) => {
+    e._dt = new Set(toks(e.name));
+    e._dt.forEach(t => { (tokIdxE[t] = tokIdxE[t] || []).push(e); });
+    if (e.phone.length === 10) (phoneE[e.phone] = phoneE[e.phone] || []).push(e);
+    if (e.email) (emailE[e.email] = emailE[e.email] || []).push(e);
+  });
+  U.forEach(u => {
+    u.dupOf = null; u.dupTier = ''; u.nonDealer = '';
+    if (u.ifTag) return;                       // engaged records are never removed
+    const nm = u.name, ow = u.owner;
+    if (BRAND_RE.test(nm) && !USED_OK.test(nm)) u.nonDealer = 'New-car franchise / brand dealer';
+    else if (/^[\d\s\-+().]*$/.test(normHeader(nm)) ) u.nonDealer = 'Unnamed / numeric entry';
+    else if (/not named|\bdeleted\b|\btest+\b|^private seller/i.test(nm + ' ' + ow)) u.nonDealer = 'Unnamed / test / placeholder entry';
+    if (u.nonDealer) return;
+    // 1) same phone or e-mail as an engaged dealer
+    let hit = (u.phone.length === 10 && phoneE[u.phone] || [])[0] || (u.email && emailE[u.email] || [])[0];
+    let tier = hit ? 'Same phone / e-mail' : '';
+    // 2) same business name (≥2 meaningful words, ≥75% overlap of the shorter name)
+    if (!hit) {
+      const T = new Set(toks(u.name)); if (T.size < 2) return;
+      const cnt = new Map();
+      T.forEach(t => (tokIdxE[t] || []).forEach(e => cnt.set(e, (cnt.get(e) || 0) + 1)));
+      let best = null, bs = 0;
+      cnt.forEach((n, e) => { const m = Math.min(T.size, e._dt.size); if (n >= 2 && n >= 0.75 * m && n / m > bs) { bs = n / m; best = e; } });
+      if (best) { hit = best; tier = 'Same business name'; }
+    }
+    if (hit) { u.dupOf = hit; u.dupTier = tier; }
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -824,6 +866,7 @@ const COLS = [
   { id: 'owner', label: 'Owner', w: 170, al: 'l', t: 'text', g: d => d.owner },
   { id: 'tags', label: 'Tags', w: 130, al: 'l', t: 'text', g: d => [d.ifTag ? 'IF' : '', d.cf ? (d.cf.tier === 'exact' ? 'CF' : 'CF (likely)') : ''].filter(Boolean).join(' · '),
     pill: d => (d.ifTag ? '<span class="du-pill p-if">IF</span> ' : '') + (d.cf ? (d.cf.tier === 'exact' ? '<span class="du-pill p-cf">CF</span>' : '<span class="du-pill p-cfl" title="Name-similarity match — please verify">CF?</span>') : '') },
+  { id: 'rec', label: 'Record Check', w: 200, al: 'l', t: 'text', g: d => d.dupOf ? 'Duplicate of ' + d.dupOf.code : d.nonDealer ? 'Not a used-car dealer' : 'Valid' },
   { id: 'city', label: 'City', w: 130, al: 'l', t: 'text', g: d => d.city },
   { id: 'region', label: 'Region', w: 140, al: 'l', t: 'text', g: d => d.region },
   { id: 'size', label: 'Dealer Size', w: 170, al: 'l', t: 'text', g: d => d.size },
@@ -864,6 +907,7 @@ function cellText(c, d) {
 // STATE & FUNNEL
 // ═══════════════════════════════════════════════════════════════════════════
 let scope = 'all', stageF = '', tagCF = false, tagMP = false, searchQ = '';
+let recF = 'valid', typeOn = { dealer: true, unclass: true, agent: false, other: false };
 let filters = {}, sortSpec = null, curList = [], funnelList = [];
 const ROW_H = 36, BUF = 12, HEAD_H = 70;
 let rsStart = -1, rsEnd = -1;
@@ -874,9 +918,13 @@ const STAGES = [
   ['onboarded', 'Onboarded', d => d.onboarded], ['activated', 'Active – Lifetime', d => d.activated],
   ['act12', 'Active – L12M', d => d.act12, 1], ['act6', 'Active – L6M', d => d.act6, 1], ['act3', 'Active – L3M', d => d.act3, 1]
 ];
+function recOk(d) { return recF === 'all' || (recF === 'valid' ? !d.dupOf && !d.nonDealer : recF === 'dup' ? !!d.dupOf : !!d.nonDealer); }
+function typeOk(d) { return d.ifTag || typeOn[d.tg]; }
+function inView(d) { return recOk(d) && typeOk(d); }
 function funnelBase() {
   const q = searchQ.trim().toLowerCase();
   return U.filter(d => {
+    if (!inView(d)) return false;
     if (scope === 'if' && !d.ifTag) return false;
     if (scope === 'none' && d.ifTag) return false;
     if (stageF) { const s = STAGES.find(x => x[0] === stageF); if (!s[2](d)) return false; }
@@ -889,26 +937,38 @@ function funnelBase() {
 function chip(id, label, count, pct, on, cls, extra) {
   return '<button type="button" class="du-chip ' + (cls || '') + (on ? ' on' : '') + '" data-k="' + id + '"' + (extra || '') + '><b>' + count.toLocaleString('en-US') + '</b><span>' + esc(label) + '</span>' + (pct != null ? '<small>' + pct + '</small>' : '') + '</button>';
 }
+const TYPE_LBL = { dealer: 'Used Car Dealers', unclass: 'Unclassified Category', agent: 'Agents & Brokers', other: 'Other Categories' };
 function renderChips() {
-  const total = U.length, ifN = U.filter(d => d.ifTag).length, noneN = total - ifN;
+  const V = U.filter(inView);
+  const nValid = U.filter(d => !d.dupOf && !d.nonDealer);
+  document.getElementById('du-rec').innerHTML = '<span class="du-lbl">Records</span>' +
+    chip('rec:valid', 'Valid Records', nValid.filter(typeOk).length, 'duplicates & non-dealers removed', recF === 'valid') +
+    chip('rec:dup', 'Duplicates of Engaged Dealers', U.filter(d => d.dupOf).length, 'already onboarded / engaged', recF === 'dup', 'sub') +
+    chip('rec:nd', 'Not Used-Car Dealers', U.filter(d => d.nonDealer).length, 'franchise, unnamed, numeric', recF === 'nodealer', 'sub') +
+    chip('rec:all', 'All Records', U.length, 'unfiltered', recF === 'all', 'sub');
+  document.getElementById('du-type').innerHTML = '<span class="du-lbl">Dealer Type</span>' + ['dealer', 'unclass', 'agent', 'other'].map(k =>
+    chip('type:' + k, TYPE_LBL[k], nValid.filter(d => d.tg === k).length, k === 'dealer' ? 'Home · Store · Car Mall' : k === 'agent' ? 'excluded by default' : '', typeOn[k], typeOn[k] ? '' : 'sub')).join('');
+  const total = V.length, ifN = V.filter(d => d.ifTag).length, noneN = total - ifN;
   const pc = n => ifN ? (Math.round(n / ifN * 1000) / 10) + '% of IF Engaged' : '';
   document.getElementById('du-scope').innerHTML = '<span class="du-lbl">Universe</span>' +
     chip('scope:all', 'All Dealers', total, '', scope === 'all') + chip('scope:if', 'IF Engaged', ifN, (Math.round(ifN / total * 1000) / 10) + '% of universe', scope === 'if') +
     chip('scope:none', 'Not Yet Engaged', noneN, (Math.round(noneN / total * 1000) / 10) + '% of universe', scope === 'none');
   let f = '<span class="du-lbl">IF Funnel</span>';
   STAGES.forEach((s, i) => {
-    const n = U.filter(s[2]).length;
+    const n = V.filter(s[2]).length;
     if (i && !s[3]) f += '<span class="du-arrow">›</span>';
     f += chip('stage:' + s[0], s[1], n, pc(n), stageF === s[0], s[3] ? 'sub' : '');
   });
   document.getElementById('du-funnel').innerHTML = f;
-  const cfN = U.filter(d => d.cf).length;
+  const cfN = V.filter(d => d.cf).length;
   document.getElementById('du-tags').innerHTML = '<span class="du-lbl">Other Tags</span>' +
     chip('tag:cf', 'CF Tagged' + (notes.cf ? '' : ' (no data)'), cfN, '', tagCF) + chip('tag:mp', 'MP Tagged', 0, 'Pending MP Universe data', tagMP, 'dis');
 }
 document.addEventListener('click', e => {
   const b = e.target.closest && e.target.closest('.du-chip'); if (!b) return;
   const [k, v] = b.dataset.k.split(':');
+  if (k === 'rec') recF = v === 'nd' ? 'nodealer' : v;
+  if (k === 'type') typeOn[v] = !typeOn[v];
   if (k === 'scope') { scope = v; if (v === 'none') stageF = ''; }
   else if (k === 'stage') { stageF = stageF === v ? '' : v; if (stageF && scope === 'none') scope = 'if'; }
   else if (k === 'tag') { if (v === 'cf') tagCF = !tagCF; else tagMP = !tagMP; }
@@ -1062,18 +1122,18 @@ function refreshBody(resetScroll) {
   funnelList = funnelBase();
   curList = applySort(applyFilters(funnelList));
   const wrap = document.getElementById('wr-wrap');
-  if (resetScroll) wrap.scrollTop = 0;
+  if (resetScroll) { const top = wrap.getBoundingClientRect().top; if (top < 0) window.scrollBy(0, top - 8); }
   rsStart = rsEnd = -1;
   paintRows(true);
   document.getElementById('wr-count').textContent = curList.length.toLocaleString('en-US') + ' of ' + U.length.toLocaleString('en-US') + ' dealers';
-  renderHead();
+  renderHead(); stickHead();
 }
 function paintRows(force) {
   const body = document.getElementById('wr-body'), wrap = document.getElementById('wr-wrap');
   const n = curList.length, ncols = COLS.length;
   if (!n) { body.innerHTML = '<tr><td colspan="' + ncols + '" style="padding:18px;text-align:left;color:var(--text3);font-style:italic">No dealers match the current filters.</td></tr>'; rsStart = rsEnd = -1; return; }
-  const first = Math.max(0, Math.floor((wrap.scrollTop - HEAD_H) / ROW_H));
-  const vis = Math.ceil(wrap.clientHeight / ROW_H) + 1;
+  const first = Math.max(0, Math.floor((-wrap.getBoundingClientRect().top - HEAD_H) / ROW_H));
+  const vis = Math.ceil(window.innerHeight / ROW_H) + 2;
   if (!force && rsStart >= 0 && first >= rsStart + 2 && first + vis <= rsEnd - 2) return;
   if (!force && rsStart === 0 && first + vis <= rsEnd - 2) return;
   const start = Math.max(0, first - BUF), end = Math.min(n, first + vis + BUF);
@@ -1085,17 +1145,25 @@ function paintRows(force) {
   rsStart = start; rsEnd = end;
 }
 let _scrollRaf = 0;
-document.getElementById('wr-wrap').addEventListener('scroll', () => {
+// The page scrolls (not the table): rows are virtualised against the window scroll and the
+// header row is kept in view by nudging it down as the table scrolls past the top.
+function stickHead() {
+  const wrap = document.getElementById('wr-wrap'), t = wrap.getBoundingClientRect();
+  const tb = document.querySelector('.topbar'), tbh = tb && getComputedStyle(tb).position === 'sticky' ? tb.getBoundingClientRect().height : 0;
+  const need = tbh - t.top;
+  const off = need > 0 ? Math.min(need, Math.max(0, t.height - HEAD_H - 10)) : 0;
+  document.querySelectorAll('#wr-head th').forEach(th => { th.style.transform = off ? 'translateY(' + off + 'px)' : ''; });
+}
+window.addEventListener('scroll', () => {
   if (_scrollRaf) return;
-  _scrollRaf = requestAnimationFrame(() => { _scrollRaf = 0; paintRows(false); });
+  _scrollRaf = requestAnimationFrame(() => { _scrollRaf = 0; paintRows(false); stickHead(); });
 }, { passive: true });
 function fitWrap() {
   const w = document.getElementById('wr-wrap'); if (!w) return;
   const top = w.getBoundingClientRect().top + window.scrollY;
-  w.style.maxHeight = 'none';
-  w.style.height = Math.max(320, window.innerHeight - (top - window.scrollY) - 44) + 'px';
+  w.style.maxHeight = 'none'; w.style.height = 'auto'; w.style.overflowY = 'hidden';
 }
-window.addEventListener('resize', () => { fitWrap(); paintRows(true); });
+window.addEventListener('resize', () => { fitWrap(); paintRows(true); stickHead(); });
 
 document.getElementById('wr-search').oninput = function () { searchQ = this.value; clearTimeout(window._sT); window._sT = setTimeout(() => refreshBody(true), 180); };
 document.getElementById('wr-clear').onclick = function () { filters = {}; sortSpec = null; refreshBody(true); };
@@ -1115,6 +1183,8 @@ function kv(label, val) { return '<div><span>' + esc(label) + '</span>' + (val =
 function showDetail(d) {
   let h = '<button class="du-x" title="Close">×</button><h2>' + esc(d.name || d.code) + '</h2><div class="du-sub">' + esc(d.code) + (d.owner ? ' · ' + esc(d.owner) : '') + ' · ' + esc([d.city, d.region].filter(Boolean).join(', ')) + '</div>';
   h += '<div>' + (d.ifTag ? '<span class="du-pill p-if">IF</span> ' : '') + (d.cf ? (d.cf.tier === 'exact' ? '<span class="du-pill p-cf">CF</span> ' : '<span class="du-pill p-cfl">CF? likely</span> ') : '') + '<span class="du-pill p-s' + d.stageCls + '">' + esc(d.stageLabel) + '</span></div>';
+  if (d.dupOf) h += '<div class="du-sub" style="margin-top:8px"><b>Duplicate record</b> of ' + esc(d.dupOf.code) + ' — ' + esc(d.dupOf.name) + ' (' + esc(d.dupTier) + '). Excluded from the valid universe because that dealer is already engaged.</div>';
+  if (d.nonDealer) h += '<div class="du-sub" style="margin-top:8px"><b>Excluded:</b> ' + esc(d.nonDealer) + '.</div>';
   h += '<h3>Profile</h3><div class="du-kv">' + kv('Dealer size', d.size) + kv('Category', d.cat) + kv('Inventory size', d.inv) + kv('IF transactions', d.iftx) + kv('Activity tier', d.tier) + kv('CF transactions', d.cftx) + kv('UCRF transactions', '') + '</div>';
   h += '<h3>IF visits (' + d.visits.length + ')</h3>';
   h += d.visits.length ? '<table class="du-tb"><tr><th>Date</th><th>Visited by</th><th>Purpose</th><th>Remarks</th></tr>' + d.visits.map(v => '<tr><td>' + fmtDate(v.date) + '</td><td>' + esc(v.by) + '</td><td>' + esc(v.purpose) + '</td><td>' + esc(v.remarks) + '</td></tr>').join('') + '</table>' : '<div class="du-none">No IF visits recorded.</div>';
@@ -1144,6 +1214,7 @@ function renderNotes() {
   if (notes.apps) p.push('applications matched: ' + notes.apps.matched.toLocaleString() + ' of ' + notes.apps.total.toLocaleString());
   if (notes.dc) p.push('onboarded dealers matched: ' + notes.dc.matched + ' of ' + notes.dc.total);
   if (notes.dd) p.push('drawdowns matched: ' + notes.dd.matched.toLocaleString() + ' of ' + notes.dd.total.toLocaleString());
+  p.push(U.filter(d => d.dupOf).length + ' duplicate records of engaged dealers and ' + U.filter(d => d.nonDealer).length + ' non-dealer entries removed from the valid view (matched on phone / e-mail or business name; engaged dealers are never removed)');
   document.getElementById('du-notes').innerHTML = '<b>Data notes</b> — ' + esc(p.join(' · ')) + '. UCRF transactions and the MP tag will populate once those sources are added. “IF Engaged” = any IF visit, application, onboarding or drawdown. Activity tiers use the latest credited drawdown date (L3M / L6M / L12M = within the last 3 / 6 / 12 months). Click a row for the full visit and application detail.';
 }
 async function tryRender() {
