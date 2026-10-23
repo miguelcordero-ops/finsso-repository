@@ -907,7 +907,7 @@ function cellText(c, d) {
 // STATE & FUNNEL
 // ═══════════════════════════════════════════════════════════════════════════
 let scope = 'all', stageF = '', tagCF = false, tagMP = false, searchQ = '';
-let recF = 'valid', typeOn = { dealer: true, unclass: true, agent: false, other: false };
+let recF = 'valid', typeOn = { dealer: true, unclass: false, agent: false, other: false };
 let filters = {}, sortSpec = null, curList = [], funnelList = [];
 const ROW_H = 36, BUF = 12, HEAD_H = 70;
 let rsStart = -1, rsEnd = -1;
@@ -919,7 +919,7 @@ const STAGES = [
   ['act12', 'Active – L12M', d => d.act12, 1], ['act6', 'Active – L6M', d => d.act6, 1], ['act3', 'Active – L3M', d => d.act3, 1]
 ];
 function recOk(d) { return recF === 'all' || (recF === 'valid' ? !d.dupOf && !d.nonDealer : recF === 'dup' ? !!d.dupOf : !!d.nonDealer); }
-function typeOk(d) { return d.ifTag || typeOn[d.tg]; }
+function typeOk(d) { return typeOn[d.tg]; }
 function inView(d) { return recOk(d) && typeOk(d); }
 function funnelBase() {
   const q = searchQ.trim().toLowerCase();
@@ -1214,7 +1214,7 @@ function renderNotes() {
   if (notes.apps) p.push('applications matched: ' + notes.apps.matched.toLocaleString() + ' of ' + notes.apps.total.toLocaleString());
   if (notes.dc) p.push('onboarded dealers matched: ' + notes.dc.matched + ' of ' + notes.dc.total);
   if (notes.dd) p.push('drawdowns matched: ' + notes.dd.matched.toLocaleString() + ' of ' + notes.dd.total.toLocaleString());
-  p.push(U.filter(d => d.dupOf).length + ' duplicate records of engaged dealers and ' + U.filter(d => d.nonDealer).length + ' non-dealer entries removed from the valid view (matched on phone / e-mail or business name; engaged dealers are never removed)');
+  p.push(U.filter(d => d.dupOf).length + ' duplicate records of engaged dealers and ' + U.filter(d => d.nonDealer).length + ' non-dealer entries removed from the valid view (matched on phone / e-mail or business name; engaged dealers are never removed as duplicates or non-dealers)');
   document.getElementById('du-notes').innerHTML = '<b>Data notes</b> — ' + esc(p.join(' · ')) + '. UCRF transactions and the MP tag will populate once those sources are added. “IF Engaged” = any IF visit, application, onboarding or drawdown. Activity tiers use the latest credited drawdown date (L3M / L6M / L12M = within the last 3 / 6 / 12 months). Click a row for the full visit and application detail.';
 }
 async function tryRender() {
