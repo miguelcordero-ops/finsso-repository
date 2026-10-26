@@ -413,7 +413,7 @@
 ,IF0412,JRDC CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,1,250000,250000,0,250000,173,,144,46177,Blacklisted,15 DPD,46177,,,2,0,2,0.001118508104,144,144,46184,2,0,2,0,Yes,,,,46195.66593
 ,IF0413,ABBY CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0414,M3AUTO VEHICLE TRADING,Malou Alfonso,Myrnalyn Bankingkito,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0415,RT061977 AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,1,2,2,0,364530,364530,364530,0,48.5,,,,Open,,,,,3,1,2,0.001630919037,0,0,46300,2,1,1,0,No
+,IF0415,RT061977 AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,1,2,2,0,364530,364530,364530,0,48.5,,,,Hold,Multiple Failure Audits,,,,4,1,3,0.001630919037,0,0,46321,3,1,2,0,Yes
 ,IF0416,JOEL AUTO TRADING,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46177.57639,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0417,REY AUTO TRADING,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46177.57986,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0418,4.BROTHERS AUTO TRADING,Albert Dalupang,Ricmar Magboo,0,0,1,0,319000,319000,319000,0,17,,,,Open,,,,,0,0,0,0.001427216341,0,0,,0,0,0,0,No
