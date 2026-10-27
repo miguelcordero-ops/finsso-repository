@@ -1,1 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#E8461E">
+<title>Stock Audit</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{
+  --primary:#E8461E;--accent:#F97316;--bg:#F0F4FD;--card:#FFFFFF;--card2:#F7F8FC;
+  --border:rgba(0,0,0,0.09);--text:#111827;--text2:#4B5563;--text3:#8A92A0;
+  --red:#DC2626;--red-bg:rgba(220,38,38,0.10);--orange:#EA580C;--orange-bg:rgba(234,88,12,0.11);
+  --amber:#B45309;--amber-bg:rgba(245,158,11,0.15);--green:#15803D;--green-bg:rgba(22,163,74,0.12);
+  --blue:#2563EB;--blue-bg:rgba(37,99,235,0.10);--grey-bg:rgba(107,114,128,0.12);
+  --shadow:0 1px 2px rgba(0,0,0,0.05),0 4px 14px rgba(30,41,90,0.07);
+  --nav-h:62px;--r:14px;
+}
+:root[data-theme="dark"]{
+  --bg:#0B0F1A;--card:#161B29;--card2:#1C2233;--border:rgba(255,255,255,0.10);
+  --text:#E5E7EB;--text2:#A1A9B8;--text3:#6B7280;
+  --red:#F87171;--red-bg:rgba(248,113,113,0.14);--orange:#FB923C;--orange-bg:rgba(251,146,60,0.14);
+  --amber:#FBBF24;--amber-bg:rgba(251,191,36,0.14);--green:#4ADE80;--green-bg:rgba(74,222,128,0.13);
+  --blue:#60A5FA;--blue-bg:rgba(96,165,250,0.14);--grey-bg:rgba(156,163,175,0.14);
+  --shadow:0 1px 2px rgba(0,0,0,0.4),0 4px 14px rgba(0,0,0,0.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{color-scheme:light dark}html[data-theme="dark"]{color-scheme:dark}html[data-theme="light"]{color-scheme:light}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 16px)}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
 
+/* ── top bar ── */
+.topbar{position:sticky;top:0;z-index:200;background:var(--card);border-bottom:1px solid var(--border);padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top));display:flex;align-items:center;gap:12px}
+.brand{font-weight:700;color:var(--primary);font-size:17px;letter-spacing:-0.3px;white-space:nowrap}
+.brand small{display:block;font-size:11px;color:var(--text3);font-weight:500;letter-spacing:0}
+.top-sp{flex:1}
+.who{display:flex;align-items:center;gap:8px;min-width:0}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--primary));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
+.who-txt{line-height:1.2;min-width:0}.who-txt b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}.who-txt span{font-size:11px;color:var(--text3)}
+.icon-btn{border:1px solid var(--border);background:var(--card2);border-radius:10px;padding:7px 10px;font-size:12px;color:var(--text2)}
+.lens{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+@media(max-width:700px){
+  .topbar{flex-wrap:wrap;row-gap:8px;padding:8px 12px;padding-top:calc(8px + env(safe-area-inset-top))}
+  .who-txt{display:none}
+  .lens{order:5;width:100%}
+  .lens:empty{display:none}
+  .brand{font-size:16px}
+  .main{padding:12px}
+}
+
+/* ── navigation: top tabs on laptop, bottom bar on phone ── */
+.nav{display:flex;gap:4px;position:fixed;left:0;right:0;bottom:0;z-index:250;background:var(--card);border-top:1px solid var(--border);padding:6px 6px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 18px rgba(0,0,0,0.08)}
+.nav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;padding:5px 2px;border-radius:10px;color:var(--text3);min-height:46px;font-weight:600}
+.nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nav button.on{color:var(--primary);background:rgba(232,70,30,0.09)}
+.nav button.hide{display:none}
+.nav .fab{color:#fff;background:linear-gradient(135deg,var(--accent),var(--primary));margin:-14px 4px 0;border-radius:16px;box-shadow:0 6px 16px rgba(232,70,30,0.35);flex:1.15}
+.nav .fab.on{color:#fff;background:linear-gradient(135deg,var(--accent),var(--primary))}
+@media(min-width:900px){
+  body{padding-bottom:30px}
+  .nav{position:sticky;top:55px;bottom:auto;border-top:0;border-bottom:1px solid var(--border);box-shadow:none;padding:0 16px;gap:2px;justify-content:flex-start;z-index:190}
+  .nav button{flex:none;flex-direction:row;gap:7px;font-size:13px;padding:11px 16px;border-radius:0;border-bottom:3px solid transparent;min-height:0}
+  .nav button.on{background:none;border-bottom-color:var(--primary)}
+  .nav .fab{margin:6px 0 6px 10px;border-radius:10px;padding:7px 16px;border-bottom:0;flex:none}
+  .nav .fab.on{border-bottom:0}
+}
+
+/* ── layout ── */
+.main{max-width:1180px;margin:0 auto;padding:16px}
+.h1{font-size:20px;font-weight:700;letter-spacing:-0.3px}.sub{color:var(--text3);font-size:12.5px;margin-top:2px}
+.sec{margin-top:20px}.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}.sec-h h2{font-size:15px;font-weight:700}.sec-h .sub{margin:0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:14px}
+.grid{display:grid;gap:12px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:620px){.kpis{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.kpis{grid-template-columns:repeat(6,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:12px 14px;text-align:left;cursor:pointer;display:block;width:100%}
+.kpi .n{font-size:26px;font-weight:800;letter-spacing:-0.5px;line-height:1.1}.kpi .l{font-size:11.5px;color:var(--text2);margin-top:3px;font-weight:600}.kpi .s{font-size:10.5px;color:var(--text3);margin-top:1px}
+.kpi.red .n{color:var(--red)}.kpi.orange .n{color:var(--orange)}.kpi.amber .n{color:var(--amber)}.kpi.green .n{color:var(--green)}.kpi.blue .n{color:var(--blue)}
+.two{display:grid;gap:14px}@media(min-width:900px){.two{grid-template-columns:1.5fr 1fr}}
+.cols3{display:grid;gap:12px}@media(min-width:760px){.cols3{grid-template-columns:repeat(2,1fr)}}@media(min-width:1100px){.cols3{grid-template-columns:repeat(3,1fr)}}
+
+/* ── pills / chips / buttons ── */
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.p-crit{background:var(--red);color:#fff}.p-high{background:var(--orange-bg);color:var(--orange)}.p-soon{background:var(--amber-bg);color:var(--amber)}.p-ok{background:var(--grey-bg);color:var(--text2)}
+.t-red{background:var(--red-bg);color:var(--red)}.t-orange{background:var(--orange-bg);color:var(--orange)}.t-green{background:var(--green-bg);color:var(--green)}.t-blue{background:var(--blue-bg);color:var(--blue)}.t-grey{background:var(--grey-bg);color:var(--text2)}.t-amber{background:var(--amber-bg);color:var(--amber)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--border);background:var(--card);border-radius:99px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--text2);min-height:34px}
+.chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card)}
+.seg button{border:0;background:none;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--text2)}
+.seg button.on{background:var(--primary);color:#fff}
+.btn{border:1px solid var(--border);background:var(--card);border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.pri{background:linear-gradient(135deg,var(--accent),var(--primary));border-color:transparent;color:#fff}
+.btn.sm{padding:6px 10px;min-height:32px;font-size:12px;border-radius:8px}
+.btn.ghost{background:none}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.search{width:100%;border:1px solid var(--border);background:var(--card);border-radius:10px;padding:10px 12px;min-height:42px}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.toolbar .search{flex:1;min-width:180px}
+.empty{padding:30px 14px;text-align:center;color:var(--text3)}
+.muted{color:var(--text3)}.small{font-size:12px}.b{font-weight:700}
+
+/* ── work items ── */
+.item{background:var(--card);border:1px solid var(--border);border-left:5px solid var(--grey-bg);border-radius:var(--r);box-shadow:var(--shadow);padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.item.crit{border-left-color:var(--red)}.item.high{border-left-color:var(--orange)}.item.soon{border-left-color:var(--amber)}
+.item-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.item-t{font-weight:700;font-size:14px}.item-s{font-size:12px;color:var(--text2)}
+.item-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.item-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.list{display:flex;flex-direction:column;gap:10px}
+.dcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.dcard-h{padding:12px 14px;display:flex;flex-direction:column;gap:6px;cursor:pointer}
+.dcard-body[hidden]{display:none}
+.dcard-body{border-top:1px solid var(--border);background:var(--card2);padding:10px;display:flex;flex-direction:column;gap:8px}
+.dcard .addr{font-size:12px;color:var(--text2)}
+.dd-mini{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--grey-bg);border-radius:10px;padding:9px 11px;display:flex;flex-direction:column;gap:5px}
+.dd-mini.crit{border-left-color:var(--red)}.dd-mini.high{border-left-color:var(--orange)}.dd-mini.soon{border-left-color:var(--amber)}
+.stopno{width:26px;height:26px;border-radius:50%;background:var(--primary);color:#fff;font-weight:800;font-size:12px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.bar{height:8px;border-radius:99px;background:var(--grey-bg);overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--primary));border-radius:99px}
+
+/* ── data table (every column filterable) ── */
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:auto;max-height:calc(100vh - 230px);-webkit-overflow-scrolling:touch}
+table.dt{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px}
+.dt th{position:sticky;top:0;z-index:3;background:var(--card2);text-align:left;padding:0;border-bottom:1px solid var(--border);white-space:nowrap}
+.dt th .th{display:flex;align-items:center;gap:4px;padding:9px 8px 9px 10px;font-weight:700;font-size:11.5px;color:var(--text2)}
+.dt th .th span{flex:1;cursor:pointer;user-select:none}
+.fbtn{border:0;background:none;padding:3px 5px;border-radius:6px;color:var(--text3);font-size:11px}
+.fbtn.on{background:var(--primary);color:#fff}
+.dt td{padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--card)}
+.dt tr:hover td{background:var(--card2)}
+.dt td.fz,.dt th.fz{position:sticky;left:0;z-index:4;box-shadow:2px 0 0 var(--border)}
+.dt th.fz{z-index:6}
+.dt td.num,.dt th.num .th{text-align:right;justify-content:flex-end}
+.dt td.click{cursor:pointer}
+.fpanel{position:fixed;z-index:1200;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,0.25);width:290px;max-width:calc(100vw - 20px);max-height:70vh;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
+.fpanel .row{display:flex;gap:6px}.fpanel button.o{flex:1;border:1px solid var(--border);background:var(--card2);border-radius:8px;padding:7px;font-size:12px;font-weight:600}
+.fpanel input[type=text],.fpanel select{width:100%;border:1px solid var(--border);background:var(--card);border-radius:8px;padding:8px}
+.fpanel .vals{max-height:200px;overflow:auto;border:1px solid var(--border);border-radius:8px;padding:4px}
+.fpanel label{display:flex;gap:8px;align-items:center;padding:5px 6px;font-size:12.5px;border-radius:6px}
+.fpanel label:hover{background:var(--card2)}
+.fpanel h6{font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
+@media(max-width:700px){.fpanel{left:8px!important;right:8px;bottom:8px;top:auto!important;width:auto;max-height:78vh}}
+
+/* ── sheet / modal ── */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:900;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:640px;max-height:92vh;border-radius:20px 20px 0 0;overflow:auto;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,0.3)}
+@media(min-width:700px){.scrim{align-items:center}.sheet{border-radius:20px}}
+.sheet h3{font-size:16px;margin-bottom:4px}
+.kv{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 14px;margin:10px 0}
+.kv div{font-size:12.5px}.kv span{display:block;font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.tl{display:flex;flex-direction:column;gap:8px;margin-top:8px}.tl .e{border-left:3px solid var(--grey-bg);padding:2px 0 2px 10px;font-size:12.5px}.tl .e.f{border-left-color:var(--red)}.tl .e.p{border-left-color:var(--green)}
+
+/* ── form ── */
+.form{display:flex;flex-direction:column;gap:14px;max-width:720px}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld>label,.fld>.lab{font-size:12px;font-weight:700;color:var(--text2)}
+.fld .req{color:var(--red)}
+.inp{width:100%;border:1px solid var(--border);background:var(--card);border-radius:10px;padding:11px 12px;min-height:46px;font-size:15px}
+textarea.inp{min-height:84px;resize:vertical}
+.inp[readonly]{background:var(--card2);color:var(--text2)}
+.hint{font-size:11.5px;color:var(--text3)}
+.bigseg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bigseg button{border:2px solid var(--border);background:var(--card);border-radius:12px;padding:14px;font-weight:800;font-size:16px}
+.bigseg button.on.pass{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.bigseg button.on.fail{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.photos{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ph{position:relative;width:76px;height:76px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.ph img{width:100%;height:100%;object-fit:cover}.ph button{position:absolute;top:2px;right:2px;border:0;background:rgba(0,0,0,.6);color:#fff;width:22px;height:22px;border-radius:50%;font-size:13px;line-height:1}
+.addph{width:76px;height:76px;border-radius:10px;border:2px dashed var(--border);background:var(--card2);color:var(--text2);font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.callout{border-radius:12px;padding:10px 12px;font-size:12.5px}
+.callout.warn{background:var(--amber-bg);color:var(--amber)}.callout.bad{background:var(--red-bg);color:var(--red)}.callout.good{background:var(--green-bg);color:var(--green)}.callout.info{background:var(--blue-bg);color:var(--blue)}
+.stickyact{position:sticky;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 8px);display:flex;gap:10px;padding:10px 0;background:linear-gradient(to top,var(--bg) 70%,transparent)}
+@media(min-width:900px){.stickyact{bottom:0}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 14px);background:#111827;color:#fff;padding:10px 16px;border-radius:12px;z-index:2000;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.35);max-width:90vw}
+.toast.err{background:var(--red)}
+.spin{width:18px;height:18px;border:3px solid var(--grey-bg);border-top-color:var(--primary);border-radius:50%;animation:sp .8s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading{display:flex;flex-direction:column;align-items:center;gap:12px;padding:70px 20px;color:var(--text3)}
+
+/* ── lock ── */
+.lock-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .35s}
+.lock-overlay.unlocking{opacity:0;pointer-events:none}.lock-overlay.hidden{display:none}
+.lock-card{background:var(--card);border:1px solid var(--border);box-shadow:0 30px 80px rgba(30,41,90,0.2);border-radius:26px;padding:34px 30px 26px;width:360px;max-width:92vw;display:flex;flex-direction:column;align-items:center}
+.lock-icon-box{width:62px;height:62px;border-radius:18px;background:linear-gradient(135deg,var(--accent),var(--primary));box-shadow:0 4px 16px rgba(232,70,30,0.30);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.lock-icon-box svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lock-title{font-size:18px;font-weight:700;margin-bottom:6px;text-align:center}.lock-sub{font-size:12.5px;color:var(--text3);margin-bottom:20px;text-align:center;line-height:1.6}
+.lock-signin{min-height:44px;display:flex;justify-content:center}.lock-error-msg{font-size:12px;color:var(--red);margin-top:10px;min-height:16px;text-align:center}
+.lock-contact{font-size:11px;color:var(--text3);text-align:center;margin-top:14px}.lock-contact a{color:var(--primary);text-decoration:underline}
+</style></head>
+<body>
+<div class="lock-overlay" id="lock-overlay">
+  <div class="lock-card">
+    <div class="lock-icon-box"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+    <div class="lock-title">Stock Audit</div>
+    <div class="lock-sub">Sign in with your Finsso account<br>to open your audit schedule</div>
+    <div id="g-signin" class="lock-signin"></div>
+    <div class="lock-error-msg" id="lock-err"></div>
+    <div class="lock-contact">Need access? Contact <a href="mailto:miguel.cordero@finsso.com">miguel.cordero@finsso.com</a></div>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="brand">Stock Audit<small id="today-lbl"></small></div>
+  <div class="top-sp"></div>
+  <div class="lens" id="lens"></div>
+  <div class="who"><div class="avatar" id="avatar">?</div><div class="who-txt"><b id="who-name">—</b><span id="who-role"></span></div></div>
+  <button class="icon-btn" id="theme-btn" title="Light / dark">◐</button>
+</div>
+
+<div class="nav" id="nav">
+  <button data-view="home" class="on"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
+  <button data-view="itin"><svg viewBox="0 0 24 24"><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.5 19H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.5"/></svg>Itinerary</button>
+  <button data-view="audit" class="fab"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Audit</button>
+  <button data-view="dealers"><svg viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9M3 9v11h18V9M3 9h18M9 20v-6h6v6"/></svg>Dealers</button>
+  <button data-view="dd"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Drawdowns</button>
+  <button data-view="lead" class="hide"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Leadership</button>
+</div>
+
+<div class="main" id="view"><div class="loading"><span class="spin"></span>Sign in to continue…</div></div>
+<div id="overlay-root"></div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   STOCK AUDIT — config
+══════════════════════════════════════════════════ */
+var DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-repository/main/data/';
+var GOOGLE_CLIENT_ID = '263530903165-4nv0iueb5ftb5hjevr14mqug3rlraav5.apps.googleusercontent.com';
+// Same Apps Script deployment as the Access Control / Sales Weekly Review (StockAudit-AppsScript.gs is added to that project).
+var SA_API = 'https://script.google.com/a/macros/finsso.com/s/AKfycbznI2kQ8a0ApTS9xbDjY4oLoya5KQlqJ-xHm4X75BwkgIby4Cfqtz2xCupYOeFMBFik/exec';
+var DAY_MS = 86400000;
+var MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var ID_TOKEN = '';
+var ME = null;                 // { email, name, leader }
+var S = { view: 'home', lens: { role: 'auditor', officer: '' }, dpd5: true, itinWin: 'week', route: [], q: '' };
+
+/* ── helpers copied from the other dashboards (header-name lookup, CSV parsing, date parsing) ── */
+function parseSheetDate(v) {
+  if (v === null || v === undefined) return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  if (/^\d+(\.\d+)?$/.test(s)) {
+    const serial = Math.floor(parseFloat(s));
+    if (serial < 20000 || serial > 60000) return null;
+    const utcMs = Math.round((serial - 25569) * DAY_MS);
+    const utcDate = new Date(utcMs);
+    return new Date(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate());
+  }
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[1]-1, +m[2]);
+  const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+function parseNum(v) {
+  if (v === null || v === undefined || v === '') return 0;
+  const s = String(v).replace(/[,₱%]/g,'').trim();
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i+1] === '"') { field += '"'; i++; }
+      else if (ch === '"') inQ = false;
+      else field += ch;
+    } else {
+      if (ch === '"') inQ = true;
+      else if (ch === ',') { row.push(field); field = ''; }
+      else if (ch === '\r') { /* skip */ }
+      else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else field += ch;
+    }
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
+}
+// Columns are ALWAYS looked up by header name, never by position — the sheet
+// can gain or lose columns at any time. Header text is whitespace-normalized
+// on both sides (some headers carry doubled spaces, NBSPs or embedded
+// newlines, e.g. "R2  Payment Status", "Plate Number\n(as on ORCR)").
+function normHeader(h) { return String(h == null ? '' : h).replace(/[\s\u00a0]+/g, ' ').trim(); }
+function buildColumnMap(headerRow) {
+  const idx = {};
+  headerRow.forEach((h, i) => { const key = normHeader(h); if (key && !(key in idx)) idx[key] = i; });
+  return function (name) { const k = normHeader(name); return idx[k] !== undefined ? idx[k] : -1; };
+}
+function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
+// Normalizes a person-name field for matching: Google Sheets sometimes stores
+// a non-breaking space (U+00A0) instead of a regular space between a first
+// and last name (seen in real data as "Ricmar Magboo"), and typed sheets
+// like "[Raw] Mapping" use a plain space for the same name — without this,
+// those two strings don't compare equal and the SO silently falls out of
+// every team total. Collapses any run of whitespace (regular or NBSP) to a
+// single regular space, so the two representations always match.
+function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
+
+async function fetchCSV(name, optional) {
+  const url = DATA_BASE + name + '?_=' + Date.now();
+  const r = await fetch(url);
+  if (!r.ok) {
+    if (optional) return null; // e.g. a new export not deployed yet — degrade gracefully
+    throw new Error('Failed to load ' + name + ' (HTTP ' + r.status + ')');
+  }
+  return parseCSV(await r.text());
+}
+
+
+/* ══════════════════════════════════════════════════
+   small utilities
+══════════════════════════════════════════════════ */
+function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function sod(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+var TODAY = sod(new Date());
+function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+function diffDays(a, b) { return Math.round((sod(a) - sod(b)) / DAY_MS); }
+function fmtD(d) { return d ? String(d.getDate()).padStart(2, '0') + ' ' + MONTH_ABBR[d.getMonth()] + ' ' + d.getFullYear() : '—'; }
+function fmtDs(d) { return d ? String(d.getDate()).padStart(2, '0') + ' ' + MONTH_ABBR[d.getMonth()] : '—'; }
+function iso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function peso(n) { return '₱' + Math.round(n || 0).toLocaleString('en-US'); }
+function pct(a, b) { return b ? Math.round(a / b * 100) + '%' : '—'; }
+function mkey(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
+function uid8() { const a = new Uint8Array(4); crypto.getRandomValues(a); return Array.from(a, x => x.toString(16).padStart(2, '0')).join(''); }
+function toast(msg, err) { const t = document.createElement('div'); t.className = 'toast' + (err ? ' err' : ''); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), err ? 6000 : 3200); }
+function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function initials(n) { return String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0].toUpperCase()).join('') || '?'; }
+
+/* ══════════════════════════════════════════════════
+   DATA MODEL  (all columns looked up by header name)
+══════════════════════════════════════════════════ */
+var OPEN_RE = /^(open|overdue|restructuring active|restructuring pending)$/i;
+var DD = {}, ALLDD = [], OPEN = [], DEALERS = {}, INSP = [], INSP_IDS = {}, OFFICERS = { so: new Set(), co: new Set() };
+var COVERAGE_START = null;      // first date in the stock-inspection data
+
+function validPH(lat, lng) { return lat >= 4 && lat <= 21.5 && lng >= 116 && lng <= 127; }
+
+async function loadCore() {
+  const [dr, si, am] = await Promise.all([fetchCSV('drawdown-review-sheet.csv'), fetchCSV('stock-inspection.csv'), fetchCSV('AuditMapping.csv', true)]);
+  // ── drawdowns
+  const c = buildColumnMap(dr[0]);
+  const ix = {}; ['Drawdown ID','Dealer ID','Dealership Name','Loan Status','Assigned SO','Assigned Stock Audit Officer','Assigned Collections Officer','Credit Date to Dealer Bank Account','Year Model','Make Model Variant','Plate Number (as on ORCR)','Original Principal','Outstanding Principal','Total Outstanding Principal','In DPD?','DPD Aging','Failure Status','Frequency','Maturity Due Date','Repossessed Unit?','Sold Flagging','Financing Type'].forEach(n => ix[n] = c(n));
+  DD = {}; ALLDD = [];
+  for (let i = 1; i < dr.length; i++) {
+    const r = dr[i], id = String(get(r, ix['Drawdown ID'])).trim();
+    if (!id) continue;
+    const outP = parseNum(get(r, ix['Outstanding Principal'])) || parseNum(get(r, ix['Total Outstanding Principal']));
+    const d = {
+      id, dealerId: String(get(r, ix['Dealer ID'])).trim(), dealer: normName(get(r, ix['Dealership Name'])),
+      status: normName(get(r, ix['Loan Status'])), so: normName(get(r, ix['Assigned Stock Audit Officer'])), co: normName(get(r, ix['Assigned Collections Officer'])),
+      sales: normName(get(r, ix['Assigned SO'])), credit: parseSheetDate(get(r, ix['Credit Date to Dealer Bank Account'])),
+      year: String(get(r, ix['Year Model'])).trim(), model: normName(get(r, ix['Make Model Variant'])), plate: normName(get(r, ix['Plate Number (as on ORCR)'])),
+      orig: parseNum(get(r, ix['Original Principal'])), out: outP,
+      inDpd: /^yes/i.test(get(r, ix['In DPD?'])), dpdDays: parseNum(get(r, ix['DPD Aging'])),
+      failFlag: /multiple/i.test(get(r, ix['Failure Status'])), mat: parseSheetDate(get(r, ix['Maturity Due Date'])),
+      repo: /^yes/i.test(String(get(r, ix['Repossessed Unit?'])).trim()), soldFlag: /sold/i.test(get(r, ix['Sold Flagging'])),
+      hist: []
+    };
+    d.open = OPEN_RE.test(d.status) && d.out > 0.5 && !d.repo;
+    DD[id] = d; ALLDD.push(d);
+  }
+  OPEN = ALLDD.filter(d => d.open);
+  OFFICERS = { so: new Set(), co: new Set() };
+  OPEN.forEach(d => { if (d.so) OFFICERS.so.add(d.so); if (d.co) OFFICERS.co.add(d.co); });
+  // ── dealers from AuditMapping (dealer-level: address, coordinates, city, officers)
+  DEALERS = {};
+  if (am && am.length) {
+    const ac = buildColumnMap(am[0]);
+    const addrIdx = []; am[0].forEach((h, i) => { if (normHeader(h) === 'Dealership Address') addrIdx.push(i); });
+    am.slice(1).forEach(r => {
+      const id = String(get(r, ac('Dealer ID'))).trim(); if (!id) return;
+      const lat = parseFloat(get(r, ac('Latitude'))), lng = parseFloat(get(r, ac('Longitude')));
+      const phoneRaw = addrIdx.length > 1 ? String(get(r, addrIdx[1])).replace(/\D/g, '') : '';
+      DEALERS[id] = { id, name: normName(get(r, ac('Dealership Name'))), sm: normName(get(r, ac('Assigned SM'))), sales: normName(get(r, ac('Assigned SO'))),
+        status: normName(get(r, ac('Dealer Status'))), address: normName(get(r, addrIdx[0])), phone: phoneRaw ? (phoneRaw[0] === '0' ? phoneRaw : '0' + phoneRaw) : '',
+        lat: validPH(lat, lng) ? lat : null, lng: validPH(lat, lng) ? lng : null, city: normName(get(r, ac('City Extract'))),
+        so: normName(get(r, ac('Assigned Stock Audit Officer'))), co: normName(get(r, ac('Assigned Collections Officer'))) };
+    });
+  }
+  ALLDD.forEach(d => { if (d.dealerId && !DEALERS[d.dealerId]) DEALERS[d.dealerId] = { id: d.dealerId, name: d.dealer, sm: '', sales: d.sales, status: '', address: '', phone: '', lat: null, lng: null, city: '', so: d.so, co: d.co }; });
+  // ── inspections
+  const sc = buildColumnMap(si[0]);
+  INSP = []; INSP_IDS = {};
+  si.slice(1).forEach(r => {
+    const id = String(get(r, sc('Drawdown ID'))).trim(), date = parseSheetDate(get(r, sc('Date')));
+    if (!id || !date) return;
+    const status = String(get(r, sc('Stock Inspection Status'))).trim();
+    const e = { id, date, who: normName(get(r, sc('Inspector'))), email: String(get(r, sc('User email'))).trim().toLowerCase(), status,
+      iid: String(get(r, sc('Inspection ID'))).trim(), dealer: normName(get(r, sc('Dealership Name'))),
+      vs: String(get(r, sc('Vehicle Status - F'))).trim() || String(get(r, sc('Vehicle Status - S'))).trim(),
+      remarks: String(get(r, sc('Additional Remarks from SIO - F'))).trim() || String(get(r, sc('Additional Remarks from SIO - S'))).trim(),
+      poc: String(get(r, sc('POC Name'))).trim(), sold: parseSheetDate(get(r, sc('Date Vehicle Sold'))), method: String(get(r, sc('Sales Method'))).trim() };
+    INSP.push(e); if (e.iid) INSP_IDS[e.iid] = 1;
+    if (!COVERAGE_START || date < COVERAGE_START) COVERAGE_START = date;
+  });
+  rebuildHistory();
+}
+function rebuildHistory() {
+  ALLDD.forEach(d => d.hist = []);
+  INSP.sort((a, b) => a.date - b.date);
+  INSP.forEach(e => { const d = DD[e.id]; if (d) d.hist.push(e); });
+  computeAll();
+}
+
+/* ══════════════════════════════════════════════════
+   30 / 15 / 7 / 3 SCHEDULING RULE + PRIORITY
+   · first audit due 30 days after the drawdown credit date
+   · then 15 days after a Passed audit, 3 days after a Failed audit
+   · while the account is on DPD, no longer than 7 days between audits
+   Priority ranks by scheduled date first (overdue → due soon), then lifts accounts
+   that are on DPD or have failed twice in a row.
+══════════════════════════════════════════════════ */
+function computeSchedule(d) {
+  const h = d.hist, last = h.length ? h[h.length - 1] : null;
+  let due, basis, interval = null;
+  if (!last) {
+    due = d.credit ? addDays(d.credit, 30) : TODAY;
+    basis = d.credit ? '30 days after drawdown (first audit)' : 'No credit date on record';
+  } else {
+    const pass = /^pass/i.test(last.status);
+    interval = pass ? 15 : 3;
+    let why = pass ? 'Passed' : 'Failed';
+    if ((d.inDpd || d.dpdDays >= 1) && interval > 7) { interval = 7; why += ' + on DPD'; }
+    else if (d.inDpd || d.dpdDays >= 1) why += ' + on DPD';
+    due = addDays(last.date, interval);
+    basis = interval + ' days after ' + why + ' audit on ' + fmtD(last.date);
+  }
+  let streak = 0;
+  for (let i = h.length - 1; i >= 0 && /^fail/i.test(h[i].status); i--) streak++;
+  d.last = last; d.due = due; d.basis = basis; d.interval = interval;
+  d.failStreak = streak; d.multiFail = streak >= 2 || (d.failFlag && streak >= 1);
+  d.daysToDue = diffDays(due, TODAY);
+  d.overdue = d.daysToDue < 0; d.overdueDays = d.overdue ? -d.daysToDue : 0;
+  d.dpdOn = d.inDpd || d.dpdDays >= 1;
+  let sc = 0;
+  if (d.daysToDue < 0) sc = 400 + Math.min(d.overdueDays, 45);
+  else if (d.daysToDue === 0) sc = 350;
+  else if (d.daysToDue <= 3) sc = 250 - d.daysToDue * 5;
+  else if (d.daysToDue <= 7) sc = 150 - d.daysToDue;
+  else sc = Math.max(0, 100 - d.daysToDue);
+  if (d.multiFail) sc += 60;
+  if (d.dpdOn) sc += 40 + Math.min(d.dpdDays, 90) / 3;
+  d.score = sc;
+  if (d.daysToDue <= 0 && (d.multiFail || d.dpdOn)) { d.prio = 'Critical'; d.pc = 'crit'; }
+  else if (d.daysToDue < 0) { d.prio = 'High'; d.pc = 'high'; }
+  else if (d.daysToDue <= 3) { d.prio = 'Due soon'; d.pc = 'soon'; }
+  else if (d.daysToDue <= 7) { d.prio = 'This week'; d.pc = 'ok'; }
+  else { d.prio = 'Scheduled'; d.pc = 'ok'; }
+}
+function computeAll() { OPEN.forEach(computeSchedule); }
+
+function dueText(d) {
+  if (d.daysToDue < 0) return 'Overdue ' + d.overdueDays + 'd';
+  if (d.daysToDue === 0) return 'Due today';
+  if (d.daysToDue === 1) return 'Due tomorrow';
+  return 'Due in ' + d.daysToDue + 'd';
+}
+
+/* ── lens: whose work am I looking at? ── */
+function lensRoles() {
+  const n = ME ? ME.name : '';
+  return { auditor: OFFICERS.so.has(n), collector: OFFICERS.co.has(n) };
+}
+function lensList() {
+  const L = S.lens; let list = OPEN;
+  if (L.officer !== '*') list = OPEN.filter(d => L.role === 'auditor' ? d.so === L.officer : d.co === L.officer);
+  if (L.role === 'collector' && S.dpd5) list = list.filter(d => d.dpdDays >= 5);
+  return list.slice().sort((a, b) => b.score - a.score || a.due - b.due);
+}
+function chipsFor(d) {
+  let h = '<span class="pill p-' + d.pc + '">' + esc(d.prio) + '</span>';
+  h += '<span class="pill ' + (d.overdue ? 't-red' : d.daysToDue <= 3 ? 't-amber' : 't-grey') + '">' + esc(dueText(d)) + '</span>';
+  if (d.dpdOn) h += '<span class="pill t-orange">DPD ' + (d.dpdDays || '') + '</span>';
+  if (d.multiFail) h += '<span class="pill t-red">' + (d.failStreak >= 2 ? d.failStreak + '× failed in a row' : 'Multiple failures') + '</span>';
+  else if (d.last && /^fail/i.test(d.last.status)) h += '<span class="pill t-red">Last: Failed</span>';
+  if (!d.last) h += '<span class="pill t-blue">First audit</span>';
+  if (d.soldFlag) h += '<span class="pill t-grey">Sold flag</span>';
+  return h;
+}
+
+/* ══════════════════════════════════════════════════
+   DATA TABLE — a filter dropdown on EVERY column
+   (sort A→Z / Z→A, filter by condition, filter by values with checkboxes)
+══════════════════════════════════════════════════ */
+function makeTable(host, cols, rows, o) {
+  o = o || {};
+  const st = { f: {}, sort: o.sort || null, panel: null };
+  let cur = [];
+  const txt = (c, r) => { const v = c.txt ? c.txt(r) : c.val(r); return v == null || v === '' ? '(blank)' : String(v); };
+  const raw = (c, r) => { const v = c.val(r); return v instanceof Date ? v.getTime() : v; };
+  function cond(c, f, r) {
+    const v = raw(c, r), q = f.v;
+    if (f.op === 'empty') return v === '' || v == null || v === 0 && c.type !== 'num';
+    if (f.op === 'nempty') return !(v === '' || v == null);
+    if (c.type === 'num' || c.type === 'date') {
+      const n = c.type === 'date' ? (q ? new Date(q + 'T00:00:00').getTime() : NaN) : parseFloat(q);
+      if (isNaN(n)) return true; const x = Number(v);
+      return f.op === 'eq' ? x === n : f.op === 'gt' ? x > n : f.op === 'lt' ? x < n : f.op === 'gte' ? x >= n : x <= n;
+    }
+    const s = String(v == null ? '' : v).toLowerCase(), t = String(q || '').toLowerCase();
+    return f.op === 'contains' ? s.includes(t) : f.op === 'ncontains' ? !s.includes(t) : f.op === 'eq' ? s === t : s.startsWith(t);
+  }
+  function pass(r) {
+    for (const c of cols) { const f = st.f[c.id]; if (!f) continue;
+      if (f.sel && !f.sel.has(txt(c, r))) return false;
+      if (f.op && !cond(c, f, r)) return false; }
+    return true;
+  }
+  function viewRows() {
+    let r = rows.filter(pass);
+    if (st.sort) { const c = cols.find(x => x.id === st.sort.id), dir = st.sort.dir;
+      r = r.slice().sort((a, b) => { let x = raw(c, a), y = raw(c, b);
+        if (x == null || x === '') return 1; if (y == null || y === '') return -1;
+        return (typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), undefined, { numeric: true })) * dir; }); }
+    return r;
+  }
+  const active = id => { const f = st.f[id]; return !!f && (!!f.sel || !!f.op); };
+  function render() {
+    cur = viewRows();
+    const nF = Object.keys(st.f).filter(active).length;
+    let h = '<div class="toolbar" style="margin:0 0 8px"><span class="small muted">' + cur.length.toLocaleString() + ' of ' + rows.length.toLocaleString() + ' rows' + (nF ? ' · ' + nF + ' filter' + (nF > 1 ? 's' : '') : '') + '</span>' +
+      (nF || st.sort ? '<button class="btn sm ghost" data-t="clear">Clear filters &amp; sort</button>' : '') + '<span style="flex:1"></span>' + (o.csv ? '<button class="btn sm" data-t="csv">Export CSV</button>' : '') + '</div>';
+    h += '<div class="tbl-wrap"' + (o.maxH ? ' style="max-height:' + o.maxH + '"' : '') + '><table class="dt"><thead><tr>';
+    cols.forEach(c => { const srt = st.sort && st.sort.id === c.id ? (st.sort.dir > 0 ? ' ▲' : ' ▼') : '';
+      h += '<th class="' + (c.fz ? 'fz ' : '') + (c.type === 'num' ? 'num' : '') + '"><div class="th"><span data-t="sort" data-c="' + c.id + '">' + esc(c.label) + srt + '</span><button class="fbtn' + (active(c.id) ? ' on' : '') + '" data-t="f" data-c="' + c.id + '" title="Filter">▾</button></div></th>'; });
+    h += '</tr></thead><tbody>';
+    const MAX = 800;
+    cur.slice(0, MAX).forEach((r, i) => { h += '<tr data-i="' + i + '">';
+      cols.forEach(c => { h += '<td class="' + (c.fz ? 'fz ' : '') + (c.type === 'num' ? 'num ' : '') + (o.onRow ? 'click' : '') + '">' + (c.html ? c.html(r) : esc(c.txt ? c.txt(r) : (c.val(r) instanceof Date ? fmtD(c.val(r)) : c.val(r)))) + '</td>'; });
+      h += '</tr>'; });
+    if (!cur.length) h += '<tr><td colspan="' + cols.length + '" class="empty">No rows match these filters.</td></tr>';
+    h += '</tbody></table></div>';
+    if (cur.length > MAX) h += '<div class="small muted" style="margin-top:6px">Showing the first ' + MAX + ' rows — narrow with filters to see the rest.</div>';
+    host.innerHTML = h;
+  }
+  function closePanel() { if (st.panel) { st.panel.remove(); st.panel = null; document.removeEventListener('mousedown', outside, true); } }
+  function outside(e) { if (st.panel && !st.panel.contains(e.target) && !(e.target.closest && e.target.closest('.fbtn'))) closePanel(); }
+  function openPanel(id, anchor) {
+    closePanel();
+    const c = cols.find(x => x.id === id), f = st.f[id] || (st.f[id] = {});
+    const p = document.createElement('div'); p.className = 'fpanel';
+    const ops = c.type === 'num' ? [['eq', '='], ['gt', '>'], ['gte', '≥'], ['lt', '<'], ['lte', '≤']] : c.type === 'date' ? [['eq', 'Is on'], ['gt', 'After'], ['lt', 'Before'], ['gte', 'On or after'], ['lte', 'On or before']] : [['contains', 'Contains'], ['ncontains', 'Does not contain'], ['eq', 'Is exactly'], ['starts', 'Starts with']];
+    const vals = {}; rows.forEach(r => { const t = txt(c, r); vals[t] = (vals[t] || 0) + 1; });
+    const keys = Object.keys(vals).sort((a, b) => c.type === 'num' ? parseFloat(a) - parseFloat(b) : a.localeCompare(b, undefined, { numeric: true }));
+    p.innerHTML = '<div class="row"><button class="o" data-s="asc">Sort A → Z</button><button class="o" data-s="desc">Sort Z → A</button></div>' +
+      '<h6>Filter by condition</h6><select data-k="op"><option value="">None</option>' + ops.concat([['empty', 'Is empty'], ['nempty', 'Is not empty']]).map(x => '<option value="' + x[0] + '"' + (f.op === x[0] ? ' selected' : '') + '>' + x[1] + '</option>').join('') + '</select>' +
+      '<input type="' + (c.type === 'date' ? 'date' : 'text') + '" data-k="v" placeholder="Value" value="' + esc(f.v || '') + '">' +
+      '<h6>Filter by values</h6><input type="text" data-k="q" placeholder="Search values…"><div class="row"><button class="o" data-s="all">Select all</button><button class="o" data-s="none">Clear</button></div><div class="vals" data-k="list"></div>' +
+      '<div class="row"><button class="o" data-s="reset">Reset column</button><button class="o" data-s="done" style="background:var(--primary);color:#fff;border-color:var(--primary)">Done</button></div>';
+    const list = p.querySelector('[data-k=list]');
+    const draw = () => { const q = p.querySelector('[data-k=q]').value.toLowerCase(); const sel = f.sel;
+      list.innerHTML = keys.filter(k => !q || k.toLowerCase().includes(q)).slice(0, 400).map(k => '<label><input type="checkbox" data-v="' + esc(k) + '"' + (!sel || sel.has(k) ? ' checked' : '') + '>' + esc(k) + ' <span class="muted small">(' + vals[k] + ')</span></label>').join('') || '<div class="empty small">No values</div>'; };
+    draw();
+    p.addEventListener('input', e => {
+      if (e.target.dataset.k === 'q') draw();
+      else if (e.target.dataset.k === 'v') { f.v = e.target.value; render(); }
+    });
+    p.addEventListener('change', e => {
+      if (e.target.dataset.k === 'op') { f.op = e.target.value || undefined; render(); }
+      else if (e.target.dataset.v !== undefined) {
+        if (!f.sel) f.sel = new Set(keys);
+        e.target.checked ? f.sel.add(e.target.dataset.v) : f.sel.delete(e.target.dataset.v);
+        if (f.sel.size === keys.length) f.sel = undefined; render();
+      }
+    });
+    p.addEventListener('click', e => {
+      const s = e.target.dataset.s; if (!s) return;
+      if (s === 'asc' || s === 'desc') { st.sort = { id, dir: s === 'asc' ? 1 : -1 }; render(); closePanel(); }
+      else if (s === 'all') { f.sel = undefined; draw(); render(); }
+      else if (s === 'none') { f.sel = new Set(); draw(); render(); }
+      else if (s === 'reset') { delete st.f[id]; render(); closePanel(); }
+      else if (s === 'done') closePanel();
+    });
+    document.body.appendChild(p); st.panel = p;
+    const b = anchor.getBoundingClientRect();
+    if (window.innerWidth > 700) { p.style.top = Math.min(b.bottom + 4, window.innerHeight - 340) + 'px'; p.style.left = Math.max(8, Math.min(b.left - 200, window.innerWidth - 300)) + 'px'; }
+    setTimeout(() => document.addEventListener('mousedown', outside, true), 0);
+  }
+  host.onclick = function (e) {
+    const t = e.target.closest('[data-t]');
+    if (t) {
+      const k = t.dataset.t;
+      if (k === 'sort') { const id = t.dataset.c; st.sort = st.sort && st.sort.id === id ? (st.sort.dir > 0 ? { id, dir: -1 } : null) : { id, dir: 1 }; render(); }
+      else if (k === 'f') openPanel(t.dataset.c, t);
+      else if (k === 'clear') { st.f = {}; st.sort = null; render(); }
+      else if (k === 'csv') exportCsv();
+      return;
+    }
+    const tr = e.target.closest('tr[data-i]');
+    if (tr && o.onRow) o.onRow(cur[+tr.dataset.i]);
+  };
+  function exportCsv() {
+    const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const lines = [cols.map(c => q(c.label)).join(',')].concat(cur.map(r => cols.map(c => { const v = c.val(r); return q(v instanceof Date ? iso(v) : (c.txt && c.type !== 'num' ? c.txt(r) : v)); }).join(',')));
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' })); a.download = (o.csv || 'export') + '.csv'; a.click();
+  }
+  render();
+  return { refresh(newRows) { rows = newRows; render(); }, rows: () => cur, preset(fn) { rows = fn(rows); render(); } };
+}
+
+/* ══════════════════════════════════════════════════
+   sheets (modal) + shared bits
+══════════════════════════════════════════════════ */
+function openSheet(html) {
+  closeSheet();
+  const r = document.getElementById('overlay-root');
+  r.innerHTML = '<div class="scrim" id="scrim"><div class="sheet" id="sheet">' + html + '</div></div>';
+  document.getElementById('scrim').addEventListener('mousedown', e => { if (e.target.id === 'scrim') closeSheet(); });
+  return document.getElementById('sheet');
+}
+function closeSheet() { document.getElementById('overlay-root').innerHTML = ''; }
+
+function dealerOf(d) { return DEALERS[d.dealerId] || { name: d.dealer, address: '', phone: '', city: '' }; }
+function navUrl(dl, fallbackName) {
+  const q = dl.lat != null ? dl.lat + ',' + dl.lng : encodeURIComponent((dl.name || fallbackName || '') + ' ' + (dl.address || dl.city || ''));
+  return 'https://www.google.com/maps/dir/?api=1&destination=' + q;
+}
+function dealerActs(dl, fb) {
+  return '<a class="btn sm" target="_blank" rel="noopener" href="' + esc(navUrl(dl, fb)) + '">Navigate</a>' + (dl.phone ? '<a class="btn sm" href="tel:' + esc(dl.phone) + '">Call</a>' : '');
+}
+function vehicleLabel(d) { return [d.year, d.model].filter(Boolean).join(' ') || '—'; }
+
+function itemHtml(d, opts) {
+  opts = opts || {};
+  const dl = dealerOf(d);
+  return '<div class="item ' + d.pc + '"><div class="item-top"><div><div class="item-t">' + esc(d.dealer) + ' <span class="muted">· ' + esc(d.id) + '</span></div>' +
+    '<div class="item-s">' + esc(vehicleLabel(d)) + (d.plate ? ' · <b>' + esc(d.plate) + '</b>' : '') + (dl.city ? ' · ' + esc(dl.city) : '') + '</div></div></div>' +
+    '<div class="item-meta">' + chipsFor(d) + '</div>' +
+    '<div class="item-s muted">' + (d.last ? 'Last audit ' + fmtD(d.last.date) + ' — ' + esc(d.last.status) + ' · ' : '') + 'due ' + fmtD(d.due) + ' (' + esc(d.basis) + ')</div>' +
+    '<div class="item-act"><button class="btn pri sm" data-act="audit" data-id="' + esc(d.id) + '">Start audit</button><button class="btn sm" data-act="detail" data-id="' + esc(d.id) + '">Details</button>' + (opts.noNav ? '' : dealerActs(dl, d.dealer)) + '</div></div>';
+}
+function showDetail(id) {
+  const d = DD[id]; if (!d) return; if (d.open && !d.due) computeSchedule(d);
+  const dl = dealerOf(d);
+  let h = '<h3>' + esc(d.dealer) + ' · ' + esc(d.id) + '</h3><div class="sub">' + esc(vehicleLabel(d)) + (d.plate ? ' · ' + esc(d.plate) : '') + '</div>';
+  if (d.open) h += '<div class="item-meta" style="margin:10px 0">' + chipsFor(d) + '</div><div class="callout info small">Next audit due <b>' + fmtD(d.due) + '</b> — ' + esc(d.basis) + '.</div>';
+  h += '<div class="kv"><div><span>Loan status</span>' + esc(d.status || '—') + '</div><div><span>Outstanding</span>' + peso(d.out) + '</div><div><span>Credit date</span>' + fmtD(d.credit) + '</div><div><span>DPD</span>' + (d.dpdDays || (d.inDpd ? 'Yes' : '0')) + '</div>' +
+    '<div><span>Audit officer</span>' + esc(d.so || '—') + '</div><div><span>Collections officer</span>' + esc(d.co || '—') + '</div><div><span>City</span>' + esc(dl.city || '—') + '</div><div><span>Address</span>' + esc(dl.address || '—') + '</div></div>';
+  h += '<div class="item-act" style="margin-bottom:8px">' + (d.open ? '<button class="btn pri" data-act="audit" data-id="' + esc(d.id) + '">Start audit</button>' : '') + dealerActs(dl, d.dealer) + '<button class="btn" data-act="close">Close</button></div>';
+  h += '<div class="b" style="margin-top:12px">Audit history (' + d.hist.length + ')</div><div class="tl">';
+  d.hist.slice().reverse().slice(0, 10).forEach(e => {
+    h += '<div class="e ' + (/^pass/i.test(e.status) ? 'p' : 'f') + '"><b>' + esc(e.status) + '</b> · ' + fmtD(e.date) + ' · ' + esc(e.who || '—') + (e.pending ? ' <span class="pill t-blue">just submitted</span>' : '') + (e.vs ? '<br><span class="muted">' + esc(e.vs) + '</span>' : '') + (e.remarks ? '<br>' + esc(e.remarks) : '') + '</div>'; });
+  if (!d.hist.length) h += '<div class="muted small">No audits recorded yet.</div>';
+  h += '</div>';
+  openSheet(h);
+}
+
+/* ══════════════════════════════════════════════════
+   HOME
+══════════════════════════════════════════════════ */
+function monday(d) { const x = sod(d); const k = (x.getDay() + 6) % 7; return addDays(x, -k); }
+function myAudits(from) {
+  const L = S.lens; return INSP.filter(e => e.date >= from && (L.officer === '*' || e.who === L.officer));
+}
+function lensName() { return S.lens.officer === '*' ? 'All officers' : S.lens.officer; }
+function greeting() { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'; }
+function counts(list) {
+  return { over: list.filter(d => d.overdue).length, today: list.filter(d => d.daysToDue === 0).length, soon: list.filter(d => d.daysToDue > 0 && d.daysToDue <= 3).length,
+    dpd: list.filter(d => d.dpdOn).length, multi: list.filter(d => d.multiFail).length, first: list.filter(d => !d.last).length };
+}
+function renderHome() {
+  const list = lensList(), c = counts(list), L = S.lens;
+  const wk = myAudits(monday(TODAY)), mtd = myAudits(new Date(TODAY.getFullYear(), TODAY.getMonth(), 1));
+  const wkF = wk.filter(e => /^fail/i.test(e.status)).length;
+  const isCol = L.role === 'collector';
+  let h = '<div class="h1">' + greeting() + ', ' + esc((ME.name || '').split(' ')[0] || 'there') + '</div>' +
+    '<div class="sub">' + esc(lensName()) + ' · ' + (isCol ? 'Collections view — accounts at ' + (S.dpd5 ? '5+ DPD' : 'any DPD') : 'Stock audit view — all assigned drawdowns') + ' · ' + list.length + ' open drawdowns</div>';
+  h += '<div class="kpis sec">' +
+    '<button class="kpi red" data-act="goto" data-f="overdue"><div class="n">' + c.over + '</div><div class="l">Overdue</div><div class="s">past scheduled date</div></button>' +
+    '<button class="kpi orange" data-act="goto" data-f="today"><div class="n">' + c.today + '</div><div class="l">Due today</div><div class="s">&nbsp;</div></button>' +
+    '<button class="kpi amber" data-act="goto" data-f="soon"><div class="n">' + c.soon + '</div><div class="l">Due in 1–3 days</div><div class="s">&nbsp;</div></button>' +
+    '<button class="kpi orange" data-act="goto" data-f="dpd"><div class="n">' + c.dpd + '</div><div class="l">On DPD</div><div class="s">7-day cycle</div></button>' +
+    '<button class="kpi red" data-act="goto" data-f="multi"><div class="n">' + c.multi + '</div><div class="l">Failed 2× in a row</div><div class="s">re-audit in 3 days</div></button>' +
+    '<button class="kpi green" data-act="goto" data-f="all"><div class="n">' + wk.length + '</div><div class="l">Audits this week</div><div class="s">' + mtd.length + ' MTD · ' + wkF + ' failed this week</div></button></div>';
+  const top = list.filter(d => d.daysToDue <= 3).slice(0, 6);
+  h += '<div class="two sec"><div><div class="sec-h" style="margin-top:0"><h2>Up next — highest priority</h2><button class="btn sm" data-act="nav" data-v="itin">Plan route →</button></div><div class="list">';
+  h += top.length ? top.map(d => itemHtml(d)).join('') : '<div class="card empty">Nothing overdue or due within 3 days. Nice work.</div>';
+  h += '</div></div><div class="grid" style="align-content:start">';
+  const rt = routeDealers();
+  h += '<div class="card"><div class="b">Today’s route</div>' + (rt.length ? '<div class="small muted" style="margin:4px 0 8px">' + rt.length + ' stop' + (rt.length > 1 ? 's' : '') + ' planned</div>' + rt.slice(0, 5).map((s, i) => '<div style="display:flex;gap:8px;align-items:center;margin:5px 0"><span class="stopno">' + (i + 1) + '</span><span>' + esc(s.name) + '</span></div>').join('') + (rt.length > 5 ? '<div class="small muted">+' + (rt.length - 5) + ' more</div>' : '') : '<div class="small muted" style="margin:4px 0 8px">No stops planned yet. Open the Itinerary and add dealers.</div>') + '<div style="margin-top:8px"><button class="btn sm" data-act="nav" data-v="itin">Open itinerary</button></div></div>';
+  const pend = INSP.filter(e => e.pending && (L.officer === '*' || e.who === L.officer));
+  if (pend.length) h += '<div class="card"><div class="b">Submitted — syncing</div><div class="small muted" style="margin:4px 0">These are saved to the sheet and will appear in the GitHub data after the next export.</div>' + pend.slice(-5).reverse().map(e => '<div class="small">' + esc(e.id) + ' · ' + esc(e.status) + ' · ' + fmtDs(e.date) + '</div>').join('') + '</div>';
+  h += '<details class="card"><summary class="b" style="cursor:pointer">How audits are scheduled</summary><div class="small" style="margin-top:8px;line-height:1.6">' +
+    '<b>First audit:</b> 30 days after the drawdown is credited.<br><b>After a Passed audit:</b> next one within 15 days.<br><b>After a Failed audit:</b> re-audit within 3 days.<br><b>On DPD:</b> audit at least every 7 days.<br><br>' +
+    '<b>Priority:</b> sorted by scheduled date first (overdue, then due today, then soon). Accounts on DPD and accounts that failed twice in a row are lifted above others in the same urgency band.</div></details>';
+  h += '</div></div>';
+  return h;
+}
+
+/* ══════════════════════════════════════════════════
+   ITINERARY
+══════════════════════════════════════════════════ */
+function routeKey() { return 'sa-route-' + (ME ? ME.email : ''); }
+function loadRoute() { const r = lsGet(routeKey(), null); S.route = r && r.d === iso(TODAY) ? r.ids : []; }
+function saveRoute() { lsSet(routeKey(), { d: iso(TODAY), ids: S.route }); }
+function dealerGroups(list) {
+  const m = {};
+  list.forEach(d => { const k = d.dealerId || d.dealer; (m[k] = m[k] || { key: k, dealer: dealerOf(d), name: d.dealer, items: [], max: 0 }); const g = m[k]; g.items.push(d); g.max = Math.max(g.max, d.score); });
+  return Object.values(m).sort((a, b) => b.max - a.max);
+}
+function hav(a, b) { const R = 6371, t = x => x * Math.PI / 180, dLa = t(b.lat - a.lat), dLo = t(b.lng - a.lng); const q = Math.sin(dLa / 2) ** 2 + Math.cos(t(a.lat)) * Math.cos(t(b.lat)) * Math.sin(dLo / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(q)); }
+function routeDealers() {
+  const all = dealerGroups(lensList());
+  const picked = S.route.map(k => all.find(g => g.key === k)).filter(Boolean);
+  if (picked.length < 2) return picked.map(g => ({ key: g.key, name: g.name, dealer: g.dealer, items: g.items }));
+  const withC = picked.filter(g => g.dealer.lat != null), noC = picked.filter(g => g.dealer.lat == null);
+  const ord = []; let rest = withC.slice();
+  if (rest.length) { rest.sort((a, b) => b.max - a.max); let c = rest.shift(); ord.push(c);
+    while (rest.length) { let bi = 0, bd = 1e9; rest.forEach((g, i) => { const dd = hav(c.dealer, g.dealer); if (dd < bd) { bd = dd; bi = i; } }); c = rest.splice(bi, 1)[0]; ord.push(c); } }
+  return ord.concat(noC).map(g => ({ key: g.key, name: g.name, dealer: g.dealer, items: g.items }));
+}
+function routeUrl(stops) {
+  const pt = s => s.dealer.lat != null ? s.dealer.lat + ',' + s.dealer.lng : encodeURIComponent(s.name + ' ' + (s.dealer.address || s.dealer.city || ''));
+  const s = stops.slice(0, 10); if (!s.length) return '#';
+  let u = 'https://www.google.com/maps/dir/?api=1&destination=' + pt(s[s.length - 1]);
+  if (s.length > 1) u += '&waypoints=' + s.slice(0, -1).map(pt).join('%7C');
+  return u + '&travelmode=driving';
+}
+function renderItin() {
+  const W = { today: 0, d3: 3, week: 7, all: 9999 }[S.itinWin];
+  const base = lensList().filter(d => d.daysToDue <= W);
+  const groups = dealerGroups(base), rt = routeDealers();
+  let h = '<div class="h1">Itinerary</div><div class="sub">Dealers grouped so one visit covers every drawdown due there · ordered by priority</div>';
+  h += '<div class="toolbar"><div class="chips">' + [['today', 'Today + overdue'], ['d3', 'Next 3 days'], ['week', 'This week'], ['all', 'Everything open']].map(x => '<button class="chip' + (S.itinWin === x[0] ? ' on' : '') + '" data-act="win" data-v="' + x[0] + '">' + x[1] + '</button>').join('') + '</div></div>';
+  if (rt.length) {
+    h += '<div class="card" style="margin-bottom:14px"><div class="sec-h" style="margin:0 0 8px"><h2>Today’s route · ' + rt.length + ' stop' + (rt.length > 1 ? 's' : '') + '</h2><span class="small muted">' + (function(n){return n + ' drawdown' + (n > 1 ? 's' : '');})(rt.reduce((a, s) => a + s.items.length, 0)) + '</span></div>';
+    h += rt.map((s, i) => '<div style="display:flex;gap:10px;align-items:center;padding:6px 0;border-top:' + (i ? '1px solid var(--border)' : '0') + '"><span class="stopno">' + (i + 1) + '</span><div style="flex:1;min-width:0"><div class="b">' + esc(s.name) + '</div><div class="small muted">' + esc(s.dealer.city || s.dealer.address || '') + ' · ' + s.items.length + ' unit' + (s.items.length > 1 ? 's' : '') + '</div></div><button class="btn sm ghost" data-act="rt" data-k="' + esc(s.key) + '">Remove</button></div>').join('');
+    h += '<div class="item-act" style="margin-top:10px"><a class="btn pri" target="_blank" rel="noopener" href="' + esc(routeUrl(rt)) + '">Open route in Google Maps</a><button class="btn" data-act="rtclear">Clear route</button></div>' + (rt.length > 10 ? '<div class="small muted" style="margin-top:6px">Google Maps takes up to 10 stops — the first 10 are sent.</div>' : '') + '<div class="small muted" style="margin-top:6px">Stops are ordered by nearest-next from the highest-priority dealer, using the coordinates on the mapping sheet.</div></div>';
+  }
+  h += '<div class="list">';
+  groups.forEach(g => {
+    const inRt = S.route.includes(g.key), nO = g.items.filter(d => d.overdue).length;
+    h += '<div class="dcard"><div class="dcard-h" data-act="tog" data-k="' + esc(g.key) + '"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><div class="item-t">' + esc(g.name) + '</div><div class="addr">' + esc(g.dealer.address || '') + (g.dealer.city ? ' · ' + esc(g.dealer.city) : '') + '</div></div><button class="btn sm ' + (inRt ? '' : 'pri') + '" data-act="rt" data-k="' + esc(g.key) + '">' + (inRt ? '✓ In route' : '+ Route') + '</button></div>' +
+      '<div class="item-meta"><span class="pill t-grey">' + g.items.length + ' drawdown' + (g.items.length > 1 ? 's' : '') + '</span>' + (nO ? '<span class="pill t-red">' + nO + ' overdue</span>' : '') + (g.items.some(d => d.dpdOn) ? '<span class="pill t-orange">DPD</span>' : '') + (g.items.some(d => d.multiFail) ? '<span class="pill t-red">Repeat failure</span>' : '') + '</div>' +
+      '<div class="item-act">' + dealerActs(g.dealer, g.name) + '</div></div>' +
+      '<div class="dcard-body" id="db-' + esc(g.key) + '" ' + (S.open && S.open[g.key] ? '' : 'hidden') + '>' + g.items.map(d => ddMini(d)).join('') + '</div></div>';
+  });
+  if (!groups.length) h += '<div class="card empty">Nothing in this window. Try a wider range above.</div>';
+  return h + '</div>';
+}
+function ddMini(d) {
+  return '<div class="dd-mini ' + d.pc + '"><div class="item-top"><div><div class="b">' + esc(d.id) + ' · ' + esc(d.plate || 'no plate') + '</div><div class="small muted">' + esc(vehicleLabel(d)) + '</div></div><div style="text-align:right" class="small">' + peso(d.out) + '</div></div><div class="item-meta">' + chipsFor(d) + '</div><div class="item-act"><button class="btn pri sm" data-act="audit" data-id="' + esc(d.id) + '">Start audit</button><button class="btn sm" data-act="detail" data-id="' + esc(d.id) + '">Details</button></div></div>';
+}
+
+/* ══════════════════════════════════════════════════
+   DEALERS
+══════════════════════════════════════════════════ */
+S.dq = ''; S.dsort = 'prio'; S.dflt = 'all'; S.open = {};
+function renderDealers() {
+  let h = '<div class="h1">Dealers</div><div class="sub">Every dealer with open drawdowns in this view</div>';
+  h += '<div class="toolbar"><input class="search" id="dq" placeholder="Search dealer, city, drawdown ID or plate…" value="' + esc(S.dq) + '"><select class="inp" id="dsort" style="width:auto;min-height:42px"><option value="prio"' + (S.dsort === 'prio' ? ' selected' : '') + '>Sort: priority</option><option value="name"' + (S.dsort === 'name' ? ' selected' : '') + '>Sort: name</option><option value="city"' + (S.dsort === 'city' ? ' selected' : '') + '>Sort: city</option><option value="n"' + (S.dsort === 'n' ? ' selected' : '') + '>Sort: most drawdowns</option></select></div>';
+  h += '<div class="chips" style="margin-bottom:12px">' + [['all', 'All'], ['due', 'Needs audit now'], ['dpd', 'On DPD'], ['multi', 'Repeat failures']].map(x => '<button class="chip' + (S.dflt === x[0] ? ' on' : '') + '" data-act="dflt" data-v="' + x[0] + '">' + x[1] + '</button>').join('') + '</div><div id="dlist"></div>';
+  return h;
+}
+function paintDealers() {
+  const host = document.getElementById('dlist'); if (!host) return;
+  let list = lensList(); const q = S.dq.toLowerCase().trim();
+  if (S.dflt === 'due') list = list.filter(d => d.daysToDue <= 0); else if (S.dflt === 'dpd') list = list.filter(d => d.dpdOn); else if (S.dflt === 'multi') list = list.filter(d => d.multiFail);
+  let g = dealerGroups(list);
+  if (q) g = g.filter(x => (x.name + ' ' + (x.dealer.city || '') + ' ' + (x.dealer.address || '')).toLowerCase().includes(q) || x.items.some(d => (d.id + ' ' + d.plate).toLowerCase().includes(q)));
+  if (S.dsort === 'name') g.sort((a, b) => a.name.localeCompare(b.name)); else if (S.dsort === 'city') g.sort((a, b) => (a.dealer.city || '~').localeCompare(b.dealer.city || '~') || a.name.localeCompare(b.name)); else if (S.dsort === 'n') g.sort((a, b) => b.items.length - a.items.length);
+  host.innerHTML = '<div class="small muted" style="margin-bottom:8px">' + g.length + ' dealers</div><div class="cols3">' + g.slice(0, 120).map(x => {
+    const nO = x.items.filter(d => d.overdue).length, nD = x.items.filter(d => d.daysToDue === 0).length;
+    return '<div class="dcard"><div class="dcard-h" data-act="tog" data-k="' + esc(x.key) + '"><div class="item-t">' + esc(x.name) + '</div><div class="addr">' + esc(x.dealer.address || '—') + '</div><div class="item-meta"><span class="pill t-grey">' + esc(x.dealer.city || 'No city') + '</span><span class="pill t-grey">' + x.items.length + ' drawdown' + (x.items.length > 1 ? 's' : '') + '</span>' + (nO ? '<span class="pill t-red">' + nO + ' overdue</span>' : '') + (nD ? '<span class="pill t-orange">' + nD + ' due today</span>' : '') + (x.items.some(d => d.dpdOn) ? '<span class="pill t-orange">DPD</span>' : '') + (x.items.some(d => d.multiFail) ? '<span class="pill t-red">Repeat failure</span>' : '') + (x.dealer.status ? '<span class="pill t-blue">' + esc(x.dealer.status) + '</span>' : '') + '</div><div class="item-act">' + dealerActs(x.dealer, x.name) + '<button class="btn sm" data-act="rt" data-k="' + esc(x.key) + '">' + (S.route.includes(x.key) ? '✓ In route' : '+ Route') + '</button></div></div><div class="dcard-body" id="db-' + esc(x.key) + '" ' + (S.open[x.key] ? '' : 'hidden') + '>' + x.items.map(ddMini).join('') + '</div></div>';
+  }).join('') + '</div>' + (g.length > 120 ? '<div class="small muted" style="margin-top:8px">Showing 120 of ' + g.length + ' — search to narrow.</div>' : '') + (!g.length ? '<div class="card empty">No dealers match.</div>' : '');
+}
+
+/* ══════════════════════════════════════════════════
+   DRAWDOWNS (filterable table)
+══════════════════════════════════════════════════ */
+S.ddf = 'all';
+var ddTable = null;
+function ddPresetFilter(d) {
+  const f = S.ddf;
+  return f === 'all' || (f === 'overdue' && d.overdue) || (f === 'today' && d.daysToDue === 0) || (f === 'soon' && d.daysToDue > 0 && d.daysToDue <= 3) || (f === 'dpd' && d.dpdOn) || (f === 'multi' && d.multiFail) || (f === 'first' && !d.last);
+}
+function renderDD() {
+  let h = '<div class="h1">Drawdowns</div><div class="sub">' + esc(lensName()) + ' · tap a row for details and to start an audit · use ▾ on any column to sort or filter</div>';
+  h += '<div class="chips" style="margin:12px 0">' + [['all', 'All'], ['overdue', 'Overdue'], ['today', 'Due today'], ['soon', 'Due 1–3 days'], ['dpd', 'On DPD'], ['multi', 'Repeat failures'], ['first', 'First audit']].map(x => '<button class="chip' + (S.ddf === x[0] ? ' on' : '') + '" data-act="ddf" data-v="' + x[0] + '">' + x[1] + '</button>').join('') + '</div><div id="ddt"></div>';
+  return h;
+}
+function paintDD() {
+  const host = document.getElementById('ddt'); if (!host) return;
+  const rows = lensList().filter(ddPresetFilter);
+  const cols = [
+    { id: 'id', label: 'Drawdown', fz: true, val: d => d.id, html: d => '<b>' + esc(d.id) + '</b>' },
+    { id: 'prio', label: 'Priority', val: d => d.prio, html: d => '<span class="pill p-' + d.pc + '">' + esc(d.prio) + '</span>' },
+    { id: 'dealer', label: 'Dealer', val: d => d.dealer },
+    { id: 'city', label: 'City', val: d => dealerOf(d).city || '' },
+    { id: 'plate', label: 'Plate', val: d => d.plate },
+    { id: 'veh', label: 'Vehicle', val: d => vehicleLabel(d) },
+    { id: 'due', label: 'Next due', type: 'date', val: d => d.due, txt: d => fmtD(d.due) },
+    { id: 'dtd', label: 'Days to due', type: 'num', val: d => d.daysToDue, html: d => '<span class="' + (d.daysToDue < 0 ? 'pill t-red' : '') + '">' + d.daysToDue + '</span>' },
+    { id: 'dpd', label: 'DPD', type: 'num', val: d => d.dpdDays || 0 },
+    { id: 'streak', label: 'Fails in a row', type: 'num', val: d => d.failStreak },
+    { id: 'lastd', label: 'Last audit', type: 'date', val: d => d.last ? d.last.date : '', txt: d => d.last ? fmtD(d.last.date) : '' },
+    { id: 'lastr', label: 'Last result', val: d => d.last ? d.last.status : 'Never' },
+    { id: 'n', label: '# audits', type: 'num', val: d => d.hist.length },
+    { id: 'out', label: 'Outstanding', type: 'num', val: d => Math.round(d.out), txt: d => peso(d.out) },
+    { id: 'status', label: 'Loan status', val: d => d.status },
+    { id: 'so', label: 'Audit officer', val: d => d.so },
+    { id: 'co', label: 'Collections officer', val: d => d.co },
+    { id: 'basis', label: 'Schedule basis', val: d => d.basis }
+  ];
+  ddTable = makeTable(host, cols, rows, { onRow: d => showDetail(d.id), csv: 'stock-audit-drawdowns' });
+}
+
+/* ══════════════════════════════════════════════════
+   AUDIT UPLOAD — mirrors the raw "Stock Inspection" sheet columns
+══════════════════════════════════════════════════ */
+var PERSONS = ['Showroom Staff', 'Dealer / Owner', 'Business Partner', 'Wife', 'New Client / Drawdown', 'Others'];
+var VS_PASS = ['Good Condition', 'Unit not in Good Condition'];
+var VS_FAIL = ['Unvalidated Unit Presence', 'Sold and Released Collateral', 'Missing Unit with No Information', 'Dealer Owner/Staff Unavailability', 'Unit not in Good Condition'];
+var SALES = ['Financing', 'Cash', 'Others'];
+var A = null;   // current audit form state
+
+function newAudit(ddId) {
+  const d = ddId ? DD[ddId] : null;
+  A = { iid: uid8(), ddId: ddId || '', date: iso(TODAY), person: '', poc: '', loc: '', status: '', vs: '', remarks: '', sold: '', method: '',
+    photos: { show: [], mvir: [], coll: [] }, geo: null, busy: false, done: null, q: '' };
+  if (d) A.loc = (dealerOf(d).address || dealerOf(d).city || '');
+  geoRefresh();
+}
+function geoRefresh() {
+  if (!navigator.geolocation) { if (A) A.geo = { err: 'GPS not available on this device' }; return; }
+  navigator.geolocation.getCurrentPosition(p => { if (A) { A.geo = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy }; paintGeo(); } },
+    e => { if (A) { A.geo = { err: e.code === 1 ? 'Location permission denied' : 'Could not get location' }; paintGeo(); } }, { enableHighAccuracy: true, timeout: 8000, maximumAge: 20000 });
+}
+function paintGeo() { const el = document.getElementById('geo'); if (el) el.innerHTML = geoHtml(); }
+function geoHtml() {
+  const g = A && A.geo;
+  if (!g) return '<span class="spin"></span> Getting your location…';
+  if (g.err) return '<span class="pill t-amber">No GPS</span> ' + esc(g.err) + ' — photos will be saved without a location stamp. <button class="btn sm" data-act="geo">Retry</button>';
+  return '<span class="pill t-green">GPS ready</span> ' + g.lat.toFixed(5) + ', ' + g.lng.toFixed(5) + ' (±' + Math.round(g.acc) + ' m) — stamped onto each photo';
+}
+function auditCandidates() {
+  const q = (A.q || '').toLowerCase().trim();
+  let pool = S.lens.officer === '*' || ME.leader ? OPEN : OPEN.filter(d => d.so === ME.name || d.co === ME.name);
+  if (!pool.length) pool = OPEN;
+  const mine = new Set(lensList().map(d => d.id));
+  if (!q) return lensList().slice(0, 8);
+  return pool.filter(d => (d.id + ' ' + d.plate + ' ' + d.dealer + ' ' + d.model).toLowerCase().includes(q)).sort((a, b) => (mine.has(b.id) ? 1 : 0) - (mine.has(a.id) ? 1 : 0) || b.score - a.score).slice(0, 10);
+}
+function selOpts(arr, cur, ph) { return '<option value="">' + esc(ph || 'Select…') + '</option>' + arr.map(x => '<option' + (x === cur ? ' selected' : '') + '>' + esc(x) + '</option>').join(''); }
+function photoBlock(key, label, req, hint) {
+  const ph = A.photos[key];
+  return '<div class="fld"><div class="lab">' + esc(label) + (req ? ' <span class="req">*</span>' : '') + '</div><div class="photos">' +
+    ph.map((p, i) => '<div class="ph"><img src="' + p.url + '"><button data-act="rmph" data-k="' + key + '" data-i="' + i + '">×</button></div>').join('') +
+    '<label class="addph"><span style="font-size:20px">＋</span>Photo<input type="file" accept="image/*" multiple hidden data-ph="' + key + '"></label></div>' + (hint ? '<div class="hint">' + esc(hint) + '</div>' : '') + '</div>';
+}
+function renderAudit() {
+  if (!A) newAudit('');
+  if (A.done) return renderAuditDone();
+  const d = A.ddId ? DD[A.ddId] : null;
+  let h = '<div class="h1">New stock audit</div><div class="sub">Fills the same fields as the stock inspection form</div><div class="form sec" id="aform">';
+  if (!d) {
+    h += '<div class="fld"><label>Find the drawdown <span class="req">*</span></label><input class="inp" id="aq" placeholder="Drawdown ID, plate or dealer name" value="' + esc(A.q) + '" autocomplete="off"></div><div class="list" id="acand">' + candHtml() + '</div></div>';
+    return h;
+  }
+  const dl = dealerOf(d);
+  h += '<div class="card"><div style="display:flex;justify-content:space-between;gap:8px"><div><div class="item-t">' + esc(d.dealer) + ' · ' + esc(d.id) + '</div><div class="item-s">' + esc(vehicleLabel(d)) + ' · <b>' + esc(d.plate || '—') + '</b></div></div><button class="btn sm" data-act="chg">Change</button></div>' +
+    (d.open ? '<div class="item-meta" style="margin-top:8px">' + chipsFor(d) + '</div>' : '<div class="callout warn small" style="margin-top:8px">This drawdown is not open — the audit can still be recorded.</div>') + '</div>';
+  h += '<div class="fld"><label>Dealership name</label><input class="inp" readonly value="' + esc(d.dealer) + '"></div>';
+  h += '<div class="kv" style="grid-template-columns:1fr 2fr 1fr;margin:0"><div class="fld"><label>Year model</label><input class="inp" readonly value="' + esc(d.year) + '"></div><div class="fld"><label>Make / model / variant</label><input class="inp" readonly value="' + esc(d.model) + '"></div><div class="fld"><label>Plate number</label><input class="inp" readonly value="' + esc(d.plate) + '"></div></div>';
+  h += '<div class="fld"><label>Date of audit <span class="req">*</span></label><input class="inp" type="date" id="f-date" max="' + iso(TODAY) + '" value="' + esc(A.date) + '"></div>';
+  h += '<div class="callout info small" id="geo">' + geoHtml() + '</div>';
+  h += '<div class="fld"><label>Person contacted <span class="req">*</span></label><select class="inp" id="f-person">' + selOpts(PERSONS, A.person) + '</select></div>';
+  h += '<div class="fld"><label>POC name <span class="req">*</span></label><input class="inp" id="f-poc" value="' + esc(A.poc) + '" placeholder="Name of the person you spoke to"></div>';
+  h += photoBlock('show', 'Geo-tagged photo of the showroom', true, 'Stand at the showroom entrance so the dealership signage is visible.');
+  h += '<div class="fld"><label>Collateral location (barangay, city and province) <span class="req">*</span></label><input class="inp" id="f-loc" value="' + esc(A.loc) + '" placeholder="Where is the unit right now?"><div class="hint">Pre-filled with the dealer address — change it if the unit is somewhere else.</div></div>';
+  h += '<div class="fld"><div class="lab">Stock inspection result <span class="req">*</span></div><div class="bigseg"><button type="button" class="pass' + (A.status === 'Passed' ? ' on' : '') + '" data-act="res" data-v="Passed">✓ Passed</button><button type="button" class="fail' + (A.status === 'Failed' ? ' on' : '') + '" data-act="res" data-v="Failed">✕ Failed</button></div></div>';
+  if (A.status) {
+    const sfx = A.status === 'Passed' ? 'S' : 'F', vs = A.status === 'Passed' ? VS_PASS : VS_FAIL;
+    h += '<div class="fld"><label>Vehicle status <span class="req">*</span></label><select class="inp" id="f-vs">' + selOpts(vs, A.vs) + '</select></div>';
+    h += photoBlock('mvir', 'Motor vehicle inspection report (MVIR)', false, 'Optional. Add the signed MVIR if you completed one.');
+    h += photoBlock('coll', 'Collateral pictures (geo-tagged)', true, 'Front, rear, sides, plate and odometer. Up to 8 photos.');
+    if (A.vs === 'Sold and Released Collateral') {
+      h += '<div class="callout warn small">Unit reported as sold — record when and how it was sold.</div>';
+      h += '<div class="fld"><label>Date vehicle sold <span class="req">*</span></label><input class="inp" type="date" id="f-sold" max="' + iso(TODAY) + '" value="' + esc(A.sold) + '"></div>';
+      h += '<div class="fld"><label>Sales method <span class="req">*</span></label><select class="inp" id="f-method">' + selOpts(SALES, A.method) + '</select></div>';
+    }
+    h += '<div class="fld"><label>Additional remarks from SIO' + (A.status === 'Failed' ? ' <span class="req">*</span>' : '') + '</label><textarea class="inp" id="f-rem" placeholder="' + (A.status === 'Passed' ? 'e.g. Unit presented at the showroom, running condition' : 'Explain what you found and who you spoke to') + '">' + esc(A.remarks) + '</textarea></div>';
+    if (A.status === 'Failed') h += '<div class="callout bad small">A failed audit puts this drawdown on the 3-day re-audit cycle' + (d.multiFail || d.failStreak >= 1 ? ' — it has already failed ' + d.failStreak + '× in a row.' : '.') + '</div>';
+  }
+  h += '<div class="small muted">Inspector: <b>' + esc(ME.name) + '</b> · ' + esc(ME.email) + ' (added automatically)</div>';
+  h += '<div class="stickyact"><button class="btn pri" style="flex:1" id="a-submit"' + (A.busy ? ' disabled' : '') + '>Submit audit</button><button class="btn" data-act="acancel">Cancel</button></div></div>';
+  return h;
+}
+function candHtml() {
+  const c = auditCandidates();
+  return c.length ? c.map(d => '<button class="item ' + d.pc + '" style="text-align:left;cursor:pointer" data-act="pick" data-id="' + esc(d.id) + '"><div class="item-t">' + esc(d.dealer) + ' <span class="muted">· ' + esc(d.id) + '</span></div><div class="item-s">' + esc(vehicleLabel(d)) + ' · ' + esc(d.plate) + '</div><div class="item-meta">' + chipsFor(d) + '</div></button>').join('') : '<div class="card empty">No drawdown matches.</div>';
+}
+function readForm() {
+  const v = id => { const e = document.getElementById(id); return e ? e.value : null; };
+  ['date:f-date', 'person:f-person', 'poc:f-poc', 'loc:f-loc', 'vs:f-vs', 'sold:f-sold', 'method:f-method', 'remarks:f-rem'].forEach(p => { const [k, id] = p.split(':'); const x = v(id); if (x !== null) A[k] = x; });
+}
+async function addPhotos(key, files) {
+  const room = (key === 'show' ? 3 : 8) - A.photos[key].length;
+  const list = Array.from(files).filter(f => /^image\//.test(f.type)).slice(0, Math.max(0, room));
+  if (!list.length) return toast('Photo limit reached', true);
+  let geo = A.geo && !A.geo.err ? A.geo : null;
+  list.forEach(f => A.photos[key].push({ file: f, url: URL.createObjectURL(f), at: new Date(), geo }));
+  readForm(); paintAudit();
+}
+function paintAudit() { const sc = window.scrollY; document.getElementById('view').innerHTML = renderAudit(); bindAudit(); window.scrollTo(0, sc); }
+function bindAudit() {
+  const v = document.getElementById('view');
+  const q = document.getElementById('aq'); if (q) { q.oninput = () => { A.q = q.value; document.getElementById('acand').innerHTML = candHtml(); }; }
+  v.querySelectorAll('input[data-ph]').forEach(i => i.onchange = () => { addPhotos(i.dataset.ph, i.files); i.value = ''; });
+  const vs = document.getElementById('f-vs'); if (vs) vs.onchange = () => { readForm(); paintAudit(); };
+  const s = document.getElementById('a-submit'); if (s) s.onclick = submitAudit;
+}
+function validateAudit() {
+  readForm(); const e = [];
+  if (!A.ddId) e.push('Pick a drawdown');
+  if (!A.date) e.push('Date of audit');
+  else if (new Date(A.date + 'T00:00:00') > addDays(TODAY, 0)) e.push('Date cannot be in the future');
+  if (!A.person) e.push('Person contacted');
+  if (!A.poc.trim()) e.push('POC name');
+  if (!A.photos.show.length) e.push('Showroom photo');
+  if (!A.loc.trim()) e.push('Collateral location');
+  if (!A.status) e.push('Passed or Failed');
+  else {
+    if (!A.vs) e.push('Vehicle status');
+    if (!A.photos.coll.length) e.push('Collateral pictures');
+    if (A.status === 'Failed' && !A.remarks.trim()) e.push('Remarks (required for a failed audit)');
+    if (A.vs === 'Sold and Released Collateral') { if (!A.sold) e.push('Date vehicle sold'); if (!A.method) e.push('Sales method'); }
+  }
+  return e;
+}
+function loadImage(file) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); }); }
+async function processImage(p, stamp) {
+  let bmp; try { bmp = await createImageBitmap(p.file, { imageOrientation: 'from-image' }); } catch (e) { bmp = await loadImage(p.file); }
+  const w0 = bmp.width, h0 = bmp.height, sc = Math.min(1, 1600 / Math.max(w0, h0)), w = Math.round(w0 * sc), h = Math.round(h0 * sc);
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.drawImage(bmp, 0, 0, w, h);
+  const fs = Math.max(13, Math.round(w / 48)), pad = Math.round(fs * 0.6);
+  const t = p.at, ts = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0') + ' ' + String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+  const l2 = ts + (p.geo ? '  ·  ' + p.geo.lat.toFixed(5) + ', ' + p.geo.lng.toFixed(5) + ' (±' + Math.round(p.geo.acc) + 'm)' : '  ·  no GPS');
+  g.fillStyle = 'rgba(0,0,0,0.55)'; g.fillRect(0, h - fs * 2.5 - pad, w, fs * 2.5 + pad);
+  g.fillStyle = '#fff'; g.font = '600 ' + fs + 'px -apple-system,Segoe UI,Roboto,sans-serif'; g.textBaseline = 'alphabetic';
+  g.fillText(stamp, pad, h - fs * 1.5 - pad * 0.2); g.fillText(l2, pad, h - pad * 0.6);
+  const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.78));
+  return await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1]); fr.onerror = rej; fr.readAsDataURL(blob); });
+}
+async function submitAudit() {
+  const errs = validateAudit();
+  if (errs.length) { toast('Please complete: ' + errs.slice(0, 4).join(', ') + (errs.length > 4 ? '…' : ''), true); return; }
+  if (!ID_TOKEN) return showLock('Your sign-in expired — sign in again, then press Submit.');
+  const d = DD[A.ddId], pass = A.status === 'Passed', sfx = pass ? 'S' : 'F';
+  A.busy = true; paintAudit();
+  const sheet = openSheet('<h3>Submitting audit…</h3><div class="sub" id="up-msg">Preparing photos</div><div class="bar" style="margin:14px 0"><i id="up-bar" style="width:5%"></i></div><div class="small muted">Keep this screen open until it finishes.</div>');
+  const setP = (m, p) => { const a = document.getElementById('up-msg'), b = document.getElementById('up-bar'); if (a) a.textContent = m; if (b) b.style.width = p + '%'; };
+  try {
+    const stamp = 'FINSSO STOCK AUDIT · ' + d.id + ' · ' + (d.plate || '') + ' · ' + ME.name;
+    const plan = [['Geo-tagged Photo of the Showroom', A.photos.show], ['Motor Vehicle Inspection Report (MVIR) - ' + sfx, A.photos.mvir], ['Collateral Pictures (Geo-tagged Photos) - ' + sfx, A.photos.coll]];
+    const total = plan.reduce((a, x) => a + x[1].length, 0); let n = 0; const files = [];
+    for (const [col, arr] of plan) for (const p of arr) { setP('Compressing photo ' + (n + 1) + ' of ' + total, 5 + 55 * n / Math.max(1, total)); files.push({ col, name: d.id + '_' + (n + 1) + '.jpg', data: await processImage(p, stamp) }); n++; }
+    const row = { 'Drawdown ID': d.id, 'Date': A.date, 'Dealership Name': d.dealer, 'Year Model': d.year, 'Make Model Variant': d.model, 'Plate Number (as on ORCR)': d.plate,
+      'Person Contacted': A.person, 'POC Name': A.poc.trim(), 'Collateral Location (Barangay, City and Province)': A.loc.trim(), 'Stock Inspection Status': A.status,
+      ['Vehicle Status - ' + sfx]: A.vs, ['Additional Remarks from SIO - ' + sfx]: A.remarks.trim(), 'Inspection ID': A.iid };
+    if (A.vs === 'Sold and Released Collateral') { row['Date Vehicle Sold'] = A.sold; row['Sales Method'] = A.method; }
+    setP('Uploading to Drive and saving to the sheet…', 70);
+    const r = await fetch(SA_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'sa_submit', idToken: ID_TOKEN, row, files }) });
+    const j = await r.json();
+    if (!j.ok) { closeSheet(); A.busy = false; if (j.code === 'auth') { showLock('Your sign-in expired — sign in again, then press Submit.'); } else toast(j.error || 'Upload failed', true); paintAudit(); return; }
+    setP('Done', 100);
+    INSP.push({ id: d.id, date: new Date(A.date + 'T00:00:00'), who: ME.name, email: ME.email, status: A.status, iid: A.iid, dealer: d.dealer, vs: A.vs, remarks: A.remarks.trim(), poc: A.poc.trim(), sold: null, method: A.method, pending: true });
+    INSP_IDS[A.iid] = 1; rebuildHistory(); lsSet('sa-pend-' + ME.email, INSP.filter(e => e.pending).map(e => ({ id: e.id, date: iso(e.date), who: e.who, status: e.status, iid: e.iid, dealer: e.dealer, vs: e.vs, remarks: e.remarks })));
+    closeSheet(); A.busy = false; A.done = { ddId: d.id, status: A.status, urls: j.urls || {} }; render();
+  } catch (e) {
+    closeSheet(); A.busy = false; toast('Upload failed: ' + (e && e.message || e) + '. Your form is still here — try again.', true); paintAudit();
+  }
+}
+function renderAuditDone() {
+  const d = DD[A.done.ddId], pass = A.done.status === 'Passed';
+  let h = '<div class="form"><div class="callout ' + (pass ? 'good' : 'bad') + '" style="font-size:15px;padding:16px"><b>' + (pass ? '✓ Audit submitted — Passed' : '✕ Audit submitted — Failed') + '</b><br>' + esc(d.dealer) + ' · ' + esc(d.id) + ' · ' + esc(d.plate) + '</div>';
+  if (d.open) h += '<div class="card"><div class="b">Next audit</div><div style="margin:6px 0">' + chipsFor(d) + '</div><div class="small muted">Due ' + fmtD(d.due) + ' — ' + esc(d.basis) + '</div></div>';
+  h += '<div class="small muted">Saved to the stock inspection sheet with photos in Drive. It shows in this app straight away and in the shared dashboards after the next data export.</div>';
+  const same = lensList().filter(x => x.dealerId === d.dealerId && x.id !== d.id && x.daysToDue <= 7);
+  if (same.length) h += '<div class="callout warn small"><b>' + same.length + ' more drawdown' + (same.length > 1 ? 's' : '') + ' at this dealer due soon:</b><br>' + same.map(x => esc(x.id + ' · ' + x.plate + ' · ' + dueText(x))).join('<br>') + '</div>' + same.slice(0, 3).map(x => '<button class="btn pri" data-act="audit" data-id="' + esc(x.id) + '">Audit ' + esc(x.plate || x.id) + ' next</button>').join('');
+  h += '<div class="item-act"><button class="btn" data-act="nav" data-v="home">Back to home</button><button class="btn" data-act="newaudit">Audit another</button></div></div>';
+  return h;
+}
+
+/* ══════════════════════════════════════════════════
+   LEADERSHIP — week / MTD performance
+   Loads the loan + repayment history on demand (only leaders open this tab) so the
+   30/15/7/3 schedule, adherence and on-time % are computed exactly like the KPI workbook.
+══════════════════════════════════════════════════ */
+var LN = null;
+function kindOf(t) { t = String(t || '').toLowerCase(); return t.includes('renewal 1') ? 'R1' : t.includes('renewal 2') ? 'R2' : t.includes('final') ? 'M' : null; }
+async function loadLeadData() {
+  if (LN) return LN;
+  const [d2, d3, r2, r3] = await Promise.all([fetchCSV('drawdown.csv'), fetchCSV('drawdownv3.csv', true), fetchCSV('repayment.csv'), fetchCSV('repaymentv3.csv', true)]);
+  const loans = {}, pb = {};
+  const c2 = buildColumnMap(d2[0]);
+  d2.slice(1).forEach(r => { const id = String(get(r, c2('Drawdown ID'))).trim(); if (!id) return;
+    loans[id] = { id, credit: parseSheetDate(get(r, c2('Credit Date to Dealer Bank Account'))), orig: parseNum(get(r, c2('Original Principal'))), v: 2,
+      r1: parseSheetDate(get(r, c2('Renewal 1 Due Date'))), r2: parseSheetDate(get(r, c2('Renewal 2 Due Date'))), mat: parseSheetDate(get(r, c2('Final Maturity Date'))) }; });
+  if (d3) { const c3 = buildColumnMap(d3[0]); d3.slice(1).forEach(r => { const id = String(get(r, c3('Drawdown ID'))).trim(); if (!id) return;
+    loans[id] = { id, credit: parseSheetDate(get(r, c3('Credit Date to Dealer Bank Account'))), orig: parseNum(get(r, c3('Original Principal'))), v: 3, mat: parseSheetDate(get(r, c3('Maturity Due Date'))) }; }); }
+  const cr2 = buildColumnMap(r2[0]);
+  r2.slice(1).forEach(r => { const id = String(get(r, cr2('Drawdown ID'))).trim(), d = parseSheetDate(get(r, cr2('Dealer Payment Date'))); if (!loans[id] || !d) return;
+    (pb[id] = pb[id] || []).push({ date: d, prin: parseNum(get(r, cr2('Dealer Paid Principal'))), type: String(get(r, cr2('Dealer Repayment Type'))).trim(), v: 2 }); });
+  if (r3) { const cr3 = buildColumnMap(r3[0]); r3.slice(1).forEach(r => { const id = String(get(r, cr3('Drawdown ID'))).trim(), d = parseSheetDate(get(r, cr3('Dealer Payment Date'))); if (!loans[id] || !d) return;
+    (pb[id] = pb[id] || []).push({ date: d, prin: parseNum(get(r, cr3('Principal Applied'))), type: String(get(r, cr3('Dealer Payment Type'))).trim(), v: 3, due: parseSheetDate(get(r, cr3('Payment Due Date'))) }); }); }
+  LN = { loans, pb };
+  return LN;
+}
+function outAt(id, asof) { const l = LN.loans[id]; if (!l || !l.credit || l.credit >= asof) return 0; let paid = 0; (LN.pb[id] || []).forEach(p => { if (p.date < asof) paid += p.prin; }); return Math.max(0, l.orig - paid); }
+function dpdAt(id, D) {
+  const l = LN.loans[id]; if (!l || outAt(id, D) <= 0.5) return 0;
+  const paid = new Set(); (LN.pb[id] || []).forEach(p => { if (p.date < D) { const k = kindOf(p.type); if (k) paid.add(k); } }); if (paid.has('R2')) paid.add('R1');
+  const dues = []; if (l.v === 2) { if (l.r1) dues.push([l.r1, 'R1']); if (l.r2) dues.push([l.r2, 'R2']); if (l.mat) dues.push([l.mat, 'M']); } else if (l.mat) dues.push([l.mat, 'M']);
+  const od = dues.filter(x => x[0] < D && !paid.has(x[1])).map(x => x[0].getTime());
+  return od.length ? Math.round((D.getTime() - Math.min.apply(null, od)) / DAY_MS) : 0;
+}
+function payDue(p, l) { return p.v === 3 ? p.due : ({ R1: l.r1, R2: l.r2, M: l.mat })[kindOf(p.type)]; }
+function buildEvents() {
+  const by = {}; INSP.forEach(e => (by[e.id] = by[e.id] || []).push(e));
+  const ev = [];
+  Object.keys(LN.loans).forEach(id => {
+    const l = LN.loans[id]; if (!l.credit) return;
+    const ins = (by[id] || []).slice().sort((a, b) => a.date - b.date);
+    let cur = COVERAGE_START && l.credit >= COVERAGE_START ? addDays(l.credit, 30) : null;
+    ins.forEach(a => {
+      if (cur) ev.push({ id, due: cur, done: a });
+      const base = /^pass/i.test(a.status) ? 15 : 3, onDpd = dpdAt(id, addDays(a.date, 1)) >= 1;
+      cur = addDays(a.date, onDpd ? Math.min(base, 7) : base);
+    });
+    if (cur) ev.push({ id, due: cur, done: null });
+  });
+  return ev;
+}
+function periodsDef() {
+  const y = TODAY.getFullYear(), m = TODAY.getMonth(), mon = monday(TODAY);
+  return { week: { label: 'This week', from: mon, to: TODAY }, lweek: { label: 'Last week', from: addDays(mon, -7), to: addDays(mon, -1) },
+    mtd: { label: 'Month to date', from: new Date(y, m, 1), to: TODAY }, lmonth: { label: 'Last month', from: new Date(y, m - 1, 1), to: new Date(y, m, 0) },
+    l2month: { label: MONTH_ABBR[(m + 10) % 12] + ' ' + new Date(y, m - 2, 1).getFullYear(), from: new Date(y, m - 2, 1), to: new Date(y, m - 1, 0) } };
+}
+S.lper = 'mtd';
+async function renderLead(host) {
+  host.innerHTML = '<div class="loading"><span class="spin"></span>Loading loan and repayment history…<div class="small">This tab loads a few extra files, so the first open takes a moment.</div></div>';
+  try { await loadLeadData(); } catch (e) { host.innerHTML = '<div class="card empty">Could not load the history files: ' + esc(e.message) + '</div>'; return; }
+  const P = periodsDef(), per = P[S.lper], from = per.from, to = per.to;
+  const ev = buildEvents().filter(e => e.due >= from && e.due <= to && e.due <= TODAY && outAt(e.id, e.due) > 0.5 && DD[e.id] && DD[e.id].so);
+  const insp = INSP.filter(e => e.date >= from && e.date <= to);
+  const names = new Set(); insp.forEach(e => e.who && names.add(e.who)); ev.forEach(e => names.add(DD[e.id].so));
+  const rows = [];
+  names.forEach(n => {
+    const mine = insp.filter(e => e.who === n), sch = ev.filter(e => DD[e.id].so === n), done = sch.filter(e => e.done), ont = sch.filter(e => e.done && diffDays(e.done.date, e.due) <= 3);
+    const dealers = new Set(mine.map(e => DD[e.id] ? DD[e.id].dealerId : e.dealer));
+    const open = OPEN.filter(d => d.so === n);
+    rows.push({ n, tot: mine.length, pass: mine.filter(e => /^pass/i.test(e.status)).length, fail: mine.filter(e => /^fail/i.test(e.status)).length, dealers: dealers.size,
+      sch: sch.length, done: done.length, ont: ont.length, openN: open.length, over: open.filter(d => d.overdue).length, multi: open.filter(d => d.multiFail).length, dpd: open.filter(d => d.dpdOn).length });
+  });
+  rows.sort((a, b) => b.tot - a.tot);
+  const T = rows.reduce((a, r) => { Object.keys(r).forEach(k => { if (typeof r[k] === 'number') a[k] = (a[k] || 0) + r[k]; }); return a; }, {});
+  // per-day bars
+  const days = []; for (let d = from; d <= to; d = addDays(d, 1)) days.push(d);
+  const cnt = days.map(d => insp.filter(e => iso(e.date) === iso(d)).length), mx = Math.max(1, ...cnt);
+  let h = '<div class="h1">Leadership</div><div class="sub">' + esc(per.label) + ' · ' + fmtD(from) + ' – ' + fmtD(to) + ' · adherence and on-time use the 30/15/7/3 schedule (current officer assignment)</div>';
+  h += '<div class="chips" style="margin:12px 0">' + Object.keys(P).map(k => '<button class="chip' + (S.lper === k ? ' on' : '') + '" data-act="lper" data-v="' + k + '">' + esc(P[k].label) + '</button>').join('') + '</div>';
+  h += '<div class="kpis"><div class="kpi blue"><div class="n">' + (T.tot || 0) + '</div><div class="l">Audits done</div><div class="s">' + (T.dealers || 0) + ' dealer-visits</div></div>' +
+    '<div class="kpi ' + (T.tot && T.fail / T.tot > 0.4 ? 'red' : 'green') + '"><div class="n">' + pct(T.pass || 0, T.tot || 0) + '</div><div class="l">Pass rate</div><div class="s">' + (T.fail || 0) + ' failed</div></div>' +
+    '<div class="kpi ' + ((T.done / T.sch) >= 0.85 ? 'green' : 'amber') + '"><div class="n">' + pct(T.done || 0, T.sch || 0) + '</div><div class="l">Adherence</div><div class="s">' + (T.done || 0) + ' of ' + (T.sch || 0) + ' scheduled</div></div>' +
+    '<div class="kpi ' + ((T.ont / T.sch) >= 0.7 ? 'green' : 'amber') + '"><div class="n">' + pct(T.ont || 0, T.sch || 0) + '</div><div class="l">On time</div><div class="s">within 3-day grace</div></div>' +
+    '<div class="kpi red"><div class="n">' + OPEN.filter(d => d.overdue).length + '</div><div class="l">Overdue now</div><div class="s">all open drawdowns</div></div>' +
+    '<div class="kpi red"><div class="n">' + OPEN.filter(d => d.multiFail).length + '</div><div class="l">Repeat failures</div><div class="s">' + OPEN.filter(d => d.dpdOn).length + ' on DPD</div></div></div>';
+  h += '<div class="card sec"><div class="b" style="margin-bottom:8px">Audits per day</div><div style="display:flex;align-items:flex-end;gap:3px;height:90px">' + days.map((d, i) => '<div title="' + fmtDs(d) + ': ' + cnt[i] + '" style="flex:1;min-width:3px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:2px"><span class="small muted" style="font-size:9px">' + (cnt[i] || '') + '</span><div style="width:100%;border-radius:4px 4px 0 0;background:' + (d.getDay() === 0 || d.getDay() === 6 ? 'var(--border)' : 'linear-gradient(var(--accent),var(--primary))') + ';height:' + Math.max(2, cnt[i] / mx * 64) + 'px"></div></div>').join('') + '</div><div style="display:flex;justify-content:space-between" class="small muted"><span>' + fmtDs(from) + '</span><span>' + fmtDs(to) + '</span></div></div>';
+  h += '<div class="sec"><div class="sec-h"><h2>Audit performance by officer</h2><span class="sub">Inspector = who did the audit · Scheduled / Adherence / On time = drawdowns assigned to the officer</span></div><div id="lt1"></div></div>';
+  h += '<div class="sec"><div class="sec-h"><h2>Collections — recovered at DPD 5+</h2><span class="sub" id="lt2sub"></span></div><div id="lt2"></div></div>';
+  host.innerHTML = h;
+  const cols = [
+    { id: 'n', label: 'Officer', fz: true, val: r => r.n, html: r => '<b>' + esc(r.n) + '</b>' },
+    { id: 'tot', label: 'Audits', type: 'num', val: r => r.tot }, { id: 'pass', label: 'Passed', type: 'num', val: r => r.pass }, { id: 'fail', label: 'Failed', type: 'num', val: r => r.fail },
+    { id: 'fr', label: 'Fail %', type: 'num', val: r => r.tot ? Math.round(r.fail / r.tot * 100) : 0, txt: r => pct(r.fail, r.tot) },
+    { id: 'dl', label: 'Dealers visited', type: 'num', val: r => r.dealers },
+    { id: 'sch', label: 'Scheduled', type: 'num', val: r => r.sch }, { id: 'done', label: 'Done', type: 'num', val: r => r.done },
+    { id: 'ad', label: 'Adherence', type: 'num', val: r => r.sch ? Math.round(r.done / r.sch * 100) : 0, txt: r => pct(r.done, r.sch), html: r => r.sch ? '<b class="' + (r.done / r.sch >= 0.85 ? '' : 'pill t-amber') + '">' + pct(r.done, r.sch) + '</b>' : '—' },
+    { id: 'ot', label: 'On time', type: 'num', val: r => r.sch ? Math.round(r.ont / r.sch * 100) : 0, txt: r => pct(r.ont, r.sch) },
+    { id: 'openN', label: 'Open assigned', type: 'num', val: r => r.openN }, { id: 'over', label: 'Overdue now', type: 'num', val: r => r.over, html: r => r.over ? '<span class="pill t-red">' + r.over + '</span>' : '0' },
+    { id: 'multi', label: 'Repeat failures', type: 'num', val: r => r.multi }, { id: 'dpd', label: 'On DPD', type: 'num', val: r => r.dpd }];
+  makeTable(document.getElementById('lt1'), cols, rows, { csv: 'stock-audit-officers', maxH: '60vh' });
+  paintCollections(P);
+}
+function paintCollections(P) {
+  const per = P[S.lper], mEnd = per.to, mStart = new Date(mEnd.getFullYear(), mEnd.getMonth(), 1), E = addDays(mEnd, 1);
+  const sub = document.getElementById('lt2sub'); if (sub) sub.textContent = MONTH_ABBR[mEnd.getMonth()] + ' ' + mEnd.getFullYear() + ' (month of the period) · Repayment % = principal recovered ÷ (month-end principal still 5+ DPD + recovered)';
+  const by = {};
+  const row = n => by[n] = by[n] || { n, rec: 0, sumDpd: 0, cnt: 0, end: 0, accts: 0 };
+  Object.keys(LN.pb).forEach(id => { const d = DD[id], l = LN.loans[id]; if (!d || !d.co) return;
+    LN.pb[id].forEach(p => { if (p.date < mStart || p.date > mEnd) return; const due = payDue(p, l); if (!due) return; const late = diffDays(p.date, due); if (late >= 5) { const r = row(d.co); r.rec += p.prin; r.sumDpd += late; r.cnt++; } }); });
+  Object.keys(LN.loans).forEach(id => { const d = DD[id]; if (!d || !d.co) return; if (dpdAt(id, E) >= 5) { const r = row(d.co); r.end += outAt(id, E); r.accts++; } });
+  const rows = Object.values(by).map(r => ({ ...r, den: r.end + r.rec })).sort((a, b) => b.den - a.den);
+  const cols = [
+    { id: 'n', label: 'Collections officer', fz: true, val: r => r.n, html: r => '<b>' + esc(r.n) + '</b>' },
+    { id: 'rec', label: 'Principal recovered (DPD 5+)', type: 'num', val: r => Math.round(r.rec), txt: r => peso(r.rec) },
+    { id: 'avg', label: 'Avg DPD on payment', type: 'num', val: r => r.cnt ? Math.round(r.sumDpd / r.cnt * 10) / 10 : 0 },
+    { id: 'end', label: 'Month-end principal still 5+ DPD', type: 'num', val: r => Math.round(r.end), txt: r => peso(r.end) },
+    { id: 'den', label: 'Principal overdue (MTD)', type: 'num', val: r => Math.round(r.den), txt: r => peso(r.den) },
+    { id: 'rp', label: 'Repayment %', type: 'num', val: r => r.den ? Math.round(r.rec / r.den * 1000) / 10 : 0, txt: r => r.den ? (r.rec / r.den * 100).toFixed(1) + '%' : '—' },
+    { id: 'ac', label: 'Accounts still 5+ DPD', type: 'num', val: r => r.accts }];
+  makeTable(document.getElementById('lt2'), cols, rows, { csv: 'stock-audit-collections', maxH: '50vh' });
+}
+
+/* ══════════════════════════════════════════════════
+   ROUTER / EVENTS
+══════════════════════════════════════════════════ */
+function renderLens() {
+  const roles = lensRoles(), el = document.getElementById('lens'); let h = '';
+  if (ME.leader) {
+    const names = Array.from(new Set(Array.from(OFFICERS.so).concat(Array.from(OFFICERS.co)))).sort();
+    h += '<select class="inp" id="lens-off" style="width:auto;min-height:34px;padding:4px 8px;font-size:12.5px"><option value="*"' + (S.lens.officer === '*' ? ' selected' : '') + '>Everyone</option>' + names.map(n => '<option' + (n === S.lens.officer ? ' selected' : '') + '>' + esc(n) + '</option>').join('') + '</select>';
+  }
+  if (ME.leader || (roles.auditor && roles.collector)) h += '<div class="seg"><button data-act="role" data-v="auditor" class="' + (S.lens.role === 'auditor' ? 'on' : '') + '">Auditor</button><button data-act="role" data-v="collector" class="' + (S.lens.role === 'collector' ? 'on' : '') + '">Collector</button></div>';
+  if (S.lens.role === 'collector') h += '<button class="chip' + (S.dpd5 ? ' on' : '') + '" data-act="dpd5" style="min-height:30px;padding:4px 10px">5+ DPD only</button>';
+  el.innerHTML = h;
+  const sel = document.getElementById('lens-off'); if (sel) sel.onchange = () => { S.lens.officer = sel.value; render(); };
+}
+function setDefaultLens() {
+  const r = lensRoles();
+  S.lens = { role: r.auditor || !r.collector ? 'auditor' : 'collector', officer: ME.name };
+  if (ME.leader && !r.auditor && !r.collector) S.lens.officer = '*';
+}
+function render() {
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.view === S.view));
+  renderLens();
+  const v = document.getElementById('view');
+  document.getElementById('avatar').textContent = initials(ME.name);
+  document.getElementById('who-name').textContent = ME.name || ME.email;
+  const rl = lensRoles(); document.getElementById('who-role').textContent = (ME.leader ? 'Leadership' : rl.auditor && rl.collector ? 'Auditor & collector' : rl.collector ? 'Collections officer' : 'Stock auditor');
+  document.getElementById('today-lbl').textContent = DOW[TODAY.getDay()] + ', ' + fmtD(TODAY);
+  if (S.view === 'home') v.innerHTML = renderHome();
+  else if (S.view === 'itin') v.innerHTML = renderItin();
+  else if (S.view === 'dealers') { v.innerHTML = renderDealers(); paintDealers(); const q = document.getElementById('dq'); q.oninput = () => { S.dq = q.value; paintDealers(); }; document.getElementById('dsort').onchange = function () { S.dsort = this.value; paintDealers(); }; }
+  else if (S.view === 'dd') { v.innerHTML = renderDD(); paintDD(); }
+  else if (S.view === 'audit') { v.innerHTML = renderAudit(); bindAudit(); }
+  else if (S.view === 'lead' && ME.leader) renderLead(v);
+  else { S.view = 'home'; v.innerHTML = renderHome(); }
+}
+function go(view) { S.view = view; render(); window.scrollTo(0, 0); }
+document.getElementById('nav').addEventListener('click', e => { const b = e.target.closest('button[data-view]'); if (!b) return; if (b.dataset.view === 'audit' && (!A || A.done)) newAudit(''); go(b.dataset.view); });
+document.getElementById('theme-btn').onclick = function () { const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', t); try { localStorage.setItem('finsso-theme', t); } catch (e) {} };
+(function () { let t = null; try { t = localStorage.getItem('finsso-theme'); } catch (e) {} if (!t && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) t = 'dark'; if (t) document.documentElement.setAttribute('data-theme', t); })();
+
+document.addEventListener('click', function (e) {
+  if (e.target.closest('a[href]')) return;
+  const t = e.target.closest('[data-act]'); if (!t) return;
+  const a = t.dataset.act, id = t.dataset.id, v = t.dataset.v, k = t.dataset.k;
+  if (a === 'audit') { closeSheet(); newAudit(id); go('audit'); }
+  else if (a === 'detail') showDetail(id);
+  else if (a === 'close') closeSheet();
+  else if (a === 'nav') go(v);
+  else if (a === 'goto') { S.ddf = t.dataset.f; go('dd'); }
+  else if (a === 'win') { S.itinWin = v; render(); }
+  else if (a === 'rt') { e.stopPropagation(); S.route = S.route.includes(k) ? S.route.filter(x => x !== k) : S.route.concat(k); saveRoute(); const y = window.scrollY; render(); window.scrollTo(0, y); }
+  else if (a === 'rtclear') { S.route = []; saveRoute(); render(); }
+  else if (a === 'tog') { S.open[k] = !S.open[k]; const b = document.getElementById('db-' + k); if (b) b.hidden = !S.open[k]; }
+  else if (a === 'dflt') { S.dflt = v; render(); }
+  else if (a === 'ddf') { S.ddf = v; render(); }
+  else if (a === 'role') { S.lens.role = v; render(); }
+  else if (a === 'dpd5') { S.dpd5 = !S.dpd5; render(); }
+  else if (a === 'lper') { S.lper = v; render(); }
+  else if (a === 'res') { readForm(); A.status = v; const ok = v === 'Passed' ? VS_PASS : VS_FAIL; if (!ok.includes(A.vs)) A.vs = ''; paintAudit(); }
+  else if (a === 'rmph') { A.photos[k].splice(+t.dataset.i, 1); readForm(); paintAudit(); }
+  else if (a === 'chg') { readForm(); A.ddId = ''; paintAudit(); }
+  else if (a === 'pick') { A.ddId = id; const d = DD[id]; A.loc = dealerOf(d).address || dealerOf(d).city || ''; paintAudit(); }
+  else if (a === 'geo') { A.geo = null; paintGeo(); geoRefresh(); }
+  else if (a === 'acancel') { A = null; go('home'); }
+  else if (a === 'newaudit') { newAudit(''); render(); window.scrollTo(0, 0); }
+});
+
+/* ══════════════════════════════════════════════════
+   SIGN-IN + ACCESS  (access list is checked by the Apps Script, which verifies the Google token)
+   Sheet: "Stock Audit Access" tab in the Access Control workbook —
+          Email | Name (exactly as in AuditMapping) | Dashboards (blank, or AuditLeadership)
+══════════════════════════════════════════════════ */
+function _decodeJwt(t) { try { var p = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'); return JSON.parse(decodeURIComponent(escape(atob(p)))); } catch (e) { return null; } }
+function _authError(msg) { var e = document.getElementById('lock-err'); if (e) e.textContent = msg || ''; }
+function showLock(msg) {
+  const s = document.getElementById('lock-overlay'); s.classList.remove('hidden', 'unlocking'); _authError(msg || '');
+  try { google.accounts.id.disableAutoSelect(); google.accounts.id.prompt(); } catch (e) {}
+}
+async function whoami(token) {
+  for (let i = 0; i < 3; i++) {
+    try { const r = await fetch(SA_API + (SA_API.indexOf('?') >= 0 ? '&' : '?') + 'action=sa_whoami&token=' + encodeURIComponent(token) + '&_=' + Date.now()); return await r.json(); }
+    catch (e) { await new Promise(r => setTimeout(r, 500 * (i + 1))); }
+  }
+  return null;
+}
+var _booting = false;
+async function _onGoogleCredential(resp) {
+  _authError('');
+  const data = _decodeJwt(resp && resp.credential);
+  if (!data || !data.email) return _authError('Could not read your Google account. Try again.');
+  ID_TOKEN = resp.credential;
+  if (ME) { document.getElementById('lock-overlay').classList.add('unlocking'); setTimeout(() => document.getElementById('lock-overlay').classList.add('hidden'), 400); toast('Signed in again'); return; }
+  if (_booting) return; _booting = true;
+  _authError('Checking access…');
+  const j = await whoami(ID_TOKEN);
+  if (!j) { _booting = false; return _authError('Could not reach the access service — check your connection and try again.'); }
+  if (!j.ok) { _booting = false; try { google.accounts.id.disableAutoSelect(); } catch (e) {} return _authError(j.error || (data.email + ' is not on the Stock Audit access list. Ask the admin to add you.')); }
+  ME = { email: j.email, name: j.name || '', leader: !!j.leader };
+  _authError('');
+  document.getElementById('lock-overlay').classList.add('unlocking'); setTimeout(() => document.getElementById('lock-overlay').classList.add('hidden'), 400);
+  document.getElementById('view').innerHTML = '<div class="loading"><span class="spin"></span>Loading your schedule…</div>';
+  try {
+    await loadCore();
+    await mergePending();
+  } catch (e) { document.getElementById('view').innerHTML = '<div class="card empty">Could not load the data: ' + esc(e.message) + '<br><br><button class="btn" onclick="location.reload()">Retry</button></div>'; return; }
+  document.querySelector('#nav [data-view=lead]').classList.toggle('hide', !ME.leader);
+  setDefaultLens(); loadRoute(); render();
+  const r = lensRoles(); if (!r.auditor && !r.collector && !ME.leader) toast('No drawdowns are assigned to “' + (ME.name || ME.email) + '” in the drawdown sheet.', true);
+}
+async function mergePending() {
+  // audits submitted from this app that the exported CSV does not contain yet
+  let list = [];
+  try { const r = await fetch(SA_API + '?action=sa_recent&token=' + encodeURIComponent(ID_TOKEN) + '&_=' + Date.now()); const j = await r.json(); if (j.ok) list = j.rows || []; } catch (e) {}
+  list = list.concat(lsGet('sa-pend-' + ME.email, []));
+  let changed = false;
+  list.forEach(x => { if (!x.iid || INSP_IDS[x.iid]) return; const date = parseSheetDate(x.date); if (!date || !DD[x.id]) return;
+    INSP.push({ id: x.id, date, who: x.who || '', email: '', status: x.status, iid: x.iid, dealer: x.dealer || DD[x.id].dealer, vs: x.vs || '', remarks: x.remarks || '', poc: '', sold: null, method: '', pending: true }); INSP_IDS[x.iid] = 1; changed = true; });
+  lsSet('sa-pend-' + ME.email, INSP.filter(e => e.pending).map(e => ({ id: e.id, date: iso(e.date), who: e.who, status: e.status, iid: e.iid, dealer: e.dealer, vs: e.vs, remarks: e.remarks })));
+  if (changed) rebuildHistory();
+}
+function _initGoogleAuth() {
+  if (!window.google || !google.accounts || !google.accounts.id) return setTimeout(_initGoogleAuth, 200);
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: _onGoogleCredential, auto_select: true, cancel_on_tap_outside: false });
+  google.accounts.id.renderButton(document.getElementById('g-signin'), { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'signin_with', logo_alignment: 'center', width: 260 });
+  google.accounts.id.prompt();
+}
+if (document.readyState !== 'loading') _initGoogleAuth(); else document.addEventListener('DOMContentLoaded', _initGoogleAuth);
+</script>
+</body></html>
