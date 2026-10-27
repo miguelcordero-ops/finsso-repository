@@ -340,55 +340,87 @@ var COVERAGE_START = null;      // first date in the stock-inspection data
 
 function validPH(lat, lng) { return lat >= 4 && lat <= 21.5 && lng >= 116 && lng <= 127; }
 
+var LN = { loans: {}, pb: {} };   // loan + payment history from the drawdown / repayment trackers (v2 and v3)
+function kindOf(t) { t = String(t || '').toLowerCase(); return t.includes('renewal 1') ? 'R1' : t.includes('renewal 2') ? 'R2' : t.includes('final') ? 'M' : null; }
+function outAt(id, asof) { const l = LN.loans[id]; if (!l || !l.credit || l.credit >= asof) return 0; let paid = 0; (LN.pb[id] || []).forEach(p => { if (p.date < asof) paid += p.prin; }); return Math.max(0, l.orig - paid); }
+function dpdAt(id, D) {
+  const l = LN.loans[id]; if (!l || outAt(id, D) <= 0.5) return 0;
+  const paid = new Set(); (LN.pb[id] || []).forEach(p => { if (p.date < D) { const k = kindOf(p.type); if (k) paid.add(k); } }); if (paid.has('R2')) paid.add('R1');
+  const dues = []; if (l.r1) dues.push([l.r1, 'R1']); if (l.r2) dues.push([l.r2, 'R2']); if (l.mat) dues.push([l.mat, 'M']);
+  const od = dues.filter(x => x[0] < D && !paid.has(x[1])).map(x => x[0].getTime());
+  return od.length ? Math.round((D.getTime() - Math.min.apply(null, od)) / DAY_MS) : 0;
+}
+var V3_DPD_COLS = ['R1 DPD', 'R2 DPD', 'R3 DPD', 'P1 DPD', 'R4 DPD', 'P2 DPD', 'R5 DPD', 'P3 DPD', 'Maturity DPD'];
+
+/* Drawdowns come ONLY from the drawdown trackers (drawdown.csv = previous versions, drawdownv3.csv = v3),
+   payments from repayment.csv / repaymentv3.csv. Dealer details and the assigned stock audit officer /
+   collections officer come from AuditMapping.csv (one row per dealer). */
 async function loadCore() {
-  const [dr, si, am] = await Promise.all([fetchCSV('drawdown-review-sheet.csv'), fetchCSV('stock-inspection.csv'), fetchCSV('AuditMapping.csv', true)]);
-  // ── drawdowns
-  const c = buildColumnMap(dr[0]);
-  const ix = {}; ['Drawdown ID','Dealer ID','Dealership Name','Loan Status','Assigned SO','Assigned Stock Audit Officer','Assigned Collections Officer','Credit Date to Dealer Bank Account','Year Model','Make Model Variant','Plate Number (as on ORCR)','Original Principal','Outstanding Principal','Total Outstanding Principal','In DPD?','DPD Aging','Failure Status','Frequency','Maturity Due Date','Repossessed Unit?','Sold Flagging','Financing Type'].forEach(n => ix[n] = c(n));
-  DD = {}; ALLDD = [];
-  for (let i = 1; i < dr.length; i++) {
-    const r = dr[i], id = String(get(r, ix['Drawdown ID'])).trim();
-    if (!id) continue;
-    const outP = parseNum(get(r, ix['Outstanding Principal'])) || parseNum(get(r, ix['Total Outstanding Principal']));
-    const d = {
-      id, dealerId: String(get(r, ix['Dealer ID'])).trim(), dealer: normName(get(r, ix['Dealership Name'])),
-      status: normName(get(r, ix['Loan Status'])), so: normName(get(r, ix['Assigned Stock Audit Officer'])), co: normName(get(r, ix['Assigned Collections Officer'])),
-      sales: normName(get(r, ix['Assigned SO'])), credit: parseSheetDate(get(r, ix['Credit Date to Dealer Bank Account'])),
-      year: String(get(r, ix['Year Model'])).trim(), model: normName(get(r, ix['Make Model Variant'])), plate: normName(get(r, ix['Plate Number (as on ORCR)'])),
-      orig: parseNum(get(r, ix['Original Principal'])), out: outP,
-      inDpd: /^yes/i.test(get(r, ix['In DPD?'])), dpdDays: parseNum(get(r, ix['DPD Aging'])),
-      failFlag: /multiple/i.test(get(r, ix['Failure Status'])), mat: parseSheetDate(get(r, ix['Maturity Due Date'])),
-      repo: /^yes/i.test(String(get(r, ix['Repossessed Unit?'])).trim()), soldFlag: /sold/i.test(get(r, ix['Sold Flagging'])),
-      hist: []
-    };
-    d.open = OPEN_RE.test(d.status) && d.out > 0.5 && !d.repo;
-    DD[id] = d; ALLDD.push(d);
+  const [d2, d3, r2, r3, si, am] = await Promise.all([fetchCSV('drawdown.csv'), fetchCSV('drawdownv3.csv', true), fetchCSV('repayment.csv'), fetchCSV('repaymentv3.csv', true), fetchCSV('stock-inspection.csv'), fetchCSV('AuditMapping.csv')]);
+  // ── dealers + officer mapping (AuditMapping.csv)
+  DEALERS = {};
+  const ac = buildColumnMap(am[0]);
+  const addrIdx = []; am[0].forEach((h, i) => { if (normHeader(h) === 'Dealership Address') addrIdx.push(i); });
+  am.slice(1).forEach(r => {
+    const id = String(get(r, ac('Dealer ID'))).trim(); if (!id) return;
+    const lat = parseFloat(get(r, ac('Latitude'))), lng = parseFloat(get(r, ac('Longitude')));
+    const phoneRaw = addrIdx.length > 1 ? String(get(r, addrIdx[1])).replace(/\D/g, '') : '';
+    DEALERS[id] = { id, name: normName(get(r, ac('Dealership Name'))), sm: normName(get(r, ac('Assigned SM'))), sales: normName(get(r, ac('Assigned SO'))),
+      status: normName(get(r, ac('Dealer Status'))), address: normName(get(r, addrIdx[0])), phone: phoneRaw ? (phoneRaw[0] === '0' ? phoneRaw : '0' + phoneRaw) : '',
+      lat: validPH(lat, lng) ? lat : null, lng: validPH(lat, lng) ? lng : null, city: normName(get(r, ac('City Extract'))),
+      so: normName(get(r, ac('Assigned Stock Audit Officer'))), co: normName(get(r, ac('Assigned Collections Officer'))) };
+  });
+  // ── loans (v2 then v3)
+  LN = { loans: {}, pb: {} };
+  const c2 = buildColumnMap(d2[0]);
+  d2.slice(1).forEach(r => {
+    const id = String(get(r, c2('Drawdown ID'))).trim(); if (!id) return;
+    LN.loans[id] = { id, v: 2, dealerId: String(get(r, c2('Dealer ID'))).trim(), dealer: normName(get(r, c2('Dealership Name'))), status: normName(get(r, c2('Loan Status'))),
+      sales: normName(get(r, c2('Assigned SO'))), credit: parseSheetDate(get(r, c2('Credit Date to Dealer Bank Account'))), orig: parseNum(get(r, c2('Original Principal'))),
+      out: parseNum(get(r, c2('Total Outstanding Principal'))) || parseNum(get(r, c2('Restructure Outstanding Balance'))),
+      r1: parseSheetDate(get(r, c2('Renewal 1 Due Date'))), r2: parseSheetDate(get(r, c2('Renewal 2 Due Date'))), mat: parseSheetDate(get(r, c2('Final Maturity Date'))),
+      year: String(get(r, c2('Year Model'))).trim(), model: normName(get(r, c2('Make Model Variant'))), plate: normName(get(r, c2('Plate Number (as on ORCR)'))),
+      soldFlag: /sold/i.test(get(r, c2('Sold Flagging'))), repo: /^yes/i.test(String(get(r, c2('Repossessed Unit?'))).trim()), so: '', co: '', dpdSheet: 0 };
+  });
+  if (d3) {
+    const c3 = buildColumnMap(d3[0]);
+    d3.slice(1).forEach(r => {
+      const id = String(get(r, c3('Drawdown ID'))).trim(); if (!id) return;
+      let dp = 0; V3_DPD_COLS.forEach(n => { const v = parseNum(get(r, c3(n))); if (v > dp) dp = v; });
+      LN.loans[id] = { id, v: 3, dealerId: String(get(r, c3('Dealer ID'))).trim(), dealer: normName(get(r, c3('Dealership Name'))), status: normName(get(r, c3('Loan Status'))),
+        sales: normName(get(r, c3('Assigned SO'))), credit: parseSheetDate(get(r, c3('Credit Date to Dealer Bank Account'))), orig: parseNum(get(r, c3('Original Principal'))),
+        out: parseNum(get(r, c3('Outstanding Principal'))), r1: parseSheetDate(get(r, c3('R1 Due Date'))), r2: parseSheetDate(get(r, c3('R2 Due Date'))), mat: parseSheetDate(get(r, c3('Maturity Due Date'))),
+        year: String(get(r, c3('Year Model'))).trim(), model: normName(get(r, c3('Make Model Variant'))), plate: normName(get(r, c3('Plate Number (as on ORCR)'))),
+        soldFlag: false, repo: false, so: normName(get(r, c3('Assigned Auditor'))), co: normName(get(r, c3('Assigned Collections Officer'))), dpdSheet: dp };
+    });
   }
+  // ── payments (principal paid per payment; repayment.csv = previous versions, repaymentv3.csv = v3)
+  const cr2 = buildColumnMap(r2[0]);
+  r2.slice(1).forEach(r => { const id = String(get(r, cr2('Drawdown ID'))).trim(), d = parseSheetDate(get(r, cr2('Dealer Payment Date'))); if (!LN.loans[id] || !d) return;
+    (LN.pb[id] = LN.pb[id] || []).push({ date: d, prin: parseNum(get(r, cr2('Dealer Paid Principal'))), type: String(get(r, cr2('Dealer Repayment Type'))).trim(), v: 2 }); });
+  if (r3) { const cr3 = buildColumnMap(r3[0]); r3.slice(1).forEach(r => { const id = String(get(r, cr3('Drawdown ID'))).trim(), d = parseSheetDate(get(r, cr3('Dealer Payment Date'))); if (!LN.loans[id] || !d) return;
+    (LN.pb[id] = LN.pb[id] || []).push({ date: d, prin: parseNum(get(r, cr3('Principal Applied'))), type: String(get(r, cr3('Dealer Payment Type'))).trim(), v: 3, due: parseSheetDate(get(r, cr3('Payment Due Date'))) }); }); }
+  // ── drawdown records
+  DD = {}; ALLDD = [];
+  Object.keys(LN.loans).forEach(id => {
+    const l = LN.loans[id], dl = DEALERS[l.dealerId];
+    const d = { id, v: l.v, dealerId: l.dealerId, dealer: l.dealer || (dl && dl.name) || '', status: l.status, sales: l.sales, credit: l.credit, year: l.year, model: l.model, plate: l.plate,
+      orig: l.orig, out: l.out, so: dl ? dl.so : '', co: dl ? dl.co : '',   /* officers come ONLY from AuditMapping.csv (dealer level) */ failFlag: false, mat: l.mat, repo: l.repo, soldFlag: l.soldFlag, hist: [] };
+    d.open = OPEN_RE.test(d.status) && d.out > 0.5 && !d.repo;
+    if (d.open) { d.dpdDays = l.v === 3 ? l.dpdSheet : dpdAt(id, TODAY); d.inDpd = d.dpdDays >= 1; } else { d.dpdDays = 0; d.inDpd = false; }
+    DD[id] = d; ALLDD.push(d);
+  });
   OPEN = ALLDD.filter(d => d.open);
   OFFICERS = { so: new Set(), co: new Set() };
   OPEN.forEach(d => { if (d.so) OFFICERS.so.add(d.so); if (d.co) OFFICERS.co.add(d.co); });
-  // ── dealers from AuditMapping (dealer-level: address, coordinates, city, officers)
-  DEALERS = {};
-  if (am && am.length) {
-    const ac = buildColumnMap(am[0]);
-    const addrIdx = []; am[0].forEach((h, i) => { if (normHeader(h) === 'Dealership Address') addrIdx.push(i); });
-    am.slice(1).forEach(r => {
-      const id = String(get(r, ac('Dealer ID'))).trim(); if (!id) return;
-      const lat = parseFloat(get(r, ac('Latitude'))), lng = parseFloat(get(r, ac('Longitude')));
-      const phoneRaw = addrIdx.length > 1 ? String(get(r, addrIdx[1])).replace(/\D/g, '') : '';
-      DEALERS[id] = { id, name: normName(get(r, ac('Dealership Name'))), sm: normName(get(r, ac('Assigned SM'))), sales: normName(get(r, ac('Assigned SO'))),
-        status: normName(get(r, ac('Dealer Status'))), address: normName(get(r, addrIdx[0])), phone: phoneRaw ? (phoneRaw[0] === '0' ? phoneRaw : '0' + phoneRaw) : '',
-        lat: validPH(lat, lng) ? lat : null, lng: validPH(lat, lng) ? lng : null, city: normName(get(r, ac('City Extract'))),
-        so: normName(get(r, ac('Assigned Stock Audit Officer'))), co: normName(get(r, ac('Assigned Collections Officer'))) };
-    });
-  }
   ALLDD.forEach(d => { if (d.dealerId && !DEALERS[d.dealerId]) DEALERS[d.dealerId] = { id: d.dealerId, name: d.dealer, sm: '', sales: d.sales, status: '', address: '', phone: '', lat: null, lng: null, city: '', so: d.so, co: d.co }; });
-  // ── inspections
+  // ── inspections (a v3 tracker ID carries a trailing "*"; the audit sheet may omit it)
   const sc = buildColumnMap(si[0]);
   INSP = []; INSP_IDS = {};
   si.slice(1).forEach(r => {
-    const id = String(get(r, sc('Drawdown ID'))).trim(), date = parseSheetDate(get(r, sc('Date')));
+    let id = String(get(r, sc('Drawdown ID'))).trim(); const date = parseSheetDate(get(r, sc('Date')));
     if (!id || !date) return;
+    if (!DD[id] && DD[id + '*']) id = id + '*';
     const status = String(get(r, sc('Stock Inspection Status'))).trim();
     const e = { id, date, who: normName(get(r, sc('Inspector'))), email: String(get(r, sc('User email'))).trim().toLowerCase(), status,
       iid: String(get(r, sc('Inspection ID'))).trim(), dealer: normName(get(r, sc('Dealership Name'))),
@@ -773,41 +805,46 @@ function paintDealers() {
 /* ══════════════════════════════════════════════════
    DRAWDOWNS (filterable table)
 ══════════════════════════════════════════════════ */
-S.ddf = 'all';
-var ddTable = null;
+S.ddf = 'all'; S.ddq = ''; S.ddsort = 'prio'; S.ddAll = false; S.ddShow = 30;
 function ddPresetFilter(d) {
   const f = S.ddf;
   return f === 'all' || (f === 'overdue' && d.overdue) || (f === 'today' && d.daysToDue === 0) || (f === 'soon' && d.daysToDue > 0 && d.daysToDue <= 3) || (f === 'dpd' && d.dpdOn) || (f === 'multi' && d.multiFail) || (f === 'first' && !d.last);
 }
 function renderDD() {
-  let h = '<div class="h1">Drawdowns</div><div class="sub">' + esc(lensName()) + ' · tap a row for details and to start an audit · use ▾ on any column to sort or filter</div>';
-  h += '<div class="chips" style="margin:12px 0">' + [['all', 'All'], ['overdue', 'Overdue'], ['today', 'Due today'], ['soon', 'Due 1–3 days'], ['dpd', 'On DPD'], ['multi', 'Repeat failures'], ['first', 'First audit']].map(x => '<button class="chip' + (S.ddf === x[0] ? ' on' : '') + '" data-act="ddf" data-v="' + x[0] + '">' + x[1] + '</button>').join('') + '</div><div id="ddt"></div>';
+  let h = '<div class="h1">Drawdowns</div><div class="sub">' + esc(S.ddAll ? 'Whole portfolio' : lensName()) + ' · search by dealer, drawdown ID or plate</div>';
+  h += '<div class="toolbar"><input class="search" id="ddq" type="search" placeholder="Search dealer, drawdown ID, plate or model…" value="' + esc(S.ddq) + '" autocomplete="off">' +
+    '<select class="inp" id="ddsort" style="width:auto;min-height:42px"><option value="prio"' + (S.ddsort === 'prio' ? ' selected' : '') + '>Sort: priority</option><option value="due"' + (S.ddsort === 'due' ? ' selected' : '') + '>Sort: next due date</option><option value="dealer"' + (S.ddsort === 'dealer' ? ' selected' : '') + '>Sort: dealer A–Z</option><option value="dpd"' + (S.ddsort === 'dpd' ? ' selected' : '') + '>Sort: highest DPD</option><option value="out"' + (S.ddsort === 'out' ? ' selected' : '') + '>Sort: outstanding</option></select></div>';
+  h += '<div class="chips" style="margin-bottom:12px">' + [['all', 'All'], ['overdue', 'Overdue'], ['today', 'Due today'], ['soon', 'Due 1–3 days'], ['dpd', 'On DPD'], ['multi', 'Repeat failures'], ['first', 'First audit']].map(x => '<button class="chip' + (S.ddf === x[0] ? ' on' : '') + '" data-act="ddf" data-v="' + x[0] + '">' + x[1] + '</button>').join('') +
+    '<button class="chip' + (S.ddAll ? ' on' : '') + '" data-act="ddall">Whole portfolio</button></div><div id="ddlist"></div>';
   return h;
 }
+function ddRows() {
+  let list = S.ddAll ? OPEN.slice() : lensList();
+  list = list.filter(ddPresetFilter);
+  const toks = S.ddq.toLowerCase().split(/\s+/).filter(Boolean);
+  if (toks.length) list = list.filter(d => { const hay = (d.id + ' ' + d.plate + ' ' + d.dealer + ' ' + d.model + ' ' + (dealerOf(d).city || '')).toLowerCase(); return toks.every(t => hay.includes(t)); });
+  const k = S.ddsort;
+  if (k === 'due') list.sort((a, b) => a.due - b.due || b.score - a.score);
+  else if (k === 'dealer') list.sort((a, b) => a.dealer.localeCompare(b.dealer) || a.id.localeCompare(b.id, undefined, { numeric: true }));
+  else if (k === 'dpd') list.sort((a, b) => (b.dpdDays || 0) - (a.dpdDays || 0) || b.score - a.score);
+  else if (k === 'out') list.sort((a, b) => b.out - a.out);
+  else list.sort((a, b) => b.score - a.score || a.due - b.due);
+  return list;
+}
+function ddCard(d) {
+  const dl = dealerOf(d);
+  return '<div class="item ' + d.pc + '"><div class="item-top"><div><div class="item-t">' + esc(d.dealer) + '</div><div class="item-s"><b>' + esc(d.id) + '</b> · ' + esc(vehicleLabel(d)) + (d.plate ? ' · ' + esc(d.plate) : '') + '</div></div><div class="small b" style="white-space:nowrap">' + peso(d.out) + '</div></div>' +
+    '<div class="item-meta">' + chipsFor(d) + '</div>' +
+    '<div class="item-s muted">' + (d.last ? 'Last audit ' + fmtD(d.last.date) + ' — ' + esc(d.last.status) : 'Never audited') + ' · due ' + fmtD(d.due) + (dl.city ? ' · ' + esc(dl.city) : '') + '</div>' +
+    (S.ddAll ? '<div class="item-s muted">Audit: ' + esc(d.so || '—') + ' · Collections: ' + esc(d.co || '—') + '</div>' : '') +
+    '<div class="item-act"><button class="btn pri sm" data-act="audit" data-id="' + esc(d.id) + '">Start audit</button><button class="btn sm" data-act="detail" data-id="' + esc(d.id) + '">Details</button>' + dealerActs(dl, d.dealer) + '</div></div>';
+}
 function paintDD() {
-  const host = document.getElementById('ddt'); if (!host) return;
-  const rows = lensList().filter(ddPresetFilter);
-  const cols = [
-    { id: 'id', label: 'Drawdown', fz: true, val: d => d.id, html: d => '<b>' + esc(d.id) + '</b>' },
-    { id: 'prio', label: 'Priority', val: d => d.prio, html: d => '<span class="pill p-' + d.pc + '">' + esc(d.prio) + '</span>' },
-    { id: 'dealer', label: 'Dealer', val: d => d.dealer },
-    { id: 'city', label: 'City', val: d => dealerOf(d).city || '' },
-    { id: 'plate', label: 'Plate', val: d => d.plate },
-    { id: 'veh', label: 'Vehicle', val: d => vehicleLabel(d) },
-    { id: 'due', label: 'Next due', type: 'date', val: d => d.due, txt: d => fmtD(d.due) },
-    { id: 'dtd', label: 'Days to due', type: 'num', val: d => d.daysToDue, html: d => '<span class="' + (d.daysToDue < 0 ? 'pill t-red' : '') + '">' + d.daysToDue + '</span>' },
-    { id: 'dpd', label: 'DPD', type: 'num', val: d => d.dpdDays || 0 },
-    { id: 'streak', label: 'Fails in a row', type: 'num', val: d => d.failStreak },
-    { id: 'lastd', label: 'Last audit', type: 'date', val: d => d.last ? d.last.date : '', txt: d => d.last ? fmtD(d.last.date) : '' },
-    { id: 'lastr', label: 'Last result', val: d => d.last ? d.last.status : 'Never' },
-    { id: 'n', label: '# audits', type: 'num', val: d => d.hist.length },
-    { id: 'out', label: 'Outstanding', type: 'num', val: d => Math.round(d.out), txt: d => peso(d.out) },
-    { id: 'status', label: 'Loan status', val: d => d.status },
-    { id: 'so', label: 'Audit officer', val: d => d.so },
-    { id: 'co', label: 'Collections officer', val: d => d.co },
-    { id: 'basis', label: 'Schedule basis', val: d => d.basis }
-  ];
-  ddTable = makeTable(host, cols, rows, { onRow: d => showDetail(d.id), csv: 'stock-audit-drawdowns' });
+  const host = document.getElementById('ddlist'); if (!host) return;
+  const rows = ddRows(), shown = rows.slice(0, S.ddShow);
+  host.innerHTML = '<div class="small muted" style="margin-bottom:8px">' + rows.length.toLocaleString() + ' drawdown' + (rows.length === 1 ? '' : 's') + (S.ddq ? ' matching “' + esc(S.ddq) + '”' : '') + '</div>' +
+    (rows.length ? '<div class="cols3">' + shown.map(ddCard).join('') + '</div>' : '<div class="card empty">No drawdowns match.' + (!S.ddAll && S.ddq ? '<br><button class="btn sm" style="margin-top:10px" data-act="ddall">Search the whole portfolio</button>' : '') + '</div>') +
+    (rows.length > shown.length ? '<div style="text-align:center;margin-top:14px"><button class="btn" data-act="ddmore">Show more (' + (rows.length - shown.length) + ' left)</button></div>' : '');
 }
 
 /* ══════════════════════════════════════════════════
@@ -992,34 +1029,7 @@ function renderAuditDone() {
    Loads the loan + repayment history on demand (only leaders open this tab) so the
    30/15/7/3 schedule, adherence and on-time % are computed exactly like the KPI workbook.
 ══════════════════════════════════════════════════ */
-var LN = null;
-function kindOf(t) { t = String(t || '').toLowerCase(); return t.includes('renewal 1') ? 'R1' : t.includes('renewal 2') ? 'R2' : t.includes('final') ? 'M' : null; }
-async function loadLeadData() {
-  if (LN) return LN;
-  const [d2, d3, r2, r3] = await Promise.all([fetchCSV('drawdown.csv'), fetchCSV('drawdownv3.csv', true), fetchCSV('repayment.csv'), fetchCSV('repaymentv3.csv', true)]);
-  const loans = {}, pb = {};
-  const c2 = buildColumnMap(d2[0]);
-  d2.slice(1).forEach(r => { const id = String(get(r, c2('Drawdown ID'))).trim(); if (!id) return;
-    loans[id] = { id, credit: parseSheetDate(get(r, c2('Credit Date to Dealer Bank Account'))), orig: parseNum(get(r, c2('Original Principal'))), v: 2,
-      r1: parseSheetDate(get(r, c2('Renewal 1 Due Date'))), r2: parseSheetDate(get(r, c2('Renewal 2 Due Date'))), mat: parseSheetDate(get(r, c2('Final Maturity Date'))) }; });
-  if (d3) { const c3 = buildColumnMap(d3[0]); d3.slice(1).forEach(r => { const id = String(get(r, c3('Drawdown ID'))).trim(); if (!id) return;
-    loans[id] = { id, credit: parseSheetDate(get(r, c3('Credit Date to Dealer Bank Account'))), orig: parseNum(get(r, c3('Original Principal'))), v: 3, mat: parseSheetDate(get(r, c3('Maturity Due Date'))) }; }); }
-  const cr2 = buildColumnMap(r2[0]);
-  r2.slice(1).forEach(r => { const id = String(get(r, cr2('Drawdown ID'))).trim(), d = parseSheetDate(get(r, cr2('Dealer Payment Date'))); if (!loans[id] || !d) return;
-    (pb[id] = pb[id] || []).push({ date: d, prin: parseNum(get(r, cr2('Dealer Paid Principal'))), type: String(get(r, cr2('Dealer Repayment Type'))).trim(), v: 2 }); });
-  if (r3) { const cr3 = buildColumnMap(r3[0]); r3.slice(1).forEach(r => { const id = String(get(r, cr3('Drawdown ID'))).trim(), d = parseSheetDate(get(r, cr3('Dealer Payment Date'))); if (!loans[id] || !d) return;
-    (pb[id] = pb[id] || []).push({ date: d, prin: parseNum(get(r, cr3('Principal Applied'))), type: String(get(r, cr3('Dealer Payment Type'))).trim(), v: 3, due: parseSheetDate(get(r, cr3('Payment Due Date'))) }); }); }
-  LN = { loans, pb };
-  return LN;
-}
-function outAt(id, asof) { const l = LN.loans[id]; if (!l || !l.credit || l.credit >= asof) return 0; let paid = 0; (LN.pb[id] || []).forEach(p => { if (p.date < asof) paid += p.prin; }); return Math.max(0, l.orig - paid); }
-function dpdAt(id, D) {
-  const l = LN.loans[id]; if (!l || outAt(id, D) <= 0.5) return 0;
-  const paid = new Set(); (LN.pb[id] || []).forEach(p => { if (p.date < D) { const k = kindOf(p.type); if (k) paid.add(k); } }); if (paid.has('R2')) paid.add('R1');
-  const dues = []; if (l.v === 2) { if (l.r1) dues.push([l.r1, 'R1']); if (l.r2) dues.push([l.r2, 'R2']); if (l.mat) dues.push([l.mat, 'M']); } else if (l.mat) dues.push([l.mat, 'M']);
-  const od = dues.filter(x => x[0] < D && !paid.has(x[1])).map(x => x[0].getTime());
-  return od.length ? Math.round((D.getTime() - Math.min.apply(null, od)) / DAY_MS) : 0;
-}
+async function loadLeadData() { return LN; }
 function payDue(p, l) { return p.v === 3 ? p.due : ({ R1: l.r1, R2: l.r2, M: l.mat })[kindOf(p.type)]; }
 function buildEvents() {
   const by = {}; INSP.forEach(e => (by[e.id] = by[e.id] || []).push(e));
@@ -1139,7 +1149,7 @@ function render() {
   if (S.view === 'home') v.innerHTML = renderHome();
   else if (S.view === 'itin') v.innerHTML = renderItin();
   else if (S.view === 'dealers') { v.innerHTML = renderDealers(); paintDealers(); const q = document.getElementById('dq'); q.oninput = () => { S.dq = q.value; paintDealers(); }; document.getElementById('dsort').onchange = function () { S.dsort = this.value; paintDealers(); }; }
-  else if (S.view === 'dd') { v.innerHTML = renderDD(); paintDD(); }
+  else if (S.view === 'dd') { v.innerHTML = renderDD(); paintDD(); const q = document.getElementById('ddq'); q.oninput = () => { S.ddq = q.value; S.ddShow = 30; clearTimeout(window._ddT); window._ddT = setTimeout(paintDD, 150); }; document.getElementById('ddsort').onchange = function () { S.ddsort = this.value; S.ddShow = 30; paintDD(); }; }
   else if (S.view === 'audit') { v.innerHTML = renderAudit(); bindAudit(); }
   else if (S.view === 'lead' && ME.leader) renderLead(v);
   else { S.view = 'home'; v.innerHTML = renderHome(); }
@@ -1163,7 +1173,9 @@ document.addEventListener('click', function (e) {
   else if (a === 'rtclear') { S.route = []; saveRoute(); render(); }
   else if (a === 'tog') { S.open[k] = !S.open[k]; const b = document.getElementById('db-' + k); if (b) b.hidden = !S.open[k]; }
   else if (a === 'dflt') { S.dflt = v; render(); }
-  else if (a === 'ddf') { S.ddf = v; render(); }
+  else if (a === 'ddf') { S.ddf = v; S.ddShow = 30; render(); }
+  else if (a === 'ddall') { S.ddAll = !S.ddAll; S.ddShow = 30; render(); }
+  else if (a === 'ddmore') { S.ddShow += 30; paintDD(); }
   else if (a === 'role') { S.lens.role = v; render(); }
   else if (a === 'dpd5') { S.dpd5 = !S.dpd5; render(); }
   else if (a === 'lper') { S.lper = v; render(); }
