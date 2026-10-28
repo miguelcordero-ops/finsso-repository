@@ -517,6 +517,7 @@ var V3_MILES = [['R1', 'R1 Due Date', 'R1 Payment Status', 'R1 Payment Date', 'R
   ['Maturity', 'Maturity Due Date', 'Maturity Payment Status', 'Maturity Payment Date', 'Maturity DPD']];
 
 function str(r, c, n) { return String(get(r, c(n))).trim(); }
+function colAfter(hdr, name, after) { const a = hdr.findIndex(h => normHeader(h) === normHeader(after)), t = normHeader(name); for (let i = a + 1; i < hdr.length; i++) if (normHeader(hdr[i]) === t) return i; return -1; }
 function nz(v) { return v == null || v === '' || (typeof v === 'number' && isNaN(v)); }
 
 async function loadAll() {
@@ -618,7 +619,12 @@ async function loadAll() {
       const id = str(r, k, 'Dealer ID'); if (!id) return; const d = mk(id, normName(get(r, k('Dealership Name'))));
       d.name = normName(get(r, k('Dealership Name'))) || d.name; d.gcd = str(r, k, 'GCD Code');
       d.group = str(r, k, 'Same Group');
-      d.ck = { clStatus: str(r, k, 'Credit Line Status'), holdReason: str(r, k, 'Reason for CL Hold Status'), blkReason: str(r, k, 'Reason for Hold / Blacklisting'), blkDate: parseSheetDate(get(r, k('Date of Blacklisting'))),
+      const nbS = colAfter(ck[0], 'Credit Line Status', 'Netbank'), ffS = colAfter(ck[0], 'Credit Line Status', 'Finsso'), allS = colAfter(ck[0], 'Credit Line Status', 'Outstanding Netbank Booking');
+      const nbR = colAfter(ck[0], 'Reason for CL Hold Status', 'Netbank'), ffR = colAfter(ck[0], 'Reason for CL Hold Status', 'Finsso');
+      const cl2 = (nm, has, st, rs, cl, dp, out, av) => ({ name: nm, has: /^yes/i.test(has) || !!st, status: String(get(r, st) || '').trim(), reason: String(get(r, rs) || '').trim(), cl: parseNum(get(r, k(cl))), dp: parseNum(get(r, k(dp))), out: parseNum(get(r, k(out))), avail: parseNum(get(r, k(av))) });
+      const lines = [cl2('Netbank', str(r, k, 'Netbank'), nbS, nbR, 'Netbank - Approved Credit Limit', 'Netbank - Approved Drawing Power', 'Netbank - Outstanding Principal', 'Netbank - Available Drawing Power'),
+        cl2('Finsso', str(r, k, 'Finsso'), ffS, ffR, 'Finsso - Approved Credit Limit', 'Finsso - Approved Drawing Power', 'Finsso - Outstanding Principal', 'Finsso - Available Drawing Power')];
+      d.ck = { lines, allStatus: String(get(r, allS) || '').trim(), clStatus: String(get(r, allS) || '').trim(), holdReason: '', blkReason: str(r, k, 'Reason for Hold / Blacklisting'), blkDate: parseSheetDate(get(r, k('Date of Blacklisting'))),
         reassess: parseSheetDate(get(r, k('Reassessement Date'))), cl: parseNum(get(r, k('Current Approved Credit Limit'))), dp: parseNum(get(r, k('Current Approved Drawing Power'))), outst: parseNum(get(r, k('Total Outstanding Amount'))),
         avail: parseNum(get(r, k('Total Available Drawing Power'))), util: parseNum(get(r, k('% Utilization'))), lifeTxn: parseNum(get(r, k("Lifetime TXN's"))), openLoans: parseNum(get(r, k('No. of open Loans'))),
         nb: str(r, k, 'Netbank'), ff: str(r, k, 'Finsso'), nbCl: parseNum(get(r, k('Netbank - Approved Credit Limit'))), ffCl: parseNum(get(r, k('Finsso - Approved Credit Limit'))), nbOut: parseNum(get(r, k('Netbank - Outstanding Principal'))), ffOut: parseNum(get(r, k('Finsso - Outstanding Principal'))),
@@ -686,7 +692,7 @@ async function loadAll() {
    PER-DEALER ANALYTICS + RULE-BASED CREDIT FLAGS
    (all thresholds live in TH so they are easy to tune)
 ══════════════════════════════════════════════════ */
-var TH = { dpdRed: 30, dpdAmber: 5, lateDays: 5, lateN6m: 3, lateRate: 0.4, utilAmber: 0.9, concAmber: 0.05, concRed: 0.10, expirySoon: 60, dormant: 90, rampPct: 0.5, rampMin: 1000000, ltvAmber: 0.8 };
+var TH = { holdDpd: 5, blacklistDpd: 15, dpdRed: 30, dpdAmber: 5, lateDays: 5, lateN6m: 3, lateRate: 0.4, utilAmber: 0.9, concAmber: 0.05, concRed: 0.10, expirySoon: 60, dormant: 90, rampPct: 0.5, rampMin: 1000000, ltvAmber: 0.8 };
 
 function monthsBack(n) { const out = []; for (let i = n - 1; i >= 0; i--) out.push(new Date(TODAY.getFullYear(), TODAY.getMonth() - i, 1)); return out; }
 function stats(d) {
@@ -733,13 +739,23 @@ function flagsOf(d) {
   const st = stats(d), ck = d.ck, F = [], add = (sev, title, detail) => F.push({ sev, title, detail: detail || '' });
   const P = n => '₱' + (n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : Math.round(n).toLocaleString('en-US'));
   if (ck) {
-    if (/blacklist/i.test(ck.clStatus)) add('red', 'Blacklisted', [ck.blkReason, ck.blkDate ? 'since ' + fmtD(ck.blkDate) : ''].filter(Boolean).join(' · '));
-    else if (/hold/i.test(ck.clStatus)) add('amber', 'Credit line on hold', [ck.holdReason, ck.reassess ? 'reassessment ' + fmtD(ck.reassess) : ''].filter(Boolean).join(' · '));
-    if (ck.expiry && d.out > 0 || (ck.expiry && /open/i.test(ck.clStatus))) {
-      const dd = diffDays(ck.expiry, TODAY);
-      if (dd < 0) add(d.out > 0 ? 'red' : 'amber', 'Credit line expired', 'Expired ' + fmtD(ck.expiry) + (d.out > 0 ? ' — ' + P(d.out) + ' still outstanding' : ''));
-      else if (dd <= TH.expirySoon) add('amber', 'Credit line expiring', 'Expires ' + fmtD(ck.expiry) + ' (' + dd + ' days)');
-    }
+    // two independent credit lines (Netbank / Finsso) — each can be Open, Hold, Blacklisted or expired on its own
+    const act = (ck.lines || []).filter(x => x.has);
+    act.forEach(x => {
+      const why = [x.reason, x.out ? P(x.out) + ' outstanding on this line' : ''].filter(Boolean).join(' · ');
+      if (/blacklist/i.test(x.status)) add('red', x.name + ' line blacklisted', why);
+      else if (/hold/i.test(x.status)) add('amber', x.name + ' line on hold', why);
+      else if (/expired/i.test(x.reason) && !/open/i.test(x.status)) add(x.out > 0 ? 'red' : 'info', x.name + ' line expired', x.out > 0 ? P(x.out) + ' still outstanding on an expired line' : 'No balance outstanding on this line');
+      else if (/pending/i.test(x.reason)) add('info', x.name + ' line — ' + x.reason, x.status ? 'Status: ' + x.status : '');
+    });
+    if (act.length && !act.some(x => /open/i.test(x.status)) && ck.expiry && diffDays(ck.expiry, TODAY) < 0 && d.out > 0) add('red', 'No open credit line', 'Expiry date ' + fmtD(ck.expiry) + ' has passed and no line is Open — ' + P(d.out) + ' outstanding');
+    else if (act.some(x => /open/i.test(x.status)) && ck.expiry) { const dd = diffDays(ck.expiry, TODAY); if (dd >= 0 && dd <= TH.expirySoon) add('amber', 'Credit line expiring', 'Expires ' + fmtD(ck.expiry) + ' (' + dd + ' days)'); }
+    // Policy: both lines go on HOLD at 5–14 DPD (1–4 DPD is inside the grace window) or when one drawdown has failed 2+ audits in a row, and BLACKLIST at 15+ DPD
+    const multi = (d.open || []).filter(l => l.failStreak >= 2), exp = st.maxDpd >= TH.blacklistDpd ? 'Blacklisted' : (st.maxDpd >= TH.holdDpd || multi.length) ? 'Hold' : '';
+    d.expected = exp; d.expectedWhy = st.maxDpd >= TH.blacklistDpd ? st.maxDpd + ' DPD' : st.maxDpd >= TH.holdDpd ? st.maxDpd + ' DPD' + (multi.length ? ' and repeated failed audits' : '') : multi.length ? 'repeated failed audits on ' + multi[0].id : '';
+    if (exp) act.forEach(x => { const okBlk = /blacklist/i.test(x.status), okHold = /hold|blacklist/i.test(x.status);
+      if (exp === 'Blacklisted' && !okBlk) add('amber', 'Policy: ' + x.name + ' line should be blacklisted', d.expectedWhy + ' (15+ DPD) but the line shows ' + (x.status || 'no status'));
+      else if (exp === 'Hold' && !okHold && !/expired/i.test(x.reason)) add('amber', 'Policy: ' + x.name + ' line should be on hold', d.expectedWhy + ' but the line shows ' + (x.status || 'no status')); });
   }
   if (st.maxDpd >= TH.dpdRed) add('red', 'Past due ' + st.maxDpd + ' days', st.dpdLoans + ' loan' + (st.dpdLoans > 1 ? 's' : '') + ' on DPD · ' + P(st.parOut) + ' at 5+ DPD (' + Math.round(st.dpdOut * 100) + '% of outstanding)');
   else if (st.maxDpd >= TH.dpdAmber) add('amber', 'Past due ' + st.maxDpd + ' days', st.dpdLoans + ' loan' + (st.dpdLoans > 1 ? 's' : '') + ' on DPD · ' + P(st.parOut) + ' at 5+ DPD');
@@ -766,7 +782,7 @@ function flagsOf(d) {
   if (st.penPaid > 0) add('info', 'Penalty fees incurred', P(st.penPaid) + ' penalty fees paid to date');
   if (openL.length && st.avgLtv > TH.ltvAmber) add('amber', 'High LTV on open loans', 'Average LTV of ' + Math.round(st.avgLtv * 100) + '% (above ' + Math.round(TH.ltvAmber * 100) + '%)');
   // activity
-  if (st.last && ck && /open/i.test(ck.clStatus)) { const dd = diffDays(TODAY, st.last); if (st.nL6 === 0 && st.n >= 3 && dd > 180) add('info', 'Dormant', 'No drawdown for ' + dd + ' days'); }
+  if (st.last && ck && (ck.lines || []).some(x => /open/i.test(x.status))) { const dd = diffDays(TODAY, st.last); if (st.nL6 === 0 && st.n >= 3 && dd > 180) add('info', 'Dormant', 'No drawdown for ' + dd + ' days'); }
   if (st.n >= 3 && st.nL3 === 0 && st.nL6 >= 3) add('amber', 'Drawdowns stopped', 'No drawdown in the last 3 months after ' + st.nL6 + ' in the 6 months before');
   if (st.gmvL3 >= TH.rampMin && st.gmvP3 > 0 && st.gmvL3 >= st.gmvP3 * (1 + TH.rampPct) && st.gmvL3 - st.gmvP3 >= TH.rampMin) add('info', 'Rapid ramp-up', 'Last 3 months drawdowns ' + P(st.gmvL3) + ' vs ' + P(st.gmvP3) + ' in the 3 months before');
   if (d.ob && (/^with negative/i.test(d.ob.bap) || /^with negative/i.test(d.ob.cmap))) add('amber', 'Negative credit hit at onboarding', [/^with negative/i.test(d.ob.bap) ? 'BAP' : '', /^with negative/i.test(d.ob.cmap) ? 'CMAP' : ''].filter(Boolean).join(' & ') + ' flagged a negative credit hit');
@@ -776,7 +792,7 @@ function flagsOf(d) {
   const order = { red: 0, amber: 1, info: 2, green: 3 }; F.sort((a, b) => order[a.sev] - order[b.sev]);
   const score = Math.min(100, F.reduce((s, f) => s + (f.sev === 'red' ? 25 : f.sev === 'amber' ? 10 : 0), 0));
   d.flags = F; d.score = score;
-  d.rating = !d.loans.length && !d.ck ? { k: 'grey', t: 'Not rated', s: 'No credit history' } : /blacklist/i.test(ck && ck.clStatus || '') || score >= 50 ? { k: 'red', t: 'High risk', s: 'score ' + score } : score >= 20 ? { k: 'amber', t: 'Watch', s: 'score ' + score } : { k: 'green', t: 'Low risk', s: 'score ' + score };
+  d.rating = !d.loans.length && !d.ck ? { k: 'grey', t: 'Not rated', s: 'No credit history' } : (ck && (ck.lines || []).some(x => x.has && /blacklist/i.test(x.status)) && d.out > 0) || score >= 50 ? { k: 'red', t: 'High risk', s: 'score ' + score } : score >= 20 ? { k: 'amber', t: 'Watch', s: 'score ' + score } : { k: 'green', t: 'Low risk', s: 'score ' + score };
   return F;
 }
 
@@ -787,7 +803,9 @@ var SEGS = ['Active borrower', 'Past borrower', 'Onboarded — no drawdown', 'Ap
 var TABLES = {};
 function pill(cls, t) { return '<span class="pill ' + cls + '">' + esc(t) + '</span>'; }
 function segPill(s) { return pill(s === 'Active borrower' ? 't-green' : s === 'Past borrower' ? 't-blue' : s === 'Onboarded — no drawdown' ? 't-amber' : 't-grey', s); }
-function clPill(ck) { if (!ck || !ck.clStatus) return ''; const s = ck.clStatus; return pill(/blacklist/i.test(s) ? 't-red' : /hold/i.test(s) ? 't-amber' : 't-green', 'Credit line: ' + s); }
+function clPill(ck) { if (!ck) return ''; return (ck.lines || []).filter(x => x.has && x.status).map(x => pill(/blacklist/i.test(x.status) ? 't-red' : /hold/i.test(x.status) ? 't-amber' : 't-green', x.name + ': ' + x.status + (/expired/i.test(x.reason) ? ' (expired)' : /pending/i.test(x.reason) ? ' (' + x.reason.toLowerCase() + ')' : ''))).join(''); }
+function lineWorst(d) { const L = d.ck ? d.ck.lines.filter(x => x.has) : []; return L.some(x => /blacklist/i.test(x.status)) ? 'Blacklisted' : L.some(x => /hold/i.test(x.status)) ? 'Hold' : L.some(x => /open/i.test(x.status)) ? 'Open' : ''; }
+function lineTxt(d, n) { const x = d.ck && d.ck.lines.find(l => l.name === n); return x && x.has ? (x.status || '—') + (x.reason && /expired|pending/i.test(x.reason) ? ' · ' + x.reason : '') : ''; }
 function pesoS(n) { n = n || 0; const a = Math.abs(n); return (n < 0 ? '-' : '') + '₱' + (a >= 1e6 ? (a / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M' : a >= 1e3 ? Math.round(a / 1e3) + 'K' : Math.round(a)); }
 function pc(n) { return n == null || isNaN(n) ? '—' : Math.round(n * 100) + '%'; }
 function dpdHtml(n) { return n >= 1 ? '<span class="pill ' + (n >= TH.dpdRed ? 't-red' : n >= TH.dpdAmber ? 't-amber' : 't-grey') + '">' + n + 'd</span>' : '<span class="muted">0</span>'; }
@@ -818,17 +836,17 @@ function renderHome(host) {
   act.forEach(flagsOf);
   const par = act.reduce((s, d) => s + stats(d).parOut, 0), par30 = act.reduce((s, d) => s + stats(d).par30Out, 0);
   const onDpd = act.filter(d => stats(d).maxDpd >= TH.dpdAmber).length;
-  const blk = DLLIST.filter(d => d.ck && /blacklist/i.test(d.ck.clStatus)).length, hold = DLLIST.filter(d => d.ck && /hold/i.test(d.ck.clStatus)).length;
+  const blk = DLLIST.filter(d => lineWorst(d) === 'Blacklisted').length, hold = DLLIST.filter(d => lineWorst(d) === 'Hold').length;
   const cnt = s => DLLIST.filter(d => d.seg === s).length;
   let h = searchBox();
   h += '<div class="ckpis" style="margin-top:6px">' +
     ck('Active borrowers', act.length.toLocaleString(), TOT.open.toLocaleString() + ' open loans', 'blue') + ck('Total outstanding', pesoS(TOT.out), 'open loan principal') +
     ck('At 5+ DPD', pesoS(par), pc(TOT.out ? par / TOT.out : 0) + ' of outstanding', par ? 'amber' : '') + ck('At 30+ DPD', pesoS(par30), pc(TOT.out ? par30 / TOT.out : 0) + ' of outstanding', par30 ? 'red' : '') +
-    ck('Dealers on 5+ DPD', onDpd, 'of ' + act.length + ' active', onDpd ? 'amber' : '') + ck('On hold / blacklisted', hold + ' / ' + blk, 'credit line status', blk ? 'red' : '') + '</div>';
+    ck('Dealers on 5+ DPD', onDpd, 'of ' + act.length + ' active', onDpd ? 'amber' : '') + ck('On hold / blacklisted', hold + ' / ' + blk, 'dealers — worst of the two lines', blk ? 'red' : '') + '</div>';
   h += '<div class="sec"><div class="sec-h"><h2>Portfolio watchlist</h2><span class="sub">Dealers with open loans or a held / blacklisted line · click a row to open the profile · rule-based score (see flags on each profile)</span></div><div id="wl"></div></div>';
   h += '<div class="sub" style="margin-top:14px">Dealers in scope: ' + SEGS.map(s => cnt(s).toLocaleString() + ' ' + s.toLowerCase()).join(' · ') + '</div>';
   host.innerHTML = h;
-  const rows = DLLIST.filter(d => d.seg === 'Active borrower' || (d.ck && /hold|blacklist/i.test(d.ck.clStatus) && d.out > 0));
+  const rows = DLLIST.filter(d => d.seg === 'Active borrower' || (['Hold', 'Blacklisted'].includes(lineWorst(d)) && d.out > 0));
   rows.forEach(flagsOf);
   TABLES.wl = makeTable(document.getElementById('wl'), [
     { id: 'n', label: 'Dealer', fz: true, val: d => d.name, html: d => '<b>' + esc(d.name) + '</b> <span class="muted small">' + esc(d.id) + '</span>' },
@@ -837,7 +855,7 @@ function renderHome(host) {
     { id: 'dp', label: 'Max DPD', type: 'num', val: d => stats(d).maxDpd, html: d => dpdHtml(stats(d).maxDpd) },
     { id: 'par', label: 'At 5+ DPD', type: 'num', val: d => stats(d).parOut, txt: d => peso(stats(d).parOut) },
     { id: 'u', label: 'Utilisation', type: 'num', val: d => d.ck && d.ck.dp ? Math.round(d.out / d.ck.dp * 100) : '', txt: d => d.ck && d.ck.dp ? Math.round(d.out / d.ck.dp * 100) + '%' : '—' },
-    { id: 'cl', label: 'Credit line', val: d => d.ck ? d.ck.clStatus : '' }, { id: 'nf', label: 'Red flags', type: 'num', val: d => d.flags.filter(f => f.sev === 'red').length },
+    { id: 'nbl', label: 'Netbank line', val: d => lineTxt(d, 'Netbank') }, { id: 'ffl', label: 'Finsso line', val: d => lineTxt(d, 'Finsso') }, { id: 'ex', label: 'Policy status', val: d => d.expected || 'OK' }, { id: 'nf', label: 'Red flags', type: 'num', val: d => d.flags.filter(f => f.sev === 'red').length },
     { id: 'tf', label: 'Top flag', val: d => d.flags[0] && d.flags[0].sev !== 'green' ? d.flags[0].title : '' },
     { id: 'so', label: 'Sales officer', val: d => d.ck ? d.ck.so : '' }, { id: 'grp', label: 'Family group', val: d => d.group || '' }
   ], rows, { sort: { id: 'par', dir: -1 }, csv: 'credit-watchlist', onRow: d => sel(d.id), maxH: 'calc(100vh - 360px)' });
@@ -874,7 +892,7 @@ function renderProfile(host) {
   const redN = d.flags.filter(f => f.sev === 'red').length, ambN = d.flags.filter(f => f.sev === 'amber').length;
   let h = searchBox();
   h += '<div class="hero"><div><h1>' + esc(d.name) + '</h1><div class="sub" style="margin:4px 0 8px">' + esc(d.id.replace(/^(U:|APP:)/, '')) + (d.gcd ? ' · ' + esc(d.gcd) : '') + (d.group ? ' · ' + esc(d.group) : '') + '</div>' +
-    '<div class="chips">' + segPill(d.seg) + clPill(ck_) + (ob && ob.obType ? pill('t-grey', ob.obType) : '') + (ck_ && ck_.nb === 'Yes' ? pill('t-grey', 'Netbank') : '') + (ck_ && ck_.ff === 'Yes' ? pill('t-grey', 'Finsso') : '') + '</div></div>' +
+    '<div class="chips">' + segPill(d.seg) + clPill(ck_) + (ob && ob.obType ? pill('t-grey', ob.obType) : '') + '' + '</div></div>' +
     '<div class="rating r-' + d.rating.k + '"><div>' + d.rating.t + '<small>' + d.rating.s + ' · ' + redN + ' red · ' + ambN + ' amber flag' + (ambN === 1 ? '' : 's') + '</small></div></div></div>';
   h += '<div class="sec" style="margin-top:12px">' + kvs([['Sales officer / manager', [so, sm && sm !== so ? sm : ''].filter(Boolean).join(' / ')], ['Owner', (ob && ob.owner) || (un && un.owner) || ''], ['Contact', (ob && ob.phone) || (un && un.phone) || ''], ['Location', loc], ['Onboarded', ck_ && ck_.onboarded ? fmtD(ck_.onboarded) : ob && ob.applied ? 'Applied ' + fmtD(ob.applied) : ''], ['Stock audit / collections officer', am ? [am.so, am.co].filter(Boolean).join(' / ') : '']]) + '</div>';
   h += '<div class="tabs" id="tabs">' + [['overview', 'Overview'], ['loans', 'Loans (' + d.loans.length + ')'], ['payments', 'Payments (' + d.dealerPays.length + ')'], ['audits', 'Stock audits (' + d.audits.length + ')'], ['credit', 'Credit line & onboarding']].map(t => '<button data-act="tab" data-t="' + t[0] + '" class="' + (S.tab === t[0] ? 'on' : '') + '">' + t[1] + '</button>').join('') + '</div><div id="tabbody"></div>';
@@ -959,9 +977,12 @@ function showLoan(id) {
 function creditTab(d) {
   const ck_ = d.ck, ob = d.ob, un = d.un; let h = '';
   if (ck_) {
-    h += '<div class="sec-h"><h2>Credit line</h2></div><div class="card">' + kvs([['Status', ck_.clStatus], ['Reason (hold / blacklist)', [ck_.holdReason, ck_.blkReason].filter(Boolean).join(' · ')], ['Blacklisted on', ck_.blkDate ? fmtD(ck_.blkDate) : ''], ['Reassessment date', ck_.reassess ? fmtD(ck_.reassess) : ''],
-      ['Approved credit limit', peso(ck_.cl)], ['Drawing power', peso(ck_.dp)], ['Original credit limit', ck_.origCl ? peso(ck_.origCl) : ''], ['Outstanding (sheet)', peso(ck_.outst)], ['Available drawing power', peso(ck_.avail)], ['Utilisation (sheet)', pc(ck_.util)],
-      ['Netbank line', ck_.nb === 'Yes' ? peso(ck_.nbCl) + ' · out ' + peso(ck_.nbOut) : ''], ['Finsso line', ck_.ff === 'Yes' ? peso(ck_.ffCl) + ' · out ' + peso(ck_.ffOut) : ''], ['Credit line expiry', ck_.expiry ? fmtD(ck_.expiry) : ''], ['Risk pricing', ck_.risk && !isNaN(parseFloat(ck_.risk)) ? (parseFloat(ck_.risk) * 100).toFixed(2) + '%' : ck_.risk],
+    h += '<div class="sec-h"><h2>Credit lines</h2><span class="sub">Netbank and Finsso lines are independent — each has its own status</span></div><div class="cols3" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">' +
+      ck_.lines.map(x => '<div class="card"><div class="item-top"><b>' + x.name + ' line</b>' + (x.has && x.status ? pill(/blacklist/i.test(x.status) ? 't-red' : /hold/i.test(x.status) ? 't-amber' : 't-green', x.status) : pill('t-grey', x.has ? 'No status' : 'No line')) + '</div>' +
+        (x.has ? kvs([['Reason / note', x.reason], ['Approved credit limit', peso(x.cl)], ['Drawing power', peso(x.dp)], ['Outstanding', peso(x.out)], ['Available drawing power', peso(x.avail)]]) : '<div class="muted small" style="margin-top:8px">This dealer has no ' + x.name + ' credit line.</div>') + '</div>').join('') + '</div>' +
+      '<div class="card" style="margin-top:12px"><div class="small muted" style="margin-bottom:6px">Policy: both lines go on <b>Hold</b> at ' + TH.holdDpd + '–' + (TH.blacklistDpd - 1) + ' DPD or when one drawdown fails 2+ audits in a row, and are <b>Blacklisted</b> at ' + TH.blacklistDpd + '+ DPD.' + (d.expected ? ' This dealer’s data points to <b>' + d.expected + '</b> (' + esc(d.expectedWhy) + ').' : ' This dealer currently triggers neither.') + '</div>' +
+      kvs([['Overall status (sheet)', ck_.allStatus], ['Overall reason (sheet)', ck_.blkReason], ['Blacklisted on', ck_.blkDate ? fmtD(ck_.blkDate) : ''], ['Reassessment date', ck_.reassess ? fmtD(ck_.reassess) : ''],
+      ['Combined credit limit', peso(ck_.cl)], ['Combined drawing power', peso(ck_.dp)], ['Original credit limit', ck_.origCl ? peso(ck_.origCl) : ''], ['Outstanding (sheet)', peso(ck_.outst)], ['Utilisation (sheet)', pc(ck_.util)], ['Credit line expiry', ck_.expiry ? fmtD(ck_.expiry) : ''], ['Risk pricing', ck_.risk && !isNaN(parseFloat(ck_.risk)) ? (parseFloat(ck_.risk) * 100).toFixed(2) + '%' : ck_.risk],
       ['L3M avg repayment delay', ck_.l3d && !isNaN(parseFloat(ck_.l3d)) ? parseFloat(ck_.l3d).toFixed(1) + ' days' : ''], ['L6M avg repayment delay', ck_.l6d && !isNaN(parseFloat(ck_.l6d)) ? parseFloat(ck_.l6d).toFixed(1) + ' days' : ''], ['Payments made / due (90 days)', ck_.due90 ? ck_.pay90 + ' / ' + ck_.due90 : ''],
       ['80% LTV qualified', ck_.ltv80], ['Auto CL increase', ck_.autoInc + (ck_.nextInc ? ' · next ' + fmtD(ck_.nextInc) + (ck_.nextIncAmt ? ' to ' + peso(ck_.nextIncAmt) : '') : '')], ['CL increases (lifetime)', ck_.nIncr ? ck_.nIncr + ' (' + ck_.nAuto + ' automatic)' : ''], ['Lifetime transactions', ck_.lifeTxn ? String(ck_.lifeTxn) : ''], ['Pending Netbank remittance', ck_.pendingRemit ? peso(ck_.pendingRemit) : '']]) + '</div>';
   }
