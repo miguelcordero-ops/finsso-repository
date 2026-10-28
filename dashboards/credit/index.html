@@ -1,1 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#E8461E">
+<title>Credit — Dealer Profile</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{
+  --primary:#E8461E;--accent:#F97316;--bg:#F0F4FD;--card:#FFFFFF;--card2:#F7F8FC;
+  --border:rgba(0,0,0,0.09);--text:#111827;--text2:#4B5563;--text3:#8A92A0;
+  --red:#DC2626;--red-bg:rgba(220,38,38,0.10);--orange:#EA580C;--orange-bg:rgba(234,88,12,0.11);
+  --amber:#B45309;--amber-bg:rgba(245,158,11,0.15);--green:#15803D;--green-bg:rgba(22,163,74,0.12);
+  --blue:#2563EB;--blue-bg:rgba(37,99,235,0.10);--grey-bg:rgba(107,114,128,0.12);
+  --shadow:0 1px 2px rgba(0,0,0,0.05),0 4px 14px rgba(30,41,90,0.07);
+  --nav-h:62px;--r:14px;
+}
+:root[data-theme="dark"]{
+  --bg:#0B0F1A;--card:#161B29;--card2:#1C2233;--border:rgba(255,255,255,0.10);
+  --text:#E5E7EB;--text2:#A1A9B8;--text3:#6B7280;
+  --red:#F87171;--red-bg:rgba(248,113,113,0.14);--orange:#FB923C;--orange-bg:rgba(251,146,60,0.14);
+  --amber:#FBBF24;--amber-bg:rgba(251,191,36,0.14);--green:#4ADE80;--green-bg:rgba(74,222,128,0.13);
+  --blue:#60A5FA;--blue-bg:rgba(96,165,250,0.14);--grey-bg:rgba(156,163,175,0.14);
+  --shadow:0 1px 2px rgba(0,0,0,0.4),0 4px 14px rgba(0,0,0,0.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{color-scheme:light dark}html[data-theme="dark"]{color-scheme:dark}html[data-theme="light"]{color-scheme:light}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;padding-bottom:40px}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
 
+/* ── top bar ── */
+.topbar{position:sticky;top:0;z-index:200;background:var(--card);border-bottom:1px solid var(--border);padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top));display:flex;align-items:center;gap:12px}
+.brand{font-weight:700;color:var(--primary);font-size:17px;letter-spacing:-0.3px;white-space:nowrap}
+.brand small{display:block;font-size:11px;color:var(--text3);font-weight:500;letter-spacing:0}
+.top-sp{flex:1}
+.who{display:flex;align-items:center;gap:8px;min-width:0}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--primary));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
+.who-txt{line-height:1.2;min-width:0}.who-txt b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}.who-txt span{font-size:11px;color:var(--text3)}
+.icon-btn{border:1px solid var(--border);background:var(--card2);border-radius:10px;padding:7px 10px;font-size:12px;color:var(--text2)}
+.lens{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+@media(max-width:700px){
+  .topbar{flex-wrap:wrap;row-gap:8px;padding:8px 12px;padding-top:calc(8px + env(safe-area-inset-top))}
+  .who-txt{display:none}
+  .lens{order:5;width:100%}
+  .lens:empty{display:none}
+  .brand{font-size:16px}
+  .main{padding:12px}
+}
+
+/* ── navigation: top tabs on laptop, bottom bar on phone ── */
+.nav{display:flex;gap:4px;position:fixed;left:0;right:0;bottom:0;z-index:250;background:var(--card);border-top:1px solid var(--border);padding:6px 6px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 18px rgba(0,0,0,0.08)}
+.nav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;padding:5px 2px;border-radius:10px;color:var(--text3);min-height:46px;font-weight:600}
+.nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nav button.on{color:var(--primary);background:rgba(232,70,30,0.09)}
+.nav button.hide{display:none}
+.nav .fab{color:#fff;background:linear-gradient(135deg,var(--accent),var(--primary));margin:-14px 4px 0;border-radius:16px;box-shadow:0 6px 16px rgba(232,70,30,0.35);flex:1.15}
+.nav .fab.on{color:#fff;background:linear-gradient(135deg,var(--accent),var(--primary))}
+@media(min-width:900px){
+  body{padding-bottom:30px}
+  .nav{position:sticky;top:55px;bottom:auto;border-top:0;border-bottom:1px solid var(--border);box-shadow:none;padding:0 16px;gap:2px;justify-content:flex-start;z-index:190}
+  .nav button{flex:none;flex-direction:row;gap:7px;font-size:13px;padding:11px 16px;border-radius:0;border-bottom:3px solid transparent;min-height:0}
+  .nav button.on{background:none;border-bottom-color:var(--primary)}
+  .nav .fab{margin:6px 0 6px 10px;border-radius:10px;padding:7px 16px;border-bottom:0;flex:none}
+  .nav .fab.on{border-bottom:0}
+}
+
+/* ── layout ── */
+.main{max-width:1180px;margin:0 auto;padding:16px}
+.h1{font-size:20px;font-weight:700;letter-spacing:-0.3px}.sub{color:var(--text3);font-size:12.5px;margin-top:2px}
+.sec{margin-top:20px}.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}.sec-h h2{font-size:15px;font-weight:700}.sec-h .sub{margin:0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:14px}
+.grid{display:grid;gap:12px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:620px){.kpis{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.kpis{grid-template-columns:repeat(6,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:12px 14px;text-align:left;cursor:pointer;display:block;width:100%}
+.kpi .n{font-size:26px;font-weight:800;letter-spacing:-0.5px;line-height:1.1}.kpi .l{font-size:11.5px;color:var(--text2);margin-top:3px;font-weight:600}.kpi .s{font-size:10.5px;color:var(--text3);margin-top:1px}
+.kpi.red .n{color:var(--red)}.kpi.orange .n{color:var(--orange)}.kpi.amber .n{color:var(--amber)}.kpi.green .n{color:var(--green)}.kpi.blue .n{color:var(--blue)}
+.two{display:grid;gap:14px}@media(min-width:900px){.two{grid-template-columns:1.5fr 1fr}}
+.cols3{display:grid;gap:12px}@media(min-width:760px){.cols3{grid-template-columns:repeat(2,1fr)}}@media(min-width:1100px){.cols3{grid-template-columns:repeat(3,1fr)}}
+
+/* ── pills / chips / buttons ── */
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.p-crit{background:var(--red);color:#fff}.p-high{background:var(--orange-bg);color:var(--orange)}.p-soon{background:var(--amber-bg);color:var(--amber)}.p-ok{background:var(--grey-bg);color:var(--text2)}
+.t-red{background:var(--red-bg);color:var(--red)}.t-orange{background:var(--orange-bg);color:var(--orange)}.t-green{background:var(--green-bg);color:var(--green)}.t-blue{background:var(--blue-bg);color:var(--blue)}.t-grey{background:var(--grey-bg);color:var(--text2)}.t-amber{background:var(--amber-bg);color:var(--amber)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--border);background:var(--card);border-radius:99px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--text2);min-height:34px}
+.chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card)}
+.seg button{border:0;background:none;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--text2)}
+.seg button.on{background:var(--primary);color:#fff}
+.btn{border:1px solid var(--border);background:var(--card);border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.pri{background:linear-gradient(135deg,var(--accent),var(--primary));border-color:transparent;color:#fff}
+.btn.sm{padding:6px 10px;min-height:32px;font-size:12px;border-radius:8px}
+.btn.ghost{background:none}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.search{width:100%;border:1px solid var(--border);background:var(--card);border-radius:10px;padding:10px 12px;min-height:42px}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.toolbar .search{flex:1;min-width:180px}
+.empty{padding:30px 14px;text-align:center;color:var(--text3)}
+.muted{color:var(--text3)}.small{font-size:12px}.b{font-weight:700}
+
+/* ── work items ── */
+.item{background:var(--card);border:1px solid var(--border);border-left:5px solid var(--grey-bg);border-radius:var(--r);box-shadow:var(--shadow);padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.item.crit{border-left-color:var(--red)}.item.high{border-left-color:var(--orange)}.item.soon{border-left-color:var(--amber)}
+.item-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.item-t{font-weight:700;font-size:14px}.item-s{font-size:12px;color:var(--text2)}
+.item-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.item-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.list{display:flex;flex-direction:column;gap:10px}
+.dcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.dcard-h{padding:12px 14px;display:flex;flex-direction:column;gap:6px;cursor:pointer}
+.dcard-body[hidden]{display:none}
+.dcard-body{border-top:1px solid var(--border);background:var(--card2);padding:10px;display:flex;flex-direction:column;gap:8px}
+.dcard .addr{font-size:12px;color:var(--text2)}
+.dd-mini{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--grey-bg);border-radius:10px;padding:9px 11px;display:flex;flex-direction:column;gap:5px}
+.dd-mini.crit{border-left-color:var(--red)}.dd-mini.high{border-left-color:var(--orange)}.dd-mini.soon{border-left-color:var(--amber)}
+.stopno{width:26px;height:26px;border-radius:50%;background:var(--primary);color:#fff;font-weight:800;font-size:12px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.bar{height:8px;border-radius:99px;background:var(--grey-bg);overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--primary));border-radius:99px}
+
+/* ── data table (every column filterable) ── */
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:auto;max-height:calc(100vh - 230px);-webkit-overflow-scrolling:touch}
+table.dt{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px}
+.dt th{position:sticky;top:0;z-index:3;background:var(--card2);text-align:left;padding:0;border-bottom:1px solid var(--border);white-space:nowrap}
+.dt th .th{display:flex;align-items:center;gap:4px;padding:9px 8px 9px 10px;font-weight:700;font-size:11.5px;color:var(--text2)}
+.dt th .th span{flex:1;cursor:pointer;user-select:none}
+.fbtn{border:0;background:none;padding:3px 5px;border-radius:6px;color:var(--text3);font-size:11px}
+.fbtn.on{background:var(--primary);color:#fff}
+.dt td{padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--card)}
+.dt tr:hover td{background:var(--card2)}
+.dt td.fz,.dt th.fz{position:sticky;left:0;z-index:4;box-shadow:2px 0 0 var(--border)}
+.dt th.fz{z-index:6}
+.dt td.num,.dt th.num .th{text-align:right;justify-content:flex-end}
+.dt td.click{cursor:pointer}
+.fpanel{position:fixed;z-index:1200;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,0.25);width:290px;max-width:calc(100vw - 20px);max-height:70vh;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
+.fpanel .row{display:flex;gap:6px}.fpanel button.o{flex:1;border:1px solid var(--border);background:var(--card2);border-radius:8px;padding:7px;font-size:12px;font-weight:600}
+.fpanel input[type=text],.fpanel select{width:100%;border:1px solid var(--border);background:var(--card);border-radius:8px;padding:8px}
+.fpanel .vals{max-height:200px;overflow:auto;border:1px solid var(--border);border-radius:8px;padding:4px}
+.fpanel label{display:flex;gap:8px;align-items:center;padding:5px 6px;font-size:12.5px;border-radius:6px}
+.fpanel label:hover{background:var(--card2)}
+.fpanel h6{font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
+@media(max-width:700px){.fpanel{left:8px!important;right:8px;bottom:8px;top:auto!important;width:auto;max-height:78vh}}
+
+/* ── sheet / modal ── */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:900;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:640px;max-height:92vh;border-radius:20px 20px 0 0;overflow:auto;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,0.3)}
+@media(min-width:700px){.scrim{align-items:center}.sheet{border-radius:20px}}
+.sheet h3{font-size:16px;margin-bottom:4px}
+.kv{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 14px;margin:10px 0}
+.kv div{font-size:12.5px}.kv span{display:block;font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.tl{display:flex;flex-direction:column;gap:8px;margin-top:8px}.tl .e{border-left:3px solid var(--grey-bg);padding:2px 0 2px 10px;font-size:12.5px}.tl .e.f{border-left-color:var(--red)}.tl .e.p{border-left-color:var(--green)}
+
+/* ── form ── */
+.form{display:flex;flex-direction:column;gap:14px;max-width:720px}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld>label,.fld>.lab{font-size:12px;font-weight:700;color:var(--text2)}
+.fld .req{color:var(--red)}
+.inp{width:100%;border:1px solid var(--border);background:var(--card);border-radius:10px;padding:11px 12px;min-height:46px;font-size:15px}
+textarea.inp{min-height:84px;resize:vertical}
+.inp[readonly]{background:var(--card2);color:var(--text2)}
+.hint{font-size:11.5px;color:var(--text3)}
+.bigseg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bigseg button{border:2px solid var(--border);background:var(--card);border-radius:12px;padding:14px;font-weight:800;font-size:16px}
+.bigseg button.on.pass{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.bigseg button.on.fail{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.photos{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ph{position:relative;width:76px;height:76px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.ph img{width:100%;height:100%;object-fit:cover}.ph button{position:absolute;top:2px;right:2px;border:0;background:rgba(0,0,0,.6);color:#fff;width:22px;height:22px;border-radius:50%;font-size:13px;line-height:1}
+.addph{width:76px;height:76px;border-radius:10px;border:2px dashed var(--border);background:var(--card2);color:var(--text2);font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.callout{border-radius:12px;padding:10px 12px;font-size:12.5px}
+.callout.warn{background:var(--amber-bg);color:var(--amber)}.callout.bad{background:var(--red-bg);color:var(--red)}.callout.good{background:var(--green-bg);color:var(--green)}.callout.info{background:var(--blue-bg);color:var(--blue)}
+.stickyact{position:sticky;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 8px);display:flex;gap:10px;padding:10px 0;background:linear-gradient(to top,var(--bg) 70%,transparent)}
+@media(min-width:900px){.stickyact{bottom:0}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 14px);background:#111827;color:#fff;padding:10px 16px;border-radius:12px;z-index:2000;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.35);max-width:90vw}
+.toast.err{background:var(--red)}
+.spin{width:18px;height:18px;border:3px solid var(--grey-bg);border-top-color:var(--primary);border-radius:50%;animation:sp .8s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading{display:flex;flex-direction:column;align-items:center;gap:12px;padding:70px 20px;color:var(--text3)}
+
+/* ── lock ── */
+.lock-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .35s}
+.lock-overlay.unlocking{opacity:0;pointer-events:none}.lock-overlay.hidden{display:none}
+.lock-card{background:var(--card);border:1px solid var(--border);box-shadow:0 30px 80px rgba(30,41,90,0.2);border-radius:26px;padding:34px 30px 26px;width:360px;max-width:92vw;display:flex;flex-direction:column;align-items:center}
+.lock-icon-box{width:62px;height:62px;border-radius:18px;background:linear-gradient(135deg,var(--accent),var(--primary));box-shadow:0 4px 16px rgba(232,70,30,0.30);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.lock-icon-box svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lock-title{font-size:18px;font-weight:700;margin-bottom:6px;text-align:center}.lock-sub{font-size:12.5px;color:var(--text3);margin-bottom:20px;text-align:center;line-height:1.6}
+.lock-signin{min-height:44px;display:flex;justify-content:center}.lock-error-msg{font-size:12px;color:var(--red);margin-top:10px;min-height:16px;text-align:center}
+.lock-contact{font-size:11px;color:var(--text3);text-align:center;margin-top:14px}.lock-contact a{color:var(--primary);text-decoration:underline}
+
+/* ── credit dashboard additions ── */
+.main{max-width:1320px}
+.srch{position:relative;flex:1;min-width:240px}
+.srch .res{position:absolute;left:0;right:0;top:46px;z-index:300;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,.22);max-height:60vh;overflow:auto}
+.srch .res .r{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer}
+.srch .res .r:hover,.srch .res .r.hi{background:var(--card2)}
+.srch .res .r:last-child{border-bottom:0}
+.hero{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;justify-content:space-between}
+.hero h1{font-size:22px;letter-spacing:-.4px}
+.rating{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;font-weight:800;font-size:14px}
+.rating small{font-weight:600;font-size:11px;opacity:.85;display:block}
+.r-red{background:var(--red-bg);color:var(--red)}.r-amber{background:var(--amber-bg);color:var(--amber)}.r-green{background:var(--green-bg);color:var(--green)}.r-grey{background:var(--grey-bg);color:var(--text2)}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin:16px 0 14px;overflow:auto}
+.tabs button{border:0;background:none;padding:10px 14px;font-weight:700;font-size:13px;color:var(--text3);border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button.on{color:var(--primary);border-bottom-color:var(--primary)}
+.flags{display:grid;gap:8px}
+@media(min-width:900px){.flags{grid-template-columns:repeat(2,1fr)}}
+.flag{display:flex;gap:10px;align-items:flex-start;border-radius:12px;padding:10px 12px;border:1px solid var(--border);background:var(--card)}
+.flag .ic{width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff;margin-top:1px}
+.flag.red{background:var(--red-bg);border-color:transparent}.flag.red .ic{background:var(--red)}
+.flag.amber{background:var(--amber-bg);border-color:transparent}.flag.amber .ic{background:#D97706}
+.flag.green{background:var(--green-bg);border-color:transparent}.flag.green .ic{background:#16A34A}
+.flag.info .ic{background:var(--text3)}
+.flag b{display:block;font-size:13px}.flag span{font-size:12px;color:var(--text2)}
+.ckpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:700px){.ckpis{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1100px){.ckpis{grid-template-columns:repeat(6,1fr)}}
+.ck{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:11px 13px}
+.ck .n{font-size:20px;font-weight:800;letter-spacing:-.4px;line-height:1.15}.ck .l{font-size:11.5px;color:var(--text2);font-weight:600;margin-top:3px}.ck .s{font-size:10.5px;color:var(--text3)}
+.ck.red .n{color:var(--red)}.ck.amber .n{color:var(--amber)}.ck.green .n{color:var(--green)}.ck.blue .n{color:var(--blue)}
+.charts{display:grid;gap:12px}@media(min-width:900px){.charts{grid-template-columns:repeat(3,1fr)}}
+.chart{position:relative}.chart h3{font-size:13px;margin-bottom:2px}.chart .sub{margin-bottom:6px}
+.chart svg{width:100%;height:auto;aspect-ratio:600/170;display:block;overflow:visible}
+.chart .tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--border);box-shadow:0 6px 20px rgba(0,0,0,.2);border-radius:8px;padding:6px 9px;font-size:12px;white-space:nowrap;display:none;z-index:5}
+.gridline{stroke:var(--border);stroke-width:1}.axt{fill:var(--text3);font-size:13px}
+.kv2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px}
+@media(min-width:900px){.kv2{grid-template-columns:repeat(4,1fr)}}
+.kv2 div{font-size:13px}.kv2 span{display:block;font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.back2{font-size:12.5px;color:var(--primary);font-weight:700;background:none;border:0;padding:0;margin-bottom:8px}
+td.od{color:var(--red);font-weight:700}
+</style></head>
+<body>
+<div class="lock-overlay" id="lock-overlay">
+  <div class="lock-card">
+    <div class="lock-icon-box"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+    <div class="lock-title">Credit — Dealer Profile</div>
+    <div class="lock-sub">Sign in with your Finsso account<br>to access this dashboard</div>
+    <div id="g-signin" class="lock-signin"></div>
+    <div class="lock-error-msg" id="lock-err"></div>
+    <div class="lock-contact">Need access? Contact <a href="mailto:miguel.cordero@finsso.com">miguel.cordero@finsso.com</a></div>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="brand">Credit<small>Dealer credit profile</small></div>
+  <div class="top-sp"></div>
+  <div class="who"><div class="avatar" id="avatar">?</div><div class="who-txt"><b id="who-name">—</b><span id="who-role">Credit</span></div></div>
+  <button class="icon-btn" id="theme-btn" title="Light / dark">◐</button>
+</div>
+
+<div class="main" id="view"><div class="loading"><span class="spin"></span>Sign in to continue…</div></div>
+<div id="overlay-root"></div>
+
+<script>
+var DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-repository/main/data/';
+var GOOGLE_CLIENT_ID = '263530903165-4nv0iueb5ftb5hjevr14mqug3rlraav5.apps.googleusercontent.com';
+var ALLOWLIST_API = 'https://script.google.com/a/macros/finsso.com/s/AKfycbznI2kQ8a0ApTS9xbDjY4oLoya5KQlqJ-xHm4X75BwkgIby4Cfqtz2xCupYOeFMBFik/exec';
+var ALLOWLIST_TAB = 'Credit';   // value to put in column B ("Dashboards") of the shared Allowlist tab
+var DAY_MS = 86400000;
+var MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var ME = null;
+var S = { sel: null, tab: 'overview', q: '', seg: 'all' };
+function parseSheetDate(v) {
+  if (v === null || v === undefined) return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  if (/^\d+(\.\d+)?$/.test(s)) {
+    const serial = Math.floor(parseFloat(s));
+    if (serial < 20000 || serial > 60000) return null;
+    const utcMs = Math.round((serial - 25569) * DAY_MS);
+    const utcDate = new Date(utcMs);
+    return new Date(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate());
+  }
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[1]-1, +m[2]);
+  const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+function parseNum(v) {
+  if (v === null || v === undefined || v === '') return 0;
+  const s = String(v).replace(/[,₱%]/g,'').trim();
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i+1] === '"') { field += '"'; i++; }
+      else if (ch === '"') inQ = false;
+      else field += ch;
+    } else {
+      if (ch === '"') inQ = true;
+      else if (ch === ',') { row.push(field); field = ''; }
+      else if (ch === '\r') { /* skip */ }
+      else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else field += ch;
+    }
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
+}
+// Columns are ALWAYS looked up by header name, never by position — the sheet
+// can gain or lose columns at any time. Header text is whitespace-normalized
+// on both sides (some headers carry doubled spaces, NBSPs or embedded
+// newlines, e.g. "R2  Payment Status", "Plate Number\n(as on ORCR)").
+function normHeader(h) { return String(h == null ? '' : h).replace(/[\s\u00a0]+/g, ' ').trim(); }
+function buildColumnMap(headerRow) {
+  const idx = {};
+  headerRow.forEach((h, i) => { const key = normHeader(h); if (key && !(key in idx)) idx[key] = i; });
+  return function (name) { const k = normHeader(name); return idx[k] !== undefined ? idx[k] : -1; };
+}
+function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
+// Normalizes a person-name field for matching: Google Sheets sometimes stores
+// a non-breaking space (U+00A0) instead of a regular space between a first
+// and last name (seen in real data as "Ricmar Magboo"), and typed sheets
+// like "[Raw] Mapping" use a plain space for the same name — without this,
+// those two strings don't compare equal and the SO silently falls out of
+// every team total. Collapses any run of whitespace (regular or NBSP) to a
+// single regular space, so the two representations always match.
+function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
+
+async function fetchCSV(name, optional) {
+  const url = DATA_BASE + name + '?_=' + Date.now();
+  const r = await fetch(url);
+  if (!r.ok) {
+    if (optional) return null; // e.g. a new export not deployed yet — degrade gracefully
+    throw new Error('Failed to load ' + name + ' (HTTP ' + r.status + ')');
+  }
+  return parseCSV(await r.text());
+}
+
+
+/* ══════════════════════════════════════════════════
+   small utilities
+══════════════════════════════════════════════════ */
+function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function sod(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+var TODAY = sod(new Date());
+function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+function diffDays(a, b) { return Math.round((sod(a) - sod(b)) / DAY_MS); }
+function fmtD(d) { return d ? String(d.getDate()).padStart(2, '0') + ' ' + MONTH_ABBR[d.getMonth()] + ' ' + d.getFullYear() : '—'; }
+function fmtDs(d) { return d ? String(d.getDate()).padStart(2, '0') + ' ' + MONTH_ABBR[d.getMonth()] : '—'; }
+function iso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function peso(n) { return '₱' + Math.round(n || 0).toLocaleString('en-US'); }
+function pct(a, b) { return b ? Math.round(a / b * 100) + '%' : '—'; }
+function mkey(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
+function uid8() { const a = new Uint8Array(4); crypto.getRandomValues(a); return Array.from(a, x => x.toString(16).padStart(2, '0')).join(''); }
+function toast(msg, err) { const t = document.createElement('div'); t.className = 'toast' + (err ? ' err' : ''); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), err ? 6000 : 3200); }
+function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function initials(n) { return String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0].toUpperCase()).join('') || '?'; }
+
+
+/* ══════════════════════════════════════════════════
+   DATA TABLE — a filter dropdown on EVERY column
+   (sort A→Z / Z→A, filter by condition, filter by values with checkboxes)
+══════════════════════════════════════════════════ */
+function makeTable(host, cols, rows, o) {
+  o = o || {};
+  const st = { f: {}, sort: o.sort || null, panel: null };
+  let cur = [];
+  const txt = (c, r) => { const v = c.txt ? c.txt(r) : c.val(r); return v == null || v === '' ? '(blank)' : String(v); };
+  const raw = (c, r) => { const v = c.val(r); return v instanceof Date ? v.getTime() : v; };
+  function cond(c, f, r) {
+    const v = raw(c, r), q = f.v;
+    if (f.op === 'empty') return v === '' || v == null || v === 0 && c.type !== 'num';
+    if (f.op === 'nempty') return !(v === '' || v == null);
+    if (c.type === 'num' || c.type === 'date') {
+      const n = c.type === 'date' ? (q ? new Date(q + 'T00:00:00').getTime() : NaN) : parseFloat(q);
+      if (isNaN(n)) return true; const x = Number(v);
+      return f.op === 'eq' ? x === n : f.op === 'gt' ? x > n : f.op === 'lt' ? x < n : f.op === 'gte' ? x >= n : x <= n;
+    }
+    const s = String(v == null ? '' : v).toLowerCase(), t = String(q || '').toLowerCase();
+    return f.op === 'contains' ? s.includes(t) : f.op === 'ncontains' ? !s.includes(t) : f.op === 'eq' ? s === t : s.startsWith(t);
+  }
+  function pass(r) {
+    for (const c of cols) { const f = st.f[c.id]; if (!f) continue;
+      if (f.sel && !f.sel.has(txt(c, r))) return false;
+      if (f.op && !cond(c, f, r)) return false; }
+    return true;
+  }
+  function viewRows() {
+    let r = rows.filter(pass);
+    if (st.sort) { const c = cols.find(x => x.id === st.sort.id), dir = st.sort.dir;
+      r = r.slice().sort((a, b) => { let x = raw(c, a), y = raw(c, b);
+        if (x == null || x === '') return 1; if (y == null || y === '') return -1;
+        return (typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), undefined, { numeric: true })) * dir; }); }
+    return r;
+  }
+  const active = id => { const f = st.f[id]; return !!f && (!!f.sel || !!f.op); };
+  function render() {
+    cur = viewRows();
+    const nF = Object.keys(st.f).filter(active).length;
+    let h = '<div class="toolbar" style="margin:0 0 8px"><span class="small muted">' + cur.length.toLocaleString() + ' of ' + rows.length.toLocaleString() + ' rows' + (nF ? ' · ' + nF + ' filter' + (nF > 1 ? 's' : '') : '') + '</span>' +
+      (nF || st.sort ? '<button class="btn sm ghost" data-t="clear">Clear filters &amp; sort</button>' : '') + '<span style="flex:1"></span>' + (o.csv ? '<button class="btn sm" data-t="csv">Export CSV</button>' : '') + '</div>';
+    h += '<div class="tbl-wrap"' + (o.maxH ? ' style="max-height:' + o.maxH + '"' : '') + '><table class="dt"><thead><tr>';
+    cols.forEach(c => { const srt = st.sort && st.sort.id === c.id ? (st.sort.dir > 0 ? ' ▲' : ' ▼') : '';
+      h += '<th class="' + (c.fz ? 'fz ' : '') + (c.type === 'num' ? 'num' : '') + '"><div class="th"><span data-t="sort" data-c="' + c.id + '">' + esc(c.label) + srt + '</span><button class="fbtn' + (active(c.id) ? ' on' : '') + '" data-t="f" data-c="' + c.id + '" title="Filter">▾</button></div></th>'; });
+    h += '</tr></thead><tbody>';
+    const MAX = 800;
+    cur.slice(0, MAX).forEach((r, i) => { h += '<tr data-i="' + i + '">';
+      cols.forEach(c => { h += '<td class="' + (c.fz ? 'fz ' : '') + (c.type === 'num' ? 'num ' : '') + (o.onRow ? 'click' : '') + '">' + (c.html ? c.html(r) : esc(c.txt ? c.txt(r) : (c.val(r) instanceof Date ? fmtD(c.val(r)) : c.val(r)))) + '</td>'; });
+      h += '</tr>'; });
+    if (!cur.length) h += '<tr><td colspan="' + cols.length + '" class="empty">No rows match these filters.</td></tr>';
+    h += '</tbody></table></div>';
+    if (cur.length > MAX) h += '<div class="small muted" style="margin-top:6px">Showing the first ' + MAX + ' rows — narrow with filters to see the rest.</div>';
+    host.innerHTML = h;
+  }
+  function closePanel() { if (st.panel) { st.panel.remove(); st.panel = null; document.removeEventListener('mousedown', outside, true); } }
+  function outside(e) { if (st.panel && !st.panel.contains(e.target) && !(e.target.closest && e.target.closest('.fbtn'))) closePanel(); }
+  function openPanel(id, anchor) {
+    closePanel();
+    const c = cols.find(x => x.id === id), f = st.f[id] || (st.f[id] = {});
+    const p = document.createElement('div'); p.className = 'fpanel';
+    const ops = c.type === 'num' ? [['eq', '='], ['gt', '>'], ['gte', '≥'], ['lt', '<'], ['lte', '≤']] : c.type === 'date' ? [['eq', 'Is on'], ['gt', 'After'], ['lt', 'Before'], ['gte', 'On or after'], ['lte', 'On or before']] : [['contains', 'Contains'], ['ncontains', 'Does not contain'], ['eq', 'Is exactly'], ['starts', 'Starts with']];
+    const vals = {}; rows.forEach(r => { const t = txt(c, r); vals[t] = (vals[t] || 0) + 1; });
+    const keys = Object.keys(vals).sort((a, b) => c.type === 'num' ? parseFloat(a) - parseFloat(b) : a.localeCompare(b, undefined, { numeric: true }));
+    p.innerHTML = '<div class="row"><button class="o" data-s="asc">Sort A → Z</button><button class="o" data-s="desc">Sort Z → A</button></div>' +
+      '<h6>Filter by condition</h6><select data-k="op"><option value="">None</option>' + ops.concat([['empty', 'Is empty'], ['nempty', 'Is not empty']]).map(x => '<option value="' + x[0] + '"' + (f.op === x[0] ? ' selected' : '') + '>' + x[1] + '</option>').join('') + '</select>' +
+      '<input type="' + (c.type === 'date' ? 'date' : 'text') + '" data-k="v" placeholder="Value" value="' + esc(f.v || '') + '">' +
+      '<h6>Filter by values</h6><input type="text" data-k="q" placeholder="Search values…"><div class="row"><button class="o" data-s="all">Select all</button><button class="o" data-s="none">Clear</button></div><div class="vals" data-k="list"></div>' +
+      '<div class="row"><button class="o" data-s="reset">Reset column</button><button class="o" data-s="done" style="background:var(--primary);color:#fff;border-color:var(--primary)">Done</button></div>';
+    const list = p.querySelector('[data-k=list]');
+    const draw = () => { const q = p.querySelector('[data-k=q]').value.toLowerCase(); const sel = f.sel;
+      list.innerHTML = keys.filter(k => !q || k.toLowerCase().includes(q)).slice(0, 400).map(k => '<label><input type="checkbox" data-v="' + esc(k) + '"' + (!sel || sel.has(k) ? ' checked' : '') + '>' + esc(k) + ' <span class="muted small">(' + vals[k] + ')</span></label>').join('') || '<div class="empty small">No values</div>'; };
+    draw();
+    p.addEventListener('input', e => {
+      if (e.target.dataset.k === 'q') draw();
+      else if (e.target.dataset.k === 'v') { f.v = e.target.value; render(); }
+    });
+    p.addEventListener('change', e => {
+      if (e.target.dataset.k === 'op') { f.op = e.target.value || undefined; render(); }
+      else if (e.target.dataset.v !== undefined) {
+        if (!f.sel) f.sel = new Set(keys);
+        e.target.checked ? f.sel.add(e.target.dataset.v) : f.sel.delete(e.target.dataset.v);
+        if (f.sel.size === keys.length) f.sel = undefined; render();
+      }
+    });
+    p.addEventListener('click', e => {
+      const s = e.target.dataset.s; if (!s) return;
+      if (s === 'asc' || s === 'desc') { st.sort = { id, dir: s === 'asc' ? 1 : -1 }; render(); closePanel(); }
+      else if (s === 'all') { f.sel = undefined; draw(); render(); }
+      else if (s === 'none') { f.sel = new Set(); draw(); render(); }
+      else if (s === 'reset') { delete st.f[id]; render(); closePanel(); }
+      else if (s === 'done') closePanel();
+    });
+    document.body.appendChild(p); st.panel = p;
+    const b = anchor.getBoundingClientRect();
+    if (window.innerWidth > 700) { p.style.top = Math.min(b.bottom + 4, window.innerHeight - 340) + 'px'; p.style.left = Math.max(8, Math.min(b.left - 200, window.innerWidth - 300)) + 'px'; }
+    setTimeout(() => document.addEventListener('mousedown', outside, true), 0);
+  }
+  host.onclick = function (e) {
+    const t = e.target.closest('[data-t]');
+    if (t) {
+      const k = t.dataset.t;
+      if (k === 'sort') { const id = t.dataset.c; st.sort = st.sort && st.sort.id === id ? (st.sort.dir > 0 ? { id, dir: -1 } : null) : { id, dir: 1 }; render(); }
+      else if (k === 'f') openPanel(t.dataset.c, t);
+      else if (k === 'clear') { st.f = {}; st.sort = null; render(); }
+      else if (k === 'csv') exportCsv();
+      return;
+    }
+    const tr = e.target.closest('tr[data-i]');
+    if (tr && o.onRow) o.onRow(cur[+tr.dataset.i]);
+  };
+  function exportCsv() {
+    const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const lines = [cols.map(c => q(c.label)).join(',')].concat(cur.map(r => cols.map(c => { const v = c.val(r); return q(v instanceof Date ? iso(v) : (c.txt && c.type !== 'num' ? c.txt(r) : v)); }).join(',')));
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' })); a.download = (o.csv || 'export') + '.csv'; a.click();
+  }
+  render();
+  return { refresh(newRows) { rows = newRows; render(); }, rows: () => cur, preset(fn) { rows = fn(rows); render(); } };
+}
+
+/* ══════════════════════════════════════════════════
+   sheets (modal) + shared bits
+══════════════════════════════════════════════════ */
+function openSheet(html) {
+  closeSheet();
+  const r = document.getElementById('overlay-root');
+  r.innerHTML = '<div class="scrim" id="scrim"><div class="sheet" id="sheet">' + html + '</div></div>';
+  document.getElementById('scrim').addEventListener('mousedown', e => { if (e.target.id === 'scrim') closeSheet(); });
+  return document.getElementById('sheet');
+}
+function closeSheet() { document.getElementById('overlay-root').innerHTML = ''; }
+
+/* ══════════════════════════════════════════════════
+   DATA MODEL — every column looked up by header name.
+   Loans: drawdown.csv (previous versions) + drawdownv3.csv (v3)
+   Payments: repayment.csv + repaymentv3.csv
+   Credit line: dealer-checker.csv · Onboarding / credit evaluation: ob-masterlist.csv
+   Collateral: stock-inspection.csv · Prospects: dealeruniverse.csv (optional)
+══════════════════════════════════════════════════ */
+var OPEN_RE = /^(open|overdue|restructuring active|restructuring pending)$/i;
+var LOANS = {}, LOANLIST = [], PAYS = [], AUDITS = [], DL = {}, DLLIST = [], GROUPS = {}, TOT = { out: 0, open: 0 };
+var LN = { loans: {}, pb: {} };
+
+function kindOf(t) { t = String(t || '').toLowerCase(); return t.includes('renewal 1') ? 'R1' : t.includes('renewal 2') ? 'R2' : t.includes('final') ? 'M' : null; }
+function outAt(id, asof) { const l = LN.loans[id]; if (!l || !l.credit || l.credit >= asof) return 0; let paid = 0; (LN.pb[id] || []).forEach(p => { if (p.date < asof) paid += p.prin; }); return Math.max(0, l.orig - paid); }
+function dpdAt(id, D) {
+  const l = LN.loans[id]; if (!l || outAt(id, D) <= 0.5) return 0;
+  const paid = new Set(); (LN.pb[id] || []).forEach(p => { if (p.date < D) { const k = kindOf(p.type); if (k) paid.add(k); } }); if (paid.has('R2')) paid.add('R1');
+  const dues = []; if (l.r1) dues.push([l.r1, 'R1']); if (l.r2) dues.push([l.r2, 'R2']); if (l.mat) dues.push([l.mat, 'M']);
+  const od = dues.filter(x => x[0] < D && !paid.has(x[1])).map(x => x[0].getTime());
+  return od.length ? Math.round((D.getTime() - Math.min.apply(null, od)) / DAY_MS) : 0;
+}
+var V3_DPD_COLS = ['R1 DPD', 'R2 DPD', 'R3 DPD', 'P1 DPD', 'R4 DPD', 'P2 DPD', 'R5 DPD', 'P3 DPD', 'Maturity DPD'];
+var V3_MILES = [['R1', 'R1 Due Date', 'R1 Payment Status', 'R1 Payment Date', 'R1 DPD'], ['R2', 'R2 Due Date', 'R2 Payment Status', 'R2 Payment Date', 'R2 DPD'],
+  ['R3', 'R3P1 Due Date', 'R3 Payment Status', 'R3 Payment Date', 'R3 DPD'], ['P1', 'R3P1 Due Date', 'P1 Payment Status', 'P1 Payment Date', 'P1 DPD'],
+  ['R4', 'R4P2 Due Date', 'R4 Payment Status', 'R4 Payment Date', 'R4 DPD'], ['P2', 'R4P2 Due Date', 'P2 Payment Status', 'P2 Payment Date', 'P2 DPD'],
+  ['R5', 'R5P3 Due Date', 'R5 Payment Status', 'R5 Payment Date', 'R5 DPD'], ['P3', 'R5P3 Due Date', 'P3 Payment Status', 'P3 Payment Date', 'P3 DPD'],
+  ['Maturity', 'Maturity Due Date', 'Maturity Payment Status', 'Maturity Payment Date', 'Maturity DPD']];
+
+function str(r, c, n) { return String(get(r, c(n))).trim(); }
+function nz(v) { return v == null || v === '' || (typeof v === 'number' && isNaN(v)); }
+
+async function loadAll() {
+  const [d2, d3, r2, r3, ck, ob, si, am, du] = await Promise.all([fetchCSV('drawdown.csv'), fetchCSV('drawdownv3.csv', true), fetchCSV('repayment.csv'), fetchCSV('repaymentv3.csv', true),
+    fetchCSV('dealer-checker.csv'), fetchCSV('ob-masterlist.csv', true), fetchCSV('stock-inspection.csv', true), fetchCSV('AuditMapping.csv', true), fetchCSV('dealeruniverse.csv', true)]);
+  LOANS = {}; LOANLIST = []; PAYS = []; AUDITS = []; DL = {}; GROUPS = {}; LN = { loans: {}, pb: {} };
+
+  // ── loans, previous versions
+  const c2 = buildColumnMap(d2[0]);
+  d2.slice(1).forEach(r => {
+    const id = str(r, c2, 'Drawdown ID'); if (!id) return;
+    const ms = [['R1', 'Renewal 1 Due Date', 'Renewal 1 Payment Status', 'Payment Date for Renewal 1', 'Renewal 1 Days Late', 'Renewal 1 Penalty'],
+      ['R2', 'Renewal 2 Due Date', 'Renewal 2 Payment Status', 'Payment Date for Renewal 2', 'Renewal 2 Days Late', 'Renewal 2 Penalty'],
+      ['Maturity', 'Final Maturity Date', 'Full Payment Status', 'Full Settlement Date', 'Days Late for Maturity Payment', 'Maturity Penalty']]
+      .map(m => ({ k: m[0], due: parseSheetDate(get(r, c2(m[1]))), status: str(r, c2, m[2]), paid: parseSheetDate(get(r, c2(m[3]))), late: parseNum(get(r, c2(m[4]))), pen: parseNum(get(r, c2(m[5]))) }));
+    const l = { id, v: 2, dealerId: str(r, c2, 'Dealer ID'), dealer: normName(get(r, c2('Dealership Name'))), status: normName(get(r, c2('Loan Status'))), so: normName(get(r, c2('Assigned SO'))),
+      credit: parseSheetDate(get(r, c2('Credit Date to Dealer Bank Account'))), orig: parseNum(get(r, c2('Original Principal'))), paidPrin: parseNum(get(r, c2('Total Paid Principal'))), paidInt: parseNum(get(r, c2('Total Paid Interest'))),
+      out: parseNum(get(r, c2('Total Outstanding Principal'))) || parseNum(get(r, c2('Restructure Outstanding Balance'))), rate: str(r, c2, 'Interest Rate (%)'), tenor: parseNum(get(r, c2('Total Loan Tenure (in days)'))),
+      r1: ms[0].due, r2: ms[1].due, mat: ms[2].due, miles: ms, settled: parseSheetDate(get(r, c2('Full Settlement Date'))),
+      type: normName(get(r, c2('Type of Financing'))), fin: normName(get(r, c2('Financier'))), year: str(r, c2, 'Year Model'), model: normName(get(r, c2('Make Model Variant'))), plate: normName(get(r, c2('Plate Number (as on ORCR)'))),
+      fmv: parseNum(get(r, c2('Fair Market Value (FMV)'))), ltv: parseNum(get(r, c2('Loan to Value (LTV) Ratio'))), soldFlag: /sold/i.test(get(r, c2('Sold Flagging'))),
+      repoRaw: str(r, c2, 'Repossessed Unit?'), repoDate: parseSheetDate(get(r, c2('Date of Repossession'))), restr: str(r, c2, 'Restructuring Status'), blk: parseSheetDate(get(r, c2('Blacklisted Date'))), dpdSheet: 0 };
+    l.repo = /^yes/i.test(l.repoRaw); LN.loans[id] = l;
+  });
+  // ── loans, v3
+  if (d3) {
+    const c3 = buildColumnMap(d3[0]);
+    d3.slice(1).forEach(r => {
+      const id = str(r, c3, 'Drawdown ID'); if (!id) return;
+      let dp = 0; V3_DPD_COLS.forEach(n => { const v = parseNum(get(r, c3(n))); if (v > dp) dp = v; });
+      const ms = V3_MILES.map(m => ({ k: m[0], due: parseSheetDate(get(r, c3(m[1]))), status: str(r, c3, m[2]) , paid: parseSheetDate(get(r, c3(m[3]))), late: parseNum(get(r, c3(m[4]))), pen: 0 })).filter(m => m.due);
+      const l = { id, v: 3, dealerId: str(r, c3, 'Dealer ID'), dealer: normName(get(r, c3('Dealership Name'))), status: normName(get(r, c3('Loan Status'))), so: normName(get(r, c3('Assigned SO'))),
+        credit: parseSheetDate(get(r, c3('Credit Date to Dealer Bank Account'))), orig: parseNum(get(r, c3('Original Principal'))), paidPrin: 0, paidInt: 0, out: parseNum(get(r, c3('Outstanding Principal'))),
+        rate: str(r, c3, 'Interest Rate %'), tenor: parseNum(get(r, c3('Total Loan Tenure Days'))), r1: parseSheetDate(get(r, c3('R1 Due Date'))), r2: parseSheetDate(get(r, c3('R2 Due Date'))), mat: parseSheetDate(get(r, c3('Maturity Due Date'))),
+        miles: ms, settled: parseSheetDate(get(r, c3('Maturity Payment Date'))), type: normName(get(r, c3('Type of Financing'))), fin: normName(get(r, c3('Financier'))),
+        year: str(r, c3, 'Year Model'), model: normName(get(r, c3('Make Model Variant'))), plate: normName(get(r, c3('Plate Number (as on ORCR)'))), fmv: parseNum(get(r, c3('Fair Market Value (FMV)'))), ltv: parseNum(get(r, c3('Loan to Value (LTV) Ratio'))),
+        soldFlag: false, repoRaw: str(r, c3, 'repo info'), repoDate: null, repo: /repo/i.test(str(r, c3, 'repo info')), restr: '', blk: null, dpdSheet: dp };
+      LN.loans[id] = l;
+    });
+  }
+  // ── payments
+  const cr2 = buildColumnMap(r2[0]);
+  r2.slice(1).forEach(r => {
+    const id = str(r, cr2, 'Drawdown ID'), d = parseSheetDate(get(r, cr2('Dealer Payment Date'))); if (!LN.loans[id] || !d) return;
+    const p = { v: 2, id, rid: str(r, cr2, 'Repayment ID'), dealerId: LN.loans[id].dealerId, date: d, type: str(r, cr2, 'Dealer Repayment Type'), mode: str(r, cr2, 'Dealer Mode of Payment'),
+      recv: parseNum(get(r, cr2('Finsso Received Amount from Dealer'))), prin: parseNum(get(r, cr2('Dealer Paid Principal'))), int: parseNum(get(r, cr2('Dealer Paid Interest'))), rfee: parseNum(get(r, cr2('Dealer Renewal Fee'))),
+      pen: parseNum(get(r, cr2('Dealer Penalty Fee'))), cash: parseNum(get(r, cr2('Dealer Cashback'))), waive: parseNum(get(r, cr2('Dealer Interest Waiver / Interest Difference'))), exc: parseNum(get(r, cr2('Dealer Lacking/Excess Payments'))),
+      remarks: str(r, cr2, 'Remarks'), due: null, dpd: null };
+    PAYS.push(p); (LN.pb[id] = LN.pb[id] || []).push({ date: d, prin: p.prin, type: p.type });
+  });
+  if (r3) {
+    const cr3 = buildColumnMap(r3[0]);
+    r3.slice(1).forEach(r => {
+      const id = str(r, cr3, 'Drawdown ID'), d = parseSheetDate(get(r, cr3('Dealer Payment Date'))); if (!LN.loans[id] || !d) return;
+      const p = { v: 3, id, rid: str(r, cr3, 'Repayment ID'), dealerId: LN.loans[id].dealerId, date: d, type: str(r, cr3, 'Dealer Payment Type'), mode: str(r, cr3, 'Dealer Mode of Payment'),
+        recv: parseNum(get(r, cr3('Total Received Amount fr Dealer'))) || parseNum(get(r, cr3('Finsso Received Amount from Dealer'))), prin: parseNum(get(r, cr3('Principal Applied'))), int: parseNum(get(r, cr3('Interest Applied'))),
+        rfee: parseNum(get(r, cr3('Renewal Fee Applied'))), pen: parseNum(get(r, cr3('Late Fee Applied'))) + parseNum(get(r, cr3('Penalty Fee Applied'))), cash: 0, waive: parseNum(get(r, cr3('Waived'))), exc: parseNum(get(r, cr3('Excess/Lacking'))),
+        remarks: '', due: parseSheetDate(get(r, cr3('Payment Due Date'))), dpd: parseNum(get(r, cr3('Payment Days Past Due'))) };
+      PAYS.push(p); (LN.pb[id] = LN.pb[id] || []).push({ date: d, prin: p.prin, type: p.type });
+      const l = LN.loans[id]; l.paidPrin += p.prin; l.paidInt += p.int;
+    });
+  }
+  // ── loan records
+  Object.keys(LN.loans).forEach(id => {
+    const l = LN.loans[id];
+    l.open = OPEN_RE.test(l.status) && l.out > 0.5 && !l.repo;
+    l.dpd = l.open ? (l.v === 3 ? l.dpdSheet : dpdAt(id, TODAY)) : 0;
+    l.maxLate = 0; l.lateN = 0; l.dueN = 0; l.pens = 0;
+    l.miles.forEach(m => { if (m.due && m.due <= TODAY && !/not applicable|n\/a|not renewed/i.test(m.status)) { l.dueN++; if (m.late > 0) { l.lateN++; } } if (m.late > l.maxLate) l.maxLate = m.late; l.pens += m.pen || 0; });
+    l.pays = []; l.audits = []; LOANS[id] = l; LOANLIST.push(l);
+  });
+  PAYS.forEach(p => { LOANS[p.id].pays.push(p); });
+  PAYS.sort((a, b) => b.date - a.date);
+
+  // ── stock audits (v3 tracker IDs may carry a trailing "*")
+  if (si) {
+    const sc = buildColumnMap(si[0]);
+    si.slice(1).forEach(r => {
+      let id = str(r, sc, 'Drawdown ID'); const date = parseSheetDate(get(r, sc('Date'))); if (!id || !date) return;
+      if (!LOANS[id] && LOANS[id + '*']) id = id + '*';
+      if (!LOANS[id]) return;
+      const e = { id, date, who: normName(get(r, sc('Inspector'))), status: str(r, sc, 'Stock Inspection Status'), vs: str(r, sc, 'Vehicle Status - F') || str(r, sc, 'Vehicle Status - S'),
+        remarks: str(r, sc, 'Additional Remarks from SIO - F') || str(r, sc, 'Additional Remarks from SIO - S'), poc: str(r, sc, 'POC Name'), method: str(r, sc, 'Sales Method'), sold: parseSheetDate(get(r, sc('Date Vehicle Sold'))),
+        dealerId: LOANS[id].dealerId };
+      AUDITS.push(e); LOANS[id].audits.push(e);
+    });
+    AUDITS.sort((a, b) => b.date - a.date);
+    LOANLIST.forEach(l => { l.audits.sort((a, b) => a.date - b.date); l.lastAudit = l.audits.length ? l.audits[l.audits.length - 1] : null;
+      let s = 0; for (let i = l.audits.length - 1; i >= 0 && /^fail/i.test(l.audits[i].status); i--) s++; l.failStreak = s; });
+  }
+  LOANLIST.forEach(l => { if (l.lastAudit === undefined) { l.lastAudit = null; l.failStreak = 0; } });
+
+  // ── dealers
+  const mk = (id, name) => DL[id] || (DL[id] = { id, name: name || id, gcd: '', loans: [], ck: null, ob: null, un: null, am: null, group: '', seg: '', flags: null });
+  LOANLIST.forEach(l => { if (!l.dealerId) return; const d = mk(l.dealerId, l.dealer); d.loans.push(l); if (!d.name || d.name === d.id) d.name = l.dealer; });
+  if (ck) {
+    const k = buildColumnMap(ck[0]);
+    ck.slice(1).forEach(r => {
+      const id = str(r, k, 'Dealer ID'); if (!id) return; const d = mk(id, normName(get(r, k('Dealership Name'))));
+      d.name = normName(get(r, k('Dealership Name'))) || d.name; d.gcd = str(r, k, 'GCD Code');
+      d.group = str(r, k, 'Same Group');
+      d.ck = { clStatus: str(r, k, 'Credit Line Status'), holdReason: str(r, k, 'Reason for CL Hold Status'), blkReason: str(r, k, 'Reason for Hold / Blacklisting'), blkDate: parseSheetDate(get(r, k('Date of Blacklisting'))),
+        reassess: parseSheetDate(get(r, k('Reassessement Date'))), cl: parseNum(get(r, k('Current Approved Credit Limit'))), dp: parseNum(get(r, k('Current Approved Drawing Power'))), outst: parseNum(get(r, k('Total Outstanding Amount'))),
+        avail: parseNum(get(r, k('Total Available Drawing Power'))), util: parseNum(get(r, k('% Utilization'))), lifeTxn: parseNum(get(r, k("Lifetime TXN's"))), openLoans: parseNum(get(r, k('No. of open Loans'))),
+        nb: str(r, k, 'Netbank'), ff: str(r, k, 'Finsso'), nbCl: parseNum(get(r, k('Netbank - Approved Credit Limit'))), ffCl: parseNum(get(r, k('Finsso - Approved Credit Limit'))), nbOut: parseNum(get(r, k('Netbank - Outstanding Principal'))), ffOut: parseNum(get(r, k('Finsso - Outstanding Principal'))),
+        l3d: str(r, k, 'L3M Average Repayment Delay'), l6d: str(r, k, 'L6M Average Repayment Delay'), repEff: str(r, k, '% Repayment Efficiency'), repL3: str(r, k, '% Repayment (L3M)'), ltv80: str(r, k, '80% LTV Qualified?'), autoInc: str(r, k, 'Qualified for Automatic CL Increase'),
+        nextInc: parseSheetDate(get(r, k('Date of Next CL Increase'))), nextIncAmt: parseNum(get(r, k('Amount of Next CL/DP Increase'))), pay90: parseNum(get(r, k('Total Payments made in the last 90 days'))), due90: parseNum(get(r, k('Total Repayments due in the last 90 days'))),
+        first: parseSheetDate(get(r, k('First TXN'))), last: parseSheetDate(get(r, k('Last TXN'))), expiry: parseSheetDate(get(r, k('Credit Line Expiry Date'))), risk: str(r, k, 'Effective Risk Pricing'), onboarded: parseSheetDate(get(r, k('Original Onboarding Date'))),
+        so: normName(get(r, k('Assigned Sales Officer'))), sm: normName(get(r, k('Assigned Sales Manager'))), origCl: parseNum(get(r, k('Original Approved Credit Limit (in PHP)'))), nIncr: parseNum(get(r, k('Total Number of CL Increase (Lifetime)'))), nAuto: parseNum(get(r, k('Total Number of Automatic CL Increase (Lifetime)'))),
+        pendingRemit: parseNum(get(r, k('Pending Remittance w/ Netbank'))) };
+    });
+  }
+  // onboarding / credit evaluation (matched by Dealer ID; rows without an ID are applicants, keyed by name)
+  const nameKey = s => normName(s).toLowerCase().replace(/[^a-z0-9]/g, '');
+  const byName = {}; Object.values(DL).forEach(d => { byName[nameKey(d.name)] = d; });
+  if (ob) {
+    const o = buildColumnMap(ob[0]);
+    ob.slice(1).forEach(r => {
+      const name = normName(get(r, o('Dealership Name'))); if (!name) return;
+      let id = str(r, o, 'Dealer ID'), d = id && DL[id] ? DL[id] : (!id && byName[nameKey(name)]) || null;
+      if (!d) { id = id || 'APP:' + nameKey(name); d = mk(id, name); byName[nameKey(name)] = d; }
+      const incr = []; for (let n = 1; n <= 6; n++) { const amt = parseNum(get(r, o(n + '. Proposed New Credit Line'))), req = parseSheetDate(get(r, o(n + '. CL Increase Request Date to Netbank'))); if (amt || req) incr.push({ n, by: str(r, o, n + '. CL Increase Requested by'), type: str(r, o, n + '. CL Increase Type'), amt, cycle: str(r, o, n + '. Loan Cycle'), req, recv: parseSheetDate(get(r, o(n + '. New CLA Receipt Date from Netbank'))), signed: parseSheetDate(get(r, o(n + '. New CLA Signed by the Dealer'))) }); }
+      d.ob = { owner: str(r, o, 'Name of Owner/Authorized Representative'), phone: str(r, o, 'Contact Number'), addr: str(r, o, 'Business Address'), referred: str(r, o, 'Dealer Referred By'), obType: str(r, o, 'Onboarding (Regular / Express)'),
+        sales: normName(get(r, o('Assigned Sales POC'))), sm: normName(get(r, o('Assigned SM'))), ops: str(r, o, 'Assigned Ops POC'), applied: parseSheetDate(get(r, o('Date of Initial Application'))), status: str(r, o, 'Application Status'), remarks: str(r, o, 'Application Remarks'),
+        bap: str(r, o, 'BAP Status'), cmap: str(r, o, 'CMAP Status'), ccRemarks: str(r, o, 'BAP/CMAP Credit Check Remarks'), docsDone: str(r, o, 'Complete Docs'), docsPending: str(r, o, 'No of Docs Pending'), endorsed: parseSheetDate(get(r, o('Date of Endorsement to Credit'))),
+        officer: str(r, o, 'Credit Officer'), init: str(r, o, 'Initial Credit Evaluation Result'), initDate: parseSheetDate(get(r, o('Initial Credit Evaluation Result Date'))), fin: str(r, o, 'Final Credit Evaluation Result'), finDate: parseSheetDate(get(r, o('Date of Final Credit Evaluation Result'))),
+        clIssued: parseSheetDate(get(r, o('Original Credit Line issuance Date'))), claSigned: parseSheetDate(get(r, o('Original CLA Signed Date'))), lastInc: parseSheetDate(get(r, o('Date of Last CL Increase'))), nextEval: parseSheetDate(get(r, o('Date of Next CL Evaluation'))),
+        latestCl: parseNum(get(r, o('Latest Endorsed CL Amount'))), pdc: str(r, o, 'Required PDC?'), pdcWhy: str(r, o, 'Reason for PDC Requirement'), co: str(r, o, 'Co-borrower'), financier: str(r, o, 'Financier'), incr };
+      if (!d.gcd) d.gcd = str(r, o, 'GCD Code');
+    });
+  }
+  // AuditMapping: address / city / coordinates / stock audit + collections officers (dealer level)
+  if (am) {
+    const a = buildColumnMap(am[0]); const addrIdx = []; am[0].forEach((h, i) => { if (normHeader(h) === 'Dealership Address') addrIdx.push(i); });
+    am.slice(1).forEach(r => { const id = str(r, a, 'Dealer ID'); if (!id || !DL[id]) return;
+      DL[id].am = { addr: normName(get(r, addrIdx[0])), city: normName(get(r, a('City Extract'))), so: normName(get(r, a('Assigned Stock Audit Officer'))), co: normName(get(r, a('Assigned Collections Officer'))), sales: normName(get(r, a('Assigned SO'))), sm: normName(get(r, a('Assigned SM'))) }; });
+  }
+  // dealer universe (prospects): matched by GCD, otherwise a prospect of its own
+  if (du) {
+    const u = buildColumnMap(du[0]); const byGcd = {}; Object.values(DL).forEach(d => { if (d.gcd) byGcd[d.gcd.toUpperCase()] = d; });
+    du.slice(1).forEach(r => {
+      const code = str(r, u, 'Dealership_Code'); const name = normName(get(r, u('Dealeship Name')) || get(r, u('Dealership Name'))); if (!code && !name) return;
+      const rec = { code, owner: str(r, u, 'Dealer_Owner_Name'), phone: str(r, u, 'Contact_No'), addr: str(r, u, 'Address'), city: str(r, u, 'City'), region: str(r, u, 'Region'), size: str(r, u, 'Dealer Size'), cat: str(r, u, 'Dealership Category'),
+        inv: str(r, u, 'Inventory Size'), sales: str(r, u, 'Average Monthly Sales'), by: str(r, u, 'Onboarded By'), onbDate: parseSheetDate(get(r, u('Onboarded Date'))), through: str(r, u, 'Onboarded Through') };
+      let d = code ? byGcd[code.toUpperCase()] : null;
+      if (!d) d = byName[nameKey(name)] || null;
+      if (!d) { d = mk('U:' + (code || nameKey(name)), name); d.gcd = code; if (code) byGcd[code.toUpperCase()] = d; byName[nameKey(name)] = d; }
+      d.un = rec;
+    });
+  }
+  // ── classify + totals + groups
+  TOT = { out: 0, open: 0 };
+  DLLIST = Object.values(DL);
+  DLLIST.forEach(d => {
+    d.loans.sort((a, b) => (b.credit || 0) - (a.credit || 0));
+    d.open = d.loans.filter(l => l.open); d.out = d.open.reduce((s, l) => s + l.out, 0); TOT.out += d.out; TOT.open += d.open.length;
+    d.seg = d.open.length ? 'Active borrower' : d.loans.length ? 'Past borrower' : d.ck ? 'Onboarded — no drawdown' : (d.ob && !/^U:/.test(d.id)) ? 'Applicant' : 'Universe prospect';
+    if (d.group) (GROUPS[d.group] = GROUPS[d.group] || []).push(d);
+    d.dealerPays = []; d.audits = [];
+    d.loans.forEach(l => { l.pays.forEach(p => d.dealerPays.push(p)); l.audits.forEach(a => d.audits.push(a)); });
+    d.dealerPays.sort((a, b) => b.date - a.date); d.audits.sort((a, b) => b.date - a.date);
+  });
+  DLLIST.forEach(d => { d.flags = null; });
+}
+
+/* ══════════════════════════════════════════════════
+   PER-DEALER ANALYTICS + RULE-BASED CREDIT FLAGS
+   (all thresholds live in TH so they are easy to tune)
+══════════════════════════════════════════════════ */
+var TH = { dpdRed: 30, dpdAmber: 5, lateDays: 5, lateN6m: 3, lateRate: 0.4, utilAmber: 0.9, concAmber: 0.05, concRed: 0.10, expirySoon: 60, dormant: 90, rampPct: 0.5, rampMin: 1000000, ltvAmber: 0.8 };
+
+function monthsBack(n) { const out = []; for (let i = n - 1; i >= 0; i--) out.push(new Date(TODAY.getFullYear(), TODAY.getMonth() - i, 1)); return out; }
+function stats(d) {
+  if (d._st) return d._st;
+  const L = d.loans, st = { n: L.length, gmv: 0, repaidPrin: 0, intPaid: 0, feesPaid: 0, penPaid: 0, first: null, last: null, lateN: 0, dueN: 0, lateN12: 0, dueN12: 0, lateN6: 0, lateSum: 0, lateCnt: 0, maxLate: 0, maxDpd: 0, parOut: 0, par30Out: 0, dpdLoans: 0, repo: 0, sold: 0, restr: 0, ltvSum: 0, ltvN: 0 };
+  const y1 = addDays(TODAY, -365), m6 = addDays(TODAY, -183);
+  L.forEach(l => {
+    st.gmv += l.orig; if (l.credit) { if (!st.first || l.credit < st.first) st.first = l.credit; if (!st.last || l.credit > st.last) st.last = l.credit; }
+    st.repaidPrin += l.paidPrin || (l.pays || []).reduce((s, p) => s + p.prin, 0);
+    st.intPaid += l.paidInt || 0;
+    if (l.repo) st.repo++; if (l.soldFlag && l.open) st.sold++; if (/restructur/i.test(l.status) || /restructur/i.test(l.restr)) st.restr++;
+    if (l.dpd > st.maxDpd) st.maxDpd = l.dpd; if (l.dpd >= 1) st.dpdLoans++; if (l.dpd >= TH.dpdAmber) st.parOut += l.out; if (l.dpd >= TH.dpdRed) st.par30Out += l.out;
+    if (l.open && l.ltv) { st.ltvSum += l.ltv; st.ltvN++; }
+    l.miles.forEach(m => {
+      if (!m.due || m.due > TODAY || /not applicable|n\/a|not renewed|cancel/i.test(m.status)) return;
+      st.dueN++; if (m.late > 0) { st.lateN++; st.lateSum += m.late; st.lateCnt++; }
+      if (m.due >= y1) { st.dueN12++; if (m.late > 0) st.lateN12++; }
+      if (m.due >= m6 && m.late > TH.lateDays) st.lateN6++;
+      if (m.late > st.maxLate) st.maxLate = m.late;
+    });
+  });
+  (d.dealerPays || []).forEach(p => { st.feesPaid += p.rfee + p.pen; st.penPaid += p.pen; if (!st.intPaid) { /* v2 totals already summed from loan row */ } });
+  if (!st.intPaid) st.intPaid = (d.dealerPays || []).reduce((s, p) => s + p.int, 0);
+  st.avgLate = st.lateCnt ? st.lateSum / st.lateCnt : 0;
+  st.onTime12 = st.dueN12 ? 1 - st.lateN12 / st.dueN12 : null;
+  st.onTimeAll = st.dueN ? 1 - st.lateN / st.dueN : null;
+  st.avgLtv = st.ltvN ? st.ltvSum / st.ltvN : 0;
+  st.dpdOut = d.out ? st.parOut / d.out : 0;
+  // monthly series (24 months): disbursed, repaid principal, month-end outstanding
+  const ms = monthsBack(24), ser = ms.map(m => ({ m, label: MONTH_ABBR[m.getMonth()] + " '" + String(m.getFullYear()).slice(2), disb: 0, n: 0, repaid: 0, out: 0 }));
+  const idx = {}; ser.forEach((s, i) => idx[mkey(s.m)] = i);
+  L.forEach(l => { if (l.credit && idx[mkey(l.credit)] !== undefined) { const s = ser[idx[mkey(l.credit)]]; s.disb += l.orig; s.n++; } });
+  (d.dealerPays || []).forEach(p => { if (idx[mkey(p.date)] !== undefined) ser[idx[mkey(p.date)]].repaid += p.prin; });
+  ser.forEach(s => { const E = new Date(s.m.getFullYear(), s.m.getMonth() + 1, 1), cap = E > TODAY ? addDays(TODAY, 1) : E; s.out = L.reduce((a, l) => a + outAt(l.id, cap), 0); });
+  st.series = ser;
+  const q = (a, b) => ser.slice(a, b).reduce((s, x) => s + x.disb, 0);
+  st.gmvL3 = q(21, 24); st.gmvP3 = q(18, 21); st.gmvP6 = q(15, 21);
+  st.nL6 = ser.slice(18, 24).reduce((s, x) => s + x.n, 0); st.nL3 = ser.slice(21, 24).reduce((s, x) => s + x.n, 0);
+  d._st = st; return st;
+}
+
+function flagsOf(d) {
+  if (d.flags) return d.flags;
+  const st = stats(d), ck = d.ck, F = [], add = (sev, title, detail) => F.push({ sev, title, detail: detail || '' });
+  const P = n => '₱' + (n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : Math.round(n).toLocaleString('en-US'));
+  if (ck) {
+    if (/blacklist/i.test(ck.clStatus)) add('red', 'Blacklisted', [ck.blkReason, ck.blkDate ? 'since ' + fmtD(ck.blkDate) : ''].filter(Boolean).join(' · '));
+    else if (/hold/i.test(ck.clStatus)) add('amber', 'Credit line on hold', [ck.holdReason, ck.reassess ? 'reassessment ' + fmtD(ck.reassess) : ''].filter(Boolean).join(' · '));
+    if (ck.expiry && d.out > 0 || (ck.expiry && /open/i.test(ck.clStatus))) {
+      const dd = diffDays(ck.expiry, TODAY);
+      if (dd < 0) add(d.out > 0 ? 'red' : 'amber', 'Credit line expired', 'Expired ' + fmtD(ck.expiry) + (d.out > 0 ? ' — ' + P(d.out) + ' still outstanding' : ''));
+      else if (dd <= TH.expirySoon) add('amber', 'Credit line expiring', 'Expires ' + fmtD(ck.expiry) + ' (' + dd + ' days)');
+    }
+  }
+  if (st.maxDpd >= TH.dpdRed) add('red', 'Past due ' + st.maxDpd + ' days', st.dpdLoans + ' loan' + (st.dpdLoans > 1 ? 's' : '') + ' on DPD · ' + P(st.parOut) + ' at 5+ DPD (' + Math.round(st.dpdOut * 100) + '% of outstanding)');
+  else if (st.maxDpd >= TH.dpdAmber) add('amber', 'Past due ' + st.maxDpd + ' days', st.dpdLoans + ' loan' + (st.dpdLoans > 1 ? 's' : '') + ' on DPD · ' + P(st.parOut) + ' at 5+ DPD');
+  else if (st.maxDpd >= 1) add('info', 'Within grace — ' + st.maxDpd + ' DPD', 'Below the 5-day threshold');
+  if (st.lateN6 >= TH.lateN6m) add('amber', 'Repeated late payments', st.lateN6 + ' payments more than ' + TH.lateDays + ' days late in the last 6 months');
+  if (st.dueN12 >= 4 && st.lateN12 / st.dueN12 >= TH.lateRate) add('amber', 'Low on-time rate', Math.round((1 - st.lateN12 / st.dueN12) * 100) + '% of due payments paid on time over the last 12 months (' + st.lateN12 + ' of ' + st.dueN12 + ' late)');
+  if (ck && !isNaN(parseFloat(ck.l3d)) && parseFloat(ck.l3d) >= 15) add('red', 'Slow repayment (L3M)', 'Average repayment delay of ' + parseFloat(ck.l3d).toFixed(1) + ' days over the last 3 months');
+  else if (ck && !isNaN(parseFloat(ck.l3d)) && parseFloat(ck.l3d) >= 5) add('amber', 'Repayment delays (L3M)', 'Average delay of ' + parseFloat(ck.l3d).toFixed(1) + ' days over the last 3 months');
+  const dp = ck && ck.dp, util = dp ? d.out / dp : null;
+  if (util !== null && dp > 0) { if (util > 1.0001) add('red', 'Over drawing power', P(d.out) + ' outstanding vs ' + P(dp) + ' drawing power'); else if (util >= TH.utilAmber) add('amber', 'Near drawing power limit', Math.round(util * 100) + '% utilised'); }
+  if (TOT.out > 0 && d.out / TOT.out >= TH.concAmber) add(d.out / TOT.out >= TH.concRed ? 'red' : 'amber', 'Portfolio concentration', (d.out / TOT.out * 100).toFixed(1) + '% of total company outstanding (' + P(d.out) + ')');
+  if (d.group && GROUPS[d.group] && GROUPS[d.group].length > 1) { const g = GROUPS[d.group], tot = g.reduce((s, x) => s + x.out, 0), ex = g.filter(x => x !== d).reduce((s, x) => s + x.out, 0); if (ex > 0) add(tot / (TOT.out || 1) >= TH.concAmber ? 'amber' : 'info', d.group + ' — combined exposure', P(tot) + ' across ' + g.length + ' linked dealers (' + P(ex) + ' held by the others)'); else add('info', d.group, g.length + ' linked dealers in this family group'); }
+  // collateral
+  const openL = d.open || [];
+  const bad = openL.filter(l => l.lastAudit && /sold|missing|unvalidated|unavailab/i.test(l.lastAudit.vs) && /^fail/i.test(l.lastAudit.status));
+  const sold = openL.filter(l => l.soldFlag || (l.lastAudit && l.lastAudit.sold));
+  if (sold.length) add('red', 'Collateral flagged sold while loan open', sold.length + ' unit' + (sold.length > 1 ? 's' : '') + ': ' + sold.slice(0, 4).map(l => l.id).join(', '));
+  else if (bad.length) add('red', 'Collateral concern on latest audit', bad.length + ' unit' + (bad.length > 1 ? 's' : '') + ' · ' + bad.slice(0, 3).map(l => l.id + ' (' + l.lastAudit.vs + ')').join('; '));
+  const streak = openL.filter(l => l.failStreak >= 2);
+  if (streak.length) add('red', 'Repeated failed stock audits', streak.length + ' open loan' + (streak.length > 1 ? 's' : '') + ' failed 2+ audits in a row');
+  else { const f1 = openL.filter(l => l.lastAudit && /^fail/i.test(l.lastAudit.status)); if (f1.length) add('amber', 'Latest stock audit failed', f1.length + ' of ' + openL.length + ' open loan' + (openL.length > 1 ? 's' : '')); }
+  if (st.repo) add(st.repo >= 3 ? 'red' : 'amber', 'Repossession history', st.repo + ' repossessed unit' + (st.repo > 1 ? 's' : ''));
+  if (st.restr) add('amber', 'Restructured account(s)', st.restr + ' loan' + (st.restr > 1 ? 's' : '') + ' restructured or in restructuring');
+  if (st.penPaid > 0) add('info', 'Penalty fees incurred', P(st.penPaid) + ' penalty fees paid to date');
+  if (openL.length && st.avgLtv > TH.ltvAmber) add('amber', 'High LTV on open loans', 'Average LTV of ' + Math.round(st.avgLtv * 100) + '% (above ' + Math.round(TH.ltvAmber * 100) + '%)');
+  // activity
+  if (st.last && ck && /open/i.test(ck.clStatus)) { const dd = diffDays(TODAY, st.last); if (st.nL6 === 0 && st.n >= 3 && dd > 180) add('info', 'Dormant', 'No drawdown for ' + dd + ' days'); }
+  if (st.n >= 3 && st.nL3 === 0 && st.nL6 >= 3) add('amber', 'Drawdowns stopped', 'No drawdown in the last 3 months after ' + st.nL6 + ' in the 6 months before');
+  if (st.gmvL3 >= TH.rampMin && st.gmvP3 > 0 && st.gmvL3 >= st.gmvP3 * (1 + TH.rampPct) && st.gmvL3 - st.gmvP3 >= TH.rampMin) add('info', 'Rapid ramp-up', 'Last 3 months drawdowns ' + P(st.gmvL3) + ' vs ' + P(st.gmvP3) + ' in the 3 months before');
+  if (d.ob && (/^with negative/i.test(d.ob.bap) || /^with negative/i.test(d.ob.cmap))) add('amber', 'Negative credit hit at onboarding', [/^with negative/i.test(d.ob.bap) ? 'BAP' : '', /^with negative/i.test(d.ob.cmap) ? 'CMAP' : ''].filter(Boolean).join(' & ') + ' flagged a negative credit hit');
+  // positives
+  if (st.dueN12 >= 5 && st.lateN12 === 0 && !F.some(f => f.sev === 'red')) add('green', 'Clean 12-month payment record', st.dueN12 + ' payments due in the last 12 months, none late');
+  if (ck && /^yes/i.test(ck.autoInc)) add('green', 'Qualified for automatic CL increase', ck.nextInc ? 'Next increase ' + fmtD(ck.nextInc) + (ck.nextIncAmt ? ' to ' + P(ck.nextIncAmt) : '') : '');
+  const order = { red: 0, amber: 1, info: 2, green: 3 }; F.sort((a, b) => order[a.sev] - order[b.sev]);
+  const score = Math.min(100, F.reduce((s, f) => s + (f.sev === 'red' ? 25 : f.sev === 'amber' ? 10 : 0), 0));
+  d.flags = F; d.score = score;
+  d.rating = !d.loans.length && !d.ck ? { k: 'grey', t: 'Not rated', s: 'No credit history' } : /blacklist/i.test(ck && ck.clStatus || '') || score >= 50 ? { k: 'red', t: 'High risk', s: 'score ' + score } : score >= 20 ? { k: 'amber', t: 'Watch', s: 'score ' + score } : { k: 'green', t: 'Low risk', s: 'score ' + score };
+  return F;
+}
+
+/* ══════════════════════════════════════════════════
+   VIEWS
+══════════════════════════════════════════════════ */
+var SEGS = ['Active borrower', 'Past borrower', 'Onboarded — no drawdown', 'Applicant', 'Universe prospect'];
+var TABLES = {};
+function pill(cls, t) { return '<span class="pill ' + cls + '">' + esc(t) + '</span>'; }
+function segPill(s) { return pill(s === 'Active borrower' ? 't-green' : s === 'Past borrower' ? 't-blue' : s === 'Onboarded — no drawdown' ? 't-amber' : 't-grey', s); }
+function clPill(ck) { if (!ck || !ck.clStatus) return ''; const s = ck.clStatus; return pill(/blacklist/i.test(s) ? 't-red' : /hold/i.test(s) ? 't-amber' : 't-green', 'Credit line: ' + s); }
+function pesoS(n) { n = n || 0; const a = Math.abs(n); return (n < 0 ? '-' : '') + '₱' + (a >= 1e6 ? (a / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M' : a >= 1e3 ? Math.round(a / 1e3) + 'K' : Math.round(a)); }
+function pc(n) { return n == null || isNaN(n) ? '—' : Math.round(n * 100) + '%'; }
+function dpdHtml(n) { return n >= 1 ? '<span class="pill ' + (n >= TH.dpdRed ? 't-red' : n >= TH.dpdAmber ? 't-amber' : 't-grey') + '">' + n + 'd</span>' : '<span class="muted">0</span>'; }
+function ratingPill(d) { flagsOf(d); const r = d.rating; return '<span class="pill r-' + r.k + '">' + r.t + '</span>'; }
+function sel(id) { S.sel = id; S.tab = 'overview'; history.replaceState(null, '', '#d=' + encodeURIComponent(id)); render(); window.scrollTo(0, 0); }
+
+function searchBox() {
+  return '<div class="toolbar" style="margin-top:0">' + (S.sel ? '<button class="btn" data-act="home">← All dealers</button>' : '') +
+    '<div class="srch"><input class="search" id="q" placeholder="Search dealer name, Dealer ID or GCD code…  (' + DLLIST.length.toLocaleString() + ' dealers)" autocomplete="off" value="' + esc(S.q) + '"><div class="res" id="res" hidden></div></div>' +
+    '<select class="search" id="seg" style="width:auto;flex:none"><option value="all">All segments</option>' + SEGS.map(s => '<option' + (S.seg === s ? ' selected' : '') + '>' + s + '</option>').join('') + '</select></div>';
+}
+function results(q) {
+  q = q.trim().toLowerCase(); const seg = S.seg;
+  let r = DLLIST.filter(d => (seg === 'all' || d.seg === seg) && (!q || d.name.toLowerCase().includes(q) || d.id.toLowerCase().includes(q) || (d.gcd || '').toLowerCase().includes(q)));
+  r.sort((a, b) => ((b.name.toLowerCase().startsWith(q) ? 1 : 0) - (a.name.toLowerCase().startsWith(q) ? 1 : 0)) || (b.out - a.out) || a.name.localeCompare(b.name));
+  return r.slice(0, 40);
+}
+function drawResults() {
+  const q = document.getElementById('q'), res = document.getElementById('res'); if (!q) return;
+  const r = results(q.value); S.q = q.value;
+  res.innerHTML = r.map(d => '<div class="r" data-act="pick" data-id="' + esc(d.id) + '"><div><b>' + esc(d.name) + '</b><div class="small muted">' + esc(d.id.replace(/^(U:|APP:)/, '')) + (d.gcd ? ' · ' + esc(d.gcd) : '') + '</div></div><div style="text-align:right">' + segPill(d.seg) + (d.out ? '<div class="small muted">' + pesoS(d.out) + ' outstanding</div>' : '') + '</div></div>').join('') || '<div class="empty small">No dealers match.</div>';
+  res.hidden = false;
+}
+
+/* ── home: portfolio overview + watchlist ── */
+function renderHome(host) {
+  const act = DLLIST.filter(d => d.seg === 'Active borrower');
+  act.forEach(flagsOf);
+  const par = act.reduce((s, d) => s + stats(d).parOut, 0), par30 = act.reduce((s, d) => s + stats(d).par30Out, 0);
+  const onDpd = act.filter(d => stats(d).maxDpd >= TH.dpdAmber).length;
+  const blk = DLLIST.filter(d => d.ck && /blacklist/i.test(d.ck.clStatus)).length, hold = DLLIST.filter(d => d.ck && /hold/i.test(d.ck.clStatus)).length;
+  const cnt = s => DLLIST.filter(d => d.seg === s).length;
+  let h = searchBox();
+  h += '<div class="ckpis" style="margin-top:6px">' +
+    ck('Active borrowers', act.length.toLocaleString(), TOT.open.toLocaleString() + ' open loans', 'blue') + ck('Total outstanding', pesoS(TOT.out), 'open loan principal') +
+    ck('At 5+ DPD', pesoS(par), pc(TOT.out ? par / TOT.out : 0) + ' of outstanding', par ? 'amber' : '') + ck('At 30+ DPD', pesoS(par30), pc(TOT.out ? par30 / TOT.out : 0) + ' of outstanding', par30 ? 'red' : '') +
+    ck('Dealers on 5+ DPD', onDpd, 'of ' + act.length + ' active', onDpd ? 'amber' : '') + ck('On hold / blacklisted', hold + ' / ' + blk, 'credit line status', blk ? 'red' : '') + '</div>';
+  h += '<div class="sec"><div class="sec-h"><h2>Portfolio watchlist</h2><span class="sub">Dealers with open loans or a held / blacklisted line · click a row to open the profile · rule-based score (see flags on each profile)</span></div><div id="wl"></div></div>';
+  h += '<div class="sub" style="margin-top:14px">Dealers in scope: ' + SEGS.map(s => cnt(s).toLocaleString() + ' ' + s.toLowerCase()).join(' · ') + '</div>';
+  host.innerHTML = h;
+  const rows = DLLIST.filter(d => d.seg === 'Active borrower' || (d.ck && /hold|blacklist/i.test(d.ck.clStatus) && d.out > 0));
+  rows.forEach(flagsOf);
+  TABLES.wl = makeTable(document.getElementById('wl'), [
+    { id: 'n', label: 'Dealer', fz: true, val: d => d.name, html: d => '<b>' + esc(d.name) + '</b> <span class="muted small">' + esc(d.id) + '</span>' },
+    { id: 'r', label: 'Rating', val: d => d.rating.t, html: d => ratingPill(d) }, { id: 's', label: 'Score', type: 'num', val: d => d.score },
+    { id: 'o', label: 'Outstanding', type: 'num', val: d => d.out, txt: d => peso(d.out) }, { id: 'ol', label: 'Open loans', type: 'num', val: d => d.open.length },
+    { id: 'dp', label: 'Max DPD', type: 'num', val: d => stats(d).maxDpd, html: d => dpdHtml(stats(d).maxDpd) },
+    { id: 'par', label: 'At 5+ DPD', type: 'num', val: d => stats(d).parOut, txt: d => peso(stats(d).parOut) },
+    { id: 'u', label: 'Utilisation', type: 'num', val: d => d.ck && d.ck.dp ? Math.round(d.out / d.ck.dp * 100) : '', txt: d => d.ck && d.ck.dp ? Math.round(d.out / d.ck.dp * 100) + '%' : '—' },
+    { id: 'cl', label: 'Credit line', val: d => d.ck ? d.ck.clStatus : '' }, { id: 'nf', label: 'Red flags', type: 'num', val: d => d.flags.filter(f => f.sev === 'red').length },
+    { id: 'tf', label: 'Top flag', val: d => d.flags[0] && d.flags[0].sev !== 'green' ? d.flags[0].title : '' },
+    { id: 'so', label: 'Sales officer', val: d => d.ck ? d.ck.so : '' }, { id: 'grp', label: 'Family group', val: d => d.group || '' }
+  ], rows, { sort: { id: 'par', dir: -1 }, csv: 'credit-watchlist', onRow: d => sel(d.id), maxH: 'calc(100vh - 360px)' });
+}
+function ck(l, n, s, cls) { return '<div class="ck ' + (cls || '') + '"><div class="n">' + n + '</div><div class="l">' + l + '</div><div class="s">' + (s || '') + '</div></div>'; }
+
+/* ── charts (single series each, one axis, hover tooltips) ── */
+function chart(id, title, sub, ser, kind, color) {
+  const W = 600, H = 170, L = 56, B = 22, T = 8, R = 8, n = ser.length, max = Math.max.apply(null, ser.map(s => s.v).concat([1]));
+  const nice = (() => { const p = Math.pow(10, Math.floor(Math.log10(max))), f = max / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; })();
+  const x = i => L + (kind === 'bar' ? (i + .5) * ((W - L - R) / n) : i * ((W - L - R) / Math.max(1, n - 1))), y = v => T + (H - T - B) * (1 - v / nice);
+  let g = ''; [0, .5, 1].forEach(f => { const v = nice * f; g += '<line class="gridline" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text class="axt" x="' + (L - 5) + '" y="' + (y(v) + 3) + '" text-anchor="end">' + pesoS(v) + '</text>'; });
+  let m = '';
+  if (kind === 'bar') { const bw = Math.max(3, (W - L - R) / n * 0.62); ser.forEach((s, i) => { if (s.v > 0) m += '<rect x="' + (x(i) - bw / 2) + '" y="' + y(s.v) + '" width="' + bw + '" height="' + (y(0) - y(s.v)) + '" rx="3" fill="' + color + '"/>'; }); }
+  else { m = '<polyline fill="none" stroke="' + color + '" stroke-width="2" stroke-linejoin="round" points="' + ser.map((s, i) => x(i) + ',' + y(s.v)).join(' ') + '"/>' + ser.map((s, i) => i === n - 1 ? '<circle cx="' + x(i) + '" cy="' + y(s.v) + '" r="4" fill="' + color + '" stroke="var(--card)" stroke-width="2"/>' : '').join(''); }
+  let xl = ''; ser.forEach((s, i) => { if (i % 4 === n % 4 || i === n - 1 && false) xl += '<text class="axt" x="' + x(i) + '" y="' + (H - 6) + '" text-anchor="middle">' + s.label + '</text>'; });
+  const hit = ser.map((s, i) => '<rect data-i="' + i + '" x="' + (x(i) - (W - L - R) / n / 2) + '" y="0" width="' + ((W - L - R) / n) + '" height="' + H + '" fill="transparent"/>').join('');
+  return '<div class="card chart" id="' + id + '"><h3>' + title + '</h3><div class="sub">' + sub + '</div><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(title) + '">' + g + m + xl + hit + '</svg><div class="tip"></div></div>';
+}
+function wireCharts(host, sets) {
+  sets.forEach(c => { const el = host.querySelector('#' + c.id); if (!el) return; const tip = el.querySelector('.tip');
+    el.querySelectorAll('rect[data-i]').forEach(r => { r.addEventListener('mouseenter', e => { const s = c.ser[+r.dataset.i]; tip.innerHTML = '<b>' + s.label + '</b><br>' + c.fmt(s); tip.style.display = 'block'; });
+      r.addEventListener('mousemove', e => { const b = el.getBoundingClientRect(); tip.style.left = Math.min(e.clientX - b.left + 12, b.width - 150) + 'px'; tip.style.top = (e.clientY - b.top - 38) + 'px'; });
+      r.addEventListener('mouseleave', () => { tip.style.display = 'none'; }); }); });
+}
+
+/* ── dealer profile ── */
+function kvs(pairs) { return '<div class="kv2">' + pairs.filter(p => p[1] !== '' && p[1] != null && p[1] !== '—').map(p => '<div><span>' + p[0] + '</span>' + (p[2] ? p[1] : esc(p[1])) + '</div>').join('') + '</div>'; }
+function renderProfile(host) {
+  const d = DL[S.sel]; if (!d) { S.sel = null; return renderHome(host); }
+  flagsOf(d); const st = stats(d), ck_ = d.ck, ob = d.ob, un = d.un, am = d.am;
+  const so = (ck_ && ck_.so) || (am && am.sales) || (ob && ob.sales) || '', sm = (ck_ && ck_.sm) || (am && am.sm) || (ob && ob.sm) || '';
+  const loc = (am && (am.addr || am.city)) || (ob && ob.addr) || (un && un.addr) || '';
+  const redN = d.flags.filter(f => f.sev === 'red').length, ambN = d.flags.filter(f => f.sev === 'amber').length;
+  let h = searchBox();
+  h += '<div class="hero"><div><h1>' + esc(d.name) + '</h1><div class="sub" style="margin:4px 0 8px">' + esc(d.id.replace(/^(U:|APP:)/, '')) + (d.gcd ? ' · ' + esc(d.gcd) : '') + (d.group ? ' · ' + esc(d.group) : '') + '</div>' +
+    '<div class="chips">' + segPill(d.seg) + clPill(ck_) + (ob && ob.obType ? pill('t-grey', ob.obType) : '') + (ck_ && ck_.nb === 'Yes' ? pill('t-grey', 'Netbank') : '') + (ck_ && ck_.ff === 'Yes' ? pill('t-grey', 'Finsso') : '') + '</div></div>' +
+    '<div class="rating r-' + d.rating.k + '"><div>' + d.rating.t + '<small>' + d.rating.s + ' · ' + redN + ' red · ' + ambN + ' amber flag' + (ambN === 1 ? '' : 's') + '</small></div></div></div>';
+  h += '<div class="sec" style="margin-top:12px">' + kvs([['Sales officer / manager', [so, sm && sm !== so ? sm : ''].filter(Boolean).join(' / ')], ['Owner', (ob && ob.owner) || (un && un.owner) || ''], ['Contact', (ob && ob.phone) || (un && un.phone) || ''], ['Location', loc], ['Onboarded', ck_ && ck_.onboarded ? fmtD(ck_.onboarded) : ob && ob.applied ? 'Applied ' + fmtD(ob.applied) : ''], ['Stock audit / collections officer', am ? [am.so, am.co].filter(Boolean).join(' / ') : '']]) + '</div>';
+  h += '<div class="tabs" id="tabs">' + [['overview', 'Overview'], ['loans', 'Loans (' + d.loans.length + ')'], ['payments', 'Payments (' + d.dealerPays.length + ')'], ['audits', 'Stock audits (' + d.audits.length + ')'], ['credit', 'Credit line & onboarding']].map(t => '<button data-act="tab" data-t="' + t[0] + '" class="' + (S.tab === t[0] ? 'on' : '') + '">' + t[1] + '</button>').join('') + '</div><div id="tabbody"></div>';
+  host.innerHTML = h; paintTab();
+}
+function paintTab() {
+  const d = DL[S.sel], b = document.getElementById('tabbody'); if (!d || !b) return; TABLES = {};
+  const st = stats(d), ck_ = d.ck;
+  if (S.tab === 'overview') {
+    let h = '<div class="sec-h"><h2>Credit flags</h2><span class="sub">Rule-based from loan, payment, credit line and stock audit data</span></div><div class="flags">' +
+      (d.flags.length ? d.flags.map(f => '<div class="flag ' + f.sev + '"><div class="ic">' + (f.sev === 'red' ? '!' : f.sev === 'amber' ? '!' : f.sev === 'green' ? '✓' : 'i') + '</div><div><b>' + esc(f.title) + '</b><span>' + esc(f.detail) + '</span></div></div>').join('') : '<div class="card empty">Nothing to flag.</div>') + '</div>';
+    const dp = ck_ && ck_.dp, util = dp ? d.out / dp : null;
+    h += '<div class="sec"><div class="sec-h"><h2>Exposure &amp; performance</h2></div><div class="ckpis">' +
+      ck('Credit limit', ck_ && ck_.cl ? pesoS(ck_.cl) : '—', ck_ && ck_.origCl ? 'originally ' + pesoS(ck_.origCl) : '') + ck('Drawing power', dp ? pesoS(dp) : '—', dp ? pesoS(Math.max(0, dp - d.out)) + ' available' : '') +
+      ck('Outstanding', pesoS(d.out), d.open.length + ' open loan' + (d.open.length === 1 ? '' : 's'), d.out ? 'blue' : '') + ck('Utilisation', util == null ? '—' : pc(util), '', util >= TH.utilAmber ? 'amber' : '') +
+      ck('Max DPD now', st.maxDpd + 'd', st.dpdLoans + ' loan' + (st.dpdLoans === 1 ? '' : 's') + ' past due', st.maxDpd >= TH.dpdRed ? 'red' : st.maxDpd >= TH.dpdAmber ? 'amber' : 'green') + ck('At 5+ DPD', pesoS(st.parOut), pc(st.dpdOut) + ' of outstanding', st.parOut ? 'amber' : '') +
+      ck('Lifetime drawdowns', st.n.toLocaleString(), pesoS(st.gmv) + ' disbursed') + ck('Principal repaid', pesoS(st.repaidPrin), pc(st.gmv ? st.repaidPrin / st.gmv : 0) + ' of disbursed') + ck('Interest paid', pesoS(st.intPaid), 'fees ' + pesoS(st.feesPaid)) +
+      ck('On-time (12M)', st.onTime12 == null ? '—' : pc(st.onTime12), st.dueN12 ? (st.dueN12 - st.lateN12) + ' of ' + st.dueN12 + ' due payments' : 'no payments due', st.onTime12 != null && st.onTime12 < .6 ? 'amber' : st.onTime12 != null ? 'green' : '') +
+      ck('Avg days late', st.lateCnt ? st.avgLate.toFixed(1) : '0', 'across ' + st.lateCnt + ' late payment' + (st.lateCnt === 1 ? '' : 's') + ' · worst ' + st.maxLate + 'd') +
+      ck('First → last drawdown', st.first ? fmtDs(st.first) + "'" + String(st.first.getFullYear()).slice(2) : '—', st.last ? 'last ' + fmtD(st.last) + ' (' + diffDays(TODAY, st.last) + 'd ago)' : '') + '</div></div>';
+    if (st.n) {
+      const A = st.series.map(s => ({ label: s.label, v: s.disb, n: s.n })), Bs = st.series.map(s => ({ label: s.label, v: s.out })), C = st.series.map(s => ({ label: s.label, v: s.repaid }));
+      h += '<div class="sec"><div class="sec-h"><h2>Last 24 months</h2></div><div class="charts">' + chart('c1', 'Drawdowns', 'principal disbursed per month', A, 'bar', '#E8461E') + chart('c2', 'Principal repaid', 'principal collected per month', C, 'bar', '#2563EB') + chart('c3', 'Outstanding principal', 'month-end balance', Bs, 'line', '#0F766E') + '</div></div>';
+    }
+    if (d.open.length) h += '<div class="sec"><div class="sec-h"><h2>Open loans</h2></div><div id="t-open"></div></div>';
+    b.innerHTML = h;
+    if (st.n) wireCharts(b, [{ id: 'c1', ser: st.series, fmt: s => peso(s.disb) + '<br><span class="muted">' + s.n + ' drawdown' + (s.n === 1 ? '' : 's') + '</span>' }, { id: 'c2', ser: st.series, fmt: s => peso(s.repaid) }, { id: 'c3', ser: st.series, fmt: s => peso(s.out) }]);
+    if (d.open.length) TABLES.open = makeTable(document.getElementById('t-open'), loanCols(true), d.open, { sort: { id: 'dpd', dir: -1 }, onRow: l => showLoan(l.id), maxH: '420px' });
+  } else if (S.tab === 'loans') {
+    b.innerHTML = '<div class="sec-h"><h2>All drawdowns</h2><span class="sub">Previous tracker versions and v3 · click a row for the payment schedule, payments and stock audits</span></div><div id="t-loans"></div>';
+    TABLES.loans = makeTable(document.getElementById('t-loans'), loanCols(false), d.loans, { sort: { id: 'cd', dir: -1 }, onRow: l => showLoan(l.id), csv: 'loans-' + d.id });
+  } else if (S.tab === 'payments') {
+    b.innerHTML = '<div class="sec-h"><h2>Repayment history</h2><span class="sub">Every payment received, newest first</span></div><div id="t-pay"></div>';
+    TABLES.pay = makeTable(document.getElementById('t-pay'), payCols(true), d.dealerPays, { sort: { id: 'pd', dir: -1 }, csv: 'payments-' + d.id, onRow: p => showLoan(p.id) });
+  } else if (S.tab === 'audits') {
+    b.innerHTML = '<div class="sec-h"><h2>Stock audit history</h2><span class="sub">Collateral checks across all of this dealer’s drawdowns</span></div><div id="t-aud"></div>';
+    TABLES.aud = makeTable(document.getElementById('t-aud'), [
+      { id: 'd', label: 'Date', type: 'date', val: a => a.date, txt: a => fmtD(a.date) }, { id: 'id', label: 'Drawdown', val: a => a.id },
+      { id: 'u', label: 'Unit', val: a => unitOf(LOANS[a.id]) }, { id: 'r', label: 'Result', val: a => a.status, html: a => pill(/^pass/i.test(a.status) ? 't-green' : /^fail/i.test(a.status) ? 't-red' : 't-grey', a.status || '—') },
+      { id: 'vs', label: 'Vehicle status', val: a => a.vs }, { id: 'w', label: 'Inspector', val: a => a.who }, { id: 'p', label: 'Person contacted', val: a => a.poc },
+      { id: 'sd', label: 'Date sold', type: 'date', val: a => a.sold || '', txt: a => a.sold ? fmtD(a.sold) : '' }, { id: 'sm', label: 'Sales method', val: a => a.method }, { id: 'rm', label: 'Remarks', val: a => a.remarks }
+    ], d.audits, { sort: { id: 'd', dir: -1 }, csv: 'audits-' + d.id, onRow: a => showLoan(a.id) });
+  } else if (S.tab === 'credit') b.innerHTML = creditTab(d);
+}
+function unitOf(l) { return l ? [l.year, l.model].filter(Boolean).join(' ') || '—' : '—'; }
+function loanCols(compact) {
+  const c = [
+    { id: 'id', label: 'Drawdown', fz: true, val: l => l.id, html: l => '<b>' + esc(l.id) + '</b>' },
+    { id: 'cd', label: 'Credit date', type: 'date', val: l => l.credit || '', txt: l => fmtD(l.credit) },
+    { id: 'u', label: 'Unit', val: l => unitOf(l) }, { id: 'pl', label: 'Plate', val: l => l.plate },
+    { id: 'pr', label: 'Principal', type: 'num', val: l => l.orig, txt: l => peso(l.orig) }, { id: 'pp', label: 'Paid principal', type: 'num', val: l => l.paidPrin, txt: l => peso(l.paidPrin) },
+    { id: 'o', label: 'Outstanding', type: 'num', val: l => l.out, txt: l => peso(l.out) }, { id: 'st', label: 'Status', val: l => l.status, html: l => pill(l.open ? (l.dpd >= TH.dpdAmber ? 't-red' : 't-green') : /closed/i.test(l.status) ? 't-grey' : /cancel/i.test(l.status) ? 't-grey' : 't-amber', l.status || '—') },
+    { id: 'dpd', label: 'DPD now', type: 'num', val: l => l.dpd, html: l => dpdHtml(l.dpd) },
+    { id: 'mt', label: 'Maturity', type: 'date', val: l => l.mat || '', txt: l => fmtD(l.mat) }, { id: 'ml', label: 'Worst days late', type: 'num', val: l => l.maxLate },
+    { id: 'la', label: 'Last audit', val: l => l.lastAudit ? l.lastAudit.status : '', html: l => l.lastAudit ? pill(/^pass/i.test(l.lastAudit.status) ? 't-green' : 't-red', l.lastAudit.status) + ' <span class="muted small">' + fmtDs(l.lastAudit.date) + '</span>' : '<span class="muted">none</span>' }];
+  if (!compact) c.push({ id: 'ty', label: 'Financing type', val: l => l.type }, { id: 'fi', label: 'Financier', val: l => l.fin }, { id: 'ra', label: 'Rate', val: l => l.rate }, { id: 'tn', label: 'Tenor (days)', type: 'num', val: l => l.tenor },
+    { id: 'pi', label: 'Interest paid', type: 'num', val: l => l.paidInt, txt: l => peso(l.paidInt) }, { id: 'pe', label: 'Penalties', type: 'num', val: l => l.pens, txt: l => peso(l.pens) }, { id: 'ltv', label: 'LTV', type: 'num', val: l => l.ltv ? Math.round(l.ltv * 100) : '', txt: l => l.ltv ? Math.round(l.ltv * 100) + '%' : '—' },
+    { id: 'se', label: 'Settled', type: 'date', val: l => l.settled || '', txt: l => l.settled ? fmtD(l.settled) : '' }, { id: 'sf', label: 'Flags', val: l => [l.repo ? 'Repossessed' : '', l.soldFlag ? 'Sold' : '', /restructur/i.test(l.status + l.restr) ? 'Restructured' : ''].filter(Boolean).join(', ') });
+  return c;
+}
+function payCols(withLoan) {
+  return [{ id: 'pd', label: 'Payment date', type: 'date', fz: true, val: p => p.date, txt: p => fmtD(p.date) }, { id: 'id', label: 'Drawdown', val: p => p.id }, { id: 'ty', label: 'Type', val: p => p.type }, { id: 'mo', label: 'Mode', val: p => p.mode },
+    { id: 'rc', label: 'Received', type: 'num', val: p => p.recv, txt: p => peso(p.recv) }, { id: 'pr', label: 'Principal', type: 'num', val: p => p.prin, txt: p => peso(p.prin) }, { id: 'in', label: 'Interest', type: 'num', val: p => p.int, txt: p => peso(p.int) },
+    { id: 'rf', label: 'Renewal fee', type: 'num', val: p => p.rfee, txt: p => peso(p.rfee) }, { id: 'pn', label: 'Penalty / late fee', type: 'num', val: p => p.pen, txt: p => peso(p.pen) }, { id: 'cb', label: 'Cashback', type: 'num', val: p => p.cash, txt: p => peso(p.cash) },
+    { id: 'wv', label: 'Waived', type: 'num', val: p => p.waive, txt: p => peso(p.waive) }, { id: 'ex', label: 'Excess / lacking', type: 'num', val: p => Math.round(p.exc * 100) / 100, txt: p => peso(p.exc) },
+    { id: 'du', label: 'Due date', type: 'date', val: p => p.due || '', txt: p => p.due ? fmtD(p.due) : '' }, { id: 'dp', label: 'Days past due', type: 'num', val: p => p.dpd == null ? '' : p.dpd }, { id: 'rm', label: 'Remarks', val: p => p.remarks }];
+}
+function showLoan(id) {
+  const l = LOANS[id]; if (!l) return;
+  const miles = l.miles.map(m => '<tr><td>' + m.k + '</td><td>' + fmtD(m.due) + '</td><td>' + esc(m.status || '—') + '</td><td>' + fmtD(m.paid) + '</td><td class="' + (m.late > 0 ? 'od' : '') + '" style="text-align:right">' + (m.late || 0) + '</td></tr>').join('');
+  const pays = (l.pays || []).slice().sort((a, b) => a.date - b.date).map(p => '<tr><td>' + fmtD(p.date) + '</td><td>' + esc(p.type) + '</td><td style="text-align:right">' + peso(p.prin) + '</td><td style="text-align:right">' + peso(p.int) + '</td><td style="text-align:right">' + peso(p.rfee + p.pen) + '</td></tr>').join('');
+  const aud = (l.audits || []).slice().reverse().map(a => '<div class="e ' + (/^fail/i.test(a.status) ? 'f' : /^pass/i.test(a.status) ? 'p' : '') + '"><b>' + fmtD(a.date) + ' · ' + esc(a.status) + '</b> <span class="muted">' + esc(a.who) + '</span>' + (a.vs ? '<div>' + esc(a.vs) + '</div>' : '') + (a.remarks ? '<div class="muted">' + esc(a.remarks) + '</div>' : '') + '</div>').join('');
+  const tb = (head, body) => '<table class="dt" style="margin:6px 0 10px"><thead><tr>' + head.map(x => '<th><div class="th"><span>' + x + '</span></div></th>').join('') + '</tr></thead><tbody>' + body + '</tbody></table>';
+  openSheet('<h3>' + esc(l.id) + ' · ' + esc(unitOf(l)) + '</h3><div class="sub">' + esc(l.plate) + ' · ' + esc(l.type) + (l.fin ? ' · ' + esc(l.fin) : '') + '</div>' +
+    '<div class="chips" style="margin:8px 0">' + pill(l.open ? (l.dpd >= TH.dpdAmber ? 't-red' : 't-green') : 't-grey', l.status) + (l.dpd ? pill('t-red', l.dpd + ' DPD') : '') + (l.repo ? pill('t-red', 'Repossessed' + (l.repoDate ? ' ' + fmtD(l.repoDate) : '')) : '') + (l.soldFlag ? pill('t-red', 'Flagged sold') : '') + '</div>' +
+    '<div class="kv"><div><span>Credit date</span>' + fmtD(l.credit) + '</div><div><span>Principal</span>' + peso(l.orig) + '</div><div><span>Paid principal</span>' + peso(l.paidPrin) + '</div><div><span>Outstanding</span>' + peso(l.out) + '</div><div><span>Rate</span>' + esc(l.rate || '—') + '</div><div><span>Tenor</span>' + (l.tenor || '—') + ' days</div><div><span>FMV / LTV</span>' + (l.fmv ? peso(l.fmv) : '—') + ' / ' + (l.ltv ? Math.round(l.ltv * 100) + '%' : '—') + '</div><div><span>Settled</span>' + fmtD(l.settled) + '</div></div>' +
+    '<h6 class="muted small" style="text-transform:uppercase">Payment schedule</h6>' + tb(['Milestone', 'Due', 'Status', 'Paid', 'Days late'], miles || '<tr><td colspan="5" class="muted">No schedule on record</td></tr>') +
+    '<h6 class="muted small" style="text-transform:uppercase">Payments</h6>' + tb(['Date', 'Type', 'Principal', 'Interest', 'Fees'], pays || '<tr><td colspan="5" class="muted">No payments recorded</td></tr>') +
+    '<h6 class="muted small" style="text-transform:uppercase">Stock audits</h6><div class="tl">' + (aud || '<div class="muted">No audits recorded</div>') + '</div>' +
+    '<div class="stickyact" style="position:static"><button class="btn" data-act="closesheet">Close</button></div>');
+}
+function creditTab(d) {
+  const ck_ = d.ck, ob = d.ob, un = d.un; let h = '';
+  if (ck_) {
+    h += '<div class="sec-h"><h2>Credit line</h2></div><div class="card">' + kvs([['Status', ck_.clStatus], ['Reason (hold / blacklist)', [ck_.holdReason, ck_.blkReason].filter(Boolean).join(' · ')], ['Blacklisted on', ck_.blkDate ? fmtD(ck_.blkDate) : ''], ['Reassessment date', ck_.reassess ? fmtD(ck_.reassess) : ''],
+      ['Approved credit limit', peso(ck_.cl)], ['Drawing power', peso(ck_.dp)], ['Original credit limit', ck_.origCl ? peso(ck_.origCl) : ''], ['Outstanding (sheet)', peso(ck_.outst)], ['Available drawing power', peso(ck_.avail)], ['Utilisation (sheet)', pc(ck_.util)],
+      ['Netbank line', ck_.nb === 'Yes' ? peso(ck_.nbCl) + ' · out ' + peso(ck_.nbOut) : ''], ['Finsso line', ck_.ff === 'Yes' ? peso(ck_.ffCl) + ' · out ' + peso(ck_.ffOut) : ''], ['Credit line expiry', ck_.expiry ? fmtD(ck_.expiry) : ''], ['Risk pricing', ck_.risk && !isNaN(parseFloat(ck_.risk)) ? (parseFloat(ck_.risk) * 100).toFixed(2) + '%' : ck_.risk],
+      ['L3M avg repayment delay', ck_.l3d && !isNaN(parseFloat(ck_.l3d)) ? parseFloat(ck_.l3d).toFixed(1) + ' days' : ''], ['L6M avg repayment delay', ck_.l6d && !isNaN(parseFloat(ck_.l6d)) ? parseFloat(ck_.l6d).toFixed(1) + ' days' : ''], ['Payments made / due (90 days)', ck_.due90 ? ck_.pay90 + ' / ' + ck_.due90 : ''],
+      ['80% LTV qualified', ck_.ltv80], ['Auto CL increase', ck_.autoInc + (ck_.nextInc ? ' · next ' + fmtD(ck_.nextInc) + (ck_.nextIncAmt ? ' to ' + peso(ck_.nextIncAmt) : '') : '')], ['CL increases (lifetime)', ck_.nIncr ? ck_.nIncr + ' (' + ck_.nAuto + ' automatic)' : ''], ['Lifetime transactions', ck_.lifeTxn ? String(ck_.lifeTxn) : ''], ['Pending Netbank remittance', ck_.pendingRemit ? peso(ck_.pendingRemit) : '']]) + '</div>';
+  }
+  if (ob) {
+    h += '<div class="sec"><div class="sec-h"><h2>Application &amp; credit evaluation</h2></div><div class="card">' + kvs([['Application status', ob.status], ['Initial application', ob.applied ? fmtD(ob.applied) : ''], ['Endorsed to credit', ob.endorsed ? fmtD(ob.endorsed) : ''], ['Credit officer', ob.officer && ob.officer !== '0' ? ob.officer : ''],
+      ['Initial evaluation', /approved|rejected/i.test(ob.init) ? ob.init + (ob.initDate ? ' · ' + fmtD(ob.initDate) : '') : ''], ['Final evaluation', /approved|rejected/i.test(ob.fin) ? ob.fin + (ob.finDate ? ' · ' + fmtD(ob.finDate) : '') : ''], ['BAP', ob.bap], ['CMAP', ob.cmap],
+      ['Credit check remarks', ob.ccRemarks], ['Docs complete?', ob.docsDone], ['Docs pending', ob.docsPending && ob.docsPending !== '0' ? ob.docsPending : ''], ['PDC required', ob.pdc + (ob.pdcWhy ? ' — ' + ob.pdcWhy : '')], ['Co-borrower', ob.co],
+      ['Original credit line issued', ob.clIssued ? fmtD(ob.clIssued) : ''], ['Original CLA signed', ob.claSigned ? fmtD(ob.claSigned) : ''], ['Latest endorsed CL', ob.latestCl ? peso(ob.latestCl) : ''], ['Last CL increase', ob.lastInc ? fmtD(ob.lastInc) : ''], ['Next CL evaluation', ob.nextEval ? fmtD(ob.nextEval) : ''],
+      ['Referred by', ob.referred], ['Sales POC', ob.sales], ['Ops POC', ob.ops], ['Remarks', ob.remarks]]) + '</div></div>';
+    if (ob.incr.length) h += '<div class="sec"><div class="sec-h"><h2>Credit line increase history</h2></div><div class="tbl-wrap"><table class="dt"><thead><tr>' + ['#', 'Type', 'Requested by', 'Proposed credit line', 'Loan cycle', 'Requested', 'CLA received', 'CLA signed'].map(x => '<th><div class="th"><span>' + x + '</span></div></th>').join('') + '</tr></thead><tbody>' +
+      ob.incr.map(i => '<tr><td>' + i.n + '</td><td>' + esc(i.type) + '</td><td>' + esc(i.by) + '</td><td style="text-align:right">' + (i.amt ? peso(i.amt) : '—') + '</td><td>' + esc(i.cycle) + '</td><td>' + fmtD(i.req) + '</td><td>' + fmtD(i.recv) + '</td><td>' + fmtD(i.signed) + '</td></tr>').join('') + '</tbody></table></div></div>';
+  }
+  if (un) h += '<div class="sec"><div class="sec-h"><h2>Dealer universe profile</h2></div><div class="card">' + kvs([['Category', un.cat], ['Dealer size', un.size], ['Inventory size', un.inv], ['Average monthly sales', un.sales], ['City / region', [un.city, un.region].filter(Boolean).join(', ')], ['Address', un.addr], ['Owner', un.owner], ['Contact', un.phone], ['Onboarded by', un.by], ['Onboarded through', un.through], ['Onboarded date', un.onbDate ? fmtD(un.onbDate) : '']]) + '</div></div>';
+  if (d.group && GROUPS[d.group] && GROUPS[d.group].length > 1) h += '<div class="sec"><div class="sec-h"><h2>' + esc(d.group) + '</h2><span class="sub">Linked dealers</span></div><div class="list">' + GROUPS[d.group].map(g => '<div class="item" data-act="pick" data-id="' + esc(g.id) + '" style="cursor:pointer"><div class="item-top"><div><div class="item-t">' + esc(g.name) + (g === d ? ' (this dealer)' : '') + '</div><div class="item-s">' + esc(g.id) + ' · outstanding ' + peso(g.out) + '</div></div>' + ratingPill(g) + '</div></div>').join('') + '</div></div>';
+  return h || '<div class="card empty">No credit line or application record found for this dealer.</div>';
+}
+
+/* ── router / events ── */
+function render() {
+  const host = document.getElementById('view'); TABLES = {};
+  if (S.sel) renderProfile(host); else renderHome(host);
+  const q = document.getElementById('q'); if (q) { q.addEventListener('input', drawResults); q.addEventListener('focus', drawResults);
+    q.addEventListener('keydown', e => { if (e.key === 'Enter') { const r = results(q.value)[0]; if (r) sel(r.id); } else if (e.key === 'Escape') document.getElementById('res').hidden = true; }); }
+  const sg = document.getElementById('seg'); if (sg) sg.addEventListener('change', () => { S.seg = sg.value; drawResults(); });
+}
+document.addEventListener('click', e => {
+  const res = document.getElementById('res'); if (res && !e.target.closest('.srch')) res.hidden = true;
+  const t = e.target.closest('[data-act]'); if (!t) return; const a = t.dataset.act;
+  if (a === 'pick') { closeSheet(); sel(t.dataset.id); } else if (a === 'home') { S.sel = null; S.q = ''; history.replaceState(null, '', location.pathname); render(); }
+  else if (a === 'tab') { S.tab = t.dataset.t; document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b === t)); paintTab(); } else if (a === 'closesheet') closeSheet();
+});
+document.getElementById('theme-btn').addEventListener('click', () => { const r = document.documentElement; const cur = r.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); r.dataset.theme = cur === 'dark' ? 'light' : 'dark'; });
+function fromHash() { const m = /#d=([^&]+)/.exec(location.hash); return m ? decodeURIComponent(m[1]) : null; }
+
+/* ══════════════════════════════════════════════════
+   GOOGLE SIGN-IN + ALLOWLIST GATE
+   Same Access Control service as every other dashboard. Put "Credit" in column B (Dashboards) of the
+   shared Allowlist tab for anyone who should see this page (blank column B = all dashboards).
+══════════════════════════════════════════════════ */
+var ALLOWLIST = null;
+async function _loadAllowlist() {
+  if (ALLOWLIST !== null) return ALLOWLIST;
+  for (let a = 0; a < 3; a++) {
+    if (a) await new Promise(r => setTimeout(r, a * 500));
+    try {
+      const r = await fetch(ALLOWLIST_API + '?action=allowlist&tab=' + encodeURIComponent(ALLOWLIST_TAB) + '&_=' + Date.now()), j = await r.json();
+      const list = (j.emails || []).map(s => String(s).toLowerCase().trim()).filter(Boolean);
+      const entries = Array.isArray(j.entries) ? j.entries.map(e => ({ email: String(e.email || '').toLowerCase().trim(), unrestricted: !!e.unrestricted, teams: (e.teams || []).map(String) })) : null;
+      return (ALLOWLIST = { emails: list, entries });
+    } catch (e) {}
+  }
+  return null;
+}
+async function _isAllowed(email) {
+  const data = await _loadAllowlist(); if (!data) return { ok: false, reason: 'load-failed' };
+  email = String(email).toLowerCase().trim(); const at = email.indexOf('@'), dom = at >= 0 ? email.slice(at) : '';
+  if (!data.entries) return data.emails.indexOf(email) >= 0 || (dom && data.emails.indexOf(dom) >= 0) ? { ok: true } : { ok: false, reason: 'not-listed' };
+  const exact = data.entries.filter(e => e.email === email), pool = exact.length ? exact : data.entries.filter(e => dom && e.email === dom);
+  // "Team <name>" tags only scope the sales dashboards, so only rows that grant this dashboard (unrestricted for 'Credit') count here
+  return pool.some(e => e.unrestricted) ? { ok: true } : { ok: false, reason: 'not-listed' };
+}
+function _decodeJwt(t) { try { const p = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'); return JSON.parse(decodeURIComponent(escape(atob(p)))); } catch (e) { return null; } }
+function _authError(m) { const e = document.getElementById('lock-err'); if (e) e.textContent = m; }
+function _logAccess(email) { try { fetch(ALLOWLIST_API + '?action=log&tab=' + encodeURIComponent(ALLOWLIST_TAB) + '&email=' + encodeURIComponent(email) + '&ua=' + encodeURIComponent(navigator.userAgent) + '&dashboard=' + encodeURIComponent(location.origin + location.pathname), { mode: 'no-cors' }).catch(() => {}); } catch (e) {} }
+var _booted = false;
+async function _grant(profile) {
+  if (_booted) return; _booted = true; ME = profile; _logAccess(profile.email);
+  document.getElementById('avatar').textContent = initials(profile.name || profile.email); document.getElementById('who-name').textContent = profile.name || profile.email;
+  const s = document.getElementById('lock-overlay'); s.classList.add('unlocking'); setTimeout(() => s.classList.add('hidden'), 400);
+  document.getElementById('view').innerHTML = '<div class="loading"><span class="spin"></span>Loading loans, payments and credit lines…<div class="small">This pulls several data files, so the first open takes a moment.</div></div>';
+  try { await loadAll(); } catch (e) { _booted = false; document.getElementById('view').innerHTML = '<div class="card empty">Could not load the data: ' + esc(e.message) + '<br><br><button class="btn" onclick="location.reload()">Retry</button></div>'; return; }
+  const h = fromHash(); S.sel = h && DL[h] ? h : null; render();
+}
+async function _onGoogleCredential(resp) {
+  _authError(''); const data = _decodeJwt(resp && resp.credential);
+  if (!data || !data.email) return _authError('Could not read your Google account. Try again.');
+  if (data.email_verified === false) return _authError('Your Google email is not verified.');
+  const r = await _isAllowed(data.email);
+  if (r.ok) _grant({ email: String(data.email).toLowerCase(), name: data.name || '' });
+  else if (r.reason === 'load-failed') _authError('Could not verify access right now — check your connection and try again.');
+  else { try { google.accounts.id.disableAutoSelect(); } catch (e) {} _authError(data.email + ' does not have access to the Credit dashboard. Ask the admin to add “Credit” next to your email in the Allowlist.'); }
+}
+function _initGoogleAuth() {
+  if (!window.google || !google.accounts || !google.accounts.id) return setTimeout(_initGoogleAuth, 200);
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: _onGoogleCredential, auto_select: true, cancel_on_tap_outside: false });
+  google.accounts.id.renderButton(document.getElementById('g-signin'), { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'signin_with', logo_alignment: 'center', width: 260 });
+  google.accounts.id.prompt();
+}
+_loadAllowlist();
+if (document.readyState !== 'loading') _initGoogleAuth(); else document.addEventListener('DOMContentLoaded', _initGoogleAuth);
+</script>
+</body></html>
