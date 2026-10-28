@@ -228,6 +228,8 @@ textarea.inp{min-height:84px;resize:vertical}
 .kv2 div{font-size:13px}.kv2 span{display:block;font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
 .back2{font-size:12.5px;color:var(--primary);font-weight:700;background:none;border:0;padding:0;margin-bottom:8px}
+.wchips{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}.wchips button{border:1px solid var(--border);background:var(--card2);border-radius:99px;padding:2px 8px;font-size:10.5px;font-weight:700;color:var(--text2)}.wchips button.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.ck.win.red .n{color:var(--red)}.ck.win.amber .n{color:var(--amber)}.ck.win.green .n{color:var(--green)}
 td.od{color:var(--red);font-weight:700}
 </style></head>
 <body>
@@ -580,6 +582,8 @@ async function loadAll() {
       const l = LN.loans[id]; l.paidPrin += p.prin; l.paidInt += p.int;
     });
   }
+  // v3 tracker: the sheet's "Outstanding Principal" can be blank, 0 or negative on live loans — fall back to original principal less principal applied
+  Object.values(LN.loans).forEach(l => { if (l.v === 3) { const paid = (LN.pb[l.id] || []).reduce((s, p) => s + p.prin, 0); if (!(l.out > 0.5) && OPEN_RE.test(l.status)) l.out = Math.max(0, l.orig - paid); } if (l.out < 0) l.out = 0; });
   // ── loan records
   Object.keys(LN.loans).forEach(id => {
     const l = LN.loans[id];
@@ -796,6 +800,27 @@ function flagsOf(d) {
   return F;
 }
 
+/* ── period-switchable tiles: utilisation of credit limit, repayment efficiency, average days late ── */
+function winStats(d, key, w) {
+  const st = stats(d), cl = d.ck && d.ck.cl, days = { L3M: 91, L6M: 183, L12M: 365, all: 100000 }[w], from = addDays(TODAY, -days), tag = w === 'all' ? ' (lifetime)' : ' (' + w + ')';
+  if (key === 'util') {
+    if (!cl) return { n: '—', label: 'Utilisation of credit limit', sub: 'No credit limit on record' };
+    let u, sub;
+    if (w === 'now') { u = d.out / cl; sub = pesoS(d.out) + ' of ' + pesoS(cl) + ' limit'; }
+    else { const s = st.series.slice(w === 'L3M' ? -3 : -6), avg = s.reduce((a, x) => a + x.out, 0) / s.length, pk = Math.max.apply(null, s.map(x => x.out)); u = avg / cl; sub = 'avg month-end balance ' + pesoS(avg) + ' · peak ' + pc(pk / cl) + ' (vs today’s limit)'; }
+    return { n: pc(u), label: 'Utilisation of credit limit' + (w === 'now' ? '' : ' · ' + w + ' avg'), sub, cls: u > 1.0001 ? 'red' : u >= TH.utilAmber ? 'amber' : '' };
+  }
+  let due = 0, ok = 0, late = 0, lateSum = 0, worst = 0;
+  d.loans.forEach(l => l.miles.forEach(m => {
+    if (!m.due || m.due > TODAY || m.due < from || /not applicable|n\/a|not renewed|cancel/i.test(m.status)) return;
+    due++; const paid = !!m.paid || (/renew|paid/i.test(m.status) && !/not|overdue/i.test(m.status));
+    if (paid && m.late <= TH.lateDays) ok++; if (m.late > 0) late++; lateSum += m.late || 0; if (m.late > worst) worst = m.late;
+  }));
+  if (!due) return { n: '—', label: key === 'eff' ? 'Repayment efficiency' + tag : 'Avg days late' + tag, sub: 'No payments fell due in this period' };
+  if (key === 'eff') { const e = ok / due; return { n: pc(e), label: 'Repayment efficiency' + tag, sub: ok + ' of ' + due + ' due payments paid within ' + TH.lateDays + ' days', cls: e >= 0.9 ? 'green' : e >= 0.7 ? '' : e >= 0.5 ? 'amber' : 'red' }; }
+  const avg = lateSum / due; return { n: avg.toFixed(1) + 'd', label: 'Avg days late' + tag, sub: late + ' late of ' + due + ' due · worst ' + worst + 'd', cls: avg >= 15 ? 'red' : avg >= 5 ? 'amber' : 'green' };
+}
+
 /* ══════════════════════════════════════════════════
    VIEWS
 ══════════════════════════════════════════════════ */
@@ -854,11 +879,17 @@ function renderHome(host) {
     { id: 'o', label: 'Outstanding', type: 'num', val: d => d.out, txt: d => peso(d.out) }, { id: 'ol', label: 'Open loans', type: 'num', val: d => d.open.length },
     { id: 'dp', label: 'Max DPD', type: 'num', val: d => stats(d).maxDpd, html: d => dpdHtml(stats(d).maxDpd) },
     { id: 'par', label: 'At 5+ DPD', type: 'num', val: d => stats(d).parOut, txt: d => peso(stats(d).parOut) },
-    { id: 'u', label: 'Utilisation', type: 'num', val: d => d.ck && d.ck.dp ? Math.round(d.out / d.ck.dp * 100) : '', txt: d => d.ck && d.ck.dp ? Math.round(d.out / d.ck.dp * 100) + '%' : '—' },
+    { id: 'u', label: 'Utilisation', type: 'num', val: d => d.ck && d.ck.cl ? Math.round(d.out / d.ck.cl * 100) : '', txt: d => d.ck && d.ck.cl ? Math.round(d.out / d.ck.cl * 100) + '%' : '—' },
     { id: 'nbl', label: 'Netbank line', val: d => lineTxt(d, 'Netbank') }, { id: 'ffl', label: 'Finsso line', val: d => lineTxt(d, 'Finsso') }, { id: 'ex', label: 'Policy status', val: d => d.expected || 'OK' }, { id: 'nf', label: 'Red flags', type: 'num', val: d => d.flags.filter(f => f.sev === 'red').length },
     { id: 'tf', label: 'Top flag', val: d => d.flags[0] && d.flags[0].sev !== 'green' ? d.flags[0].title : '' },
     { id: 'so', label: 'Sales officer', val: d => d.ck ? d.ck.so : '' }, { id: 'grp', label: 'Family group', val: d => d.group || '' }
   ], rows, { sort: { id: 'par', dir: -1 }, csv: 'credit-watchlist', onRow: d => sel(d.id), maxH: 'calc(100vh - 360px)' });
+}
+var WIN = { util: 'now', eff: 'L3M', late: 'L6M' };
+var WIN_OPTS = { util: [['now', 'Now'], ['L3M', 'L3M avg'], ['L6M', 'L6M avg']], eff: [['L3M', 'L3M'], ['L6M', 'L6M'], ['L12M', 'L12M'], ['all', 'All']], late: [['L3M', 'L3M'], ['L6M', 'L6M'], ['L12M', 'L12M'], ['all', 'All']] };
+function winTile(key, d) {
+  const w = winStats(d, key, WIN[key]); const chips = '<div class="wchips">' + WIN_OPTS[key].map(o => '<button data-act="win" data-k="' + key + '" data-w="' + o[0] + '" class="' + (WIN[key] === o[0] ? 'on' : '') + '">' + o[1] + '</button>').join('') + '</div>';
+  return '<div class="ck win ' + (w.cls || '') + '"><div class="n">' + w.n + '</div><div class="l">' + w.label + '</div><div class="s">' + w.sub + '</div>' + chips + '</div>';
 }
 function ck(l, n, s, cls) { return '<div class="ck ' + (cls || '') + '"><div class="n">' + n + '</div><div class="l">' + l + '</div><div class="s">' + (s || '') + '</div></div>'; }
 
@@ -904,14 +935,13 @@ function paintTab() {
   if (S.tab === 'overview') {
     let h = '<div class="sec-h"><h2>Credit flags</h2><span class="sub">Rule-based from loan, payment, credit line and stock audit data</span></div><div class="flags">' +
       (d.flags.length ? d.flags.map(f => '<div class="flag ' + f.sev + '"><div class="ic">' + (f.sev === 'red' ? '!' : f.sev === 'amber' ? '!' : f.sev === 'green' ? '✓' : 'i') + '</div><div><b>' + esc(f.title) + '</b><span>' + esc(f.detail) + '</span></div></div>').join('') : '<div class="card empty">Nothing to flag.</div>') + '</div>';
-    const dp = ck_ && ck_.dp, util = dp ? d.out / dp : null;
-    h += '<div class="sec"><div class="sec-h"><h2>Exposure &amp; performance</h2></div><div class="ckpis">' +
-      ck('Credit limit', ck_ && ck_.cl ? pesoS(ck_.cl) : '—', ck_ && ck_.origCl ? 'originally ' + pesoS(ck_.origCl) : '') + ck('Drawing power', dp ? pesoS(dp) : '—', dp ? pesoS(Math.max(0, dp - d.out)) + ' available' : '') +
-      ck('Outstanding', pesoS(d.out), d.open.length + ' open loan' + (d.open.length === 1 ? '' : 's'), d.out ? 'blue' : '') + ck('Utilisation', util == null ? '—' : pc(util), '', util >= TH.utilAmber ? 'amber' : '') +
+    const cl = ck_ && ck_.cl;
+    h += '<div class="sec"><div class="sec-h"><h2>Exposure &amp; performance</h2><span class="sub">Utilisation, days late and repayment efficiency can be switched between periods using the small chips on each tile</span></div><div class="ckpis">' +
+      ck('Credit limit', cl ? pesoS(cl) : '—', cl ? pesoS(Math.max(0, cl - d.out)) + ' available' + (ck_.origCl ? ' · originally ' + pesoS(ck_.origCl) : '') : '') +
+      ck('Outstanding', pesoS(d.out), d.open.length + ' open loan' + (d.open.length === 1 ? '' : 's'), d.out ? 'blue' : '') + winTile('util', d) +
       ck('Max DPD now', st.maxDpd + 'd', st.dpdLoans + ' loan' + (st.dpdLoans === 1 ? '' : 's') + ' past due', st.maxDpd >= TH.dpdRed ? 'red' : st.maxDpd >= TH.dpdAmber ? 'amber' : 'green') + ck('At 5+ DPD', pesoS(st.parOut), pc(st.dpdOut) + ' of outstanding', st.parOut ? 'amber' : '') +
+      winTile('eff', d) + winTile('late', d) +
       ck('Lifetime drawdowns', st.n.toLocaleString(), pesoS(st.gmv) + ' disbursed') + ck('Principal repaid', pesoS(st.repaidPrin), pc(st.gmv ? st.repaidPrin / st.gmv : 0) + ' of disbursed') + ck('Interest paid', pesoS(st.intPaid), 'fees ' + pesoS(st.feesPaid)) +
-      ck('On-time (12M)', st.onTime12 == null ? '—' : pc(st.onTime12), st.dueN12 ? (st.dueN12 - st.lateN12) + ' of ' + st.dueN12 + ' due payments' : 'no payments due', st.onTime12 != null && st.onTime12 < .6 ? 'amber' : st.onTime12 != null ? 'green' : '') +
-      ck('Avg days late', st.lateCnt ? st.avgLate.toFixed(1) : '0', 'across ' + st.lateCnt + ' late payment' + (st.lateCnt === 1 ? '' : 's') + ' · worst ' + st.maxLate + 'd') +
       ck('First → last drawdown', st.first ? fmtDs(st.first) + "'" + String(st.first.getFullYear()).slice(2) : '—', st.last ? 'last ' + fmtD(st.last) + ' (' + diffDays(TODAY, st.last) + 'd ago)' : '') + '</div></div>';
     if (st.n) {
       const A = st.series.map(s => ({ label: s.label, v: s.disb, n: s.n })), Bs = st.series.map(s => ({ label: s.label, v: s.out })), C = st.series.map(s => ({ label: s.label, v: s.repaid }));
@@ -922,8 +952,9 @@ function paintTab() {
     if (st.n) wireCharts(b, [{ id: 'c1', ser: st.series, fmt: s => peso(s.disb) + '<br><span class="muted">' + s.n + ' drawdown' + (s.n === 1 ? '' : 's') + '</span>' }, { id: 'c2', ser: st.series, fmt: s => peso(s.repaid) }, { id: 'c3', ser: st.series, fmt: s => peso(s.out) }]);
     if (d.open.length) TABLES.open = makeTable(document.getElementById('t-open'), loanCols(true), d.open, { sort: { id: 'dpd', dir: -1 }, onRow: l => showLoan(l.id), maxH: '420px' });
   } else if (S.tab === 'loans') {
-    b.innerHTML = '<div class="sec-h"><h2>All drawdowns</h2><span class="sub">Previous tracker versions and v3 · click a row for the payment schedule, payments and stock audits</span></div><div id="t-loans"></div>';
-    TABLES.loans = makeTable(document.getElementById('t-loans'), loanCols(false), d.loans, { sort: { id: 'cd', dir: -1 }, onRow: l => showLoan(l.id), csv: 'loans-' + d.id });
+    const oc = d.loans.filter(l => l.open).length, lf = S.loanF || 'all', LR = lf === 'open' ? d.loans.filter(l => l.open) : lf === 'closed' ? d.loans.filter(l => !l.open) : d.loans;
+    b.innerHTML = '<div class="sec-h"><h2>Drawdowns</h2><span class="sub">Previous tracker versions and v3 · closed loans show ₱0 outstanding · click a row for the payment schedule, payments and stock audits</span></div><div class="chips" style="margin-bottom:8px">' + [['all', 'All (' + d.loans.length + ')'], ['open', 'Open (' + oc + ')'], ['closed', 'Closed / cancelled (' + (d.loans.length - oc) + ')']].map(c => '<button class="chip' + (lf === c[0] ? ' on' : '') + '" data-act="loanf" data-f="' + c[0] + '">' + c[1] + '</button>').join('') + '</div><div id="t-loans"></div>';
+    TABLES.loans = makeTable(document.getElementById('t-loans'), loanCols(false), LR, { sort: { id: 'cd', dir: -1 }, onRow: l => showLoan(l.id), csv: 'loans-' + d.id });
   } else if (S.tab === 'payments') {
     b.innerHTML = '<div class="sec-h"><h2>Repayment history</h2><span class="sub">Every payment received, newest first</span></div><div id="t-pay"></div>';
     TABLES.pay = makeTable(document.getElementById('t-pay'), payCols(true), d.dealerPays, { sort: { id: 'pd', dir: -1 }, csv: 'payments-' + d.id, onRow: p => showLoan(p.id) });
@@ -943,8 +974,8 @@ function loanCols(compact) {
     { id: 'id', label: 'Drawdown', fz: true, val: l => l.id, html: l => '<b>' + esc(l.id) + '</b>' },
     { id: 'cd', label: 'Credit date', type: 'date', val: l => l.credit || '', txt: l => fmtD(l.credit) },
     { id: 'u', label: 'Unit', val: l => unitOf(l) }, { id: 'pl', label: 'Plate', val: l => l.plate },
-    { id: 'pr', label: 'Principal', type: 'num', val: l => l.orig, txt: l => peso(l.orig) }, { id: 'pp', label: 'Paid principal', type: 'num', val: l => l.paidPrin, txt: l => peso(l.paidPrin) },
-    { id: 'o', label: 'Outstanding', type: 'num', val: l => l.out, txt: l => peso(l.out) }, { id: 'st', label: 'Status', val: l => l.status, html: l => pill(l.open ? (l.dpd >= TH.dpdAmber ? 't-red' : 't-green') : /closed/i.test(l.status) ? 't-grey' : /cancel/i.test(l.status) ? 't-grey' : 't-amber', l.status || '—') },
+    { id: 'pr', label: 'Principal', type: 'num', val: l => l.orig, txt: l => peso(l.orig) },
+    { id: 'o', label: 'Outstanding', type: 'num', val: l => l.out, txt: l => peso(l.out), html: l => l.out > 0.5 ? peso(l.out) : '<span class="muted">—</span>' }, { id: 'st', label: 'Status', val: l => l.status, html: l => pill(l.open ? (l.dpd >= TH.dpdAmber ? 't-red' : 't-green') : /closed/i.test(l.status) ? 't-grey' : /cancel/i.test(l.status) ? 't-grey' : 't-amber', l.status || '—') },
     { id: 'dpd', label: 'DPD now', type: 'num', val: l => l.dpd, html: l => dpdHtml(l.dpd) },
     { id: 'mt', label: 'Maturity', type: 'date', val: l => l.mat || '', txt: l => fmtD(l.mat) }, { id: 'ml', label: 'Worst days late', type: 'num', val: l => l.maxLate },
     { id: 'la', label: 'Last audit', val: l => l.lastAudit ? l.lastAudit.status : '', html: l => l.lastAudit ? pill(/^pass/i.test(l.lastAudit.status) ? 't-green' : 't-red', l.lastAudit.status) + ' <span class="muted small">' + fmtDs(l.lastAudit.date) + '</span>' : '<span class="muted">none</span>' }];
@@ -979,10 +1010,10 @@ function creditTab(d) {
   if (ck_) {
     h += '<div class="sec-h"><h2>Credit lines</h2><span class="sub">Netbank and Finsso lines are independent — each has its own status</span></div><div class="cols3" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">' +
       ck_.lines.map(x => '<div class="card"><div class="item-top"><b>' + x.name + ' line</b>' + (x.has && x.status ? pill(/blacklist/i.test(x.status) ? 't-red' : /hold/i.test(x.status) ? 't-amber' : 't-green', x.status) : pill('t-grey', x.has ? 'No status' : 'No line')) + '</div>' +
-        (x.has ? kvs([['Reason / note', x.reason], ['Approved credit limit', peso(x.cl)], ['Drawing power', peso(x.dp)], ['Outstanding', peso(x.out)], ['Available drawing power', peso(x.avail)]]) : '<div class="muted small" style="margin-top:8px">This dealer has no ' + x.name + ' credit line.</div>') + '</div>').join('') + '</div>' +
+        (x.has ? kvs([['Reason / note', x.reason], ['Approved credit limit', peso(x.cl)], ['Drawing power', peso(x.dp)], ['Outstanding', peso(x.out)], ['Utilisation of limit', x.cl ? pc(x.out / x.cl) : '—'], ['Available drawing power', peso(x.avail)]]) : '<div class="muted small" style="margin-top:8px">This dealer has no ' + x.name + ' credit line.</div>') + '</div>').join('') + '</div>' +
       '<div class="card" style="margin-top:12px"><div class="small muted" style="margin-bottom:6px">Policy: both lines go on <b>Hold</b> at ' + TH.holdDpd + '–' + (TH.blacklistDpd - 1) + ' DPD or when one drawdown fails 2+ audits in a row, and are <b>Blacklisted</b> at ' + TH.blacklistDpd + '+ DPD.' + (d.expected ? ' This dealer’s data points to <b>' + d.expected + '</b> (' + esc(d.expectedWhy) + ').' : ' This dealer currently triggers neither.') + '</div>' +
       kvs([['Overall status (sheet)', ck_.allStatus], ['Overall reason (sheet)', ck_.blkReason], ['Blacklisted on', ck_.blkDate ? fmtD(ck_.blkDate) : ''], ['Reassessment date', ck_.reassess ? fmtD(ck_.reassess) : ''],
-      ['Combined credit limit', peso(ck_.cl)], ['Combined drawing power', peso(ck_.dp)], ['Original credit limit', ck_.origCl ? peso(ck_.origCl) : ''], ['Outstanding (sheet)', peso(ck_.outst)], ['Utilisation (sheet)', pc(ck_.util)], ['Credit line expiry', ck_.expiry ? fmtD(ck_.expiry) : ''], ['Risk pricing', ck_.risk && !isNaN(parseFloat(ck_.risk)) ? (parseFloat(ck_.risk) * 100).toFixed(2) + '%' : ck_.risk],
+      ['Combined credit limit', peso(ck_.cl)], ['Combined drawing power', peso(ck_.dp)], ['Original credit limit', ck_.origCl ? peso(ck_.origCl) : ''], ['Credit line expiry', ck_.expiry ? fmtD(ck_.expiry) : ''], ['Risk pricing', ck_.risk && !isNaN(parseFloat(ck_.risk)) ? (parseFloat(ck_.risk) * 100).toFixed(2) + '%' : ck_.risk],
       ['L3M avg repayment delay', ck_.l3d && !isNaN(parseFloat(ck_.l3d)) ? parseFloat(ck_.l3d).toFixed(1) + ' days' : ''], ['L6M avg repayment delay', ck_.l6d && !isNaN(parseFloat(ck_.l6d)) ? parseFloat(ck_.l6d).toFixed(1) + ' days' : ''], ['Payments made / due (90 days)', ck_.due90 ? ck_.pay90 + ' / ' + ck_.due90 : ''],
       ['80% LTV qualified', ck_.ltv80], ['Auto CL increase', ck_.autoInc + (ck_.nextInc ? ' · next ' + fmtD(ck_.nextInc) + (ck_.nextIncAmt ? ' to ' + peso(ck_.nextIncAmt) : '') : '')], ['CL increases (lifetime)', ck_.nIncr ? ck_.nIncr + ' (' + ck_.nAuto + ' automatic)' : ''], ['Lifetime transactions', ck_.lifeTxn ? String(ck_.lifeTxn) : ''], ['Pending Netbank remittance', ck_.pendingRemit ? peso(ck_.pendingRemit) : '']]) + '</div>';
   }
@@ -1013,6 +1044,8 @@ document.addEventListener('click', e => {
   const t = e.target.closest('[data-act]'); if (!t) return; const a = t.dataset.act;
   if (a === 'pick') { closeSheet(); sel(t.dataset.id); } else if (a === 'home') { S.sel = null; S.q = ''; history.replaceState(null, '', location.pathname); render(); }
   else if (a === 'tab') { S.tab = t.dataset.t; document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b === t)); paintTab(); } else if (a === 'closesheet') closeSheet();
+  else if (a === 'loanf') { S.loanF = t.dataset.f; paintTab(); }
+  else if (a === 'win') { WIN[t.dataset.k] = t.dataset.w; const d = DL[S.sel], tile = t.closest('.ck'); if (d && tile) { const tmp = document.createElement('div'); tmp.innerHTML = winTile(t.dataset.k, d); tile.replaceWith(tmp.firstChild); } }
 });
 document.getElementById('theme-btn').addEventListener('click', () => { const r = document.documentElement; const cur = r.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); r.dataset.theme = cur === 'dark' ? 'light' : 'dark'; });
 function fromHash() { const m = /#d=([^&]+)/.exec(location.hash); return m ? decodeURIComponent(m[1]) : null; }
