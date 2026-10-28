@@ -1049,11 +1049,22 @@ function buildEvents() {
 }
 function periodsDef() {
   const y = TODAY.getFullYear(), m = TODAY.getMonth(), mon = monday(TODAY);
-  return { week: { label: 'This week', from: mon, to: TODAY }, lweek: { label: 'Last week', from: addDays(mon, -7), to: addDays(mon, -1) },
-    mtd: { label: 'Month to date', from: new Date(y, m, 1), to: TODAY }, lmonth: { label: 'Last month', from: new Date(y, m - 1, 1), to: new Date(y, m, 0) },
-    l2month: { label: MONTH_ABBR[(m + 10) % 12] + ' ' + new Date(y, m - 2, 1).getFullYear(), from: new Date(y, m - 2, 1), to: new Date(y, m - 1, 0) } };
+  const P_ = { week: { label: 'This week', from: mon, to: TODAY }, lweek: { label: 'Last week', from: addDays(mon, -7), to: addDays(mon, -1) },
+    mtd: { label: 'Month to date', from: new Date(y, m, 1), to: TODAY }, lmonth: { label: 'Last month', from: new Date(y, m - 1, 1), to: new Date(y, m, 0) }
+  };
+  if (/^pm:/.test(S.lper || '')) { const [py, pm] = S.lper.slice(3).split('-').map(Number); P_.pm = { label: MONTH_ABBR[pm - 1] + ' ' + py, from: new Date(py, pm - 1, 1), to: new Date(py, pm, 0) }; P_[S.lper] = P_.pm; delete P_.pm; }
+  return P_;
 }
 S.lper = 'mtd';
+function lMonthSel() {
+  const start = COVERAGE_START || new Date(TODAY.getFullYear(), 0, 1), opts = [];
+  for (let d = new Date(TODAY.getFullYear(), TODAY.getMonth() - 1, 1); d >= new Date(start.getFullYear(), start.getMonth(), 1); d = new Date(d.getFullYear(), d.getMonth() - 1, 1)) {
+    const k = 'pm:' + d.getFullYear() + '-' + (d.getMonth() + 1);
+    opts.push('<option value="' + k + '"' + (S.lper === k ? ' selected' : '') + '>' + MONTH_ABBR[d.getMonth()] + ' ' + d.getFullYear() + '</option>');
+  }
+  return '<select class="chip' + (/^pm:/.test(S.lper) ? ' on' : '') + '" data-lsel="1"><option value="">Pick a month…</option>' + opts.join('') + '</select>';
+}
+document.addEventListener('change', e => { const t = e.target; if (t && t.dataset && t.dataset.lsel && t.value) { S.lper = t.value; render(); } });
 async function renderLead(host) {
   host.innerHTML = '<div class="loading"><span class="spin"></span>Loading loan and repayment history…<div class="small">This tab loads a few extra files, so the first open takes a moment.</div></div>';
   try { await loadLeadData(); } catch (e) { host.innerHTML = '<div class="card empty">Could not load the history files: ' + esc(e.message) + '</div>'; return; }
@@ -1075,7 +1086,7 @@ async function renderLead(host) {
   const days = []; for (let d = from; d <= to; d = addDays(d, 1)) days.push(d);
   const cnt = days.map(d => insp.filter(e => iso(e.date) === iso(d)).length), mx = Math.max(1, ...cnt);
   let h = '<div class="h1">Leadership</div><div class="sub">' + esc(per.label) + ' · ' + fmtD(from) + ' – ' + fmtD(to) + ' · adherence and on-time use the 30/15/7/3 schedule (current officer assignment)</div>';
-  h += '<div class="chips" style="margin:12px 0">' + Object.keys(P).map(k => '<button class="chip' + (S.lper === k ? ' on' : '') + '" data-act="lper" data-v="' + k + '">' + esc(P[k].label) + '</button>').join('') + '</div>';
+  h += '<div class="chips" style="margin:12px 0;align-items:center">' + Object.keys(P).filter(k => !/^pm:/.test(k)).map(k => '<button class="chip' + (S.lper === k ? ' on' : '') + '" data-act="lper" data-v="' + k + '">' + esc(P[k].label) + '</button>').join('') + lMonthSel() + '</div>';
   h += '<div class="kpis"><div class="kpi blue"><div class="n">' + (T.tot || 0) + '</div><div class="l">Audits done</div><div class="s">' + (T.dealers || 0) + ' dealer-visits</div></div>' +
     '<div class="kpi ' + (T.tot && T.fail / T.tot > 0.4 ? 'red' : 'green') + '"><div class="n">' + pct(T.pass || 0, T.tot || 0) + '</div><div class="l">Pass rate</div><div class="s">' + (T.fail || 0) + ' failed</div></div>' +
     '<div class="kpi ' + ((T.done / T.sch) >= 0.85 ? 'green' : 'amber') + '"><div class="n">' + pct(T.done || 0, T.sch || 0) + '</div><div class="l">Adherence</div><div class="s">' + (T.done || 0) + ' of ' + (T.sch || 0) + ' scheduled</div></div>' +
