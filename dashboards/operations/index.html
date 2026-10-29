@@ -497,7 +497,7 @@ function closeSheet() { document.getElementById('overlay-root').innerHTML = ''; 
 ══════════════════════════════════════════════════ */
 var LOANS = [], LMAP = {}, DISB = [], PAYS = [], EXC = [], PBY = {}, DBY = {}, TAT = [];
 var TAT_START = new Date(2026, 6, 1);   // time stamps only started being recorded in July 2026
-var BIZ = { start: 9, end: 18 };         // business time = Mon–Fri, 09:00–18:00 (assumption — change here)
+var BIZ = { start: 9, end: 17 };         // business time = Mon–Fri, 09:00–17:00 (assumption — change here)
 var OPEN_RE = /^(open|overdue|restructuring active|restructuring pending)$/i;
 var LOOKBACK = 120;            // pending-stage logic only looks at recent records; older gaps are historic data, not live work
 var SLA = { endorse: 2, nbDisb: 5, receipt: 2, remit: 3 };   // business-ish days before a pending item turns amber (×2 = red)
@@ -584,7 +584,7 @@ async function loadAll() {
         id, prod: v3 ? 'v3' : 'v2', dealerId: t.g(r, 'Dealer ID'), dealer: t.g(r, 'Dealership Name'), fin: t.g(r, 'Financier') || '—',
         tenor: v3 ? t.g(r, 'Loan Tenure') : t.g(r, 'Total Loan Tenure (in days)'),
         so: normName(t.g(r, 'Assigned SO')), via: t.g(r, 'Requested Via'), statusRaw: normStatus(t.g(r, 'Loan Status')),
-        cd: t.d(r, 'Credit Date to Dealer Bank Account') || t.d(r, 'PNCM Date'), orig: t.n(r, 'Original Principal'),
+        cd: t.d(r, 'Credit Date to Dealer Bank Account') || t.d(r, 'PNCM Date'), pncmDate: t.d(r, 'PNCM Date'), orig: t.n(r, 'Original Principal'),
         out: v3 ? t.n(r, 'Outstanding Principal') : (t.n(r, 'Total Outstanding Principal') || (/restructur/i.test(t.g(r, 'Loan Status')) ? t.n(r, 'Restructure Outstanding Balance') : 0)),   // restructured loans carry their balance in a separate column
         mat: v3 ? t.d(r, 'Maturity Date') : t.d(r, 'Final Maturity Date'),
         unit: [t.g(r, 'Year Model'), t.g(r, 'Make Model Variant')].filter(Boolean).join(' '), plate: t.g(r, 'Plate Number (as on ORCR)') || t.g(r, 'Plate Number'),
@@ -737,16 +737,26 @@ function bizHours(a, b) {
 }
 function buildTat(grid) {
   TAT = []; if (!grid) return;
-  const t = T(grid), plates = {};
+  TAT_START = new Date(Math.max(new Date(2026, 6, 1), new Date(TODAY.getFullYear(), TODAY.getMonth() - 2, 1)));   // running 3 months: this month + the two before (never earlier than July 2026)
+  const t = T(grid), plates = {}, usedLoan = {};
+  const normName = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   LOANS.forEach(l => { const k = plateKey(l.plate); if (k) (plates[k] = plates[k] || []).push(l); });
   const stamp = (r, n) => fixTime(t.d(r, n));
   t.rows.forEach(r => {
     const sub = t.d(r, 'Drawdown Submission Date by Sales (Captured from Gform)'); if (!sub || sub < TAT_START) return;
     let id = t.g(r, 'Drawdown ID'), plate = t.g(r, 'Plate Number'), dl = null, link = id ? 'ID' : '';
     if (id) dl = DBY[baseId(id)] || null;
-    if (!dl && plate) {     // not linked by Drawdown ID — match the plate to a loan credited on / after the submission
-      const c = (plates[plateKey(plate)] || []).filter(l => l.cd && l.cd >= addDays(sod(sub), -1)).sort((a, b) => a.cd - b.cd)[0];
-      if (c) { id = c.id; dl = DBY[baseId(c.id)] || null; link = 'Plate'; if (!dl) dl = { req: null, cred: c.cd }; }
+    if (!dl && plate) {     // no Drawdown ID: a plate can be re-used, so verify against the dealer, loan amount and PNCM date before linking
+      const amt = t.n(r, 'Loan Amount in Figures'), pn = t.d(r, 'PNCM Date'), dn = normName(t.g(r, 'Dealership/Business Name'));
+      const cands = (plates[plateKey(plate)] || []).filter(l => !usedLoan[l.id] && l.cd && l.cd >= addDays(sod(sub), -1) && l.cd <= addDays(sod(sub), 60)).map(l => {
+        const dealerOk = !!dn && normName(l.dealer) === dn, amtOk = amt > 0 && Math.abs((l.orig || 0) - amt) <= 1, pnOk = !!pn && !!l.pncmDate && sod(pn).getTime() === sod(l.pncmDate).getTime();
+        return { l, dealerOk, amtOk, pnOk, score: (dealerOk ? 4 : 0) + (amtOk ? 2 : 0) + (pnOk ? 2 : 0) };
+      }).filter(c => c.dealerOk || c.amtOk || c.pnOk).sort((a, b) => b.score - a.score || a.l.cd - b.l.cd);
+      const c = cands[0];
+      if (c) {
+        usedLoan[c.l.id] = true; id = c.l.id; dl = DBY[baseId(c.l.id)] || null; if (!dl) dl = { req: null, cred: c.l.cd };
+        link = 'Plate + ' + [c.dealerOk && 'dealer', c.amtOk && 'amount', c.pnOk && 'PNCM date'].filter(Boolean).join(' + ');
+      }
     }
     const x = {
       id, link, dealer: t.g(r, 'Dealership/Business Name'), plate, router: t.g(r, 'Drawdown Submission Router') || '—', kind: t.g(r, 'New or Redrawdown') || '—',
@@ -769,7 +779,7 @@ function buildTat(grid) {
    VIEWS — Overview · Drawdowns & Disbursals · Repayments · Exceptions
 ══════════════════════════════════════════════════ */
 var TABLES = {};
-S.sub = 'loans'; S.lf = 'active'; S.dp = 'pending'; S.py = '30d'; S.ex = 'all'; S.tp = 'all'; S.tb = 'cal'; S.tv = 'all';
+S.sub = 'loans'; S.lf = 'active'; S.dp = 'pending'; S.py = '30d'; S.ex = 'all'; S.tp = 'all'; S.tb = 'cal'; S.tv = 'all'; S.tt = 'trim';
 function pill(cls, t) { return '<span class="pill ' + cls + '">' + esc(t) + '</span>'; }
 function pesoS(n) { n = n || 0; const a = Math.abs(n); return (n < 0 ? '-' : '') + '₱' + (a >= 1e6 ? (a / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M' : a >= 1e3 ? Math.round(a / 1e3) + 'K' : Math.round(a)); }
 function numS(n) { return Math.round(n || 0).toLocaleString('en-US'); }
@@ -854,7 +864,7 @@ function overviewTab() {
   const oldestD = m.pendD.length ? Math.max.apply(null, m.pendD.map(d => d.stageAge || 0)) : 0;
   const oldestR = m.pendR.length ? Math.max.apply(null, m.pendR.map(p => diffDays(TODAY, p.cred || p.date))) : 0;
   let h = '<div class="sec-h"><h2>Where things stand today</h2><span class="sub">Tap a tile to jump to the detail behind it</span></div><div class="ckpis k4">' +
-    tile('Active loan book', pesoS(m.aum), numS(m.A.length) + ' active loans', 'blue', 'loans|active') +
+    tile('Active loan book', pesoS(m.aum), numS(m.A.length) + ' active loans · +' + pesoS(LOANS.filter(l => l.repo).reduce((s, l) => s + l.out, 0)) + ' repossessed = ' + pesoS(m.aum + LOANS.filter(l => l.repo).reduce((s, l) => s + l.out, 0)), 'blue', 'loans|active') +
     tile('Overdue principal', pesoS(m.odOut), numS(m.OD.length) + ' loans · ' + (m.aum ? Math.round(m.odOut / m.aum * 100) : 0) + '% of book', m.OD.length ? 'red' : 'green', 'loans|overdue') +
     tile('Disbursed this month', pesoS(m.dMtdAmt), numS(m.dMtd.length) + ' loans · ' + delta(m.dMtdAmt, m.dLmAmt), '', 'loans|recent') +
     tile('Collected this month', pesoS(m.cMtd), numS(m.pMtd.length) + ' payments · ' + delta(m.cMtd, m.cLm), 'green', 'pays|mtd') +
@@ -1037,7 +1047,7 @@ document.addEventListener('click', e => {
   if (a === 'tab') { S.tab = t.dataset.t; render(); window.scrollTo(0, 0); }
   else if (a === 'flt') { S[t.dataset.k] = v; render(); }
   else if (a === 'sub') { S.sub = v; render(); } else if (a === 'lf') { S.lf = v; render(); } else if (a === 'dp') { S.dp = v; render(); } else if (a === 'py') { S.py = v; render(); } else if (a === 'ex') { S.ex = v; render(); }
-  else if (a === 'tp') { S.tp = v; render(); } else if (a === 'tb') { S.tb = v; render(); } else if (a === 'tv') { S.tv = v; render(); } else if (a === 'closesheet') closeSheet();
+  else if (a === 'tp') { S.tp = v; render(); } else if (a === 'tb') { S.tb = v; render(); } else if (a === 'tv') { S.tv = v; render(); } else if (a === 'tt') { S.tt = v; render(); } else if (a === 'closesheet') closeSheet();
   else if (a === 'go') { const g = t.dataset.go.split('|'); if (g[0] === 'loans') { S.tab = 'deals'; S.sub = 'loans'; S.lf = g[1]; } else if (g[0] === 'pipe') { S.tab = 'deals'; S.sub = 'pipe'; S.dp = g[1]; } else if (g[0] === 'pays') { S.tab = 'pays'; S.py = g[1]; } else if (g[0] === 'exc') { S.tab = 'exc'; S.ex = 'all'; } render(); window.scrollTo(0, 0); }
 });
 /* ══════════════════════════════════════════════════
@@ -1051,12 +1061,13 @@ function fmtH(h) {
 }
 function pctl(a, p) { if (!a.length) return null; const s = a.slice().sort((x, y) => x - y), i = (s.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i); return s[lo] + (s[hi] - s[lo]) * (i - lo); }
 function tatStat(rows, key) {
-  const v = rows.map(r => r[S.tb][key]).filter(x => x != null);
+  let v = rows.map(r => r[S.tb][key]).filter(x => x != null);
+  if (S.tt === 'trim' && v.length >= 10) { v.sort((a, b) => a - b); const k = Math.floor(v.length * 0.1); v = v.slice(k, v.length - k); }
   return { n: v.length, med: median(v), avg: v.length ? v.reduce((a, b) => a + b, 0) / v.length : null, p90: pctl(v, 0.9), max: v.length ? Math.max.apply(null, v) : null, v };
 }
 function tatMonths() { const out = []; for (let d = new Date(TAT_START); d <= TODAY; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) out.push({ key: mkey(d), label: MONTH_ABBR[d.getMonth()] + " '" + String(d.getFullYear()).slice(2) }); return out; }
 function tatTab() {
-  if (!TAT.length) return { html: '<div class="card empty">No DD Masterlist time stamps found since July 2026. Check that <b>dd-masterlist.csv</b> is exported to the data folder.</div>', after() {} };
+  if (!TAT.length) return { html: '<div class="card empty">No DD Masterlist time stamps found in the last 3 months. Check that <b>dd-masterlist.csv</b> is exported to the data folder.</div>', after() {} };
   const MO = tatMonths(), all = TAT, rows = S.tp === 'all' ? all : all.filter(r => r.month === S.tp);
   const live = rows.filter(r => !r.cancelled), cr = rows.filter(r => r.credited && !r.cancelled), ip = rows.filter(r => r.inprog), cx = rows.filter(r => r.cancelled);
   const e2e = tatStat(cr, 't3'), ca = tatStat(rows.filter(r => !r.cancelled), 't1'), cc = tatStat(cr, 't2'), rq = tatStat(cr, 'i7');
@@ -1067,9 +1078,9 @@ function tatTab() {
   const worst = Object.keys(miss).sort((a, b) => miss[b] - miss[a])[0];
   const oldest = ip.length ? Math.max.apply(null, ip.map(r => diffDays(TODAY, r.sub))) : 0;
   const basisLbl = S.tb === 'cal' ? 'calendar time' : 'working time (Mon–Fri ' + BIZ.start + ':00–' + BIZ.end + ':00)';
-  let h = '<div class="callout info" style="margin-bottom:12px">Time stamps are only recorded from <b>July 2026</b>, so this tab starts there. Steps come from the DD Masterlist; the disbursement request and credit times come from the Disbursal tracker, linked by Drawdown ID (or by plate number when the ID is blank). A time stamp with no time of day is counted as ' + BIZ.start + ':00. Cancelled and rejected submissions are left out of the averages.</div>';
-  h += '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px"><div class="chips">' + [['all', 'All since July']].concat(MO.map(m => [m.key, m.label])).map(o => '<button class="chip' + (S.tp === o[0] ? ' on' : '') + '" data-act="tp" data-v="' + o[0] + '">' + o[1] + '</button>').join('') + '</div><div class="chips">' +
-    [['cal', 'Calendar time'], ['biz', 'Working time']].map(o => '<button class="chip' + (S.tb === o[0] ? ' on' : '') + '" data-act="tb" data-v="' + o[0] + '">' + o[1] + '</button>').join('') + '</div></div>';
+  let h = '';
+  h += '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px"><div class="chips">' + [['all', 'Last 3 months']].concat(MO.map(m => [m.key, m.label])).map(o => '<button class="chip' + (S.tp === o[0] ? ' on' : '') + '" data-act="tp" data-v="' + o[0] + '">' + o[1] + '</button>').join('') + '</div><div class="chips">' +
+    [['cal', 'Calendar time'], ['biz', 'Working hours only (Mon–Fri 9–5)']].map(o => '<button class="chip' + (S.tb === o[0] ? ' on' : '') + '" data-act="tb" data-v="' + o[0] + '">' + o[1] + '</button>').join('') + ' <span style="width:14px;display:inline-block"></span>' + [['trim', 'Trim fastest & slowest 10%'], ['all', 'Use all data']].map(o => '<button class="chip' + (S.tt === o[0] ? ' on' : '') + '" data-act="tt" data-v="' + o[0] + '">' + o[1] + '</button>').join('') + '</div></div>';
   h += '<div class="ckpis k4">' +
     tile('Drawdown submissions', numS(rows.length), numS(cr.length) + ' credited · ' + numS(ip.length) + ' in progress · ' + numS(cx.length) + ' cancelled / rejected') +
     tile('End to end — median', fmtH(e2e.med), 'submission → credited to dealer · ' + (e2e.p90 != null ? '90% within ' + fmtH(e2e.p90) : 'no credited rows') + ' · ' + e2e.n + ' drawdowns', 'blue') +
@@ -1097,7 +1108,7 @@ function tatTab() {
   h += '<div class="sec"><div class="sec-h"><h2>Time by step</h2><span class="sub">Medians by submission month · darker = longer · ' + basisLbl + '</span></div><div class="card"><div class="tbl-wrap"><table class="dt"><thead><tr><th>Step</th><th class="num">Drawdowns</th><th class="num">Median</th><th class="num">Average</th><th class="num">90% within</th><th class="num">Longest</th>' + MO.map(m => '<th class="num">' + m.label + '</th>').join('') + '</tr></thead><tbody>' +
     allSteps.map((s, i) => { const st = tatStat(live, s[0]), isT = i >= TAT_STEPS.length, mxr = Math.max.apply(null, MO.map(m => tatStat(live.filter(r => r.month === m.key), s[0]).med || 0).concat([1]));
       return '<tr' + (isT ? ' style="font-weight:700"' : '') + '><td>' + esc(s[1]) + '</td><td class="num">' + st.n + '</td><td class="num"><b>' + fmtH(st.med) + '</b></td><td class="num">' + fmtH(st.avg) + '</td><td class="num">' + fmtH(st.p90) + '</td><td class="num">' + fmtH(st.max) + '</td>' + MO.map(m => cell(tatStat(live.filter(r => r.month === m.key), s[0]), mxr)).join('') + '</tr>'; }).join('') + '</tbody></table></div>' +
-    '<div class="small muted" style="margin-top:8px">Time stamp coverage on credited drawdowns: ' + (cr.length ? Math.round(complete / cr.length * 100) : 0) + '% have every step recorded' + (worst ? ' — most often missing: ' + nm[worst] + ' (' + miss[worst] + ')' : '') + '. Some steps run in parallel (e.g. the ORCR check started before the dealer submission, or the Credit Advice was issued before the ORCR report arrived); those count as 0 for that step. Gaps over 60 days and out-of-order stamps are treated as data-entry errors and left out.</div></div></div>';
+    '<div class="small muted" style="margin-top:8px">Time stamp coverage on credited drawdowns: ' + (cr.length ? Math.round(complete / cr.length * 100) : 0) + '% have every step recorded' + (worst ? ' — most often missing: ' + nm[worst] + ' (' + miss[worst] + ')' : '') + '. Some steps run in parallel (e.g. the ORCR check started before the dealer submission, or the Credit Advice was issued before the ORCR report arrived); those count as 0 for that step. Gaps over 60 days and out-of-order stamps are treated as data-entry errors and left out.'+(S.tt==='trim'?' Medians, averages, 90th percentiles and longest values exclude the fastest and slowest 10% of each step.':'')+'</div></div></div>';
   // detail table
   const cnt = { all: rows.length, credited: cr.length, inprog: ip.length, cancel: cx.length, slow: Math.min(20, e2e.n) };
   h += '<div class="sec"><div class="sec-h"><h2>Every submission</h2><span class="sub">Click a row for its full timeline</span></div>' + subChips([['all', 'All (' + cnt.all + ')'], ['credited', 'Credited (' + cnt.credited + ')'], ['inprog', 'In progress (' + cnt.inprog + ')'], ['slow', 'Slowest 20'], ['cancel', 'Cancelled / rejected (' + cnt.cancel + ')']], S.tv, 'tv') + '<div class="card" id="t-tat"></div></div>';
