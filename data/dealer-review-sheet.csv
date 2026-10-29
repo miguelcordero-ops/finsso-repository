@@ -454,7 +454,7 @@
 ,IF0453,JNZ CAR TRADING,Albert Dalupang,Zhesa Resurrecion,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0454,BEARD CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0455,JDRED.GARAGE CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,1,0,500000,500000,500000,0,36,,,,Open,,,,,1,1,0,,0,0,46317,1,1,0,0,No
-,IF0456,KAPATID AUTO TRADING,Albert Dalupang,Albert Dalupang,0,6,3,0,1306395,1306395,1306395,0,34.22222222,,,,Hold,Multiple Failure Audits,,,,13,7,6,,0,0,46324,7,3,4,0,Yes
+,IF0456,KAPATID AUTO TRADING,Albert Dalupang,Albert Dalupang,0,6,3,0,1306395,1306395,1306395,0,34.22222222,,,,Hold,Multiple Failure Audits,,46324.89258,46324.89258,13,7,6,,0,0,46324,7,3,4,0,Yes
 ,IF0457,JOHNMARK EDORA CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0458,LEOROMMEL AUTO SHOP,Albert Dalupang,Albert Dalupang,0,4,2,0,756000,756000,756000,0,39.83333333,,,,Open,,,,,7,7,0,,0,0,46302,2,2,0,0,No
 ,IF0459,ONICHAN CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CLA Signature | Netbank: Pending CL,,46195.42569,,0,0,0,,0,0,,0,0,0,0,No
