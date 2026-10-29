@@ -537,13 +537,13 @@ const METRIC_SECTIONS = [
   { title: 'Visits & Conversion', metrics: ['Total Visit', 'Unique Visits', 'Visits to Application', 'Average Visit'] },
   { title: 'Visit Purpose Breakdown', metrics: VISIT_PURPOSE_KEYS.map(k => 'Visits: ' + k) },
   { title: 'Onboarding & Drawdowns', metrics: ['New Dealer Applications', 'Dealer Application Completed', 'Onboarded Dealers', 'Total Disbursals', 'Drawdowns (Sales)', 'Drawdowns (Runners request)'] },
-  { title: 'GMV & AUM', metrics: ['GMV', 'AUM', 'AUM (Net Blacklisted)', 'GMV Growth', 'AUM Growth'] },
+  { title: 'GMV & AUM', metrics: ['GMV', 'AUM', 'AUM (Net Blacklisted)', 'GMV Growth', 'AUM Growth', 'AUM Movement (Net Blacklisted)'] },
   { title: 'Dealer Activation', metrics: ['AUM Active Dealer', 'First-time Activation', 'Same Month Activation'] },
 ];
 const METRIC_TYPES = {
   'Total Visit': 'Count', 'Unique Visits': 'Count', 'Visits to Application': 'Percent', 'Average Visit': 'Ratio',
   'New Dealer Applications': 'Count', 'Dealer Application Completed': 'Count', 'Onboarded Dealers': 'Count', 'Total Disbursals': 'Count', 'Drawdowns (Sales)': 'Count', 'Drawdowns (Runners request)': 'Count',
-  'GMV': 'Currency', 'AUM': 'Currency', 'AUM (Net Blacklisted)': 'Currency', 'GMV Growth': 'Percent', 'AUM Growth': 'Percent',
+  'GMV': 'Currency', 'AUM': 'Currency', 'AUM (Net Blacklisted)': 'Currency', 'GMV Growth': 'Percent', 'AUM Growth': 'Percent', 'AUM Movement (Net Blacklisted)': 'Currency',
   'AUM Active Dealer': 'Count', 'First-time Activation': 'Count', 'Same Month Activation': 'Count',
 };
 VISIT_PURPOSE_KEYS.forEach(k => { METRIC_TYPES['Visits: ' + k] = 'Count'; });
@@ -733,7 +733,7 @@ async function loadData() {
 
     // ── Drawdown (one row per loan) ──
     const ddCol = buildColumnMap(ddGrid[0]);
-    drawdownRows = [];
+    drawdownRows = []; blacklistedDealerSet = null;
     for (let i = 1; i < ddGrid.length; i++) {
       const r = ddGrid[i];
       const id = get(r, ddCol('Drawdown ID')).trim();
@@ -888,6 +888,7 @@ async function loadData() {
           dealerId,
           so: normName(get(r, dcCol('Assigned Sales Officer'))),
           onboardingDate: parseSheetDate(get(r, dcCol('Original Onboarding Date'))),
+          name: get(r, dcCol('Dealership Name')).trim(),
         });
       }
     }
@@ -907,11 +908,24 @@ async function loadData() {
         const applicationDate = parseSheetDate(get(r, obCol('Date of Initial Application')));
         const completionDate = parseSheetDate(get(r, obCol('Date of Completion of Onboarding Documents by Sales')));
         if (!so && !applicationDate && !completionDate) continue; // fully blank row
-        applicationRows.push({ dealerId, so, applicationDate, completionDate });
+        applicationRows.push({ dealerId, so, applicationDate, completionDate, name: get(r, obCol('Dealership Name')).trim() });
         const nm = get(r, obCol('Dealership Name')).trim();
         if (dealerId && nm && !obNames[dealerId]) obNames[dealerId] = nm;
       }
     }
+
+    // ── Fallback sales officer for dealers whose Dealer Checker row has no "Assigned Sales Officer"
+    // yet (newly onboarded dealers often appear there before the SO is filled in): take the
+    // "Assigned Sales POC" from the OB Masterlist, matched by Dealer ID first, then by dealership name. ──
+    const nameKey = s => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    const soByDealerId = {}, soByName = {};
+    applicationRows.forEach(a => {
+      if (!a.so) return;
+      if (a.dealerId && !soByDealerId[a.dealerId]) soByDealerId[a.dealerId] = a.so;
+      const k = nameKey(a.name); if (k && !soByName[k]) soByName[k] = a.so;
+    });
+    const soFallback = (dealerId, name) => soByDealerId[dealerId] || soByName[nameKey(name)] || '';
+    onboardingRows.forEach(o => { if (!o.so) o.so = soFallback(o.dealerId, o.name); });
 
     // ── Dealer master (full "[Raw] Dealer Checker" sheet) for the Dealer
     // Status card. First occurrence of a repeated header wins (the sheet has
@@ -931,7 +945,7 @@ async function loadData() {
           dealerId,
           name: g(r, 'Dealership Name') || nameFromLoans[dealerId] || obNames[dealerId] || '(unnamed)',
           gcd: g(r, 'GCD Code'),
-          so: normName(g(r, 'Assigned Sales Officer')),
+          so: normName(g(r, 'Assigned Sales Officer')) || soFallback(dealerId, g(r, 'Dealership Name') || nameFromLoans[dealerId] || obNames[dealerId]),
           familyGroup: g(r, 'Same Group'),
           openLoansSheet: g(r, 'No. of open Loans'),
           lifetimeTxn: g(r, "Lifetime TXN's"),
@@ -1013,6 +1027,13 @@ function getDealerFirstDrawdown() {
   return dealerFirstDrawdown;
 }
 
+let blacklistedDealerSet = null;
+function getBlacklistedDealers() {
+  if (blacklistedDealerSet) return blacklistedDealerSet;
+  blacklistedDealerSet = new Set();
+  drawdownRows.forEach(l => { if (l.blacklistedDate && l.dealerId) blacklistedDealerSet.add(l.dealerId); });
+  return blacklistedDealerSet;
+}
 function teamOf(so) { return SO_TEAM_MAP[so] || null; }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1062,15 +1083,24 @@ function computeMonth(mStart, mEnd) {
   // Drawdown-stock metrics (AUM, AUM Net Blacklisted, AUM Active Dealer) —
   // attributed to the current book-owner SO, reconstructed as of month-end
   // (or "today" for the in-progress current month).
+  // AUM follows the loan's ASSIGNED SO (the originating officer), matching the
+  // Leadership "MOM Dealer Level AUM" sheet — the "SO" (current book owner)
+  // column is not used because transferred / blank-SO loans made the team
+  // totals jump without any real change in exposure.
+  // AUM (Net Blacklisted) excludes every dealer that is blacklisted TODAY, in
+  // all months alike, so month-to-month movement compares the same set of
+  // dealers (same logic as the sheet: only non-blacklisted dealers' movement).
+  const blDealers = getBlacklistedDealers();
   drawdownRows.forEach(loan => {
-    attribute(loan.so);
-    if (!loan.so) return;
+    const owner = loan.assignedSO || loan.so;
+    attribute(owner);
+    if (!owner) return;
     const out = outstandingAsOf(loan, mEnd);
     if (out <= 0) return;
-    const b = bucket(loan.so);
+    const b = bucket(owner);
     b.aum += out;
     b.aumActiveDealers.add(loan.dealerId);
-    const isBlacklisted = loan.blacklistedDate && loan.blacklistedDate <= mEnd;
+    const isBlacklisted = blDealers.has(loan.dealerId) || !!loan.blacklistedDate;
     if (!isBlacklisted) b.aumNetBlacklisted += out;
   });
 
@@ -1236,7 +1266,10 @@ function applyGrowth(series) {
     const gmvPrev = prev ? prev['GMV'] : null;
     const aumPrev = prev ? prev['AUM'] : null;
     series[i]['GMV Growth'] = gmvPrev ? (series[i]['GMV'] - gmvPrev) / gmvPrev : null;
-    series[i]['AUM Growth'] = aumPrev ? (series[i]['AUM'] - aumPrev) / aumPrev : null;
+    // AUM growth / movement use AUM (Net Blacklisted): non-blacklisted dealers only.
+    const nbPrev = prev ? prev['AUM (Net Blacklisted)'] : null;
+    series[i]['AUM Growth'] = nbPrev ? (series[i]['AUM (Net Blacklisted)'] - nbPrev) / nbPrev : null;
+    series[i]['AUM Movement (Net Blacklisted)'] = prev ? series[i]['AUM (Net Blacklisted)'] - nbPrev : null;
   }
 }
 
