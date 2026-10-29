@@ -765,6 +765,8 @@ function buildTat(grid) {
       pncm: stamp(r, 'PNCM Issuance Date to Dealer'), sign: stamp(r, 'PNCM / Disclosure Statement /Amortization Schedule Execution Date'),
       req: dl && dl.req ? fixTime(dl.req) : null, cred: dl && dl.cred ? fixTime(dl.cred) : null
     };
+    const ln = id ? (LMAP[id] || LMAP[baseId(id)]) : null;   // v3 loans from October 2026: the tracker's PNCM Date is the PNCM issuance
+    if (!x.pncm && ln && ln.prod === 'v3' && ln.pncmDate && sub >= new Date(2026, 9, 1)) x.pncm = fixTime(ln.pncmDate);
     x.month = mkey(sub); x.cancelled = /cancel|reject/i.test(x.status); x.credited = !!x.cred; x.inprog = !x.credited && !x.cancelled;
     x.cal = {}; x.biz = {}; x.neg = []; x.early = [];
     TAT_STEPS.concat(TAT_TOTALS).forEach(s => {
