@@ -499,7 +499,7 @@ function closeSheet() { document.getElementById('overlay-root').innerHTML = ''; 
    Collateral: stock-inspection.csv · Prospects: dealeruniverse.csv (optional)
 ══════════════════════════════════════════════════ */
 var OPEN_RE = /^(open|overdue|restructuring active|restructuring pending)$/i;
-var LOANS = {}, LOANLIST = [], PAYS = [], AUDITS = [], DL = {}, DLLIST = [], GROUPS = {}, TOT = { out: 0, open: 0 };
+var LOANS = {}, LOANLIST = [], PAYS = [], AUDITS = [], DL = {}, DLLIST = [], GROUPS = {}, TOT = { out: 0, open: 0, aum: 0 };
 var LN = { loans: {}, pb: {} };
 
 function kindOf(t) { t = String(t || '').toLowerCase(); return t.includes('renewal 1') ? 'R1' : t.includes('renewal 2') ? 'R2' : t.includes('final') ? 'M' : null; }
@@ -588,6 +588,8 @@ async function loadAll() {
   Object.keys(LN.loans).forEach(id => {
     const l = LN.loans[id];
     l.open = OPEN_RE.test(l.status) && l.out > 0.5 && !l.repo;
+    // tracker still says Open/Overdue but nothing is outstanding (principal fully repaid) — treat as Closed and mark it
+    l.stale = false; if (OPEN_RE.test(l.status) && !(l.out > 0.5) && !l.repo) { l.statusRaw = l.status; l.status = 'Closed'; l.stale = true; }
     l.dpd = l.open ? (l.v === 3 ? l.dpdSheet : dpdAt(id, TODAY)) : 0;
     l.maxLate = 0; l.lateN = 0; l.dueN = 0; l.pens = 0;
     l.miles.forEach(m => { if (m.due && m.due <= TODAY && !/not applicable|n\/a|not renewed/i.test(m.status)) { l.dueN++; if (m.late > 0) { l.lateN++; } } if (m.late > l.maxLate) l.maxLate = m.late; l.pens += m.pen || 0; });
@@ -678,11 +680,12 @@ async function loadAll() {
     });
   }
   // ── classify + totals + groups
-  TOT = { out: 0, open: 0 };
+  TOT = { out: 0, open: 0, aum: 0 };
   DLLIST = Object.values(DL);
   DLLIST.forEach(d => {
     d.loans.sort((a, b) => (b.credit || 0) - (a.credit || 0));
     d.open = d.loans.filter(l => l.open); d.out = d.open.reduce((s, l) => s + l.out, 0); TOT.out += d.out; TOT.open += d.open.length;
+    d.aum = d.loans.reduce((s, l) => s + (l.credit && l.credit <= TODAY ? Math.max(0, (l.orig || 0) - (l.paidPrin || 0)) : 0), 0); TOT.aum += d.aum;   // same AUM logic as Sales Team Performance: original principal less principal repaid, repossessed units included
     d.seg = d.open.length ? 'Active borrower' : d.loans.length ? 'Past borrower' : d.ck ? 'Onboarded — no drawdown' : (d.ob && !/^U:/.test(d.id)) ? 'Applicant' : 'Universe prospect';
     if (d.group) (GROUPS[d.group] = GROUPS[d.group] || []).push(d);
     d.dealerPays = []; d.audits = [];
@@ -698,6 +701,7 @@ async function loadAll() {
 ══════════════════════════════════════════════════ */
 var TH = { holdDpd: 5, blacklistDpd: 15, dpdRed: 30, dpdAmber: 5, lateDays: 5, lateN6m: 3, lateRate: 0.4, utilAmber: 0.9, concAmber: 0.05, concRed: 0.10, expirySoon: 60, dormant: 90, rampPct: 0.5, rampMin: 1000000, ltvAmber: 0.8 };
 
+function grpAum(d) { return d.group && GROUPS[d.group] ? GROUPS[d.group].reduce((s, x) => s + (x.aum || 0), 0) : (d.aum || 0); }
 function monthsBack(n) { const out = []; for (let i = n - 1; i >= 0; i--) out.push(new Date(TODAY.getFullYear(), TODAY.getMonth() - i, 1)); return out; }
 function stats(d) {
   if (d._st) return d._st;
@@ -770,8 +774,8 @@ function flagsOf(d) {
   else if (ck && !isNaN(parseFloat(ck.l3d)) && parseFloat(ck.l3d) >= 5) add('amber', 'Repayment delays (L3M)', 'Average delay of ' + parseFloat(ck.l3d).toFixed(1) + ' days over the last 3 months');
   const dp = ck && ck.dp, util = dp ? d.out / dp : null;
   if (util !== null && dp > 0) { if (util > 1.0001) add('red', 'Over drawing power', P(d.out) + ' outstanding vs ' + P(dp) + ' drawing power'); else if (util >= TH.utilAmber) add('amber', 'Near drawing power limit', Math.round(util * 100) + '% utilised'); }
-  if (TOT.out > 0 && d.out / TOT.out >= TH.concAmber) add(d.out / TOT.out >= TH.concRed ? 'red' : 'amber', 'Portfolio concentration', (d.out / TOT.out * 100).toFixed(1) + '% of total company outstanding (' + P(d.out) + ')');
-  if (d.group && GROUPS[d.group] && GROUPS[d.group].length > 1) { const g = GROUPS[d.group], tot = g.reduce((s, x) => s + x.out, 0), ex = g.filter(x => x !== d).reduce((s, x) => s + x.out, 0); if (ex > 0) add(tot / (TOT.out || 1) >= TH.concAmber ? 'amber' : 'info', d.group + ' — combined exposure', P(tot) + ' across ' + g.length + ' linked dealers (' + P(ex) + ' held by the others)'); else add('info', d.group, g.length + ' linked dealers in this family group'); }
+  if (TOT.aum > 0 && d.aum / TOT.aum >= TH.concAmber) add(d.aum / TOT.aum >= TH.concRed ? 'red' : 'amber', 'Portfolio concentration', (d.aum / TOT.aum * 100).toFixed(1) + '% of total IF AUM (' + P(d.aum) + ' of ' + P(TOT.aum) + ')');
+  if (d.group && GROUPS[d.group] && GROUPS[d.group].length > 1) { const g = GROUPS[d.group], tot = g.reduce((s, x) => s + x.out, 0), ex = g.filter(x => x !== d).reduce((s, x) => s + x.out, 0); if (ex > 0) { const ga = grpAum(d), gp = TOT.aum ? ga / TOT.aum : 0; add(gp >= TH.concRed ? 'red' : gp >= TH.concAmber ? 'amber' : 'info', d.group + ' — combined exposure', P(tot) + ' outstanding across ' + g.length + ' linked dealers (' + P(ex) + ' held by the others) · family AUM ' + P(ga) + ' = ' + (gp * 100).toFixed(1) + '% of IF AUM'); } else add('info', d.group, g.length + ' linked dealers in this family group'); }
   // collateral
   const openL = d.open || [];
   const bad = openL.filter(l => l.lastAudit && /sold|missing|unvalidated|unavailab/i.test(l.lastAudit.vs) && /^fail/i.test(l.lastAudit.status));
@@ -876,7 +880,7 @@ function renderHome(host) {
   TABLES.wl = makeTable(document.getElementById('wl'), [
     { id: 'n', label: 'Dealer', fz: true, val: d => d.name, html: d => '<b>' + esc(d.name) + '</b> <span class="muted small">' + esc(d.id) + '</span>' },
     { id: 'r', label: 'Rating', val: d => d.rating.t, html: d => ratingPill(d) }, { id: 's', label: 'Score', type: 'num', val: d => d.score },
-    { id: 'o', label: 'Outstanding', type: 'num', val: d => d.out, txt: d => peso(d.out) }, { id: 'ol', label: 'Open loans', type: 'num', val: d => d.open.length },
+    { id: 'o', label: 'Outstanding', type: 'num', val: d => d.out, txt: d => peso(d.out) }, { id: 'ca', label: '% of IF AUM', type: 'num', val: d => TOT.aum ? Math.round(d.aum / TOT.aum * 10000) / 100 : 0, txt: d => TOT.aum ? (d.aum / TOT.aum * 100).toFixed(2) + '%' : '—' }, { id: 'cg', label: 'Family % of IF AUM', type: 'num', val: d => d.group && TOT.aum ? Math.round(grpAum(d) / TOT.aum * 10000) / 100 : '', txt: d => d.group && TOT.aum ? (grpAum(d) / TOT.aum * 100).toFixed(2) + '%' : '—' }, { id: 'ol', label: 'Open loans', type: 'num', val: d => d.open.length },
     { id: 'dp', label: 'Max DPD', type: 'num', val: d => stats(d).maxDpd, html: d => dpdHtml(stats(d).maxDpd) },
     { id: 'par', label: 'At 5+ DPD', type: 'num', val: d => stats(d).parOut, txt: d => peso(stats(d).parOut) },
     { id: 'u', label: 'Utilisation', type: 'num', val: d => d.ck && d.ck.cl ? Math.round(d.out / d.ck.cl * 100) : '', txt: d => d.ck && d.ck.cl ? Math.round(d.out / d.ck.cl * 100) + '%' : '—' },
@@ -938,7 +942,7 @@ function paintTab() {
     const cl = ck_ && ck_.cl;
     h += '<div class="sec"><div class="sec-h"><h2>Exposure &amp; performance</h2><span class="sub">Utilisation, days late and repayment efficiency can be switched between periods using the small chips on each tile</span></div><div class="ckpis">' +
       ck('Credit limit', cl ? pesoS(cl) : '—', cl ? pesoS(Math.max(0, cl - d.out)) + ' available' + (ck_.origCl ? ' · originally ' + pesoS(ck_.origCl) : '') : '') +
-      ck('Outstanding', pesoS(d.out), d.open.length + ' open loan' + (d.open.length === 1 ? '' : 's'), d.out ? 'blue' : '') + winTile('util', d) +
+      ck('Outstanding', pesoS(d.out), d.open.length + ' open loan' + (d.open.length === 1 ? '' : 's'), d.out ? 'blue' : '') + winTile('util', d) + (d.group && GROUPS[d.group] && GROUPS[d.group].length > 1 ? ck('Family % of IF AUM', TOT.aum ? (grpAum(d) / TOT.aum * 100).toFixed(2) + '%' : '—', esc(d.group) + ' · ' + pesoS(grpAum(d)) + ' across ' + GROUPS[d.group].length + ' linked dealers', TOT.aum && grpAum(d) / TOT.aum >= TH.concRed ? 'red' : TOT.aum && grpAum(d) / TOT.aum >= TH.concAmber ? 'amber' : '') : '') + ck('% of IF AUM', TOT.aum ? (d.aum / TOT.aum * 100).toFixed(2) + '%' : '—', pesoS(d.aum) + ' of ' + pesoS(TOT.aum) + ' total IF AUM (incl. repossessed)', TOT.aum && d.aum / TOT.aum >= TH.concRed ? 'red' : TOT.aum && d.aum / TOT.aum >= TH.concAmber ? 'amber' : '') +
       ck('Max DPD now', st.maxDpd + 'd', st.dpdLoans + ' loan' + (st.dpdLoans === 1 ? '' : 's') + ' past due', st.maxDpd >= TH.dpdRed ? 'red' : st.maxDpd >= TH.dpdAmber ? 'amber' : 'green') + ck('At 5+ DPD', pesoS(st.parOut), pc(st.dpdOut) + ' of outstanding', st.parOut ? 'amber' : '') +
       winTile('eff', d) + winTile('late', d) +
       ck('Lifetime drawdowns', st.n.toLocaleString(), pesoS(st.gmv) + ' disbursed') + ck('Principal repaid', pesoS(st.repaidPrin), pc(st.gmv ? st.repaidPrin / st.gmv : 0) + ' of disbursed') + ck('Interest paid', pesoS(st.intPaid), 'fees ' + pesoS(st.feesPaid)) +
@@ -953,7 +957,7 @@ function paintTab() {
     if (d.open.length) TABLES.open = makeTable(document.getElementById('t-open'), loanCols(true), d.open, { sort: { id: 'dpd', dir: -1 }, onRow: l => showLoan(l.id), maxH: '420px' });
   } else if (S.tab === 'loans') {
     const oc = d.loans.filter(l => l.open).length, lf = S.loanF || 'all', LR = lf === 'open' ? d.loans.filter(l => l.open) : lf === 'closed' ? d.loans.filter(l => !l.open) : d.loans;
-    b.innerHTML = '<div class="sec-h"><h2>Drawdowns</h2><span class="sub">Previous tracker versions and v3 · closed loans show ₱0 outstanding · click a row for the payment schedule, payments and stock audits</span></div><div class="chips" style="margin-bottom:8px">' + [['all', 'All (' + d.loans.length + ')'], ['open', 'Open (' + oc + ')'], ['closed', 'Closed / cancelled (' + (d.loans.length - oc) + ')']].map(c => '<button class="chip' + (lf === c[0] ? ' on' : '') + '" data-act="loanf" data-f="' + c[0] + '">' + c[1] + '</button>').join('') + '</div><div id="t-loans"></div>';
+    b.innerHTML = '<div class="sec-h"><h2>Drawdowns</h2><span class="sub">Previous tracker versions and v3 · closed loans show — outstanding · click a row for the payment schedule, payments and stock audits</span></div><div class="chips" style="margin-bottom:8px">' + [['all', 'All (' + d.loans.length + ')'], ['open', 'Open (' + oc + ')'], ['closed', 'Closed / cancelled (' + (d.loans.length - oc) + ')']].map(c => '<button class="chip' + (lf === c[0] ? ' on' : '') + '" data-act="loanf" data-f="' + c[0] + '">' + c[1] + '</button>').join('') + '</div>' + (d.loans.some(l => l.stale) ? '<div class="callout warn" style="margin-bottom:8px">' + d.loans.filter(l => l.stale).length + ' loan(s) marked * are still Open/Overdue in the tracker but have nothing outstanding, so they are shown as Closed — update their Loan Status in the tracker.</div>' : '') + '<div id="t-loans"></div>';
     TABLES.loans = makeTable(document.getElementById('t-loans'), loanCols(false), LR, { sort: { id: 'cd', dir: -1 }, onRow: l => showLoan(l.id), csv: 'loans-' + d.id });
   } else if (S.tab === 'payments') {
     b.innerHTML = '<div class="sec-h"><h2>Repayment history</h2><span class="sub">Every payment received, newest first</span></div><div id="t-pay"></div>';
@@ -975,7 +979,7 @@ function loanCols(compact) {
     { id: 'cd', label: 'Credit date', type: 'date', val: l => l.credit || '', txt: l => fmtD(l.credit) },
     { id: 'u', label: 'Unit', val: l => unitOf(l) }, { id: 'pl', label: 'Plate', val: l => l.plate },
     { id: 'pr', label: 'Principal', type: 'num', val: l => l.orig, txt: l => peso(l.orig) },
-    { id: 'o', label: 'Outstanding', type: 'num', val: l => l.out, txt: l => peso(l.out), html: l => l.out > 0.5 ? peso(l.out) : '<span class="muted">—</span>' }, { id: 'st', label: 'Status', val: l => l.status, html: l => pill(l.open ? (l.dpd >= TH.dpdAmber ? 't-red' : 't-green') : /closed/i.test(l.status) ? 't-grey' : /cancel/i.test(l.status) ? 't-grey' : 't-amber', l.status || '—') },
+    { id: 'o', label: 'Outstanding', type: 'num', val: l => l.out, txt: l => peso(l.out), html: l => l.out > 0.5 ? peso(l.out) : '<span class="muted">—</span>' }, { id: 'st', label: 'Status', val: l => l.status, html: l => '<span title="' + (l.stale ? 'Tracker status says ' + esc(l.statusRaw) + ' but the principal is fully repaid, so it is shown as Closed' : '') + '">' + pill(l.open ? (l.dpd >= TH.dpdAmber ? 't-red' : 't-green') : /closed/i.test(l.status) ? 't-grey' : /cancel/i.test(l.status) ? 't-grey' : 't-amber', (l.status || '—') + (l.stale ? '*' : '')) + '</span>' },
     { id: 'dpd', label: 'DPD now', type: 'num', val: l => l.dpd, html: l => dpdHtml(l.dpd) },
     { id: 'mt', label: 'Maturity', type: 'date', val: l => l.mat || '', txt: l => fmtD(l.mat) }, { id: 'ml', label: 'Worst days late', type: 'num', val: l => l.maxLate },
     { id: 'la', label: 'Last audit', val: l => l.lastAudit ? l.lastAudit.status : '', html: l => l.lastAudit ? pill(/^pass/i.test(l.lastAudit.status) ? 't-green' : 't-red', l.lastAudit.status) + ' <span class="muted small">' + fmtDs(l.lastAudit.date) + '</span>' : '<span class="muted">none</span>' }];
@@ -998,7 +1002,7 @@ function showLoan(id) {
   const aud = (l.audits || []).slice().reverse().map(a => '<div class="e ' + (/^fail/i.test(a.status) ? 'f' : /^pass/i.test(a.status) ? 'p' : '') + '"><b>' + fmtD(a.date) + ' · ' + esc(a.status) + '</b> <span class="muted">' + esc(a.who) + '</span>' + (a.vs ? '<div>' + esc(a.vs) + '</div>' : '') + (a.remarks ? '<div class="muted">' + esc(a.remarks) + '</div>' : '') + '</div>').join('');
   const tb = (head, body) => '<table class="dt" style="margin:6px 0 10px"><thead><tr>' + head.map(x => '<th><div class="th"><span>' + x + '</span></div></th>').join('') + '</tr></thead><tbody>' + body + '</tbody></table>';
   openSheet('<h3>' + esc(l.id) + ' · ' + esc(unitOf(l)) + '</h3><div class="sub">' + esc(l.plate) + ' · ' + esc(l.type) + (l.fin ? ' · ' + esc(l.fin) : '') + '</div>' +
-    '<div class="chips" style="margin:8px 0">' + pill(l.open ? (l.dpd >= TH.dpdAmber ? 't-red' : 't-green') : 't-grey', l.status) + (l.dpd ? pill('t-red', l.dpd + ' DPD') : '') + (l.repo ? pill('t-red', 'Repossessed' + (l.repoDate ? ' ' + fmtD(l.repoDate) : '')) : '') + (l.soldFlag ? pill('t-red', 'Flagged sold') : '') + '</div>' +
+    '<div class="chips" style="margin:8px 0">' + pill(l.open ? (l.dpd >= TH.dpdAmber ? 't-red' : 't-green') : 't-grey', l.status + (l.stale ? '*' : '')) + (l.stale ? '<span class="small muted"> tracker says ' + esc(l.statusRaw) + ' but principal is fully repaid</span>' : '') + (l.dpd ? pill('t-red', l.dpd + ' DPD') : '') + (l.repo ? pill('t-red', 'Repossessed' + (l.repoDate ? ' ' + fmtD(l.repoDate) : '')) : '') + (l.soldFlag ? pill('t-red', 'Flagged sold') : '') + '</div>' +
     '<div class="kv"><div><span>Credit date</span>' + fmtD(l.credit) + '</div><div><span>Principal</span>' + peso(l.orig) + '</div><div><span>Paid principal</span>' + peso(l.paidPrin) + '</div><div><span>Outstanding</span>' + peso(l.out) + '</div><div><span>Rate</span>' + esc(l.rate || '—') + '</div><div><span>Tenor</span>' + (l.tenor || '—') + ' days</div><div><span>FMV / LTV</span>' + (l.fmv ? peso(l.fmv) : '—') + ' / ' + (l.ltv ? Math.round(l.ltv * 100) + '%' : '—') + '</div><div><span>Settled</span>' + fmtD(l.settled) + '</div></div>' +
     '<h6 class="muted small" style="text-transform:uppercase">Payment schedule</h6>' + tb(['Milestone', 'Due', 'Status', 'Paid', 'Days late'], miles || '<tr><td colspan="5" class="muted">No schedule on record</td></tr>') +
     '<h6 class="muted small" style="text-transform:uppercase">Payments</h6>' + tb(['Date', 'Type', 'Principal', 'Interest', 'Fees'], pays || '<tr><td colspan="5" class="muted">No payments recorded</td></tr>') +
