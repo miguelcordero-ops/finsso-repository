@@ -584,7 +584,7 @@ async function loadAll() {
         id, prod: v3 ? 'v3' : 'v2', dealerId: t.g(r, 'Dealer ID'), dealer: t.g(r, 'Dealership Name'), fin: t.g(r, 'Financier') || '—',
         tenor: v3 ? t.g(r, 'Loan Tenure') : t.g(r, 'Total Loan Tenure (in days)'),
         so: normName(t.g(r, 'Assigned SO')), via: t.g(r, 'Requested Via'), statusRaw: normStatus(t.g(r, 'Loan Status')),
-        cd: t.d(r, 'Credit Date to Dealer Bank Account') || t.d(r, 'PNCM Date'), pncmDate: t.d(r, 'PNCM Date'), orig: t.n(r, 'Original Principal'),
+        cd: t.d(r, 'Credit Date to Dealer Bank Account') || t.d(r, 'PNCM Date'), pncmDate: t.d(r, 'PNCM Date'), credReal: t.d(r, 'Credit Date to Dealer Bank Account'), orig: t.n(r, 'Original Principal'),
         out: v3 ? t.n(r, 'Outstanding Principal') : (t.n(r, 'Total Outstanding Principal') || (/restructur/i.test(t.g(r, 'Loan Status')) ? t.n(r, 'Restructure Outstanding Balance') : 0)),   // restructured loans carry their balance in a separate column
         mat: v3 ? t.d(r, 'Maturity Date') : t.d(r, 'Final Maturity Date'),
         unit: [t.g(r, 'Year Model'), t.g(r, 'Make Model Variant')].filter(Boolean).join(' '), plate: t.g(r, 'Plate Number (as on ORCR)') || t.g(r, 'Plate Number'),
@@ -840,19 +840,19 @@ function metrics() {
   m.exc = EXC.filter(pf); m.excRed = m.exc.filter(e => e.sev === 'red').length; m.excAmb = m.exc.length - m.excRed;
   return m;
 }
-function outAt(l, T) {          // outstanding principal at date T, rebuilt from credit date and principal repaid
-  if (!l.cd || l.cd > T) return 0;
-  if (!(l.active || l.repo) && T >= (l.settled || l.lastPay || l.cd)) return 0;      // closed loans drop out when settled
+function outAt(l, T) {          // same logic as Sales Team Performance AUM: original principal less principal repaid up to date T (repossessed units included)
+  if (!l.credReal || l.credReal > T) return 0;      // only loans actually credited to the dealer (blank credit date = not yet disbursed)
   const paid = (PBY[baseId(l.id)] || []).reduce((s, p) => s + (p.date <= T ? p.prin : 0), 0);
   return Math.max(0, l.orig - paid);
 }
+function eod(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999); }
 function series12() {
   const M = months(12), L = LOANS.filter(pf).filter(l => !/cancel/i.test(l.status)), P = PAYS.filter(pf);
   return M.map((mo, i) => {
-    const cur = i === M.length - 1; let aum = 0;
-    L.forEach(l => { aum += outAt(l, mo.end); });
+    const cur = i === M.length - 1; let aum = 0, repo = 0;
+    L.forEach(l => { const o = outAt(l, eod(mo.end)); aum += o; if (l.repo) repo += o; });
     const dl = L.filter(l => inRange(l.cd, mo.start, mo.end)), pm = P.filter(p => inRange(p.date, mo.start, mo.end));
-    return { label: mo.label, cur, aum, disb: sum(dl, l => l.orig), nDisb: dl.length, coll: sum(pm, p => p.recv), nPay: pm.length, prin: sum(pm, p => p.prin) };
+    return { label: mo.label, cur, aum, repo, disb: sum(dl, l => l.orig), nDisb: dl.length, coll: sum(pm, p => p.recv), nPay: pm.length, prin: sum(pm, p => p.prin) };
   });
 }
 
@@ -875,7 +875,10 @@ function overviewTab() {
   h += '<div class="sec"><div class="sec-h"><h2>Trend — last 12 months</h2><span class="sub">Current month is shown to date (orange)</span></div><div class="charts">' +
     chart('c-disb', 'Disbursed (GMV)', 'Original principal credited to dealers', se.map(s => ({ label: s.label, v: s.disb, n: s.nDisb, cur: s.cur })), 'bar', 'var(--primary)', pesoS) +
     chart('c-coll', 'Collections received', 'Cash received from dealers by payment date', se.map(s => ({ label: s.label, v: s.coll, n: s.nPay, cur: s.cur })), 'bar', 'var(--green)', pesoS) +
-    chart('c-aum', 'Loan book at month-end', 'Incl. repossessed units · rebuilt from credit dates, repayments and settlement dates', se.map(s => ({ label: s.label, v: s.aum })), 'line', 'var(--blue)', pesoS) + '</div></div>';
+    chart('c-aum', 'Loan book at month-end', 'Incl. repossessed units · original principal less principal repaid, as in Sales Team Performance', se.map(s => ({ label: s.label, v: s.aum })), 'line', 'var(--blue)', pesoS) + '</div></div>';
+  h += '<div class="sec"><div class="card"><h3 style="font-size:14px">Loan book — month-end and movement</h3><div class="sub">Outstanding principal at each month-end including repossessed units (original principal less principal repaid). The current month is to date.</div>' +
+    '<div class="tbl-wrap"><table class="dt"><thead><tr><th>Month-end</th><th class="num">Loan book</th><th class="num">of which repossessed</th><th class="num">Movement vs prior month-end</th><th class="num">Disbursed</th><th class="num">Principal collected</th></tr></thead><tbody>' +
+    se.slice(-7).map((s, i, a) => { const full = se, k = full.indexOf(s), pv = k > 0 ? full[k - 1] : null, mv = pv ? s.aum - pv.aum : null; return '<tr><td>' + esc(s.label) + (s.cur ? ' <span class="muted small">(to date)</span>' : '') + '</td><td class="num"><b>' + peso(s.aum) + '</b></td><td class="num">' + peso(s.repo) + '</td><td class="num" style="color:' + (mv == null ? 'inherit' : mv < 0 ? 'var(--green)' : 'var(--red)') + '">' + (mv == null ? '—' : (mv >= 0 ? '+' : '-') + peso(Math.abs(mv))) + '</td><td class="num">' + peso(s.disb) + '</td><td class="num">' + peso(s.prin) + '</td></tr>'; }).join('') + '</tbody></table></div></div></div>';
   // status + maturity ladder
   const cur = m.A.filter(l => !l.overdue && !/restructur/i.test(l.status)), rs = m.A.filter(l => /restructur/i.test(l.status));
   const repoL = m.L.filter(l => l.repo && !/^(closed|cancelled)$/i.test(l.status));
