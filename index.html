@@ -103,7 +103,9 @@ var GROUPS=[
     {title:'Stock Audit',href:'/dashboards/stock-audit/',icon:'check',desc:'Field app for stock auditors and collections officers — prioritised audit schedule, itinerary, dealer and drawdown views, and photo audit uploads.'},
     {title:'Repossession Dashboard',soon:true,icon:'dpd',desc:'Repossessed unit inventory, liquidation status, and recovery tracking.'}]},
   {id:'credit',title:'Credit',icon:'money',desc:'Dealer credit profiles, exposure and risk flags.',items:[
-    {title:'Dealer Credit Profile',href:'/dashboards/credit/',icon:'shield',desc:'Single-dealer credit view — credit line, exposure, full loan, payment and stock audit history, plus automatic risk flags.'}]}
+    {title:'Dealer Credit Profile',href:'/dashboards/credit/',icon:'shield',desc:'Single-dealer credit view — credit line, exposure, full loan, payment and stock audit history, plus automatic risk flags.'}]},
+  {id:'operations',title:'Operations',icon:'check',desc:'Drawdown, disbursal and repayment tracking for operations management.',items:[
+    {title:'Operations Overview',href:'/dashboards/operations/',icon:'chart',desc:'Drawdown, disbursal and repayment trackers in one view — loan book, disbursal pipeline, collections, remittances and exceptions to fix.'}]}
 ];
 function ico(k){return '<svg viewBox="0 0 24 24">'+(I[k]||I.folder)+'</svg>';}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
