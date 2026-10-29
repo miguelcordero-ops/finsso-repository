@@ -1287,9 +1287,16 @@ function applyGrowth(series) {
     const aumPrev = prev ? prev['AUM'] : null;
     series[i]['GMV Growth'] = gmvPrev ? (series[i]['GMV'] - gmvPrev) / gmvPrev : null;
     // AUM growth / movement use AUM (Net Blacklisted): non-blacklisted dealers only.
-    const nbPrev = prev ? prev['AUM (Net Blacklisted)'] : null;
+    // AUM compares against the previous FULL month-end (the leadership AUM
+    // tracker's basis) — i.e. Oct MTD vs Sep 30, not vs the Sep LMTD column.
+    let aumPrevCol = null;
+    for (let j = i + 1; j < series.length; j++) {
+      const cj = monthColumns[j], ci = monthColumns[i];
+      if (cj && !cj.isLMTD && cj.start.getTime() !== ci.start.getTime()) { aumPrevCol = series[j]; break; }
+    }
+    const nbPrev = aumPrevCol ? aumPrevCol['AUM (Net Blacklisted)'] : null;
     series[i]['AUM Growth'] = nbPrev ? (series[i]['AUM (Net Blacklisted)'] - nbPrev) / nbPrev : null;
-    series[i]['AUM Movement (Net Blacklisted)'] = prev ? series[i]['AUM (Net Blacklisted)'] - nbPrev : null;
+    series[i]['AUM Movement (Net Blacklisted)'] = aumPrevCol ? series[i]['AUM (Net Blacklisted)'] - nbPrev : null;
   }
 }
 
