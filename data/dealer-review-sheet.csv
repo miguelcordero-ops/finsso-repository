@@ -334,7 +334,7 @@
 ,IF0333,ZC AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,2,3,0,0,0,0,0,0,70.66666667,,1.5,,Open,,,,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0334,JAGSON AUTO TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,4,1,0,333922.5,333922.5,333922.5,0,69,,,,Open,,,,,3,3,0,0.00156312406,0,0,46303,1,1,0,0,No
 ,IF0335,DECK AUTO TRADING,Malou Alfonso,Rose Batacan,0,2,1,0,324000,324000,324000,0,80.66666667,,,,Hold,Multiple Failure Audits,,46293.47591,46293.47591,3,0,3,0.001516675861,0,0,46302,3,0,3,0,Yes
-,IF0336,GLLEGACY CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,10,3,1,1950000,1950000,1300000,650000,60.35714286,,5.85,46317.75,Hold,Multiple Failure Audits,,46309.97594,46309.97594,30,18,12,0.009128141758,6.25,6.25,46324,18,8,10,0,Yes
+,IF0336,GLLEGACY CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,10,3,1,1950000,1950000,1300000,650000,60.35714286,,5.85,46317.75,Hold,Multiple Failure Audits,,46309.97594,46309.97594,31,19,12,0.009128141758,6.25,6.25,46324,19,9,10,0,Yes
 ,IF0337,RMMZ CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46160.74792,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0338,SASAKYAN DEALSPH CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,4,0,0,0,0,0,0,53.5,,16,,Open,Reassessed - 08/12/2026 | Finsso: Open | Netbank: Open,,,,3,2,1,0,0,0,,0,0,0,0,No,,,46246,46174
 ,IF0339,DM AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,0,0,0,,0,0,0,0,No
@@ -379,7 +379,7 @@
 ,IF0378,CARMAX SALES AND SERVICE INC.,Albert Dalupang,Albert Dalupang,0,0,0,0,0,0,0,0,,,,,Hold,Pending CLA Signature,,46191.61458,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0379,J AND J CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46175.44583,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0380,R&A COUSIN CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46164.43194,,0,0,0,0,0,0,,0,0,0,0,No
-,IF0381,CARATE AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,1,6,2,0,540000,540000,540000,0,57.75,,6.5,,Hold,Multiple Failure Audits,,46302.64257,46302.64257,26,8,18,0.002527793102,0,0,46316,14,3,11,1,Yes
+,IF0381,CARATE AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,1,6,2,0,540000,540000,540000,0,57.75,,6.5,,Open,,,,46302.64257,28,10,18,0.002527793102,0,0,46324,16,5,11,1,No
 ,IF0382,C.B AUTOWORKS VEHICLE TRADING,Malou Alfonso,Rose Batacan,0,3,1,1,855720,855720,457200,398520,79,,2,46321,Open,,,,,9,7,2,0.004005709469,3,3,46323,5,4,1,0,No
 ,IF0383,BIGBOY CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,1,2,0,697000,697000,697000,0,42.33333333,,,,Open,,,,,5,4,1,0.003262725541,0,0,46307,5,4,1,0,No
 ,IF0384,R.C CAR TRADING,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CLA Signature,,46175.45833,,0,0,0,0,0,0,,0,0,0,0,No
