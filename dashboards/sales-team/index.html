@@ -929,7 +929,7 @@ async function loadData() {
 
     // ── Dealer master (full "[Raw] Dealer Checker" sheet) for the Dealer
     // Status card. First occurrence of a repeated header wins (the sheet has
-    // three "Credit Line Status" columns — the first is the overall one). ──
+    // three "Credit Line Status" columns — the OVERALL one is the third, after "Outstanding Netbank Booking"). ──
     dealerRows = [];
     // Fallback dealer names from the drawdown sheets' "Dealership Name" (used if the Dealer Checker name header is missing/renamed)
     const nameFromLoans = {};
@@ -937,6 +937,13 @@ async function loadData() {
     if (dcGrid) {
       const dcC = buildColumnMap(dcGrid[0]);
       const g = (r, n) => get(r, dcC(n)).trim();
+      // Overall "Credit Line Status" = the one AFTER "Outstanding Netbank Booking"
+      // (header-anchored, not a column letter); falls back to the last such header.
+      const clHdrs = dcGrid[0].map(h => normHeader(h));
+      let clOverallIdx = -1;
+      const anchor = clHdrs.indexOf(normHeader('Outstanding Netbank Booking'));
+      if (anchor >= 0) clOverallIdx = clHdrs.indexOf(normHeader('Credit Line Status'), anchor + 1);
+      if (clOverallIdx < 0) clOverallIdx = clHdrs.lastIndexOf(normHeader('Credit Line Status'));
       for (let i = 1; i < dcGrid.length; i++) {
         const r = dcGrid[i];
         const dealerId = g(r, 'Dealer ID');
@@ -958,7 +965,8 @@ async function loadData() {
           repaymentEff: g(r, '% Repayment Efficiency'),
           clIncrease: g(r, 'Qualified for Automatic CL Increase'),
           onboardingDate: parseSheetDate(g(r, 'Original Onboarding Date')),
-          clStatus: g(r, 'Credit Line Status'),
+          clStatus: get(r, clOverallIdx).trim() || g(r, 'Credit Line Status'),
+          clStatusOverall: get(r, clOverallIdx).trim(),
           holdReason: g(r, 'Reason for Hold / Blacklisting'),
           onboardingType: g(r, 'Onboarding (Regular / Express)'),
           lastTxn: parseSheetDate(g(r, 'Last TXN')),
@@ -1027,11 +1035,23 @@ function getDealerFirstDrawdown() {
   return dealerFirstDrawdown;
 }
 
+// Blacklisted-dealer test for AUM (Net Blacklisted). Source of truth is the
+// Dealer Checker's OVERALL "Credit Line Status" (the one after "Outstanding
+// Netbank Booking" — sheet column AX), looked up by header name. Only if a
+// dealer has no status there do we fall back to the loan "Blacklisted Date".
 let blacklistedDealerSet = null;
 function getBlacklistedDealers() {
   if (blacklistedDealerSet) return blacklistedDealerSet;
   blacklistedDealerSet = new Set();
-  drawdownRows.forEach(l => { if (l.blacklistedDate && l.dealerId) blacklistedDealerSet.add(l.dealerId); });
+  const decided = new Set();
+  dealerRows.forEach(d => {
+    if (!d.clStatusOverall) return;
+    decided.add(d.dealerId);
+    if (/blacklist/i.test(d.clStatusOverall)) blacklistedDealerSet.add(d.dealerId);
+  });
+  drawdownRows.forEach(l => {
+    if (l.blacklistedDate && l.dealerId && !decided.has(l.dealerId)) blacklistedDealerSet.add(l.dealerId);
+  });
   return blacklistedDealerSet;
 }
 function teamOf(so) { return SO_TEAM_MAP[so] || null; }
@@ -1100,7 +1120,7 @@ function computeMonth(mStart, mEnd) {
     const b = bucket(owner);
     b.aum += out;
     b.aumActiveDealers.add(loan.dealerId);
-    const isBlacklisted = blDealers.has(loan.dealerId) || !!loan.blacklistedDate;
+    const isBlacklisted = blDealers.has(loan.dealerId);
     if (!isBlacklisted) b.aumNetBlacklisted += out;
   });
 
