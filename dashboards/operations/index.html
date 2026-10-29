@@ -495,7 +495,9 @@ function closeSheet() { document.getElementById('overlay-root').innerHTML = ''; 
    DATA — drawdown / disbursal / repayment trackers (v2 + v3)
    Every column is looked up by HEADER NAME, never by position.
 ══════════════════════════════════════════════════ */
-var LOANS = [], LMAP = {}, DISB = [], PAYS = [], EXC = [], PBY = {}, DBY = {};
+var LOANS = [], LMAP = {}, DISB = [], PAYS = [], EXC = [], PBY = {}, DBY = {}, TAT = [];
+var TAT_START = new Date(2026, 6, 1);   // time stamps only started being recorded in July 2026
+var BIZ = { start: 9, end: 18 };         // business time = Mon–Fri, 09:00–18:00 (assumption — change here)
 var OPEN_RE = /^(open|overdue|restructuring active|restructuring pending)$/i;
 var LOOKBACK = 120;            // pending-stage logic only looks at recent records; older gaps are historic data, not live work
 var SLA = { endorse: 2, nbDisb: 5, receipt: 2, remit: 3 };   // business-ish days before a pending item turns amber (×2 = red)
@@ -535,12 +537,12 @@ function median(a) { a = a.filter(x => x != null && !isNaN(x)).sort((x, y) => x 
 function dayDiffF(a, b) { return (a - b) / DAY_MS; }       // fractional days a − b
 
 async function loadAll() {
-  const [dd, rp, d3, r3, db, db3] = await Promise.all([
+  const [dd, rp, d3, r3, db, db3, ddm] = await Promise.all([
     fetchCSV('drawdown.csv'), fetchCSV('repayment.csv'),
     fetchCSV('drawdownv3.csv', true), fetchCSV('repaymentv3.csv', true),
-    fetchCSV('disbursal.csv', true), fetchCSV('disbursalv3.csv', true)
+    fetchCSV('disbursal.csv', true), fetchCSV('disbursalv3.csv', true), fetchCSV('dd-masterlist.csv', true)
   ]);
-  LOANS = []; LMAP = {}; DISB = []; PAYS = []; EXC = []; PBY = {}; DBY = {};
+  LOANS = []; LMAP = {}; DISB = []; PAYS = []; EXC = []; PBY = {}; DBY = {}; TAT = [];
 
   /* ── repayments (needed first: principal paid per loan) ── */
   function addPays(grid, v3) {
@@ -583,7 +585,7 @@ async function loadAll() {
         tenor: v3 ? t.g(r, 'Loan Tenure') : t.g(r, 'Total Loan Tenure (in days)'),
         so: normName(t.g(r, 'Assigned SO')), via: t.g(r, 'Requested Via'), statusRaw: normStatus(t.g(r, 'Loan Status')),
         cd: t.d(r, 'Credit Date to Dealer Bank Account') || t.d(r, 'PNCM Date'), orig: t.n(r, 'Original Principal'),
-        out: v3 ? t.n(r, 'Outstanding Principal') : t.n(r, 'Total Outstanding Principal'),
+        out: v3 ? t.n(r, 'Outstanding Principal') : (t.n(r, 'Total Outstanding Principal') || (/restructur/i.test(t.g(r, 'Loan Status')) ? t.n(r, 'Restructure Outstanding Balance') : 0)),   // restructured loans carry their balance in a separate column
         mat: v3 ? t.d(r, 'Maturity Date') : t.d(r, 'Final Maturity Date'),
         unit: [t.g(r, 'Year Model'), t.g(r, 'Make Model Variant')].filter(Boolean).join(' '), plate: t.g(r, 'Plate Number (as on ORCR)') || t.g(r, 'Plate Number'),
         nbBook: t.d(r, 'Netbank Booking Date'), type: t.g(r, 'Type of Financing'), settled: t.d(r, 'Full Settlement Date'),
@@ -624,7 +626,7 @@ async function loadAll() {
       const id = t.g(r, 'Drawdown ID'); if (!id) return;
       const status = normStatus(v3 ? t.g(r, 'Loan Status') : t.g(r, 'Drawdown Status')); if (/cancel/i.test(status)) return;
       const d = {
-        id, prod: v3 ? 'v3' : 'v2', dealer: t.g(r, 'Dealership Name'), fin: t.g(r, 'Financier') || '—',
+        id, prod: v3 ? 'v3' : 'v2', dealer: t.g(r, 'Dealership Name'), fin: t.g(r, 'Financier') || '—', plate: t.g(r, 'Plate Number (as on ORCR)') || t.g(r, 'Plate Number'),
         principal: v3 ? t.n(r, 'Original Principal') : t.n(r, 'Drawdown Principal (in PHP)'), net: t.n(r, 'Net Disbursed Amount'),
         req: t.d(r, 'Date of Disbursement Request to Carmudi Finance'), cred: t.d(r, 'Credit Date to Dealer Bank Account'),
         endo: t.d(r, v3 ? 'Date & Time of Disbursement Endorsement to Netbank' : 'Date of Disbursement Endorsement to Netbank'),
@@ -654,6 +656,7 @@ async function loadAll() {
   }
   addDisb(db, false); addDisb(db3, true);
   buildExceptions();
+  buildTat(ddm);
 }
 
 /* ══════════════════════════════════════════════════
@@ -699,11 +702,74 @@ function buildExceptions() {
 function isPendingRemit(p) {
   return /netbank/i.test(p.fin) && /^yes/i.test(p.forRem) && !p.rem && !!(p.cred || p.date) && diffDays(TODAY, p.date) <= LOOKBACK && p.prod === 'v2';
 }
+
+/* ══════════════════════════════════════════════════
+   TAT — from the DD Masterlist time stamps (July 2026 onward)
+══════════════════════════════════════════════════ */
+var TAT_STEPS = [   // [id, label, from, to]
+  ['i1', 'Submission → ORCR verification request', 'sub', 'orcrReq'],
+  ['i2', 'ORCR request → ORCR report received', 'orcrReq', 'orcrRcv'],
+  ['i3', 'ORCR received → Credit Advice issued', 'orcrRcv', 'ca'],
+  ['i4', 'Credit Advice → PNCM issued to dealer', 'ca', 'pncm'],
+  ['i5', 'PNCM issued → dealer signing', 'pncm', 'sign'],
+  ['i6', 'Dealer signing → disbursement request', 'sign', 'req'],
+  ['i7', 'Disbursement request → credited to dealer', 'req', 'cred']
+];
+var TAT_TOTALS = [
+  ['t1', 'Submission → Credit Advice issued', 'sub', 'ca'],
+  ['t2', 'Credit Advice → credited to dealer', 'ca', 'cred'],
+  ['t3', 'Submission → credited to dealer (end to end)', 'sub', 'cred']
+];
+function plateKey(s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+function fixTime(d) { return d && d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0 ? new Date(d.getFullYear(), d.getMonth(), d.getDate(), BIZ.start) : d; }   // date-only stamps count as start of the working day
+function bizHours(a, b) {
+  if (!a || !b || b <= a) return 0;
+  let tot = 0, d = new Date(a.getFullYear(), a.getMonth(), a.getDate());
+  while (d <= b) {
+    const dow = d.getDay();
+    if (dow !== 0 && dow !== 6) {
+      const s = new Date(d.getFullYear(), d.getMonth(), d.getDate(), BIZ.start), e = new Date(d.getFullYear(), d.getMonth(), d.getDate(), BIZ.end);
+      const lo = a > s ? a : s, hi = b < e ? b : e; if (hi > lo) tot += (hi - lo) / 36e5;
+    }
+    d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
+  }
+  return tot;
+}
+function buildTat(grid) {
+  TAT = []; if (!grid) return;
+  const t = T(grid), plates = {};
+  LOANS.forEach(l => { const k = plateKey(l.plate); if (k) (plates[k] = plates[k] || []).push(l); });
+  const stamp = (r, n) => fixTime(t.d(r, n));
+  t.rows.forEach(r => {
+    const sub = t.d(r, 'Drawdown Submission Date by Sales (Captured from Gform)'); if (!sub || sub < TAT_START) return;
+    let id = t.g(r, 'Drawdown ID'), plate = t.g(r, 'Plate Number'), dl = null, link = id ? 'ID' : '';
+    if (id) dl = DBY[baseId(id)] || null;
+    if (!dl && plate) {     // not linked by Drawdown ID — match the plate to a loan credited on / after the submission
+      const c = (plates[plateKey(plate)] || []).filter(l => l.cd && l.cd >= addDays(sod(sub), -1)).sort((a, b) => a.cd - b.cd)[0];
+      if (c) { id = c.id; dl = DBY[baseId(c.id)] || null; link = 'Plate'; if (!dl) dl = { req: null, cred: c.cd }; }
+    }
+    const x = {
+      id, link, dealer: t.g(r, 'Dealership/Business Name'), plate, router: t.g(r, 'Drawdown Submission Router') || '—', kind: t.g(r, 'New or Redrawdown') || '—',
+      status: t.g(r, 'Drawdown Status') || '—', orcr: t.g(r, 'ORCR Status'), remarks: t.g(r, 'Credit Remarks'), poc: t.g(r, 'Assigned Ops POC'), proc: t.g(r, 'DD Processor'),
+      sub: fixTime(sub), orcrReq: stamp(r, 'ORCR Verification Request Date to Agency'), orcrRcv: stamp(r, 'ORCR Receipt Date from Agency'), ca: stamp(r, 'Date of Carmudi CA issuance to Financier'),
+      pncm: stamp(r, 'PNCM Issuance Date to Dealer'), sign: stamp(r, 'PNCM / Disclosure Statement /Amortization Schedule Execution Date'),
+      req: dl && dl.req ? fixTime(dl.req) : null, cred: dl && dl.cred ? fixTime(dl.cred) : null
+    };
+    x.month = mkey(sub); x.cancelled = /cancel|reject/i.test(x.status); x.credited = !!x.cred; x.inprog = !x.credited && !x.cancelled;
+    x.cal = {}; x.biz = {}; x.neg = []; x.early = [];
+    TAT_STEPS.concat(TAT_TOTALS).forEach(s => {
+      const a = x[s[2]], b = x[s[3]]; x.cal[s[0]] = x.biz[s[0]] = null;
+      if (a && b) { if (b - a < -36e5 && s[0].charAt(0) === 'i') { x.early.push(s[0]); x.cal[s[0]] = 0; x.biz[s[0]] = 0; } else if (b - a < -36e5 || b - a > 60 * 864e5) x.neg.push(s[0]); else { x.cal[s[0]] = Math.max(0, (b - a) / 36e5); x.biz[s[0]] = bizHours(a, b); } }
+    });
+    TAT.push(x);
+  });
+  TAT.sort((a, b) => b.sub - a.sub);
+}
 /* ══════════════════════════════════════════════════
    VIEWS — Overview · Drawdowns & Disbursals · Repayments · Exceptions
 ══════════════════════════════════════════════════ */
 var TABLES = {};
-S.sub = 'loans'; S.lf = 'active'; S.dp = 'pending'; S.py = '30d'; S.ex = 'all';
+S.sub = 'loans'; S.lf = 'active'; S.dp = 'pending'; S.py = '30d'; S.ex = 'all'; S.tp = 'all'; S.tb = 'cal'; S.tv = 'all';
 function pill(cls, t) { return '<span class="pill ' + cls + '">' + esc(t) + '</span>'; }
 function pesoS(n) { n = n || 0; const a = Math.abs(n); return (n < 0 ? '-' : '') + '₱' + (a >= 1e6 ? (a / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M' : a >= 1e3 ? Math.round(a / 1e3) + 'K' : Math.round(a)); }
 function numS(n) { return Math.round(n || 0).toLocaleString('en-US'); }
@@ -961,9 +1027,9 @@ function render() {
   const nExc = EXC.filter(pf).length, upd = TODAY;
   const chips = (k, opts) => '<div class="chips">' + opts.map(o => '<button class="chip' + (S[k] === o[0] ? ' on' : '') + '" data-act="flt" data-k="' + k + '" data-v="' + o[0] + '">' + o[1] + '</button>').join('') + '</div>';
   host.innerHTML = '<div class="hero"><div><h1>Operations overview</h1><div class="sub">Drawdown, disbursal and repayment trackers in one view · data as of ' + fmtD(TODAY) + ' (' + numS(LOANS.length) + ' loans · ' + numS(PAYS.length) + ' payments)</div></div>' +
-    '<div style="display:flex;gap:14px;flex-wrap:wrap">' + chips('prod', [['all', 'All loans'], ['v2', 'v2 (main)'], ['v3', 'v3 (180/90-day)']]) + chips('fin', [['all', 'All financiers'], ['Netbank', 'Netbank'], ['Finsso', 'Finsso']]) + '</div></div>' +
-    '<div class="tabs" id="tabs">' + [['overview', 'Overview'], ['deals', 'Drawdowns &amp; disbursals'], ['pays', 'Repayments'], ['exc', 'Exceptions' + (nExc ? ' (' + nExc + ')' : '')]].map(t => '<button data-act="tab" data-t="' + t[0] + '" class="' + (S.tab === t[0] ? 'on' : '') + '">' + t[1] + '</button>').join('') + '</div><div id="tabbody"></div>';
-  const v = S.tab === 'deals' ? dealTab() : S.tab === 'pays' ? payTab() : S.tab === 'exc' ? excTab() : overviewTab();
+    (S.tab === 'tat' ? '' : '<div style="display:flex;gap:14px;flex-wrap:wrap">' + chips('prod', [['all', 'All loans'], ['v2', 'v2 (main)'], ['v3', 'v3 (180/90-day)']]) + chips('fin', [['all', 'All financiers'], ['Netbank', 'Netbank'], ['Finsso', 'Finsso']]) + '</div>') + '</div>' +
+    '<div class="tabs" id="tabs">' + [['overview', 'Overview'], ['deals', 'Drawdowns &amp; disbursals'], ['pays', 'Repayments'], ['tat', 'TAT'], ['exc', 'Exceptions' + (nExc ? ' (' + nExc + ')' : '')]].map(t => '<button data-act="tab" data-t="' + t[0] + '" class="' + (S.tab === t[0] ? 'on' : '') + '">' + t[1] + '</button>').join('') + '</div><div id="tabbody"></div>';
+  const v = S.tab === 'deals' ? dealTab() : S.tab === 'pays' ? payTab() : S.tab === 'tat' ? tatTab() : S.tab === 'exc' ? excTab() : overviewTab();
   document.getElementById('tabbody').innerHTML = v.html; v.after();
 }
 document.addEventListener('click', e => {
@@ -971,9 +1037,94 @@ document.addEventListener('click', e => {
   if (a === 'tab') { S.tab = t.dataset.t; render(); window.scrollTo(0, 0); }
   else if (a === 'flt') { S[t.dataset.k] = v; render(); }
   else if (a === 'sub') { S.sub = v; render(); } else if (a === 'lf') { S.lf = v; render(); } else if (a === 'dp') { S.dp = v; render(); } else if (a === 'py') { S.py = v; render(); } else if (a === 'ex') { S.ex = v; render(); }
-  else if (a === 'closesheet') closeSheet();
+  else if (a === 'tp') { S.tp = v; render(); } else if (a === 'tb') { S.tb = v; render(); } else if (a === 'tv') { S.tv = v; render(); } else if (a === 'closesheet') closeSheet();
   else if (a === 'go') { const g = t.dataset.go.split('|'); if (g[0] === 'loans') { S.tab = 'deals'; S.sub = 'loans'; S.lf = g[1]; } else if (g[0] === 'pipe') { S.tab = 'deals'; S.sub = 'pipe'; S.dp = g[1]; } else if (g[0] === 'pays') { S.tab = 'pays'; S.py = g[1]; } else if (g[0] === 'exc') { S.tab = 'exc'; S.ex = 'all'; } render(); window.scrollTo(0, 0); }
 });
+/* ══════════════════════════════════════════════════
+   TAT — turnaround from drawdown submission to credit
+══════════════════════════════════════════════════ */
+function fmtH(h) {
+  if (h == null || isNaN(h)) return '—';
+  if (h < 1) return Math.round(h * 60) + ' min';
+  if (S.tb === 'cal') return h < 48 ? h.toFixed(1) + ' h' : (h / 24).toFixed(1) + ' d';
+  const bd = BIZ.end - BIZ.start; return h < bd * 2 ? h.toFixed(1) + ' h' : (h / bd).toFixed(1) + ' wd';
+}
+function pctl(a, p) { if (!a.length) return null; const s = a.slice().sort((x, y) => x - y), i = (s.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i); return s[lo] + (s[hi] - s[lo]) * (i - lo); }
+function tatStat(rows, key) {
+  const v = rows.map(r => r[S.tb][key]).filter(x => x != null);
+  return { n: v.length, med: median(v), avg: v.length ? v.reduce((a, b) => a + b, 0) / v.length : null, p90: pctl(v, 0.9), max: v.length ? Math.max.apply(null, v) : null, v };
+}
+function tatMonths() { const out = []; for (let d = new Date(TAT_START); d <= TODAY; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) out.push({ key: mkey(d), label: MONTH_ABBR[d.getMonth()] + " '" + String(d.getFullYear()).slice(2) }); return out; }
+function tatTab() {
+  if (!TAT.length) return { html: '<div class="card empty">No DD Masterlist time stamps found since July 2026. Check that <b>dd-masterlist.csv</b> is exported to the data folder.</div>', after() {} };
+  const MO = tatMonths(), all = TAT, rows = S.tp === 'all' ? all : all.filter(r => r.month === S.tp);
+  const live = rows.filter(r => !r.cancelled), cr = rows.filter(r => r.credited && !r.cancelled), ip = rows.filter(r => r.inprog), cx = rows.filter(r => r.cancelled);
+  const e2e = tatStat(cr, 't3'), ca = tatStat(rows.filter(r => !r.cancelled), 't1'), cc = tatStat(cr, 't2'), rq = tatStat(cr, 'i7');
+  const thr = S.tb === 'cal' ? 48 : (BIZ.end - BIZ.start) * 2, within = e2e.v.filter(x => x <= thr).length;
+  const stepStats = TAT_STEPS.map(s => ({ s, st: tatStat(live, s[0]) })), big = stepStats.filter(x => x.st.n >= 5).sort((a, b) => b.st.med - a.st.med)[0];
+  const need = ['ca', 'pncm', 'sign', 'req', 'cred'], miss = {}; cr.forEach(r => need.forEach(k => { if (!r[k]) miss[k] = (miss[k] || 0) + 1; }));
+  const complete = cr.filter(r => need.every(k => r[k])).length, nm = { ca: 'Credit Advice', pncm: 'PNCM issuance', sign: 'dealer signing', req: 'disbursement request', cred: 'credit time' };
+  const worst = Object.keys(miss).sort((a, b) => miss[b] - miss[a])[0];
+  const oldest = ip.length ? Math.max.apply(null, ip.map(r => diffDays(TODAY, r.sub))) : 0;
+  const basisLbl = S.tb === 'cal' ? 'calendar time' : 'working time (Mon–Fri ' + BIZ.start + ':00–' + BIZ.end + ':00)';
+  let h = '<div class="callout info" style="margin-bottom:12px">Time stamps are only recorded from <b>July 2026</b>, so this tab starts there. Steps come from the DD Masterlist; the disbursement request and credit times come from the Disbursal tracker, linked by Drawdown ID (or by plate number when the ID is blank). A time stamp with no time of day is counted as ' + BIZ.start + ':00. Cancelled and rejected submissions are left out of the averages.</div>';
+  h += '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px"><div class="chips">' + [['all', 'All since July']].concat(MO.map(m => [m.key, m.label])).map(o => '<button class="chip' + (S.tp === o[0] ? ' on' : '') + '" data-act="tp" data-v="' + o[0] + '">' + o[1] + '</button>').join('') + '</div><div class="chips">' +
+    [['cal', 'Calendar time'], ['biz', 'Working time']].map(o => '<button class="chip' + (S.tb === o[0] ? ' on' : '') + '" data-act="tb" data-v="' + o[0] + '">' + o[1] + '</button>').join('') + '</div></div>';
+  h += '<div class="ckpis k4">' +
+    tile('Drawdown submissions', numS(rows.length), numS(cr.length) + ' credited · ' + numS(ip.length) + ' in progress · ' + numS(cx.length) + ' cancelled / rejected') +
+    tile('End to end — median', fmtH(e2e.med), 'submission → credited to dealer · ' + (e2e.p90 != null ? '90% within ' + fmtH(e2e.p90) : 'no credited rows') + ' · ' + e2e.n + ' drawdowns', 'blue') +
+    tile('Credited within 2 days', e2e.n ? Math.round(within / e2e.n * 100) + '%' : '—', 'of ' + e2e.n + ' credited drawdowns (' + (S.tb === 'cal' ? '48 hours' : '2 working days') + ')', e2e.n && within / e2e.n >= 0.8 ? 'green' : 'amber') +
+    tile('Biggest wait', big ? fmtH(big.st.med) : '—', big ? big.s[1] + ' (median)' : '', 'amber') +
+    tile('Submission → Credit Advice', fmtH(ca.med), 'median · ' + ca.n + ' drawdowns') +
+    tile('Credit Advice → credited', fmtH(cc.med), 'median · ' + cc.n + ' drawdowns') +
+    tile('Request → credited to dealer', fmtH(rq.med), 'median · how fast Finance pays out once requested') +
+    tile('In progress', numS(ip.length), ip.length ? 'oldest submitted ' + oldest + ' day(s) ago' : 'nothing waiting', ip.length ? (oldest >= 7 ? 'red' : 'amber') : 'green') + '</div>';
+  // charts: monthly median + distribution
+  const mser = MO.map(m => { const rr = all.filter(r => r.month === m.key && r.credited && !r.cancelled), st = tatStat(rr, 't3'); return { label: m.label, v: st.med || 0, n: st.n, cur: m.key === mkey(TODAY) }; });
+  const bks = [['Under 4 hours', 4], ['4–8 hours', 8], ['8–24 hours', 24], ['1–2 days', 48], ['2–5 days', 120], ['Over 5 days', 1e9]], conv = x => S.tb === 'cal' ? x : x / 24 * (BIZ.end - BIZ.start);
+  const dist = bks.map((b, i) => { const lo = i ? conv(bks[i - 1][1]) : 0, hi = conv(b[1]); const n = e2e.v.filter(x => x >= lo && x < hi).length; return { label: b[0], v: n, sub: e2e.n ? Math.round(n / e2e.n * 100) + '%' : '', col: i >= 4 ? 'var(--red)' : i === 3 ? 'var(--orange)' : 'var(--green)' }; });
+  h += '<div class="sec two"><div id="tat-m">' + chart('c-tat', 'Median end to end, by submission month', 'Submission → credited to dealer (' + basisLbl + ')', mser, 'bar', 'var(--primary)', x => fmtH(x)) + '</div>' +
+    '<div class="card"><h3 style="font-size:14px">How long drawdowns take</h3><div class="sub">Share of credited drawdowns by end-to-end time</div>' + hbars(dist, r => r.v + ' <span class="muted small">' + r.sub + '</span>') + '</div></div>';
+  // journey
+  const seq = ['i1', 'i2', 'i3', 'i4', 'i5', 'i6', 'i7'], cols = ['#6366F1', '#8B5CF6', '#EC4899', '#F97316', '#F59E0B', '#10B981', '#2563EB'];
+  const meds = seq.map(k => ({ k, m: (stepStats.find(x => x.s[0] === k).st.med) || 0, s: TAT_STEPS.find(x => x[0] === k) })), tot = meds.reduce((a, b) => a + b.m, 0) || 1;
+  h += '<div class="sec"><div class="card"><h3 style="font-size:14px">The typical journey</h3><div class="sub">Median time spent in each step, in order. Steps can overlap and not every drawdown has every time stamp, so the segments are a guide rather than an exact sum.</div>' +
+    '<div style="display:flex;height:26px;border-radius:8px;overflow:hidden;margin:12px 0 10px">' + meds.map((x, i) => '<div title="' + esc(x.s[1]) + ': ' + fmtH(x.m) + '" style="width:' + Math.max(2, x.m / tot * 100) + '%;background:' + cols[i] + '"></div>').join('') + '</div>' +
+    '<div class="kv2" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr))">' + meds.map((x, i) => '<div><span><i style="display:inline-block;width:9px;height:9px;border-radius:3px;background:' + cols[i] + ';margin-right:6px"></i>' + esc(x.s[1]) + '</span><b>' + fmtH(x.m) + '</b></div>').join('') + '</div></div></div>';
+  // step table with month matrix
+  const cell = (st, mx) => '<td class="num" style="' + (st.med != null && mx ? 'background:rgba(249,115,22,' + (0.06 + 0.3 * Math.min(1, st.med / mx)).toFixed(2) + ')' : '') + '">' + (st.n ? fmtH(st.med) : '—') + '</td>';
+  const allSteps = TAT_STEPS.concat(TAT_TOTALS), mxStep = Math.max.apply(null, TAT_STEPS.map(s => tatStat(live, s[0]).med || 0).concat([1]));
+  h += '<div class="sec"><div class="sec-h"><h2>Time by step</h2><span class="sub">Medians by submission month · darker = longer · ' + basisLbl + '</span></div><div class="card"><div class="tbl-wrap"><table class="dt"><thead><tr><th>Step</th><th class="num">Drawdowns</th><th class="num">Median</th><th class="num">Average</th><th class="num">90% within</th><th class="num">Longest</th>' + MO.map(m => '<th class="num">' + m.label + '</th>').join('') + '</tr></thead><tbody>' +
+    allSteps.map((s, i) => { const st = tatStat(live, s[0]), isT = i >= TAT_STEPS.length, mxr = Math.max.apply(null, MO.map(m => tatStat(live.filter(r => r.month === m.key), s[0]).med || 0).concat([1]));
+      return '<tr' + (isT ? ' style="font-weight:700"' : '') + '><td>' + esc(s[1]) + '</td><td class="num">' + st.n + '</td><td class="num"><b>' + fmtH(st.med) + '</b></td><td class="num">' + fmtH(st.avg) + '</td><td class="num">' + fmtH(st.p90) + '</td><td class="num">' + fmtH(st.max) + '</td>' + MO.map(m => cell(tatStat(live.filter(r => r.month === m.key), s[0]), mxr)).join('') + '</tr>'; }).join('') + '</tbody></table></div>' +
+    '<div class="small muted" style="margin-top:8px">Time stamp coverage on credited drawdowns: ' + (cr.length ? Math.round(complete / cr.length * 100) : 0) + '% have every step recorded' + (worst ? ' — most often missing: ' + nm[worst] + ' (' + miss[worst] + ')' : '') + '. Some steps run in parallel (e.g. the ORCR check started before the dealer submission, or the Credit Advice was issued before the ORCR report arrived); those count as 0 for that step. Gaps over 60 days and out-of-order stamps are treated as data-entry errors and left out.</div></div></div>';
+  // detail table
+  const cnt = { all: rows.length, credited: cr.length, inprog: ip.length, cancel: cx.length, slow: Math.min(20, e2e.n) };
+  h += '<div class="sec"><div class="sec-h"><h2>Every submission</h2><span class="sub">Click a row for its full timeline</span></div>' + subChips([['all', 'All (' + cnt.all + ')'], ['credited', 'Credited (' + cnt.credited + ')'], ['inprog', 'In progress (' + cnt.inprog + ')'], ['slow', 'Slowest 20'], ['cancel', 'Cancelled / rejected (' + cnt.cancel + ')']], S.tv, 'tv') + '<div class="card" id="t-tat"></div></div>';
+  return { html: h, after() {
+    wireCharts(document.getElementById('tabbody'), [{ id: 'c-tat', ser: mser, fmt: s => 'Median ' + fmtH(s.v) + '<br>' + s.n + ' credited' }]);
+    let rr = rows; if (S.tv === 'credited') rr = cr; else if (S.tv === 'inprog') rr = ip; else if (S.tv === 'cancel') rr = cx; else if (S.tv === 'slow') rr = cr.filter(r => r[S.tb].t3 != null).sort((a, b) => b[S.tb].t3 - a[S.tb].t3).slice(0, 20);
+    const dt = k => ({ id: 'd_' + k, label: '', val: r => r[k], type: 'date', txt: r => r[k] ? fmtDs(r[k]) + ' ' + String(r[k].getHours()).padStart(2, '0') + ':' + String(r[k].getMinutes()).padStart(2, '0') : '—' });
+    const col = (k, label) => Object.assign(dt(k), { label }), iv = (k, label) => ({ id: 'v_' + k, label, val: r => r[S.tb][k], txt: r => fmtH(r[S.tb][k]), type: 'num' });
+    TABLES.tat = makeTable(document.getElementById('t-tat'), [
+      col('sub', 'Submitted'), { id: 'dl', label: 'Dealer', val: r => r.dealer }, { id: 'id', label: 'Drawdown ID', val: r => r.id || '—' }, { id: 'rt', label: 'Router', val: r => r.router }, { id: 'kd', label: 'New / redrawdown', val: r => r.kind },
+      { id: 'st', label: 'Status', val: r => r.status, html: r => pill(r.cancelled ? 't-grey' : r.credited ? 't-green' : 't-amber', r.cancelled ? r.status : r.credited ? 'Credited' : 'In progress') + '<span class="muted small"> ' + esc(r.status === '—' ? '' : r.status) + '</span>' },
+      { id: 'or', label: 'ORCR status', val: r => r.orcr || '—' }, col('orcrReq', 'ORCR requested'), col('orcrRcv', 'ORCR received'), col('ca', 'Credit Advice'), col('pncm', 'PNCM issued'), col('sign', 'Dealer signed'), col('req', 'Disbursement requested'), col('cred', 'Credited to dealer'),
+      iv('i1', 'Submission → ORCR request'), iv('i2', 'ORCR request → receipt'), iv('t1', 'Submission → Credit Advice'), iv('i4', 'Credit Advice → PNCM issued'), iv('i5', 'PNCM issued → signed'), iv('i6', 'Signed → disbursement request'), iv('i7', 'Request → credited'), iv('t2', 'Credit Advice → credited'), iv('t3', 'Submission → credited (end to end)'),
+      { id: 'ln', label: 'Linked by', val: r => r.link || 'Not linked' }
+    ], rr, { sort: { id: 'd_sub', dir: -1 }, onRow: r => showTat(r), csv: 'tat-since-july', maxH: '620px' });
+  } };
+}
+function showTat(r) {
+  const steps = [['Submitted by sales', 'sub'], ['ORCR verification requested', 'orcrReq'], ['ORCR report received', 'orcrRcv'], ['Credit Advice issued', 'ca'], ['PNCM issued to dealer', 'pncm'], ['Dealer signed', 'sign'], ['Disbursement requested', 'req'], ['Credited to dealer', 'cred']];
+  const tm = x => x ? fmtD(x) + ' ' + String(x.getHours()).padStart(2, '0') + ':' + String(x.getMinutes()).padStart(2, '0') : '<span class="muted">not recorded</span>';
+  let prev = null; const tl = steps.map(s => { const x = r[s[1]], gap = x && prev ? ' <span class="muted small">+' + fmtH(S.tb === 'cal' ? (x - prev) / 36e5 : bizHours(prev, x)) + '</span>' : ''; if (x) prev = x; return '<tr><td>' + s[0] + '</td><td>' + tm(x) + gap + '</td></tr>'; }).join('');
+  openSheet('<h3>' + esc(r.dealer) + (r.id ? ' · ' + esc(r.id) : '') + '</h3><div class="sub">' + esc(r.router) + ' · ' + esc(r.kind) + ' · ' + esc(r.status) + (r.plate ? ' · ' + esc(r.plate) : '') + '</div>' +
+    '<div class="kv" style="margin:10px 0"><div><span>End to end (' + (S.tb === 'cal' ? 'calendar' : 'working') + ')</span>' + fmtH(r[S.tb].t3) + '</div><div><span>ORCR status</span>' + esc(r.orcr || '—') + '</div><div><span>Ops POC</span>' + esc(r.poc || '—') + '</div><div><span>Processor</span>' + esc(r.proc || '—') + '</div></div>' +
+    '<table class="dt" style="margin:6px 0 10px"><thead><tr><th><div class="th"><span>Step</span></div></th><th><div class="th"><span>When (gap since the previous step)</span></div></th></tr></thead><tbody>' + tl + '</tbody></table>' +
+    (r.remarks ? '<h6 class="muted small" style="text-transform:uppercase">Credit remarks</h6><div class="small" style="white-space:pre-wrap">' + esc(r.remarks) + '</div>' : '') +
+    '<div class="stickyact" style="position:static"><button class="btn" data-act="closesheet">Close</button></div>');
+}
 document.getElementById('theme-btn').addEventListener('click', () => { const r = document.documentElement; const cur = r.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); r.dataset.theme = cur === 'dark' ? 'light' : 'dark'; });
 var ALLOWLIST = null;
 async function _loadAllowlist() {
