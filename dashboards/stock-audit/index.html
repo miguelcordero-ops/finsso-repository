@@ -946,7 +946,13 @@ async function addPhotos(key, files) {
   const list = Array.from(files).filter(f => /^image\//.test(f.type)).slice(0, Math.max(0, room));
   if (!list.length) return toast('Photo limit reached', true);
   let geo = A.geo && !A.geo.err ? A.geo : null;
-  list.forEach(f => A.photos[key].push({ file: f, url: URL.createObjectURL(f), at: new Date(), geo }));
+  // copy each picked photo into memory right away — on some Android phones the original file handle goes stale (or the camera app removes it) before Submit is pressed
+  let bad = 0;
+  for (const f of list) {
+    try { const blob = new Blob([await f.arrayBuffer()], { type: f.type || 'image/jpeg' }); A.photos[key].push({ file: blob, name: f.name || 'photo', url: URL.createObjectURL(blob), at: new Date(), geo }); }
+    catch (e) { bad++; }
+  }
+  if (bad) toast(bad + ' photo' + (bad > 1 ? 's' : '') + ' could not be read — please take ' + (bad > 1 ? 'them' : 'it') + ' again.', true);
   readForm(); paintAudit();
 }
 function paintAudit() { const sc = window.scrollY; document.getElementById('view').innerHTML = renderAudit(); bindAudit(); window.scrollTo(0, sc); }
@@ -975,9 +981,21 @@ function validateAudit() {
   }
   return e;
 }
-function loadImage(file) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); }); }
+function loadImage(src) { return new Promise((res, rej) => { const i = new Image(), isUrl = typeof src === 'string', u = isUrl ? src : URL.createObjectURL(src); i.onload = () => { if (!isUrl) URL.revokeObjectURL(u); res(i); }; i.onerror = () => { if (!isUrl) URL.revokeObjectURL(u); rej(new Error('image decode failed')); }; i.src = u; }); }
+function readDataUrl(file) { return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = () => rej(new Error('file read failed')); fr.readAsDataURL(file); }); }
+async function decodeImage(file) {          // try several decoders — phones differ (very large camera photos, odd formats, memory limits)
+  const tries = [
+    () => createImageBitmap(file, { imageOrientation: 'from-image' }),
+    () => createImageBitmap(file, { resizeWidth: 1600, resizeQuality: 'medium' }),
+    () => createImageBitmap(file),
+    () => loadImage(file),
+    async () => loadImage(await readDataUrl(file))
+  ];
+  let last; for (const t of tries) { try { return await t(); } catch (e) { last = e; } }
+  throw last || new Error('image decode failed');
+}
 async function processImage(p, stamp) {
-  let bmp; try { bmp = await createImageBitmap(p.file, { imageOrientation: 'from-image' }); } catch (e) { bmp = await loadImage(p.file); }
+  const bmp = await decodeImage(p.file);
   const w0 = bmp.width, h0 = bmp.height, sc = Math.min(1, 1600 / Math.max(w0, h0)), w = Math.round(w0 * sc), h = Math.round(h0 * sc);
   const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d'); g.drawImage(bmp, 0, 0, w, h);
   const fs = Math.max(13, Math.round(w / 48)), pad = Math.round(fs * 0.6);
@@ -1001,7 +1019,7 @@ async function submitAudit() {
     const stamp = 'FINSSO STOCK AUDIT · ' + d.id + ' · ' + (d.plate || '') + ' · ' + ME.name;
     const plan = [['Geo-tagged Photo of the Showroom', A.photos.show], ['Motor Vehicle Inspection Report (MVIR) - ' + sfx, A.photos.mvir], ['Collateral Pictures (Geo-tagged Photos) - ' + sfx, A.photos.coll]];
     const total = plan.reduce((a, x) => a + x[1].length, 0); let n = 0; const files = [];
-    for (const [col, arr] of plan) for (const p of arr) { setP('Compressing photo ' + (n + 1) + ' of ' + total, 5 + 55 * n / Math.max(1, total)); files.push({ col, name: d.id + '_' + (n + 1) + '.jpg', data: await processImage(p, stamp) }); n++; }
+    for (const [col, arr] of plan) for (const p of arr) { setP('Compressing photo ' + (n + 1) + ' of ' + total, 5 + 55 * n / Math.max(1, total)); let data; try { data = await processImage(p, stamp); } catch (e2) { throw new Error('Photo ' + (n + 1) + ' of ' + total + ' (' + col.split(' (')[0] + ') could not be processed on this phone. Remove it and take it again, or choose a smaller photo.'); } files.push({ col, name: d.id + '_' + (n + 1) + '.jpg', data }); n++; }
     const row = { 'Drawdown ID': d.id, 'Date': A.date, 'Dealership Name': d.dealer, 'Year Model': d.year, 'Make Model Variant': d.model, 'Plate Number (as on ORCR)': d.plate,
       'Person Contacted': A.person, 'POC Name': A.poc.trim(), 'Collateral Location (Barangay, City and Province)': A.loc.trim(), 'Stock Inspection Status': A.status,
       ['Vehicle Status - ' + sfx]: A.vs, ['Additional Remarks from SIO - ' + sfx]: A.remarks.trim(), 'Inspection ID': A.iid };
@@ -1015,7 +1033,7 @@ async function submitAudit() {
     INSP_IDS[A.iid] = 1; rebuildHistory(); lsSet('sa-pend-' + ME.email, INSP.filter(e => e.pending).map(e => ({ id: e.id, date: iso(e.date), who: e.who, status: e.status, iid: e.iid, dealer: e.dealer, vs: e.vs, remarks: e.remarks })));
     closeSheet(); A.busy = false; A.done = { ddId: d.id, status: A.status, urls: j.urls || {} }; render();
   } catch (e) {
-    closeSheet(); A.busy = false; toast('Upload failed: ' + (e && e.message || e) + '. Your form is still here — try again.', true); paintAudit();
+    closeSheet(); A.busy = false; toast('Upload failed: ' + (e && typeof e.message === 'string' && e.message ? e.message : (e && e.type ? 'a photo could not be read' : String(e))).replace(/\.\s*$/, '') + '. Your form is still here — try again.', true); paintAudit();
   }
 }
 function renderAuditDone() {
