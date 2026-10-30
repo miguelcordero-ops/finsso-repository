@@ -300,6 +300,9 @@ function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
 // single regular space, so the two representations always match.
 function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
 
+function parsePhones(raw) {
+  return String(raw || '').split(/[\/|,;&\n]+|\s+and\s+|\s{2,}/i).map(x => x.replace(/\D/g, '')).filter(x => x.length >= 7 && x.length <= 13).map(x => x[0] === '0' || x.slice(0, 2) === '63' ? x : '0' + x);
+}
 async function fetchCSV(name, optional) {
   const url = DATA_BASE + name + '?_=' + Date.now();
   const r = await fetch(url);
@@ -364,9 +367,9 @@ async function loadCore() {
   am.slice(1).forEach(r => {
     const id = String(get(r, ac('Dealer ID'))).trim(); if (!id) return;
     const lat = parseFloat(get(r, ac('Latitude'))), lng = parseFloat(get(r, ac('Longitude')));
-    const phoneRaw = addrIdx.length > 1 ? String(get(r, addrIdx[1])).replace(/\D/g, '') : '';
+    const phones = addrIdx.length > 1 ? parsePhones(get(r, addrIdx[1])) : [];   // a dealer can list several numbers (separated by / | , ;) — never join them into one
     DEALERS[id] = { id, name: normName(get(r, ac('Dealership Name'))), sm: normName(get(r, ac('Assigned SM'))), sales: normName(get(r, ac('Assigned SO'))),
-      status: normName(get(r, ac('Dealer Status'))), address: normName(get(r, addrIdx[0])), phone: phoneRaw ? (phoneRaw[0] === '0' ? phoneRaw : '0' + phoneRaw) : '',
+      status: normName(get(r, ac('Dealer Status'))), address: normName(get(r, addrIdx[0])), phone: phones[0] || '', phones,
       lat: validPH(lat, lng) ? lat : null, lng: validPH(lat, lng) ? lng : null, city: normName(get(r, ac('City Extract'))),
       so: normName(get(r, ac('Assigned Stock Audit Officer'))), co: normName(get(r, ac('Assigned Collections Officer'))) };
   });
@@ -415,7 +418,7 @@ async function loadCore() {
   OPEN = ALLDD.filter(d => d.open);
   OFFICERS = { so: new Set(), co: new Set() };
   OPEN.forEach(d => { if (d.so) OFFICERS.so.add(d.so); if (d.co) OFFICERS.co.add(d.co); });
-  ALLDD.forEach(d => { if (d.dealerId && !DEALERS[d.dealerId]) DEALERS[d.dealerId] = { id: d.dealerId, name: d.dealer, sm: '', sales: d.sales, status: '', address: '', phone: '', lat: null, lng: null, city: '', so: d.so, co: d.co }; });
+  ALLDD.forEach(d => { if (d.dealerId && !DEALERS[d.dealerId]) DEALERS[d.dealerId] = { id: d.dealerId, name: d.dealer, sm: '', sales: d.sales, status: '', address: '', phone: '', phones: [], lat: null, lng: null, city: '', so: d.so, co: d.co }; });
   // ── inspections (a v3 tracker ID carries a trailing "*"; the audit sheet may omit it)
   const sc = buildColumnMap(si[0]);
   INSP = []; INSP_IDS = {};
@@ -649,7 +652,7 @@ function openSheet(html) {
 }
 function closeSheet() { document.getElementById('overlay-root').innerHTML = ''; }
 
-function dealerOf(d) { return DEALERS[d.dealerId] || { name: d.dealer, address: '', phone: '', city: '' }; }
+function dealerOf(d) { return DEALERS[d.dealerId] || { name: d.dealer, address: '', phone: '', phones: [], city: '' }; }
 function navUrl(dl, fallbackName) {
   const q = dl.lat != null ? dl.lat + ',' + dl.lng : encodeURIComponent((dl.name || fallbackName || '') + ' ' + (dl.address || dl.city || ''));
   return 'https://www.google.com/maps/dir/?api=1&destination=' + q;
@@ -674,7 +677,7 @@ function showDetail(id) {
   let h = '<h3>' + esc(d.dealer) + ' · ' + esc(d.id) + '</h3><div class="sub">' + esc(vehicleLabel(d)) + (d.plate ? ' · ' + esc(d.plate) : '') + '</div>';
   if (d.open) h += '<div class="item-meta" style="margin:10px 0">' + chipsFor(d) + '</div><div class="callout info small">Next audit due <b>' + fmtD(d.due) + '</b> — ' + esc(d.basis) + '.</div>';
   h += '<div class="kv"><div><span>Loan status</span>' + esc(d.status || '—') + '</div><div><span>Outstanding</span>' + peso(d.out) + '</div><div><span>Credit date</span>' + fmtD(d.credit) + '</div><div><span>DPD</span>' + (d.dpdDays || (d.inDpd ? 'Yes' : '0')) + '</div>' +
-    '<div><span>Audit officer</span>' + esc(d.so || '—') + '</div><div><span>Collections officer</span>' + esc(d.co || '—') + '</div><div><span>City</span>' + esc(dl.city || '—') + '</div><div><span>Address</span>' + esc(dl.address || '—') + '</div></div>';
+    '<div><span>Sales officer (SO)</span>' + esc(dl.sales || '—') + '</div><div><span>Sales manager (SM)</span>' + esc(dl.sm || '—') + '</div><div><span>Dealer phone</span>' + (dl.phones && dl.phones.length ? dl.phones.map(p => '<a href="tel:' + esc(p) + '">' + esc(p) + '</a>').join('<br>') : '—') + '</div><div><span>Audit officer</span>' + esc(d.so || '—') + '</div><div><span>Collections officer</span>' + esc(d.co || '—') + '</div><div><span>City</span>' + esc(dl.city || '—') + '</div><div><span>Address</span>' + esc(dl.address || '—') + '</div></div>';
   h += '<div class="item-act" style="margin-bottom:8px">' + (d.open ? '<button class="btn pri" data-act="audit" data-id="' + esc(d.id) + '">Start audit</button>' : '') + dealerActs(dl, d.dealer) + '<button class="btn" data-act="close">Close</button></div>';
   h += '<div class="b" style="margin-top:12px">Audit history (' + d.hist.length + ')</div><div class="tl">';
   d.hist.slice().reverse().slice(0, 10).forEach(e => {
