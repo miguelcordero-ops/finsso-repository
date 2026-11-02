@@ -228,7 +228,7 @@ var DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-repo
 // ── BigQuery data API ── used when signed in; any failure falls back to the GitHub CSV below ──
 function _timedFetch(u, o, ms) { var c = new AbortController(), t = setTimeout(function () { c.abort(); }, ms || 15000); o.signal = c.signal; return fetch(u, o).finally(function () { clearTimeout(t); }); }
 var DATA_API = 'https://finsso-data-api.miguel-cordero.workers.dev/data/';
-var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv'];
+var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv','stock-audits-v2.csv'];
 var _idToken = null, DATA_SRC = {};
 // Some dashboards start loading data before sign-in finishes; wait briefly for the Google token so the BigQuery path can be used.
 var _tokenWait = new Promise(function (res) { window._resolveToken = res; });
@@ -384,7 +384,7 @@ var V3_DPD_COLS = ['R1 DPD', 'R2 DPD', 'R3 DPD', 'P1 DPD', 'R4 DPD', 'P2 DPD', '
    payments from repayment.csv / repaymentv3.csv. Dealer details and the assigned stock audit officer /
    collections officer come from AuditMapping.csv (one row per dealer). */
 async function loadCore() {
-  const [d2, d3, r2, r3, si, am] = await Promise.all([fetchCSV('drawdown.csv'), fetchCSV('drawdownv3.csv', true), fetchCSV('repayment.csv'), fetchCSV('repaymentv3.csv', true), fetchCSV('stock-inspection.csv'), fetchCSV('AuditMapping.csv')]);
+  const [d2, d3, r2, r3, si, am, sa2] = await Promise.all([fetchCSV('drawdown.csv'), fetchCSV('drawdownv3.csv', true), fetchCSV('repayment.csv'), fetchCSV('repaymentv3.csv', true), fetchCSV('stock-inspection.csv'), fetchCSV('AuditMapping.csv'), fetchCSV('stock-audits-v2.csv', true)]);
   // ── dealers + officer mapping (AuditMapping.csv)
   DEALERS = {};
   const ac = buildColumnMap(am[0]);
@@ -444,24 +444,47 @@ async function loadCore() {
   OFFICERS = { so: new Set(), co: new Set() };
   OPEN.forEach(d => { if (d.so) OFFICERS.so.add(d.so); if (d.co) OFFICERS.co.add(d.co); });
   ALLDD.forEach(d => { if (d.dealerId && !DEALERS[d.dealerId]) DEALERS[d.dealerId] = { id: d.dealerId, name: d.dealer, sm: '', sales: d.sales, status: '', address: '', phone: '', phones: [], lat: null, lng: null, city: '', so: d.so, co: d.co }; });
-  // ── inspections (a v3 tracker ID carries a trailing "*"; the audit sheet may omit it)
-  const sc = buildColumnMap(si[0]);
-  INSP = []; INSP_IDS = {};
-  si.slice(1).forEach(r => {
-    let id = String(get(r, sc('Drawdown ID'))).trim(); const date = parseSheetDate(get(r, sc('Date')));
-    if (!id || !date) return;
-    if (!DD[id] && DD[id + '*']) id = id + '*';
-    const status = String(get(r, sc('Stock Inspection Status'))).trim();
-    const e = { id, date, who: normName(get(r, sc('Inspector'))), email: String(get(r, sc('User email'))).trim().toLowerCase(), status,
-      iid: String(get(r, sc('Inspection ID'))).trim(), dealer: normName(get(r, sc('Dealership Name'))),
-      vs: String(get(r, sc('Vehicle Status - F'))).trim() || String(get(r, sc('Vehicle Status - S'))).trim(),
-      remarks: String(get(r, sc('Additional Remarks from SIO - F'))).trim() || String(get(r, sc('Additional Remarks from SIO - S'))).trim(),
-      poc: String(get(r, sc('POC Name'))).trim(), sold: parseSheetDate(get(r, sc('Date Vehicle Sold'))), method: String(get(r, sc('Sales Method'))).trim() };
-    INSP.push(e); if (e.iid) INSP_IDS[e.iid] = 1;
-    if (!COVERAGE_START || date < COVERAGE_START) COVERAGE_START = date;
-  });
+  // ── inspections: the form-response tab (stock-inspection.csv) + the "Stock Audits v2" tab that this app writes to (stock-audits-v2.csv)
+  buildInsp([si, sa2]);
   rebuildHistory();
 }
+/* inspections from one or more grids (same headers). A v3 tracker ID carries a trailing "*"; the audit sheet may omit it.
+   A row from a later grid is skipped when the same audit (Inspection ID, or drawdown + date + inspector) is already loaded. */
+function buildInsp(grids) {
+  INSP = []; INSP_IDS = {}; COVERAGE_START = null; const seen = {};
+  grids.forEach(function (si, gi) {
+    if (!si || !si.length) return;
+    const sc = buildColumnMap(si[0]);
+    si.slice(1).forEach(r => {
+      let id = String(get(r, sc('Drawdown ID'))).trim(); const date = parseSheetDate(get(r, sc('Date')));
+      if (!id || !date) return;
+      if (!DD[id] && DD[id + '*']) id = id + '*';
+      const status = String(get(r, sc('Stock Inspection Status'))).trim();
+      const e = { id, date, who: normName(get(r, sc('Inspector'))), email: String(get(r, sc('User email'))).trim().toLowerCase(), status,
+        iid: String(get(r, sc('Inspection ID'))).trim(), dealer: normName(get(r, sc('Dealership Name'))),
+        vs: String(get(r, sc('Vehicle Status - F'))).trim() || String(get(r, sc('Vehicle Status - S'))).trim(),
+        remarks: String(get(r, sc('Additional Remarks from SIO - F'))).trim() || String(get(r, sc('Additional Remarks from SIO - S'))).trim(),
+        poc: String(get(r, sc('POC Name'))).trim(), sold: parseSheetDate(get(r, sc('Date Vehicle Sold'))), method: String(get(r, sc('Sales Method'))).trim() };
+      const key = e.iid ? 'i:' + e.iid.toLowerCase() : 'k:' + id.toLowerCase() + '|' + iso(date) + '|' + e.who.toLowerCase();
+      if (gi > 0 && seen[key]) return;
+      seen[key] = 1;
+      INSP.push(e); if (e.iid) INSP_IDS[e.iid] = 1;
+      if (!COVERAGE_START || date < COVERAGE_START) COVERAGE_START = date;
+    });
+  });
+}
+/* re-read the audit data (BigQuery first, GitHub as fallback) without reloading the page, so audits saved to the sheet show up as soon as BigQuery has them */
+var _lastInspRefresh = Date.now();
+async function refreshInsp() {
+  if (!ME || (typeof A !== 'undefined' && A && A.busy)) return;
+  try {
+    const [si, sa2] = await Promise.all([fetchCSV('stock-inspection.csv'), fetchCSV('stock-audits-v2.csv', true)]);
+    buildInsp([si, sa2]); await mergePending(); rebuildHistory(); _lastInspRefresh = Date.now();
+    if (S.view !== 'audit') render();
+  } catch (e) { console.warn('Audit refresh failed', e); }
+}
+setInterval(function () { if (!document.hidden) refreshInsp(); }, 3 * 60 * 1000);
+document.addEventListener('visibilitychange', function () { if (!document.hidden && Date.now() - _lastInspRefresh > 90 * 1000) refreshInsp(); });
 function rebuildHistory() {
   ALLDD.forEach(d => d.hist = []);
   INSP.sort((a, b) => a.date - b.date);
@@ -738,7 +761,7 @@ function renderHome() {
     '<button class="kpi amber" data-act="goto" data-f="soon"><div class="n">' + c.soon + '</div><div class="l">Due in 1–3 days</div><div class="s">&nbsp;</div></button>' +
     '<button class="kpi orange" data-act="goto" data-f="dpd"><div class="n">' + c.dpd + '</div><div class="l">On DPD</div><div class="s">7-day cycle</div></button>' +
     '<button class="kpi red" data-act="goto" data-f="multi"><div class="n">' + c.multi + '</div><div class="l">Failed 2× in a row</div><div class="s">re-audit in 3 days</div></button>' +
-    '<button class="kpi green" data-act="goto" data-f="all"><div class="n">' + wk.length + '</div><div class="l">Audits this week</div><div class="s">' + mtd.length + ' MTD · ' + wkF + ' failed this week</div></button></div>';
+    '<button class="kpi green" data-act="done" data-f="week"><div class="n">' + wk.length + '</div><div class="l">Audits this week</div><div class="s">' + mtd.length + ' MTD · ' + wkF + ' failed this week</div></button></div>';
   const top = list.filter(d => d.daysToDue <= 3).slice(0, 6);
   h += '<div class="two sec"><div><div class="sec-h" style="margin-top:0"><h2>Up next — highest priority</h2><button class="btn sm" data-act="nav" data-v="itin">Plan route →</button></div><div class="list">';
   h += top.length ? top.map(d => itemHtml(d)).join('') : '<div class="card empty">Nothing overdue or due within 3 days. Nice work.</div>';
@@ -746,7 +769,7 @@ function renderHome() {
   const rt = routeDealers();
   h += '<div class="card"><div class="b">Today’s route</div>' + (rt.length ? '<div class="small muted" style="margin:4px 0 8px">' + rt.length + ' stop' + (rt.length > 1 ? 's' : '') + ' planned</div>' + rt.slice(0, 5).map((s, i) => '<div style="display:flex;gap:8px;align-items:center;margin:5px 0"><span class="stopno">' + (i + 1) + '</span><span>' + esc(s.name) + '</span></div>').join('') + (rt.length > 5 ? '<div class="small muted">+' + (rt.length - 5) + ' more</div>' : '') : '<div class="small muted" style="margin:4px 0 8px">No stops planned yet. Open the Itinerary and add dealers.</div>') + '<div style="margin-top:8px"><button class="btn sm" data-act="nav" data-v="itin">Open itinerary</button></div></div>';
   const pend = INSP.filter(e => e.pending && (L.officer === '*' || e.who === L.officer));
-  if (pend.length) h += '<div class="card"><div class="b">Submitted — syncing</div><div class="small muted" style="margin:4px 0">These are saved to the sheet and will appear in the GitHub data after the next export.</div>' + pend.slice(-5).reverse().map(e => '<div class="small">' + esc(e.id) + ' · ' + esc(e.status) + ' · ' + fmtDs(e.date) + '</div>').join('') + '</div>';
+  if (pend.length) h += '<div class="card"><div class="b">Submitted — syncing</div><div class="small muted" style="margin:4px 0">Saved to the sheet. They already count here, and show in BigQuery and the shared dashboards within about 5 minutes.</div>' + pend.slice(-5).reverse().map(e => '<div class="small">' + esc(e.id) + ' · ' + esc(e.status) + ' · ' + fmtDs(e.date) + '</div>').join('') + '</div>';
   h += '<details class="card"><summary class="b" style="cursor:pointer">How audits are scheduled</summary><div class="small" style="margin-top:8px;line-height:1.6">' +
     '<b>First audit:</b> 30 days after the drawdown is credited.<br><b>After a Passed audit:</b> next one within 15 days.<br><b>After a Failed audit:</b> re-audit within 3 days.<br><b>On DPD:</b> audit at least every 7 days.<br><br>' +
     '<b>Priority:</b> sorted by scheduled date first (overdue, then due today, then soon). Accounts on DPD and accounts that failed twice in a row are lifted above others in the same urgency band.</div></details>';
@@ -1070,7 +1093,7 @@ function renderAuditDone() {
   const d = DD[A.done.ddId], pass = A.done.status === 'Passed';
   let h = '<div class="form"><div class="callout ' + (pass ? 'good' : 'bad') + '" style="font-size:15px;padding:16px"><b>' + (pass ? '✓ Audit submitted — Passed' : '✕ Audit submitted — Failed') + '</b><br>' + esc(d.dealer) + ' · ' + esc(d.id) + ' · ' + esc(d.plate) + '</div>';
   if (d.open) h += '<div class="card"><div class="b">Next audit</div><div style="margin:6px 0">' + chipsFor(d) + '</div><div class="small muted">Due ' + fmtD(d.due) + ' — ' + esc(d.basis) + '</div></div>';
-  h += '<div class="small muted">Saved to the stock inspection sheet with photos in Drive. It shows in this app straight away and in the shared dashboards after the next data export.</div>';
+  h += '<div class="small muted">Saved to the stock inspection sheet with photos in Drive. It shows in this app straight away and in BigQuery and the shared dashboards within about 5 minutes.</div>';
   const same = lensList().filter(x => x.dealerId === d.dealerId && x.id !== d.id && x.daysToDue <= 7);
   if (same.length) h += '<div class="callout warn small"><b>' + same.length + ' more drawdown' + (same.length > 1 ? 's' : '') + ' at this dealer due soon:</b><br>' + same.map(x => esc(x.id + ' · ' + x.plate + ' · ' + dueText(x))).join('<br>') + '</div>' + same.slice(0, 3).map(x => '<button class="btn pri" data-act="audit" data-id="' + esc(x.id) + '">Audit ' + esc(x.plate || x.id) + ' next</button>').join('');
   h += '<div class="item-act"><button class="btn" data-act="nav" data-v="home">Back to home</button><button class="btn" data-act="newaudit">Audit another</button></div></div>';
@@ -1214,9 +1237,31 @@ function render() {
   else if (S.view === 'itin') v.innerHTML = renderItin();
   else if (S.view === 'dealers') { v.innerHTML = renderDealers(); paintDealers(); const q = document.getElementById('dq'); q.oninput = () => { S.dq = q.value; paintDealers(); }; document.getElementById('dsort').onchange = function () { S.dsort = this.value; paintDealers(); }; }
   else if (S.view === 'dd') { v.innerHTML = renderDD(); paintDD(); const q = document.getElementById('ddq'); q.oninput = () => { S.ddq = q.value; S.ddShow = 30; clearTimeout(window._ddT); window._ddT = setTimeout(paintDD, 150); }; document.getElementById('ddsort').onchange = function () { S.ddsort = this.value; S.ddShow = 30; paintDD(); }; }
+  else if (S.view === 'done') v.innerHTML = renderDone();
   else if (S.view === 'audit') { v.innerHTML = renderAudit(); bindAudit(); }
   else if (S.view === 'lead' && ME.leader) renderLead(v);
   else { S.view = 'home'; v.innerHTML = renderHome(); }
+}
+/* every audit logged (Audits this week card): This week / Month to date / All time, for the lens you are viewing */
+function renderDone() {
+  const w = S.doneWin || 'week';
+  const from = w === 'week' ? monday(TODAY) : w === 'mtd' ? new Date(TODAY.getFullYear(), TODAY.getMonth(), 1) : new Date(2000, 0, 1);
+  const list = myAudits(from).slice().sort((a, b) => b.date - a.date);
+  const nF = list.filter(e => /^fail/i.test(e.status)).length, show = S.doneShow || 50;
+  let h = '<div class="sec-h" style="margin-top:0"><h2>Audits logged</h2><button class="btn sm" data-act="nav" data-v="home">← Home</button></div>' +
+    '<div class="toolbar"><div class="chips">' + [['week', 'This week'], ['mtd', 'Month to date'], ['all', 'All time']].map(x => '<button class="chip' + (w === x[0] ? ' on' : '') + '" data-act="dwin" data-v="' + x[0] + '">' + x[1] + '</button>').join('') + '</div></div>' +
+    '<div class="sub" style="margin:6px 0 10px">' + esc(lensName()) + ' · ' + list.length + ' audit' + (list.length === 1 ? '' : 's') + ' · ' + (list.length - nF) + ' passed · ' + nF + ' failed</div><div class="list">';
+  if (!list.length) h += '<div class="card empty">No audits logged in this period.</div>';
+  list.slice(0, show).forEach(e => {
+    const d = DD[e.id], pass = /^pass/i.test(e.status);
+    h += '<div class="item' + (pass ? '' : ' crit') + '" data-act="detail" data-id="' + esc(e.id) + '" style="cursor:pointer"><div class="item-top"><div><div class="item-t">' + esc(e.dealer || (d && d.dealer) || '—') + '</div>' +
+      '<div class="item-s">' + esc(e.id) + (d && d.plate ? ' · ' + esc(d.plate) : '') + (d && d.model ? ' · ' + esc(d.model) : '') + '</div></div><span class="pill ' + (pass ? 't-green' : 't-red') + '">' + esc(e.status || '—') + '</span></div>' +
+      '<div class="item-meta small muted">' + fmtD(e.date) + ' · ' + esc(e.who || '—') + (e.vs ? ' · ' + esc(e.vs) : '') + (e.pending ? ' <span class="pill t-blue">just submitted</span>' : '') + '</div>' +
+      (e.remarks ? '<div class="small">' + esc(e.remarks.length > 160 ? e.remarks.slice(0, 160) + '…' : e.remarks) + '</div>' : '') + '</div>';
+  });
+  h += '</div>';
+  if (list.length > show) h += '<div style="text-align:center;margin:12px 0"><button class="btn" data-act="dmore">Show 50 more (' + (list.length - show) + ' left)</button></div>';
+  return h;
 }
 function go(view) { S.view = view; render(); window.scrollTo(0, 0); }
 document.getElementById('nav').addEventListener('click', e => { const b = e.target.closest('button[data-view]'); if (!b) return; if (b.dataset.view === 'audit' && (!A || A.done)) newAudit(''); go(b.dataset.view); });
@@ -1232,6 +1277,9 @@ document.addEventListener('click', function (e) {
   else if (a === 'close') closeSheet();
   else if (a === 'nav') go(v);
   else if (a === 'goto') { S.ddf = t.dataset.f; go('dd'); }
+  else if (a === 'done') { S.doneWin = t.dataset.f || S.doneWin || 'week'; S.doneShow = 50; go('done'); }
+  else if (a === 'dwin') { S.doneWin = v; S.doneShow = 50; render(); }
+  else if (a === 'dmore') { S.doneShow = (S.doneShow || 50) + 50; render(); }
   else if (a === 'win') { S.itinWin = v; render(); }
   else if (a === 'rt') { e.stopPropagation(); S.route = S.route.includes(k) ? S.route.filter(x => x !== k) : S.route.concat(k); saveRoute(); const y = window.scrollY; render(); window.scrollTo(0, y); }
   else if (a === 'rtclear') { S.route = []; saveRoute(); render(); }
