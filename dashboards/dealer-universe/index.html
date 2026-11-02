@@ -581,6 +581,29 @@ table.wr.du .ifs{border-left:3px solid var(--primary)}
 // CONFIG
 // ═══════════════════════════════════════════════════════════════════════════
 const DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-repository/main/data/';
+// ── BigQuery data API ── used when signed in; any failure falls back to the GitHub CSV below ──
+var DATA_API = 'https://finsso-data-api.miguel-cordero.workers.dev/data/';
+var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv'];
+var _idToken = null, DATA_SRC = {};
+// Some dashboards start loading data before sign-in finishes; wait briefly for the Google token so the BigQuery path can be used.
+var _tokenWait = new Promise(function (res) { window._resolveToken = res; });
+function _noteSrc(name, src) {
+  DATA_SRC[name] = src;
+  try { var n = Object.keys(DATA_SRC), bq = n.filter(function (k) { return DATA_SRC[k] === 'BigQuery'; }).length, el = document.getElementById('who-name'); if (el) el.title = 'Data: ' + bq + '/' + n.length + ' files from BigQuery' + (bq < n.length ? ', rest from GitHub' : ''); } catch (e) {}
+}
+async function bqFetch(name) {
+  if (!_idToken && BQ_FILES.indexOf(name) >= 0) await Promise.race([_tokenWait, new Promise(function (r) { setTimeout(r, 3000); })]);
+  if (_idToken && BQ_FILES.indexOf(name) >= 0) {
+    try {
+      var tab = (typeof ALLOWLIST_TAB !== 'undefined' && ALLOWLIST_TAB) ? ALLOWLIST_TAB : 'DealerUniverse';
+      var br = await fetch(DATA_API + name + '?tab=' + encodeURIComponent(tab), { headers: { Authorization: 'Bearer ' + _idToken } });
+      if (br.ok) { _noteSrc(name, 'BigQuery'); return parseCSV(await br.text()); }
+      console.warn('Data API ' + br.status + ' for ' + name + ' - using GitHub');
+    } catch (e) { console.warn('Data API unreachable for ' + name + ' - using GitHub'); }
+  }
+  _noteSrc(name, 'GitHub');
+  return null;
+}
 const DAY_MS = 86400000;
 const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 let ACCESS = null, ID_TOKEN = '', USER_EMAIL = '', _dataReady = false, _rendered = false;
@@ -1317,6 +1340,7 @@ function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
 function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
 
 async function fetchCSV(name, optional) {
+  { const _b = await bqFetch(name); if (_b !== null) return _b; }
   const url = DATA_BASE + name + '?_=' + Date.now();
   const r = await fetch(url);
   if (!r.ok) {
@@ -1410,6 +1434,7 @@ function _grantAccess(profile, access) {
   _logAccess(profile.email);
 }
 async function _onGoogleCredential(resp) {
+  _idToken = resp && resp.credential; if (_idToken && window._resolveToken) window._resolveToken();
   _authError('');
   var data = _decodeJwt(resp && resp.credential);
   if (!data || !data.email) { _authError('Could not read your Google account. Try again.'); return; }

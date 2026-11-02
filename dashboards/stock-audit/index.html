@@ -225,6 +225,29 @@ textarea.inp{min-height:84px;resize:vertical}
    STOCK AUDIT — config
 ══════════════════════════════════════════════════ */
 var DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-repository/main/data/';
+// ── BigQuery data API ── used when signed in; any failure falls back to the GitHub CSV below ──
+var DATA_API = 'https://finsso-data-api.miguel-cordero.workers.dev/data/';
+var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv'];
+var _idToken = null, DATA_SRC = {};
+// Some dashboards start loading data before sign-in finishes; wait briefly for the Google token so the BigQuery path can be used.
+var _tokenWait = new Promise(function (res) { window._resolveToken = res; });
+function _noteSrc(name, src) {
+  DATA_SRC[name] = src;
+  try { var n = Object.keys(DATA_SRC), bq = n.filter(function (k) { return DATA_SRC[k] === 'BigQuery'; }).length, el = document.getElementById('who-name'); if (el) el.title = 'Data: ' + bq + '/' + n.length + ' files from BigQuery' + (bq < n.length ? ', rest from GitHub' : ''); } catch (e) {}
+}
+async function bqFetch(name) {
+  if (!_idToken && BQ_FILES.indexOf(name) >= 0) await Promise.race([_tokenWait, new Promise(function (r) { setTimeout(r, 3000); })]);
+  if (_idToken && BQ_FILES.indexOf(name) >= 0) {
+    try {
+      var tab = (typeof ALLOWLIST_TAB !== 'undefined' && ALLOWLIST_TAB) ? ALLOWLIST_TAB : 'StockAudit';
+      var br = await fetch(DATA_API + name + '?tab=' + encodeURIComponent(tab), { headers: { Authorization: 'Bearer ' + _idToken } });
+      if (br.ok) { _noteSrc(name, 'BigQuery'); return parseCSV(await br.text()); }
+      console.warn('Data API ' + br.status + ' for ' + name + ' - using GitHub');
+    } catch (e) { console.warn('Data API unreachable for ' + name + ' - using GitHub'); }
+  }
+  _noteSrc(name, 'GitHub');
+  return null;
+}
 var GOOGLE_CLIENT_ID = '263530903165-4nv0iueb5ftb5hjevr14mqug3rlraav5.apps.googleusercontent.com';
 // Same Apps Script deployment as the Access Control / Sales Weekly Review (StockAudit-AppsScript.gs is added to that project).
 var SA_API = 'https://script.google.com/a/macros/finsso.com/s/AKfycbznI2kQ8a0ApTS9xbDjY4oLoya5KQlqJ-xHm4X75BwkgIby4Cfqtz2xCupYOeFMBFik/exec';
@@ -304,6 +327,7 @@ function parsePhones(raw) {
   return String(raw || '').split(/[\/|,;&\n]+|\s+and\s+|\s{2,}/i).map(x => x.replace(/\D/g, '')).filter(x => x.length >= 7 && x.length <= 13).map(x => x[0] === '0' || x.slice(0, 2) === '63' ? x : '0' + x);
 }
 async function fetchCSV(name, optional) {
+  { const _b = await bqFetch(name); if (_b !== null) return _b; }
   const url = DATA_BASE + name + '?_=' + Date.now();
   const r = await fetch(url);
   if (!r.ok) {
@@ -1025,8 +1049,13 @@ async function submitAudit() {
       ['Vehicle Status - ' + sfx]: A.vs, ['Additional Remarks from SIO - ' + sfx]: A.remarks.trim(), 'Inspection ID': A.iid };
     if (A.vs === 'Sold and Released Collateral') { row['Date Vehicle Sold'] = A.sold; row['Sales Method'] = A.method; }
     setP('Uploading to Drive and saving to the sheet…', 70);
-    const r = await fetch(SA_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'sa_submit', idToken: ID_TOKEN, row, files }) });
-    const j = await r.json();
+    const payload = JSON.stringify({ action: 'sa_submit', idToken: ID_TOKEN, row, files });
+    let j; for (let attempt = 1; attempt <= 3; attempt++) {     // a busy server (another audit saving) can answer "lock timeout" — safe to retry: the Inspection ID prevents double rows
+      const r = await fetch(SA_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: payload });
+      j = await r.json();
+      if (j.ok || !/lock|timeout|timed out|busy/i.test(String(j.error || '')) || attempt === 3) break;
+      setP('Server busy — retrying (' + attempt + ' of 2)…', 75 + attempt * 5); await new Promise(res => setTimeout(res, 4000 * attempt));
+    }
     if (!j.ok) { closeSheet(); A.busy = false; if (j.code === 'auth') { showLock('Your sign-in expired — sign in again, then press Submit.'); } else toast(j.error || 'Upload failed', true); paintAudit(); return; }
     setP('Done', 100);
     INSP.push({ id: d.id, date: new Date(A.date + 'T00:00:00'), who: ME.name, email: ME.email, status: A.status, iid: A.iid, dealer: d.dealer, vs: A.vs, remarks: A.remarks.trim(), poc: A.poc.trim(), sold: null, method: A.method, pending: true });
@@ -1242,6 +1271,7 @@ async function whoami(token) {
 }
 var _booting = false;
 async function _onGoogleCredential(resp) {
+  _idToken = resp && resp.credential; if (_idToken && window._resolveToken) window._resolveToken();
   _authError('');
   const data = _decodeJwt(resp && resp.credential);
   if (!data || !data.email) return _authError('Could not read your Google account. Try again.');

@@ -405,10 +405,38 @@ table.wr tfoot td.fz{z-index:5;background:var(--wr-head,#eef0f6)}
 .wr-bar label.wr-pin{text-transform:none;letter-spacing:0;font-weight:500;display:inline-flex;align-items:center;gap:5px;cursor:pointer}
 table.wr thead th.fz.wk{background:var(--wr-wk,#e3e8f7)}
 table.wr thead tr.sub th.fz.wk{background:var(--wr-wk2,#edf0fa)}
-table.wr thead tr.flt th{top:60px;height:34px;padding:2px 4px;background:var(--wr-wk2,#edf0fa);z-index:4}
-table.wr thead tr.flt th.fz{z-index:6}
-table.wr thead tr.flt input,table.wr thead tr.flt select{font:inherit;font-size:11px;width:100%;padding:3px 4px;border:1px solid var(--border2);border-radius:5px;background:var(--surface-hi);color:var(--text)}
 table.wr td.ck{text-align:center}
+:root{--wf-bg:#ffffff;--wf-hover:#eef1f8}
+:root[data-theme="dark"]{--wf-bg:#1b2133;--wf-hover:#273049}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--wf-bg:#1b2133;--wf-hover:#273049}}
+table.wr thead th .hc{display:flex;align-items:center;gap:4px;justify-content:space-between}
+table.wr thead th .hl{flex:1;min-width:0;overflow:visible;text-overflow:clip;white-space:normal;font-size:11px;line-height:1.1}
+table.wr thead th.rr .hc{justify-content:flex-end}table.wr thead th.rr .hl{text-align:right}
+table.wr thead th:not(.l):not(.rr) .hl{text-align:center}
+table.wr thead th .sa{font-size:9px;color:var(--primary)}
+.fbtn{flex:none;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:0;border-radius:4px;background:transparent;color:var(--text3);cursor:pointer;padding:0}
+.fbtn:hover{background:var(--wf-hover);color:var(--text)}
+.fbtn.on{background:var(--primary);color:#fff}
+.wf-panel{position:fixed;z-index:99999;width:280px;display:flex;flex-direction:column;background:var(--wf-bg) !important;color:var(--text);border:1px solid var(--border2);border-radius:10px;box-shadow:0 10px 36px rgba(0,0,0,.32);font-size:13px;padding:6px 0;overflow:hidden}
+.wf-title{padding:6px 14px 8px;font-weight:700;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.wf-item{display:block;width:100%;text-align:left;font:inherit;padding:7px 14px;border:0;background:transparent;color:var(--text);cursor:pointer}
+.wf-item:hover{background:var(--wf-hover)}
+.wf-sep{height:1px;background:var(--border2);margin:6px 0}
+.wf-sec{padding:2px 14px 6px;font-weight:600;color:var(--text);display:flex;justify-content:space-between;align-items:center}
+.wf-links{font-weight:400;font-size:12px}.wf-links a{color:var(--primary);cursor:pointer}
+.wf-cond{padding:0 14px;display:flex;flex-direction:column;gap:6px}
+.wf-panel select,.wf-panel input[type=text],.wf-panel input[type=search]{font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--wf-bg);color:var(--text);width:100%;box-sizing:border-box}
+.wf-search{margin:0 14px 4px;width:calc(100% - 28px) !important}
+.wf-count{padding:2px 14px 4px;font-size:11px;color:var(--text3)}
+.wf-list{overflow:auto;min-height:60px;max-height:240px;padding:0 6px}
+.wf-val{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:6px;cursor:pointer}
+.wf-val:hover{background:var(--wf-hover)}
+.wf-val span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wf-val em{font-style:normal;color:var(--text3);font-size:11px}
+.wf-none{padding:10px;color:var(--text3);font-style:italic}
+.wf-foot{display:flex;justify-content:flex-end;gap:8px;padding:8px 14px 4px;border-top:1px solid var(--border2);margin-top:6px}
+.wf-foot button{font:inherit;font-size:13px;padding:6px 14px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text);cursor:pointer}
+.wf-foot .wf-ok{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
 table.wr td.ck input.ckb{width:17px;height:17px;cursor:pointer;accent-color:var(--primary);vertical-align:middle}
 table.wr td.ck input.ckb.dirty{outline:2px solid var(--primary);outline-offset:1px}
 .wr-savebar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:none;align-items:center;justify-content:center;gap:14px;padding:10px 16px;background:var(--surface-hi);border-top:1px solid var(--border2);box-shadow:0 -4px 16px rgba(0,0,0,.10);backdrop-filter:blur(8px);font-size:13px}
@@ -507,6 +535,29 @@ table.wr td.ck input.ckb.dirty{outline:2px solid var(--primary);outline-offset:1
 // CONFIG
 // ═══════════════════════════════════════════════════════════════════════════
 const DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-repository/main/data/';
+// ── BigQuery data API ── used when signed in; any failure falls back to the GitHub CSV below ──
+var DATA_API = 'https://finsso-data-api.miguel-cordero.workers.dev/data/';
+var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv'];
+var _idToken = null, DATA_SRC = {};
+// Some dashboards start loading data before sign-in finishes; wait briefly for the Google token so the BigQuery path can be used.
+var _tokenWait = new Promise(function (res) { window._resolveToken = res; });
+function _noteSrc(name, src) {
+  DATA_SRC[name] = src;
+  try { var n = Object.keys(DATA_SRC), bq = n.filter(function (k) { return DATA_SRC[k] === 'BigQuery'; }).length, el = document.getElementById('who-name'); if (el) el.title = 'Data: ' + bq + '/' + n.length + ' files from BigQuery' + (bq < n.length ? ', rest from GitHub' : ''); } catch (e) {}
+}
+async function bqFetch(name) {
+  if (!_idToken && BQ_FILES.indexOf(name) >= 0) await Promise.race([_tokenWait, new Promise(function (r) { setTimeout(r, 3000); })]);
+  if (_idToken && BQ_FILES.indexOf(name) >= 0) {
+    try {
+      var tab = (typeof ALLOWLIST_TAB !== 'undefined' && ALLOWLIST_TAB) ? ALLOWLIST_TAB : 'SalesWeekly';
+      var br = await fetch(DATA_API + name + '?tab=' + encodeURIComponent(tab), { headers: { Authorization: 'Bearer ' + _idToken } });
+      if (br.ok) { _noteSrc(name, 'BigQuery'); return parseCSV(await br.text()); }
+      console.warn('Data API ' + br.status + ' for ' + name + ' - using GitHub');
+    } catch (e) { console.warn('Data API unreachable for ' + name + ' - using GitHub'); }
+  }
+  _noteSrc(name, 'GitHub');
+  return null;
+}
 const DAY_MS = 86400000;
 const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const ALL_TEAMS = '__ALL__';
@@ -739,14 +790,14 @@ function cur(key) { return edits[key] || saved[key] || { fresh: '', redraw: '', 
 // ═══════════════════════════════════════════════════════════════════════════
 // Layout: info columns (frozen) + Week 1 (frozen, optional) + ONE paged week (◀ ▶ to move).
 // Fixed-width table (fast) and VIRTUALIZED rows: only rows near the viewport exist in the DOM.
-const WR_ROW_H = 38, WR_BUF = 10, WR_HEAD_H = 94;
+const WR_ROW_H = 38, WR_BUF = 10, WR_HEAD_H = 60;
 // [label, width, align classes, key]
-const WR_FROZEN = [ ['Dealer', 170, 'l name', 'dealer'], ['Assigned Officer', 120, 'l', 'so'], ['Onboarding Date', 96, '', 'onb'], ['Last Txn', 96, '', 'last'], ['Total Available Credit Limit', 104, 'rr', 'limit'], ['Available Drawing Power', 104, 'rr', 'dp'], ['Credit Line Status', 72, '', 'cls'] ];
-const WR_SCROLL = [ ['Latest IF Visit', 96, '', 'lvd'], ['Visited By (IF)', 130, 'l', 'lvb'], ['Visit Remarks', 170, 'l', 'lvr'] ]; // not frozen — scroll with the weeks
+const WR_FROZEN = [ ['Dealer', 170, 'l name', 'dealer'], ['Assigned Officer', 120, 'l', 'so'], ['Onboarding Date', 104, '', 'onb'], ['Last Txn', 104, '', 'last'], ['Total Available Credit Limit', 104, 'rr', 'limit'], ['Available Drawing Power', 104, 'rr', 'dp'], ['Credit Line Status', 72, '', 'cls'] ];
+const WR_SCROLL = [ ['Latest IF Visit', 104, '', 'lvd'], ['Visited By (IF)', 130, 'l', 'lvb'], ['Visit Remarks', 170, 'l', 'lvr'] ]; // not frozen — scroll with the weeks
 const WR_INFO_W = () => WR_FROZEN.concat(WR_SCROLL).reduce((a, c) => a + c[1], 0);
 // one week block = 7 columns
 const WR_BLOCK_COLS = [['Actual Drawdowns', 'act'], ['Renewals Due', 'ren'], ['Maturities Due', 'mat'], ['Confidence', 'conf'], ['Planned Fresh Drawdown', 'fresh'], ['Planned Re-Drawdown', 'redraw'], ['Remarks', 'remarks']];
-const WR_W_PAGED = [76, 76, 84, 104, 112, 112, 320]; // Remarks stretches to the room that's left
+const WR_W_PAGED = [100, 96, 100, 106, 116, 116, 320]; // Remarks stretches to the room that's left
 const WR_NC = WR_BLOCK_COLS.length;
 let curList = [], baseCount = 0, curActs = {}, rsStart = -1, rsEnd = -1, wrTodayStart = null;
 let pageIdx = null, filters = {}, shown = [], tblW = 0;
@@ -783,14 +834,10 @@ function layoutBlocks() {
 }
 function frozenLefts() { let x = 0; return WR_FROZEN.map(c => { const l = x; x += c[1]; return l; }); }
 
-function infoFilterCell(key, kind) {
-  const fk = 'i|' + key, fv = filters[fk] || '';
-  if (kind === 'num') return '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="&gt;0, empty" title="Filter: &gt;0, &gt;=2000000, &lt;500000, =0, empty, any">';
-  if (kind === 'text') return '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="contains…">';
-  return '';
+function hcell(id, label) {
+  const on = filterActive(id) ? ' on' : '', sorted = sortSpec && sortSpec.id === id ? '<span class="sa">' + (sortSpec.dir === 1 ? '▲' : '▼') + '</span>' : '';
+  return '<div class="hc"><span class="hl">' + label + '</span>' + sorted + '<button type="button" class="fbtn' + on + '" data-col="' + id + '" title="Filter / sort">' + FUNNEL + '</button></div>';
 }
-const WR_INFO_FILTER = { dealer: 'text', so: 'text', limit: 'num', dp: 'num', cls: 'text', lvb: 'text', lvr: 'text' };
-
 function renderHead() {
   layoutBlocks();
   const table = document.getElementById('wr-table');
@@ -800,25 +847,14 @@ function renderHead() {
   cg += '</colgroup>';
   const fl = frozenLefts(), lastF = WR_FROZEN.length - 1;
   const thCls = c => (c[2].indexOf('l') >= 0 ? 'l' : '') + (c[2].indexOf('rr') >= 0 ? ' rr' : '');
-  let h1 = '<tr>' + WR_FROZEN.map((c, i) => '<th class="fz ' + thCls(c) + (i === lastF ? ' fzend' : '') + '" rowspan="2" style="left:' + fl[i] + 'px">' + c[0] + '</th>').join('');
-  h1 += WR_SCROLL.map(c => '<th class="' + thCls(c) + '" rowspan="2">' + c[0] + '</th>').join('');
+  let h1 = '<tr>' + WR_FROZEN.map((c, i) => '<th class="fz ' + thCls(c) + (i === lastF ? ' fzend' : '') + '" rowspan="2" style="left:' + fl[i] + 'px">' + hcell(c[3], c[0]) + '</th>').join('');
+  h1 += WR_SCROLL.map(c => '<th class="' + thCls(c) + '" rowspan="2">' + hcell(c[3], c[0]) + '</th>').join('');
   let h2 = '<tr class="sub">';
-  let h3 = '<tr class="flt">' + WR_FROZEN.map((c, i) => '<th class="fz' + (i === lastF ? ' fzend' : '') + '" style="left:' + fl[i] + 'px">' + infoFilterCell(c[3], WR_INFO_FILTER[c[3]]) + '</th>').join('') +
-    WR_SCROLL.map(c => '<th>' + infoFilterCell(c[3], WR_INFO_FILTER[c[3]]) + '</th>').join('');
   shown.forEach(b => {
     h1 += '<th class="wk wkstart" colspan="' + WR_NC + '">' + b.w.label + ' <span style="font-weight:400;color:var(--text3)">(' + b.w.range + ')</span></th>';
-    WR_BLOCK_COLS.forEach((c, i) => {
-      const cls = 'wk' + (i === 0 ? ' wkstart' : '');
-      h2 += '<th class="' + cls + '">' + c[0] + '</th>';
-      const fk = b.w.n + '|' + c[1], fv = filters[fk] || '';
-      let inner = '';
-      if (c[1] === 'conf') inner = '<select data-fk="' + fk + '" title="Filter by colour"><option value="">Any</option><option value="green"' + (fv === 'green' ? ' selected' : '') + '>Green</option><option value="yellow"' + (fv === 'yellow' ? ' selected' : '') + '>Yellow</option><option value="none"' + (fv === 'none' ? ' selected' : '') + '>No colour</option></select>';
-      else if (c[1] !== 'remarks') inner = '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="&gt;0, empty" title="Filter: &gt;0, &gt;=2, &lt;5, =3, empty, any">';
-      else inner = '<input type="text" data-fk="' + fk + '" value="' + esc(fv) + '" placeholder="contains…" title="Text contained in remarks, or: empty / any">';
-      h3 += '<th class="' + cls + '">' + inner + '</th>';
-    });
+    WR_BLOCK_COLS.forEach((c, i) => { h2 += '<th class="wk' + (i === 0 ? ' wkstart' : '') + '">' + hcell(b.w.n + '|' + c[1], c[0]) + '</th>'; });
   });
-  document.getElementById('wr-head').innerHTML = h1 + '</tr>' + h2 + '</tr>' + h3 + '</tr>';
+  document.getElementById('wr-head').innerHTML = h1 + '</tr>' + h2 + '</tr>';
   const old = table.querySelector('colgroup'); if (old) old.remove();
   table.insertAdjacentHTML('afterbegin', cg);
   updatePager();
@@ -837,52 +873,154 @@ function goPage(delta) {
   pageIdx = n; renderHead(); refreshBody(false);
 }
 
-// ── filters ──────────────────────────────────────────────────────────────────
-// Info-column filters ('i|key') always apply; week-column filters only for the week on screen.
+// ── Google-Sheets-style column filters ───────────────────────────────────────
+// Every column header has a funnel button -> panel with sort A→Z / Z→A, "filter by condition"
+// and "filter by values" (search + checkboxes). Info-column filters always apply; week-column
+// filters apply to the week currently on screen.
+let sortSpec = null; // { id, dir: 1 | -1 }
+const FUNNEL = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M1.5 2.5h13l-5 6v4.6l-3 1.4V8.5z" fill="currentColor"/></svg>';
+const BLANK = '(blank)';
+function colDef(id) {
+  const p = id.split('|');
+  const dstr = d => d ? fmtDate(d) : BLANK;
+  const T = (label, get) => ({ type: 'text', label, get: d => { const s = String(get(d) == null ? '' : get(d)).trim(); return s || BLANK; } });
+  const Nn = (label, get, fmt) => ({ type: 'num', label, num: d => { const x = get(d); return x == null || x === '' || !isFinite(+x) ? null : +x; }, get: d => { const x = get(d); return x == null || x === '' || !isFinite(+x) ? BLANK : fmt(+x); } });
+  const D = (label, get) => ({ type: 'date', label, num: d => { const x = get(d); return x ? x.getTime() : null; }, get: d => dstr(get(d)) });
+  if (p.length === 1) {
+    switch (p[0]) {
+      case 'dealer': return T('Dealer', d => d.name);
+      case 'so': return T('Assigned Officer', d => d.so);
+      case 'onb': return D('Onboarding Date', d => d.onboardingDate);
+      case 'last': return D('Last Txn', d => d.last);
+      case 'limit': return Nn('Total Available Credit Limit', d => d.availCredit, peso);
+      case 'dp': return Nn('Available Drawing Power', d => d.drawPower, peso);
+      case 'cls': return T('Credit Line Status', d => d.clStatus);
+      case 'lvd': return D('Latest IF Visit', d => (latestVisit[d.dealerId] || {}).date);
+      case 'lvb': return T('Visited By (IF)', d => (latestVisit[d.dealerId] || {}).by);
+      case 'lvr': return T('Visit Remarks', d => (latestVisit[d.dealerId] || {}).remarks);
+    }
+    return null;
+  }
+  const n = p[0], f = p[1], wk = weeks.find(w => String(w.n) === n); if (!wk) return null;
+  const key = d => n + '|' + d.dealerId;
+  switch (f) {
+    case 'act': return Nn('Actual Drawdowns', d => wk.from > wrTodayStart ? null : actualCount(d.dealerId, wk), String);
+    case 'ren': return Nn('Renewals Due', d => dueCount(d.dealerId, wk, 'R'), String);
+    case 'mat': return Nn('Maturities Due', d => dueCount(d.dealerId, wk, 'M'), String);
+    case 'conf': return { type: 'text', label: 'Confidence', get: d => { const c = cur(key(d)).conf; return c === 'green' ? 'Green' : c === 'yellow' ? 'Yellow' : BLANK; } };
+    case 'fresh': return Nn('Planned Fresh Drawdown', d => cur(key(d)).fresh, String);
+    case 'redraw': return Nn('Planned Re-Drawdown', d => cur(key(d)).redraw, String);
+    case 'remarks': return T('Remarks', d => cur(key(d)).remarks);
+  }
+  return null;
+}
+function filterActive(id) { const f = filters[id]; return !!f && (!!f.sel || !!f.op); }
 function activeFilterKeys() {
   const vis = {}; shown.forEach(b => { vis[b.w.n] = 1; });
-  return Object.keys(filters).filter(k => filters[k] && (k.charAt(0) === 'i' && k.charAt(1) === '|' || vis[k.split('|')[0]]));
+  return Object.keys(filters).filter(id => filterActive(id) && (id.indexOf('|') < 0 || vis[id.split('|')[0]]));
 }
-function numTest(expr) {
-  const s = String(expr).trim().toLowerCase(); if (!s) return null;
-  if (s === 'empty' || s === 'blank') return v => v === '' || v == null || !isFinite(parseFloat(v));
-  if (s === 'any' || s === 'has') return v => v !== '' && v != null && isFinite(parseFloat(v));
-  const m = s.match(/^(>=|<=|!=|>|<|=)?\s*(-?\d+(?:\.\d+)?)$/); if (!m) return () => false;
-  const op = m[1] || '=', n = parseFloat(m[2]);
-  return v => {
-    const x = parseFloat(v); if (!isFinite(x)) return false;
-    return op === '>' ? x > n : op === '>=' ? x >= n : op === '<' ? x < n : op === '<=' ? x <= n : op === '!=' ? x !== n : x === n;
-  };
-}
-function textTest(q) {
-  q = String(q).trim().toLowerCase(); if (!q) return null;
-  if (q === 'empty' || q === 'blank') return s => !String(s || '').trim();
-  if (q === 'any') return s => !!String(s || '').trim();
-  return s => String(s || '').toLowerCase().indexOf(q) >= 0;
+const OPS_NUM = [['', 'None'], ['empty', 'Is empty'], ['any', 'Is not empty'], ['gt', 'Greater than'], ['ge', 'Greater than or equal to'], ['lt', 'Less than'], ['le', 'Less than or equal to'], ['eq', 'Is equal to'], ['ne', 'Is not equal to']];
+const OPS_TXT = [['', 'None'], ['empty', 'Is empty'], ['any', 'Is not empty'], ['contains', 'Text contains'], ['ncontains', 'Text does not contain'], ['eq', 'Text is exactly']];
+function condPass(def, op, v, d) {
+  if (def.type === 'text') {
+    const s = def.get(d) === BLANK ? '' : def.get(d).toLowerCase(), q = String(v || '').trim().toLowerCase();
+    return op === 'empty' ? !s : op === 'any' ? !!s : op === 'contains' ? s.indexOf(q) >= 0 : op === 'ncontains' ? s.indexOf(q) < 0 : op === 'eq' ? s === q : true;
+  }
+  const x = def.num(d), t = parseFloat(v);
+  if (op === 'empty') return x == null; if (op === 'any') return x != null;
+  if (x == null || !isFinite(t)) return false;
+  return op === 'gt' ? x > t : op === 'ge' ? x >= t : op === 'lt' ? x < t : op === 'le' ? x <= t : op === 'eq' ? x === t : op === 'ne' ? x !== t : true;
 }
 function applyFilters(list) {
   const tests = [];
-  activeFilterKeys().forEach(k => {
-    const parts = k.split('|'), val = filters[k];
-    if (parts[0] === 'i') {
-      const key = parts[1];
-      if (key === 'limit' || key === 'dp') { const nt = numTest(val); if (nt) tests.push(d => nt(key === 'limit' ? d.availCredit : d.drawPower)); return; }
-      const tt = textTest(val); if (!tt) return;
-      tests.push(d => key === 'dealer' ? tt(d.name + ' ' + d.dealerId) : key === 'so' ? tt(d.so) : key === 'cls' ? tt(d.clStatus) :
-        key === 'lvb' ? tt((latestVisit[d.dealerId] || {}).by) : tt((latestVisit[d.dealerId] || {}).remarks));
-      return;
-    }
-    const n = parts[0], f = parts[1], wk = weeks.find(w => String(w.n) === n);
-    if (f === 'conf') { tests.push(d => { const c = cur(n + '|' + d.dealerId).conf || ''; return val === 'none' ? !c : c === val; }); return; }
-    if (f === 'remarks') { const tt = textTest(val); if (tt) tests.push(d => tt(cur(n + '|' + d.dealerId).remarks)); return; }
-    const nt = numTest(val); if (!nt) return;
-    if (f === 'act') tests.push(d => nt(!wk || wk.from > wrTodayStart ? '' : String(actualCount(d.dealerId, wk))));
-    else if (f === 'ren' || f === 'mat') tests.push(d => nt(String(dueCount(d.dealerId, wk, f === 'ren' ? 'R' : 'M'))));
-    else tests.push(d => nt(cur(n + '|' + d.dealerId)[f]));
+  activeFilterKeys().forEach(id => {
+    const f = filters[id], def = colDef(id); if (!def) return;
+    if (f.sel) tests.push(d => f.sel.has(def.get(d)));
+    if (f.op) tests.push(d => condPass(def, f.op, f.v, d));
   });
-  if (!tests.length) return list;
-  return list.filter(d => tests.every(t => t(d)));
+  return tests.length ? list.filter(d => tests.every(t => t(d))) : list;
 }
+function applySort(list) {
+  if (!sortSpec) return list;
+  const def = colDef(sortSpec.id); if (!def) return list;
+  const dir = sortSpec.dir, numeric = def.type !== 'text';
+  const dec = list.map((d, i) => ({ d, i, k: numeric ? def.num(d) : def.get(d) }));
+  dec.sort((a, b) => {
+    const ab = numeric ? a.k == null : a.k === BLANK, bb = numeric ? b.k == null : b.k === BLANK;
+    if (ab || bb) return ab && bb ? a.i - b.i : ab ? 1 : -1;           // blanks always last
+    const c = numeric ? a.k - b.k : String(a.k).localeCompare(String(b.k), undefined, { numeric: true, sensitivity: 'base' });
+    return c ? c * dir : a.i - b.i;
+  });
+  return dec.map(x => x.d);
+}
+
+// the dropdown panel
+let wfPanel = null;
+function closeFilterPanel() { if (wfPanel) { wfPanel.remove(); wfPanel = null; document.removeEventListener('mousedown', wfOutside, true); document.removeEventListener('keydown', wfKey, true); } }
+function wfOutside(e) { if (wfPanel && !wfPanel.contains(e.target) && !(e.target.closest && e.target.closest('.fbtn'))) closeFilterPanel(); }
+function wfKey(e) { if (e.key === 'Escape') closeFilterPanel(); }
+function openFilterPanel(id, anchor) {
+  closeFilterPanel();
+  const def = colDef(id); if (!def) return;
+  const base = dealersInScope();
+  const counts = {}; base.forEach(d => { const s = def.get(d); counts[s] = (counts[s] || 0) + 1; });
+  let vals = Object.keys(counts);
+  const ord = def.type === 'text'
+    ? (a, b) => (a === BLANK) - (b === BLANK) || a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+    : (() => { const m = {}; base.forEach(d => { m[def.get(d)] = def.num(d); }); return (a, b) => (a === BLANK) - (b === BLANK) || (m[a] - m[b]); })();
+  vals.sort(ord);
+  const f = filters[id] || {};
+  const tmp = new Set(f.sel ? Array.from(f.sel) : vals);
+  const ops = def.type === 'text' ? OPS_TXT : OPS_NUM;
+  const panel = document.createElement('div'); panel.className = 'wf-panel';
+  panel.innerHTML =
+    '<div class="wf-title">' + esc(def.label) + '</div>' +
+    '<button type="button" class="wf-item" data-sort="1">Sort A → Z</button><button type="button" class="wf-item" data-sort="-1">Sort Z → A</button>' +
+    '<div class="wf-sep"></div>' +
+    (def.type === 'date' ? '' : '<div class="wf-sec">Filter by condition</div><div class="wf-cond"><select class="wf-op">' + ops.map(o => '<option value="' + o[0] + '"' + (f.op === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select><input type="text" class="wf-v" placeholder="Value" value="' + esc(f.v || '') + '"></div><div class="wf-sep"></div>') +
+    '<div class="wf-sec">Filter by values <span class="wf-links"><a data-all="1">Select all</a> · <a data-all="0">Clear</a></span></div>' +
+    '<input type="search" class="wf-search" placeholder="Search"><div class="wf-count"></div><div class="wf-list"></div>' +
+    '<div class="wf-foot"><button type="button" class="wf-cancel">Cancel</button><button type="button" class="wf-ok">OK</button></div>';
+  document.body.appendChild(panel); wfPanel = panel;
+  const list = panel.querySelector('.wf-list'), search = panel.querySelector('.wf-search'), cnt = panel.querySelector('.wf-count');
+  const opSel = panel.querySelector('.wf-op'), vIn = panel.querySelector('.wf-v');
+  const syncCond = () => { if (vIn) vIn.style.display = (opSel.value === '' || opSel.value === 'empty' || opSel.value === 'any') ? 'none' : ''; };
+  if (opSel) { syncCond(); opSel.onchange = syncCond; }
+  const MAXN = 400;
+  const draw = () => {
+    const q = search.value.trim().toLowerCase();
+    const shownVals = vals.filter(v => !q || v.toLowerCase().indexOf(q) >= 0);
+    cnt.textContent = tmp.size + ' of ' + vals.length + ' selected' + (shownVals.length > MAXN ? ' · showing first ' + MAXN + ', search to narrow' : '');
+    list.innerHTML = shownVals.slice(0, MAXN).map(v => '<label class="wf-val"><input type="checkbox" data-v="' + esc(v) + '"' + (tmp.has(v) ? ' checked' : '') + '><span>' + esc(v) + '</span><em>' + counts[v] + '</em></label>').join('') || '<div class="wf-none">No matches</div>';
+    panel._shown = shownVals;
+  };
+  draw();
+  search.oninput = draw;
+  list.onchange = e => { const cb = e.target; if (!cb.dataset || cb.dataset.v === undefined) return; if (cb.checked) tmp.add(cb.dataset.v); else tmp.delete(cb.dataset.v); cnt.textContent = tmp.size + ' of ' + vals.length + ' selected'; };
+  panel.addEventListener('click', e => {
+    const a = e.target.closest('a[data-all]');
+    if (a) { (panel._shown || vals).forEach(v => { if (a.dataset.all === '1') tmp.add(v); else tmp.delete(v); }); draw(); return; }
+    const s = e.target.closest('[data-sort]');
+    if (s) { sortSpec = { id, dir: +s.dataset.sort }; closeFilterPanel(); renderHead(); refreshBody(true); return; }
+    if (e.target.closest('.wf-cancel')) { closeFilterPanel(); return; }
+    if (e.target.closest('.wf-ok')) {
+      const nf = {};
+      if (tmp.size < vals.length) nf.sel = new Set(tmp);
+      if (opSel && opSel.value) { nf.op = opSel.value; nf.v = vIn.value; }
+      if (nf.sel || nf.op) filters[id] = nf; else delete filters[id];
+      closeFilterPanel(); renderHead(); refreshBody(true);
+    }
+  });
+  // position under the button, kept inside the window
+  const r = anchor.getBoundingClientRect(), w = 280;
+  panel.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.left)) + 'px';
+  panel.style.top = Math.min(window.innerHeight - 120, r.bottom + 4) + 'px';
+  panel.style.maxHeight = Math.max(240, window.innerHeight - r.bottom - 16) + 'px';
+  setTimeout(() => { document.addEventListener('mousedown', wfOutside, true); document.addEventListener('keydown', wfKey, true); search.focus(); }, 0);
+}
+document.getElementById('wr-head').addEventListener('click', e => {
+  const b = e.target.closest('.fbtn'); if (!b) return; e.stopPropagation(); openFilterPanel(b.dataset.col, b);
+});
 
 function render() {
   weeks = buildWeeks(selectedMonth.y, selectedMonth.m);
@@ -893,7 +1031,7 @@ function render() {
 function refreshBody(resetScroll) {
   const base = dealersInScope();
   baseCount = base.length;
-  curList = applyFilters(base);
+  curList = applySort(applyFilters(base));
   curActs = {};
   curList.forEach(d => { curActs[d.dealerId] = weeks.map(w => w.from > wrTodayStart ? null : actualCount(d.dealerId, w)); });
   document.getElementById('wr-count').textContent = (curList.length === baseCount ? baseCount : curList.length + ' of ' + baseCount) + ' dealers · ' + MONTH_ABBR[selectedMonth.m] + ' ' + selectedMonth.y;
@@ -1013,15 +1151,6 @@ function onInput(e) {
   renderFoot();
   updateSaveBar();
 }
-// filter controls in the header
-let _fT = null;
-function onFilter(e) {
-  const el = e.target; if (!el.dataset || !el.dataset.fk) return;
-  const k = el.dataset.fk, v = el.value.trim();
-  if (v) filters[k] = v; else delete filters[k];
-  clearTimeout(_fT); _fT = setTimeout(() => refreshBody(true), el.tagName === 'SELECT' ? 0 : 220);
-}
-
 // ═══════════════════════════════════════════════════════════════════════════
 // SAVE
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1108,11 +1237,9 @@ async function tryRender() {
 
 document.addEventListener('input', onInput);
 document.addEventListener('change', e => { if (e.target.tagName === 'SELECT' && e.target.dataset && e.target.dataset.k) onInput(e); });
-document.getElementById('wr-head').addEventListener('input', onFilter);
-document.getElementById('wr-head').addEventListener('change', onFilter);
 document.getElementById('wr-prev').onclick = () => goPage(-1);
 document.getElementById('wr-next').onclick = () => goPage(1);
-document.getElementById('wr-clear').onclick = () => { filters = {}; renderHead(); refreshBody(true); };
+document.getElementById('wr-clear').onclick = () => { filters = {}; sortSpec = null; renderHead(); refreshBody(true); };
 document.addEventListener('keydown', e => {
   if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { e.preventDefault(); goPage(e.key === 'ArrowRight' ? 1 : -1); }
 });
@@ -1120,7 +1247,7 @@ document.getElementById('wr-save').onclick = saveEdits;
 document.getElementById('wr-discard').onclick = () => { edits = {}; render(); document.getElementById('wr-savemsg').textContent = ''; };
 document.getElementById('wr-month').onchange = async function () {
   if (!confirmDiscardIfDirty()) { this.value = selectedMonth.y + '-' + selectedMonth.m; return; }
-  const [y, m] = this.value.split('-').map(Number); selectedMonth = { y, m }; edits = {}; filters = {}; pageIdx = null;
+  const [y, m] = this.value.split('-').map(Number); selectedMonth = { y, m }; edits = {}; filters = {}; sortSpec = null; pageIdx = null;
   await loadSaved(); render();
 };
 document.getElementById('wr-so').onchange = function () { selectedSO = this.value; render(); };
@@ -1219,6 +1346,7 @@ function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
 function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
 
 async function fetchCSV(name, optional) {
+  { const _b = await bqFetch(name); if (_b !== null) return _b; }
   const url = DATA_BASE + name + '?_=' + Date.now();
   const r = await fetch(url);
   if (!r.ok) {
@@ -1312,6 +1440,7 @@ function _grantAccess(profile, access) {
   _logAccess(profile.email);
 }
 async function _onGoogleCredential(resp) {
+  _idToken = resp && resp.credential; if (_idToken && window._resolveToken) window._resolveToken();
   _authError('');
   var data = _decodeJwt(resp && resp.credential);
   if (!data || !data.email) { _authError('Could not read your Google account. Try again.'); return; }
