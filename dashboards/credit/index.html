@@ -329,13 +329,14 @@ function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
 
 // Data comes from BigQuery (via the Finsso data API) when the user is signed in and the file is a BigQuery
 // table; otherwise, or if the API fails for any reason, it falls back to the GitHub CSV so nothing breaks.
+function _timedFetch(u, o, ms) { var c = new AbortController(), t = setTimeout(function () { c.abort(); }, ms || 15000); o.signal = c.signal; return fetch(u, o).finally(function () { clearTimeout(t); }); }
 var DATA_API = 'https://finsso-data-api.miguel-cordero.workers.dev/data/';
 var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv'];
 var _idToken = null, DATA_SRC = {};
 async function fetchCSV(name, optional) {
   if (_idToken && BQ_FILES.indexOf(name) >= 0) {
     try {
-      const br = await fetch(DATA_API + name + '?tab=' + encodeURIComponent(ALLOWLIST_TAB), { headers: { Authorization: 'Bearer ' + _idToken } });
+      const br = await _timedFetch(DATA_API + name + '?tab=' + encodeURIComponent(ALLOWLIST_TAB), { headers: { Authorization: 'Bearer ' + _idToken } }, 15000);
       if (br.ok) { DATA_SRC[name] = 'BigQuery'; return parseCSV(await br.text()); }
       console.warn('Data API ' + br.status + ' for ' + name + ' - using GitHub');
     } catch (e) { console.warn('Data API unreachable for ' + name + ' - using GitHub'); }

@@ -536,6 +536,7 @@ table.wr td.ck input.ckb.dirty{outline:2px solid var(--primary);outline-offset:1
 // ═══════════════════════════════════════════════════════════════════════════
 const DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-repository/main/data/';
 // ── BigQuery data API ── used when signed in; any failure falls back to the GitHub CSV below ──
+function _timedFetch(u, o, ms) { var c = new AbortController(), t = setTimeout(function () { c.abort(); }, ms || 15000); o.signal = c.signal; return fetch(u, o).finally(function () { clearTimeout(t); }); }
 var DATA_API = 'https://finsso-data-api.miguel-cordero.workers.dev/data/';
 var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv'];
 var _idToken = null, DATA_SRC = {};
@@ -550,7 +551,7 @@ async function bqFetch(name) {
   if (_idToken && BQ_FILES.indexOf(name) >= 0) {
     try {
       var tab = (typeof ALLOWLIST_TAB !== 'undefined' && ALLOWLIST_TAB) ? ALLOWLIST_TAB : 'SalesWeekly';
-      var br = await fetch(DATA_API + name + '?tab=' + encodeURIComponent(tab), { headers: { Authorization: 'Bearer ' + _idToken } });
+      var br = await _timedFetch(DATA_API + name + '?tab=' + encodeURIComponent(tab), { headers: { Authorization: 'Bearer ' + _idToken } }, 15000);
       if (br.ok) { _noteSrc(name, 'BigQuery'); return parseCSV(await br.text()); }
       console.warn('Data API ' + br.status + ' for ' + name + ' - using GitHub');
     } catch (e) { console.warn('Data API unreachable for ' + name + ' - using GitHub'); }
