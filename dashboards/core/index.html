@@ -413,7 +413,7 @@ function _noteSrc(name, src) {
   try { var n = Object.keys(DATA_SRC), bq = n.filter(function (k) { return DATA_SRC[k] === 'BigQuery'; }).length, el = document.getElementById('who-name'); if (el) el.title = 'Data: ' + bq + '/' + n.length + ' files from BigQuery' + (bq < n.length ? ', rest from GitHub' : ''); } catch (e) {}
 }
 async function bqFetch(name) {
-  if (!_idToken && BQ_FILES.indexOf(name) >= 0) await Promise.race([_tokenWait, new Promise(function (r) { setTimeout(r, 3000); })]);
+  if (!_idToken && BQ_FILES.indexOf(name) >= 0) await Promise.race([_tokenWait, new Promise(function (r) { setTimeout(r, 45000); })]);
   if (_idToken && BQ_FILES.indexOf(name) >= 0) {
     try {
       var tab = (typeof ALLOWLIST_TAB !== 'undefined' && ALLOWLIST_TAB) ? ALLOWLIST_TAB : 'Overview';
@@ -1155,7 +1155,7 @@ function _grantAccess(profile) {
   _logAccess(profile.email);
 }
 async function _onGoogleCredential(resp) {
-  _idToken = resp && resp.credential; if (_idToken && window._resolveToken) window._resolveToken();
+  _idToken = resp && resp.credential; if (_idToken && window._resolveToken) window._resolveToken(); try{FinssoProfile.set(_idToken)}catch(e){}
   _authError('');
   var data = _decodeJwt(resp && resp.credential);
   if (!data || !data.email) { _authError('Could not read your Google account. Try again.'); return; }
@@ -1179,5 +1179,130 @@ function _initGoogleAuth() {
 _loadAllowlist();
 if (document.readyState !== 'loading') _initGoogleAuth();
 else document.addEventListener('DOMContentLoaded', _initGoogleAuth);
+</script>
+<script>
+/* ── Finsso profile chip: avatar + name + role, with a "Your access" panel (role from Allowlist column C) ── */
+var FinssoProfile = (function () {
+  var PAGES = [
+    { tab: 'Overview', name: 'PH Core Synergy Report', href: '/dashboards/core/' }, { tab: 'DPD', name: 'DPD Aging Dashboard', href: '/dashboards/dpd/' },
+    { tab: 'SalesWeekly', name: 'Sales Weekly Review', href: '/dashboards/weekly-review/' }, { tab: 'SalesPerf', name: 'Sales Team Performance', href: '/dashboards/sales-team/' },
+    { tab: 'DealerUniverse', name: 'Dealer Universe', href: '/dashboards/dealer-universe/' }, { tab: 'StockAudit', name: 'Stock Audit', href: '/dashboards/stock-audit/' },
+    { tab: 'Credit', name: 'Dealer Credit Profile', href: '/dashboards/credit/' }, { tab: 'Operations', name: 'Operations Overview', href: '/dashboards/operations/' }
+  ];
+  var st = { email: '', name: '', role: '', fallback: '', access: null, loaded: false, open: false, token: '' };
+  var chip = null, pop = null;
+  function apiUrl() { return window.FP_API || (typeof ALLOWLIST_API !== 'undefined' ? ALLOWLIST_API : (typeof SA_API !== 'undefined' ? SA_API : '')); }
+  function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function ini(n) { return String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(function (s) { return s[0].toUpperCase(); }).join('') || '?'; }
+  function here() { var p = location.pathname.replace(/index\.html$/, ''); return PAGES.filter(function (d) { return p.indexOf(d.href) === 0; })[0] || null; }
+
+  function css() {
+    if (document.getElementById('fp-css')) return;
+    var s = document.createElement('style'); s.id = 'fp-css';
+    s.textContent =
+      '.fp-who{position:relative;display:flex;align-items:center;gap:8px;min-width:0;cursor:pointer;border-radius:12px;padding:3px 8px 3px 3px;visibility:hidden;font-family:inherit;text-align:left}' +
+      '.fp-who.fp-ready{visibility:visible}.fp-who:hover,.fp-who.fp-open{background:rgba(128,128,128,.14)}' +
+      '.fp-who:focus-visible{outline:2px solid var(--primary,#E8461E);outline-offset:1px}' +
+      '.fp-who .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent,#F97316),var(--primary,#E8461E));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}' +
+      '.fp-who .who-txt{line-height:1.2;min-width:0;color:var(--text,inherit)}' +
+      '.fp-who .who-txt b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}' +
+      '.fp-who .who-txt span{display:block;font-size:11px;color:var(--text3,var(--text2,#8a8f98));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}' +
+      '@media(max-width:700px){.fp-who .who-txt{display:none}}' +
+      '.fp-pop{position:absolute;top:calc(100% + 8px);right:0;width:min(320px,92vw);z-index:100000;border:1px solid rgba(128,128,128,.35);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.35);padding:14px;font-size:13px;line-height:1.35;cursor:default;text-align:left;font-weight:400}' +
+      '.fp-head{display:flex;gap:10px;align-items:center}.fp-head .fp-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent,#F97316),var(--primary,#E8461E));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:none}' +
+      '.fp-head b{display:block;font-size:14px}.fp-head small{display:block;opacity:.65;word-break:break-all}' +
+      '.fp-role{margin:10px 0 2px;display:flex;align-items:center;gap:6px}.fp-pill{display:inline-block;padding:2px 10px;border-radius:999px;background:rgba(232,70,30,.15);color:var(--primary,#E8461E);font-weight:600;font-size:12px}' +
+      '.fp-sec{margin:12px 0 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;font-weight:700}' +
+      '.fp-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;max-height:260px;overflow:auto}' +
+      '.fp-list li{display:flex;justify-content:space-between;gap:8px;align-items:baseline;padding:6px 8px;border-radius:8px}.fp-list li:hover{background:rgba(128,128,128,.14)}' +
+      '.fp-list a{color:var(--primary,#E8461E);text-decoration:none;font-weight:600}.fp-list a:hover{text-decoration:underline}' +
+      '.fp-list em{font-style:normal;font-size:11px;opacity:.65;text-align:right}.fp-list li.fp-cur{background:rgba(128,128,128,.12)}.fp-list li.fp-cur a{color:inherit;cursor:default;text-decoration:none}' +
+      '.fp-msg{opacity:.7;padding:4px 8px}' +
+      '.fp-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid rgba(128,128,128,.3);font-size:12px}' +
+      '.fp-foot a{color:inherit;opacity:.7}.fp-out{font:inherit;font-size:12px;border:1px solid rgba(128,128,128,.45);background:transparent;color:inherit;border-radius:8px;padding:5px 12px;cursor:pointer}.fp-out:hover{background:rgba(128,128,128,.18)}';
+    document.head.appendChild(s);
+  }
+
+  function mount() {
+    if (chip) return chip;
+    css();
+    chip = document.querySelector('.who');
+    if (!chip) {
+      chip = document.createElement('div'); chip.className = 'who';
+      chip.innerHTML = '<div class="avatar" id="avatar">?</div><div class="who-txt"><b id="who-name">—</b><span id="who-role"></span></div>';
+      var host = document.querySelector('.header-right') || document.querySelector('.topbar-top') || document.querySelector('.topbar') || document.body;
+      host.insertBefore(chip, host.firstChild);
+      if (host.classList && host.classList.contains('header-right')) host.style.alignItems = 'center';
+    }
+    chip.classList.add('fp-who'); chip.setAttribute('role', 'button'); chip.setAttribute('tabindex', '0'); chip.setAttribute('aria-haspopup', 'true'); chip.title = chip.title || 'Your profile and access';
+    var r = document.getElementById('who-role'); if (r && !st.fallback) st.fallback = r.textContent || '';
+    chip.addEventListener('click', function (ev) { if (pop && pop.contains(ev.target)) return; toggle(); });
+    chip.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggle(); } if (ev.key === 'Escape') close(); });
+    document.addEventListener('click', function (ev) { if (st.open && chip && !chip.contains(ev.target)) close(); });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') close(); });
+    return chip;
+  }
+
+  function paintRole() {
+    var el = document.getElementById('who-role'); if (!el) return;
+    var cur = here(), txt = st.role || el.getAttribute('data-fp-app') || st.fallback || (cur ? cur.name : '');
+    if (txt) el.textContent = txt;
+  }
+
+  function decode(t) { try { var p = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'); return JSON.parse(decodeURIComponent(escape(atob(p)))); } catch (e) { return null; } }
+
+  function set(token) {
+    mount(); var d = decode(token) || {};
+    st.token = token; st.email = String(d.email || '').toLowerCase(); st.name = d.name || st.email;
+    var a = document.getElementById('avatar'), n = document.getElementById('who-name');
+    if (a) a.textContent = ini(st.name); if (n && !n.textContent.trim() || (n && n.textContent === '—')) n.textContent = st.name;
+    var r = document.getElementById('who-role');
+    if (r && !r.__fp) { r.__fp = true; new MutationObserver(function () { if (st.role && r.textContent !== st.role) r.textContent = st.role; else if (!st.role && r.textContent) { r.setAttribute('data-fp-app', r.textContent); } }).observe(r, { childList: true, characterData: true, subtree: true }); }
+    paintRole(); chip.classList.add('fp-ready'); load();
+  }
+
+  function load() {
+    var key = 'fp_access_' + st.email, now = Date.now(), c = null;
+    try { c = JSON.parse(sessionStorage.getItem(key) || 'null'); } catch (e) {}
+    if (c && now - c.at < 5 * 60e3) { apply(c.data); return; }
+    var api = apiUrl(); if (!api || !st.token) { st.loaded = true; return; }
+    fetch(api + (api.indexOf('?') >= 0 ? '&' : '?') + 'action=access&id_token=' + encodeURIComponent(st.token))
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (j && j.ok) { try { sessionStorage.setItem(key, JSON.stringify({ at: Date.now(), data: j })); } catch (e) {} apply(j); } else { st.loaded = true; render(); } })
+      .catch(function () { st.loaded = true; render(); });
+  }
+  function apply(j) { st.access = j.dashboards || []; st.role = j.role || ''; st.loaded = true; paintRole(); render(); }
+
+  function tone() {
+    var c = getComputedStyle(document.body).color.match(/\d+/g) || [0, 0, 0], lum = (0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]);
+    return lum > 140 ? { bg: '#1b1f27', fg: '#e8eaed' } : { bg: '#ffffff', fg: '#1f2328' };
+  }
+  function render() {
+    if (!pop) return;
+    var t = tone(); pop.style.background = t.bg; pop.style.color = t.fg;
+    var cur = here(), h = '<div class="fp-head"><div class="fp-av">' + esc(ini(st.name)) + '</div><div><b>' + esc(st.name) + '</b><small>' + esc(st.email) + '</small></div></div>';
+    h += '<div class="fp-role">Role: ' + (st.role ? '<span class="fp-pill">' + esc(st.role) + '</span>' : '<span style="opacity:.6">not set</span>') + '</div>';
+    h += '<div class="fp-sec">Your access</div>';
+    if (!st.loaded) h += '<div class="fp-msg">Loading…</div>';
+    else if (st.access && st.access.length) {
+      h += '<ul class="fp-list">' + st.access.map(function (d) {
+        var isCur = cur && d.href === cur.href, scope = d.scope === 'team' ? (d.teams || []).map(function (x) { return /^team\b/i.test(x) ? x : 'Team ' + x; }).join(', ') + ' data only' : 'Full access';
+        return '<li class="' + (isCur ? 'fp-cur' : '') + '"><a href="' + esc(d.href) + '"' + (isCur ? ' aria-current="page"' : '') + '>' + esc(d.name) + '</a><em>' + (isCur ? 'you are here · ' : '') + esc(scope) + '</em></li>';
+      }).join('') + '</ul>';
+    } else h += '<div class="fp-msg">' + (cur ? 'You are signed in to <b>' + esc(cur.name) + '</b>. The full list of your dashboards could not be loaded right now.' : 'Your access list could not be loaded right now.') + '</div>';
+    h += '<div class="fp-foot"><a href="mailto:miguel.cordero@finsso.com?subject=' + encodeURIComponent('Dashboard access request') + '">Need more access?</a><button type="button" class="fp-out">Sign out</button></div>';
+    pop.innerHTML = h;
+    var o = pop.querySelector('.fp-out'); if (o) o.onclick = function (ev) { ev.stopPropagation(); try { google.accounts.id.disableAutoSelect(); } catch (e) {} try { sessionStorage.removeItem('fp_access_' + st.email); } catch (e) {} location.reload(); };
+  }
+  function toggle() { st.open ? close() : openP(); }
+  function openP() { if (!chip) return; pop = document.createElement('div'); pop.className = 'fp-pop'; pop.setAttribute('role', 'dialog'); pop.addEventListener('click', function (e) { e.stopPropagation(); }); chip.appendChild(pop); chip.classList.add('fp-open'); st.open = true; render(); place(); }
+  function place() { if (!pop || !chip) return; var r = chip.getBoundingClientRect(), w = Math.min(320, window.innerWidth * 0.92), left = Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8)); pop.style.position = 'fixed'; pop.style.top = (r.bottom + 8) + 'px'; pop.style.left = left + 'px'; pop.style.right = 'auto'; pop.style.maxHeight = (window.innerHeight - r.bottom - 20) + 'px'; pop.style.overflowY = 'auto'; }
+  window.addEventListener('resize', place);
+  function close() { if (pop && pop.parentNode) pop.parentNode.removeChild(pop); pop = null; if (chip) chip.classList.remove('fp-open'); st.open = false; }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
+  return { set: set, mount: mount };
+})();
+
 </script>
 </body></html>
