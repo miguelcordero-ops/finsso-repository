@@ -327,7 +327,20 @@ function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
 // single regular space, so the two representations always match.
 function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
 
+// Data comes from BigQuery (via the Finsso data API) when the user is signed in and the file is a BigQuery
+// table; otherwise, or if the API fails for any reason, it falls back to the GitHub CSV so nothing breaks.
+var DATA_API = 'https://finsso-data-api.miguel-cordero.workers.dev/data/';
+var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv'];
+var _idToken = null, DATA_SRC = {};
 async function fetchCSV(name, optional) {
+  if (_idToken && BQ_FILES.indexOf(name) >= 0) {
+    try {
+      const br = await fetch(DATA_API + name + '?tab=' + encodeURIComponent(ALLOWLIST_TAB), { headers: { Authorization: 'Bearer ' + _idToken } });
+      if (br.ok) { DATA_SRC[name] = 'BigQuery'; return parseCSV(await br.text()); }
+      console.warn('Data API ' + br.status + ' for ' + name + ' - using GitHub');
+    } catch (e) { console.warn('Data API unreachable for ' + name + ' - using GitHub'); }
+  }
+  DATA_SRC[name] = 'GitHub';
   const url = DATA_BASE + name + '?_=' + Date.now();
   const r = await fetch(url);
   if (!r.ok) {
@@ -676,7 +689,7 @@ async function loadAll() {
       let d = code ? byGcd[code.toUpperCase()] : null;
       if (!d) d = byName[nameKey(name)] || null;
       if (!d) { d = mk('U:' + (code || nameKey(name)), name); d.gcd = code; if (code) byGcd[code.toUpperCase()] = d; byName[nameKey(name)] = d; }
-      d.un = rec;
+      d.un = rec; d.uName = name;   // keep the Dealer Universe name too, so dealers can be found by either name
     });
   }
   // ── classify + totals + groups
@@ -848,14 +861,14 @@ function searchBox() {
 }
 function results(q) {
   q = q.trim().toLowerCase(); const seg = S.seg;
-  let r = DLLIST.filter(d => (seg === 'all' || d.seg === seg) && (!q || d.name.toLowerCase().includes(q) || d.id.toLowerCase().includes(q) || (d.gcd || '').toLowerCase().includes(q)));
+  let r = DLLIST.filter(d => (seg === 'all' || d.seg === seg) && (!q || d.name.toLowerCase().includes(q) || d.id.toLowerCase().includes(q) || (d.gcd || '').toLowerCase().includes(q) || (d.uName || '').toLowerCase().includes(q) || ((d.un && d.un.owner) || '').toLowerCase().includes(q)));
   r.sort((a, b) => ((b.name.toLowerCase().startsWith(q) ? 1 : 0) - (a.name.toLowerCase().startsWith(q) ? 1 : 0)) || (b.out - a.out) || a.name.localeCompare(b.name));
   return r.slice(0, 40);
 }
 function drawResults() {
   const q = document.getElementById('q'), res = document.getElementById('res'); if (!q) return;
   const r = results(q.value); S.q = q.value;
-  res.innerHTML = r.map(d => '<div class="r" data-act="pick" data-id="' + esc(d.id) + '"><div><b>' + esc(d.name) + '</b><div class="small muted">' + esc(d.id.replace(/^(U:|APP:)/, '')) + (d.gcd ? ' · ' + esc(d.gcd) : '') + '</div></div><div style="text-align:right">' + segPill(d.seg) + (d.out ? '<div class="small muted">' + pesoS(d.out) + ' outstanding</div>' : '') + '</div></div>').join('') || '<div class="empty small">No dealers match.</div>';
+  res.innerHTML = r.map(d => '<div class="r" data-act="pick" data-id="' + esc(d.id) + '"><div><b>' + esc(d.name) + '</b><div class="small muted">' + esc(d.id.replace(/^(U:|APP:)/, '')) + (d.gcd ? ' · ' + esc(d.gcd) : '') + (d.uName && d.uName.toLowerCase() !== d.name.toLowerCase() ? ' · Universe: ' + esc(d.uName) : '') + '</div></div><div style="text-align:right">' + segPill(d.seg) + (d.out ? '<div class="small muted">' + pesoS(d.out) + ' outstanding</div>' : '') + '</div></div>').join('') || '<div class="empty small">No dealers match.</div>';
   res.hidden = false;
 }
 
@@ -1090,13 +1103,14 @@ async function _grant(profile) {
   document.getElementById('avatar').textContent = initials(profile.name || profile.email); document.getElementById('who-name').textContent = profile.name || profile.email;
   const s = document.getElementById('lock-overlay'); s.classList.add('unlocking'); setTimeout(() => s.classList.add('hidden'), 400);
   document.getElementById('view').innerHTML = '<div class="loading"><span class="spin"></span>Loading loans, payments and credit lines…<div class="small">This pulls several data files, so the first open takes a moment.</div></div>';
-  try { await loadAll(); } catch (e) { _booted = false; document.getElementById('view').innerHTML = '<div class="card empty">Could not load the data: ' + esc(e.message) + '<br><br><button class="btn" onclick="location.reload()">Retry</button></div>'; return; }
+  try { await loadAll(); try { const n = Object.keys(DATA_SRC), bq = n.filter(k => DATA_SRC[k] === 'BigQuery').length; document.getElementById('who-name').title = 'Data: ' + bq + '/' + n.length + ' files from BigQuery' + (bq < n.length ? ', rest from GitHub' : ''); console.info('Data sources', DATA_SRC); } catch (e) {} } catch (e) { _booted = false; document.getElementById('view').innerHTML = '<div class="card empty">Could not load the data: ' + esc(e.message) + '<br><br><button class="btn" onclick="location.reload()">Retry</button></div>'; return; }
   const h = fromHash(); S.sel = h && DL[h] ? h : null; render();
 }
 async function _onGoogleCredential(resp) {
   _authError(''); const data = _decodeJwt(resp && resp.credential);
   if (!data || !data.email) return _authError('Could not read your Google account. Try again.');
   if (data.email_verified === false) return _authError('Your Google email is not verified.');
+  _idToken = resp.credential;
   const r = await _isAllowed(data.email);
   if (r.ok) _grant({ email: String(data.email).toLowerCase(), name: data.name || '' });
   else if (r.reason === 'load-failed') _authError('Could not verify access right now — check your connection and try again.');
