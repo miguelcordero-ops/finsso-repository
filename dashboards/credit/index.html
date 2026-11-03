@@ -780,7 +780,7 @@ function flagsOf(d) {
   if (ck) {
     // two independent credit lines (Netbank / Finsso) — each can be Open, Hold, Blacklisted or expired on its own
     const act = (ck.lines || []).filter(x => x.has);
-    if (ck.dealerStatus && !act.some(x => new RegExp(ck.dealerStatus, 'i').test(x.status))) add(ck.dealerStatus === 'Blacklisted' ? 'red' : 'amber', 'Dealer ' + (ck.dealerStatus === 'Blacklisted' ? 'blacklisted' : 'on hold') + ' (Dealer Checker)', ck.blkReason || '');
+    if (ck.dealerStatus) add(ck.dealerStatus === 'Blacklisted' ? 'red' : 'amber', 'Dealer ' + (ck.dealerStatus === 'Blacklisted' ? 'blacklisted' : 'on hold') + ' (Dealer Checker)', ck.blkReason || '');
     act.forEach(x => {
       const why = [x.reason, x.out ? P(x.out) + ' outstanding on this line' : ''].filter(Boolean).join(' · ');
       if (/blacklist/i.test(x.status)) add('red', x.name + ' line blacklisted', why);
@@ -794,8 +794,8 @@ function flagsOf(d) {
     const multi = (d.open || []).filter(l => l.failStreak >= 2), exp = st.maxDpd >= TH.blacklistDpd ? 'Blacklisted' : (st.maxDpd >= TH.holdDpd || multi.length) ? 'Hold' : '';
     d.expected = exp; d.expectedWhy = st.maxDpd >= TH.blacklistDpd ? st.maxDpd + ' DPD' : st.maxDpd >= TH.holdDpd ? st.maxDpd + ' DPD' + (multi.length ? ' and repeated failed audits' : '') : multi.length ? 'repeated failed audits on ' + multi[0].id : '';
     if (exp) act.forEach(x => { const okBlk = /blacklist/i.test(x.status), okHold = /hold|blacklist/i.test(x.status);
-      if (exp === 'Blacklisted' && !okBlk) add('amber', 'Policy: ' + x.name + ' line should be blacklisted', d.expectedWhy + ' (15+ DPD) but the line shows ' + (x.status || 'no status'));
-      else if (exp === 'Hold' && !okHold && !/expired/i.test(x.reason)) add('amber', 'Policy: ' + x.name + ' line should be on hold', d.expectedWhy + ' but the line shows ' + (x.status || 'no status')); });
+      if (exp === 'Blacklisted' && !okBlk && ck.dealerStatus !== 'Blacklisted') add('amber', 'Policy: ' + x.name + ' line should be blacklisted', d.expectedWhy + ' (15+ DPD) but the line shows ' + (x.status || 'no status'));
+      else if (exp === 'Hold' && !okHold && !ck.dealerStatus && !/expired/i.test(x.reason)) add('amber', 'Policy: ' + x.name + ' line should be on hold', d.expectedWhy + ' but the line shows ' + (x.status || 'no status')); });
   }
   if (st.maxDpd >= TH.dpdRed) add('red', 'Past due ' + st.maxDpd + ' days', st.dpdLoans + ' loan' + (st.dpdLoans > 1 ? 's' : '') + ' on DPD · ' + P(st.parOut) + ' at 5+ DPD (' + Math.round(st.dpdOut * 100) + '% of outstanding)');
   else if (st.maxDpd >= TH.dpdAmber) add('amber', 'Past due ' + st.maxDpd + ' days', st.dpdLoans + ' loan' + (st.dpdLoans > 1 ? 's' : '') + ' on DPD · ' + P(st.parOut) + ' at 5+ DPD');
@@ -864,7 +864,9 @@ var SEGS = ['Active borrower', 'Past borrower', 'Onboarded — no drawdown', 'Ap
 var TABLES = {};
 function pill(cls, t) { return '<span class="pill ' + cls + '">' + esc(t) + '</span>'; }
 function segPill(s) { return pill(s === 'Active borrower' ? 't-green' : s === 'Past borrower' ? 't-blue' : s === 'Onboarded — no drawdown' ? 't-amber' : 't-grey', s); }
-function clPill(ck) { if (!ck) return ''; const ds = ck.dealerStatus && !(ck.lines || []).some(x => x.has && new RegExp(ck.dealerStatus, 'i').test(x.status)) ? pill(ck.dealerStatus === 'Blacklisted' ? 't-red' : 't-amber', 'Dealer: ' + ck.dealerStatus + (ck.blkReason ? ' — ' + ck.blkReason : '')) : ''; return ds + (ck.lines || []).filter(x => x.has && x.status).map(x => pill(/blacklist/i.test(x.status) ? 't-red' : /hold/i.test(x.status) ? 't-amber' : 't-green', x.name + ': ' + x.status + (/expired/i.test(x.reason) ? ' (expired)' : /pending/i.test(x.reason) ? ' (' + x.reason.toLowerCase() + ')' : ''))).join(''); }
+function effStatus(ck, x) { return ck && ck.dealerStatus && !/hold|blacklist/i.test(x.status) ? ck.dealerStatus : x.status; }
+function clPill(ck) { if (!ck) return ''; const tone = st => /blacklist/i.test(st) ? 't-red' : /hold/i.test(st) ? 't-amber' : 't-green', ds = ck.dealerStatus ? pill(tone(ck.dealerStatus), 'Dealer: ' + ck.dealerStatus + (ck.blkReason ? ' — ' + ck.blkReason : '')) : '';
+  return ds + (ck.lines || []).filter(x => x.has && x.status).map(x => { const e = effStatus(ck, x); return pill(tone(e), x.name + ': ' + e + (e !== x.status ? ' (dealer-level)' : /expired/i.test(x.reason) ? ' (expired)' : /pending/i.test(x.reason) ? ' (' + x.reason.toLowerCase() + ')' : '')); }).join(''); }
 function lineWorst(d) { const L = d.ck ? d.ck.lines.filter(x => x.has) : [], ds = d.ck && d.ck.dealerStatus; return ds === 'Blacklisted' || L.some(x => /blacklist/i.test(x.status)) ? 'Blacklisted' : ds === 'Hold' || L.some(x => /hold/i.test(x.status)) ? 'Hold' : L.some(x => /open/i.test(x.status)) ? 'Open' : ''; }
 function lineTxt(d, n) { const x = d.ck && d.ck.lines.find(l => l.name === n); return x && x.has ? (x.status || '—') + (x.reason && /expired|pending/i.test(x.reason) ? ' · ' + x.reason : '') : ''; }
 function pesoS(n) { n = n || 0; const a = Math.abs(n); return (n < 0 ? '-' : '') + '₱' + (a >= 1e6 ? (a / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M' : a >= 1e3 ? Math.round(a / 1e3) + 'K' : Math.round(a)); }
@@ -1045,7 +1047,7 @@ function creditTab(d) {
   const ck_ = d.ck, ob = d.ob, un = d.un; let h = '';
   if (ck_) {
     h += '<div class="sec-h"><h2>Credit lines</h2><span class="sub">Netbank and Finsso lines are independent — each has its own status</span></div><div class="cols3" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">' +
-      ck_.lines.map(x => '<div class="card"><div class="item-top"><b>' + x.name + ' line</b>' + (x.has && x.status ? pill(/blacklist/i.test(x.status) ? 't-red' : /hold/i.test(x.status) ? 't-amber' : 't-green', x.status) : pill('t-grey', x.has ? 'No status' : 'No line')) + '</div>' +
+      ck_.lines.map(x => '<div class="card"><div class="item-top"><b>' + x.name + ' line</b>' + (x.has && x.status ? pill(/blacklist/i.test(effStatus(ck_, x)) ? 't-red' : /hold/i.test(effStatus(ck_, x)) ? 't-amber' : 't-green', effStatus(ck_, x) + (effStatus(ck_, x) !== x.status ? ' (dealer-level)' : '')) : pill('t-grey', x.has ? 'No status' : 'No line')) + '</div>' +
         (x.has ? kvs([['Reason / note', x.reason], ['Approved credit limit', peso(x.cl)], ['Drawing power', peso(x.dp)], ['Outstanding', peso(x.out)], ['Utilisation of limit', x.cl ? pc(x.out / x.cl) : '—'], ['Available drawing power', peso(x.avail)]]) : '<div class="muted small" style="margin-top:8px">This dealer has no ' + x.name + ' credit line.</div>') + '</div>').join('') + '</div>' +
       '<div class="card" style="margin-top:12px"><div class="small muted" style="margin-bottom:6px">Policy: both lines go on <b>Hold</b> at ' + TH.holdDpd + '–' + (TH.blacklistDpd - 1) + ' DPD or when one drawdown fails 2+ audits in a row, and are <b>Blacklisted</b> at ' + TH.blacklistDpd + '+ DPD.' + (d.expected ? ' This dealer’s data points to <b>' + d.expected + '</b> (' + esc(d.expectedWhy) + ').' : ' This dealer currently triggers neither.') + '</div>' +
       kvs([['Overall status (sheet)', ck_.allStatus], ['Overall reason (sheet)', ck_.blkReason], ['Blacklisted on', ck_.blkDate ? fmtD(ck_.blkDate) : ''], ['Reassessment date', ck_.reassess ? fmtD(ck_.reassess) : ''],
