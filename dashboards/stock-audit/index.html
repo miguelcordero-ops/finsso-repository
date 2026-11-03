@@ -530,9 +530,10 @@ function computeSchedule(d) {
   else if (d.daysToDue <= 7) sc = 150 - d.daysToDue;
   else sc = Math.max(0, 100 - d.daysToDue);
   if (d.multiFail) sc += 60;
+  if (d.soldTag) sc += 100;
   if (d.dpdOn) sc += 40 + Math.min(d.dpdDays, 90) / 3;
   d.score = sc;
-  if (d.daysToDue <= 0 && (d.multiFail || d.dpdOn)) { d.prio = 'Critical'; d.pc = 'crit'; }
+  if (d.soldTag || (d.daysToDue <= 0 && (d.multiFail || d.dpdOn))) { d.prio = 'Critical'; d.pc = 'crit'; }
   else if (d.daysToDue < 0) { d.prio = 'High'; d.pc = 'high'; }
   else if (d.daysToDue <= 3) { d.prio = 'Due soon'; d.pc = 'soon'; }
   else if (d.daysToDue <= 7) { d.prio = 'This week'; d.pc = 'ok'; }
@@ -566,7 +567,6 @@ function chipsFor(d) {
   else if (d.last && /^fail/i.test(d.last.status)) h += '<span class="pill t-red">Last: Failed</span>';
   if (!d.last) h += '<span class="pill t-blue">First audit</span>';
   if (d.soldTag) h += '<span class="pill t-purple">Sold</span>';
-  if (d.soldFlag) h += '<span class="pill t-grey">Sold flag</span>';
   return h;
 }
 
@@ -1191,13 +1191,15 @@ async function renderLead(host) {
 }
 function paintCollections(P) {
   const per = P[S.lper], mEnd = per.to, mStart = new Date(mEnd.getFullYear(), mEnd.getMonth(), 1), E = addDays(mEnd, 1);
-  const sub = document.getElementById('lt2sub'); if (sub) sub.textContent = MONTH_ABBR[mEnd.getMonth()] + ' ' + mEnd.getFullYear() + ' (month of the period) · Repayment % = principal recovered ÷ (month-end principal still 5+ DPD + recovered)';
+  const sub = document.getElementById('lt2sub'); if (sub) sub.textContent = MONTH_ABBR[mEnd.getMonth()] + ' ' + mEnd.getFullYear() + ' (month of the period) · Repayment % = principal recovered ÷ (month-end principal still 5+ DPD + recovered) · Audits done and Dealers visited cover the selected period';
   const by = {};
   const row = n => by[n] = by[n] || { n, rec: 0, sumDpd: 0, cnt: 0, end: 0, accts: 0 };
   Object.keys(LN.pb).forEach(id => { const d = DD[id], l = LN.loans[id]; if (!d || !d.co) return;
     LN.pb[id].forEach(p => { if (p.date < mStart || p.date > mEnd) return; const due = payDue(p, l); if (!due) return; const late = diffDays(p.date, due); if (late >= 5) { const r = row(d.co); r.rec += p.prin; r.sumDpd += late; r.cnt++; } }); });
   Object.keys(LN.loans).forEach(id => { const d = DD[id]; if (!d || !d.co) return; if (dpdAt(id, E) >= 5) { const r = row(d.co); r.end += outAt(id, E); r.accts++; } });
-  const rows = Object.values(by).map(r => ({ ...r, den: r.end + r.rec })).sort((a, b) => b.den - a.den);
+  // audits the collections officers did themselves (Inspector = the officer), over the whole period picked above
+  INSP.forEach(e => { if (e.date < per.from || e.date > per.to || !e.who || !OFFICERS.co.has(e.who)) return; const r = row(e.who); r.aud = (r.aud || 0) + 1; (r.dl = r.dl || new Set()).add(DD[e.id] ? DD[e.id].dealerId : e.dealer); });
+  const rows = Object.values(by).map(r => ({ ...r, aud: r.aud || 0, dlv: r.dl ? r.dl.size : 0, den: r.end + r.rec })).sort((a, b) => b.den - a.den);
   const cols = [
     { id: 'n', label: 'Collections officer', fz: true, val: r => r.n, html: r => '<b>' + esc(r.n) + '</b>' },
     { id: 'rec', label: 'Principal recovered (DPD 5+)', type: 'num', val: r => Math.round(r.rec), txt: r => peso(r.rec) },
@@ -1205,7 +1207,8 @@ function paintCollections(P) {
     { id: 'end', label: 'Month-end principal still 5+ DPD', type: 'num', val: r => Math.round(r.end), txt: r => peso(r.end) },
     { id: 'den', label: 'Principal overdue (MTD)', type: 'num', val: r => Math.round(r.den), txt: r => peso(r.den) },
     { id: 'rp', label: 'Repayment %', type: 'num', val: r => r.den ? Math.round(r.rec / r.den * 1000) / 10 : 0, txt: r => r.den ? (r.rec / r.den * 100).toFixed(1) + '%' : '—' },
-    { id: 'ac', label: 'Accounts still 5+ DPD', type: 'num', val: r => r.accts }];
+    { id: 'ac', label: 'Accounts still 5+ DPD', type: 'num', val: r => r.accts },
+    { id: 'aud', label: 'Audits done', type: 'num', val: r => r.aud }, { id: 'dlv', label: 'Dealers visited', type: 'num', val: r => r.dlv }];
   makeTable(document.getElementById('lt2'), cols, rows, { csv: 'stock-audit-collections', maxH: '50vh' });
 }
 
