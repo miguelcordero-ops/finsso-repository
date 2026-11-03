@@ -9,7 +9,7 @@
 ,IF0008,JAYJAY CAR TRADING,Albert Dalupang,Albert Dalupang,AUM Inactive,"NO 45 AGNOS ST., NIA VILLAGE, ZONE 1, BRGY SAUYO, QUEZON CITY, 1116",9989995188,14.6917641,121.0509113,Quezon City,0,,Anton Belmonte,Anton Belmonte,Randy Celorico,Anton Belmonte
 ,IF0009,MIKMIK'S CAR TRADING,Albert Dalupang,Albert Dalupang,Lifetime Inactive,"91 AURORA PIJUAN STREET, BF RESORT VILLAGE, BRGY TALON DOS, LAS PIÑAS CITY, 1747",9566590932,14.4411943,120.9826192,Las Piñas,0,,,,Bernard Gombio,Bernard Gombio
 ,IF0010,GARAGE888 AUTO TRADING,Albert Dalupang,Albert Dalupang,AUM Inactive,"601 ESCODA ST CORNER SANTOL ST, BRGY SAMPALOC, MANILA, 1008",9165466695,14.607584,120.9949266,Manila,0,,Anton Belmonte,Anton Belmonte,Randy Celorico,Michael John Pineda
-,IF0011,DAVE AND MELODY VEHICLE TRADING (Formerly as D.M Cars),Albert Dalupang,Albert Dalupang,AUM Active,"BLK 9 LOT 71 HILLS OF MAIA ALTA, BRGY DALIG, ANTIPOLO CITY, RIZAL, 1870",9276626333,14.5640963,121.1925555,Antipolo,1,,Michael John Pineda,Michael John Pineda,Reynante Estacion,Michael John Pineda
+,IF0011,DAVE AND MELODY VEHICLE TRADING (Formerly as D.M Cars),Albert Dalupang,Albert Dalupang,AUM Inactive,"BLK 9 LOT 71 HILLS OF MAIA ALTA, BRGY DALIG, ANTIPOLO CITY, RIZAL, 1870",9276626333,14.5640963,121.1925555,Antipolo,0,,Michael John Pineda,Michael John Pineda,Reynante Estacion,Michael John Pineda
 ,IF0012,GCE VEHICLE TRADING (Formerly: LINIS SIKAT CARWASH & ACCESSORIES),Albert Dalupang,Albert Dalupang,AUM Active,"159 GOVERNOR MANGUBAT AVENUE, BRGY BUROL MAIN, DASMARIÑAS, CAVITE, 4114",9392067253,14.3273665,120.950689,Dasmariñas,3,,,,Bernard Gombio,Bernard Gombio
 ,IF0013,DON/GIE 2ND HAND CAR TRADING,Albert Dalupang,Albert Dalupang,AUM Inactive,"1011 EDSA, PROJ 7, BRGY VETERANS VILLAGE, QUEZON CITY, 1105",09179541088 / 09563848368        ,14.6564208,121.0249962,Quezon City,2,,Anton Belmonte,Anton Belmonte,Randy Celorico,Anton Belmonte
 ,IF0014,QRA AUTOSALE AND AUTOWORKS ENTERPRISES CORP.,Albert Dalupang,Jerome Cacayan,AUM Inactive,"9096 NATIONAL HIGHWAY, BRGY CANLALAY, BIÑAN, LAGUNA, 4024",9176255302,14.3417578,121.070773,Biñan,0,,Bernard Gombio,Bernard Gombio,Bernard Gombio,Bernard Gombio
@@ -262,7 +262,7 @@
 ,IF0261,ALPINE3 CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,Lifetime Inactive,"3 ALPINE, BRGY MERVILLE, PARAÑAQUE CITY, 1709",9178860956,14.5043837,121.0289503,Manila,0,,,,Bernard Gombio,Bernard Gombio
 ,IF0262,FMB CAR TRADING,Malou Alfonso,Myrnalyn Bankingkito,AUM Active,"BLK 19 LOT 19, LAWAAN ST, AMPARO SUBD, BRGY 179 (TALA), CALOOCAN CITY, 1427",9055268456,14.6513606,120.9902209,Manila,2,,Anton Belmonte,Anton Belmonte,Randy Celorico,Anton Belmonte
 ,IF0263,FASTCARS AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,AUM Inactive,"50 LINCOLN ST, SFDM, BRGY SAN FRANCISCO DEL MONTE, QUEZON CITY, 1105",9762733999,14.6470147,121.0139945,Quezon City,0,,Anton Belmonte,Anton Belmonte,Randy Celorico,Nathaniel Ruelos
-,IF0264,ROSMEL AUTO TRADING,Albert Dalupang,Ricmar Magboo,AUM Inactive,"PUROK 3, BRGY TAMBO, LIPA CITY, BATANGAS, 4217",9687673454,13.9496508,121.1381037,Lipa City,2,,Michael John Pineda,Michael John Pineda,Reynante Estacion,Michael John Pineda
+,IF0264,ROSMEL AUTO TRADING,Albert Dalupang,Ricmar Magboo,AUM Inactive,"PUROK 3, BRGY TAMBO, LIPA CITY, BATANGAS, 4217",9687673454,13.9496508,121.1381037,Lipa City,1,,Michael John Pineda,Michael John Pineda,Reynante Estacion,Michael John Pineda
 ,IF0265,ELLA BELLA CAR TRADING,Malou Alfonso,Rose Batacan,AUM Inactive,"22 MORNING GLORY ST., NOVALICHES, BRGY TALIPAPA, QUEZON CITY, 1116",9672062747,14.6917117,121.0243984,Quezon City,0,,Anton Belmonte,Anton Belmonte,Randy Celorico,Nathaniel Ruelos
 ,IF0266,AIRCONDITION TRADING WIL-AIR,Malou Alfonso,Myrnalyn Bankingkito,Lifetime Inactive,"011 LT BLK 4, SANTA BARBARA AVENUE ST, SBRS, BRGY TANDANG SORA, QUEZON CITY, 1116",9331541955,14.6891922,121.039896,Quezon City,0,,,,Randy Celorico,Nathaniel Ruelos
 ,IF0267,CJ FLOW OPC,Marah Luriely A. Villaruz,Rhoyland Alagon,AUM Active,"67 PAO, SANTA MESA HEIGHTS, BRGY ST. PETER, QUEZON CITY, 1114",9178668188,14.6361402,121.0000072,Quezon City,2,,Anton Belmonte,Anton Belmonte,Randy Celorico,Nathaniel Ruelos
@@ -483,7 +483,7 @@
 ,IF0482,LODS CAR ACCESSORIES STORE,Albert Dalupang,Albert Dalupang,,BLK 3 LOT 7 SIMON ST. STARKVILLE SUBD CARSADANG BAGO II IMUS CAVITE,9165606021,,,,0,,,,Bernard Gombio,Bernard Gombio
 ,IF0483,CARLOWDEAL AUTO TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,,120 J. Rizal St. BRGY SAN ANTONIO MABITAC LAGUNA,9267749268,,,,0,,,,Bernard Gombio,Bernard Gombio
 ,IF0484,CEDCARS VEHICLE TRADING,Marah Luriely A. Villaruz,Elvira Ladea,,1190 Mt. CARMERL ST. STA MONICA SUBD UGONG VALENZUELA CITY,9179550220,,,,0,,,,Randy Celorico,Anton Belmonte
-,IF0485,ERIC CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,,"B14 L6 PH2 OBAMA ST THE MEADOWS SUBDIVISION, BRGY SAN JOSE PATAG STA MARIA BULACAN",9156128475,,,,1,,,,Randy Celorico,Anton Belmonte
+,IF0485,ERIC CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,,"B14 L6 PH2 OBAMA ST THE MEADOWS SUBDIVISION, BRGY SAN JOSE PATAG STA MARIA BULACAN",9156128475,,,,0,,,,Randy Celorico,Anton Belmonte
 ,IF0486,CAR AGENT SERVICES KKJ,Malou Alfonso,Myrnalyn Bankingkito,,BLK37 L23 PALAO ROAD SAINT MARGARETTE ST. KAPAYAPAAN VILLE PH 1-A CANLUBANG CALAMBA LAGUNA,9918011160,,,,0,,,,Bernard Gombio,Bernard Gombio
 ,IF0487,KMG CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,,1249 B IBARRA ST. BRGY 482 MANILA 1008,9186123195,,,,0,,,,Reynante Estacion,Michael John Pineda
 ,IF0488,4K AUTO TRADING,Albert Dalupang,Zhesa Resurrecion,,12 PINPIN ST BAHAYANG PAG-ASA PH4 BRGY. PINAGBUKLOD IMUS CAVITE ,9158669025,,,,0,,,,Bernard Gombio,Bernard Gombio
@@ -515,3 +515,4 @@
 ,IF0514,JPC CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,,59 R MAGSAYSAY ST BAYUGO JALA-JALA RIZAL,9510150260,,,,0,,,,Reynante Estacion,Richard Fanuncio
 ,IF0515,SALAH CAR AGENT SERVICES,Marah Luriely A. Villaruz,Rhoyland Alagon,,39 TURQUOISE ST NORTHVIEW 1 SUBD TALA BATASAN HILLS QUEZON CITY,9050712457,,,,0,,,,Randy Celorico,Nathaniel Ruelos
 ,IF0516,TON'S CAR TRADING,Malou Alfonso,Candyce Aguete,,BLK 4 LOT 1 CONCEPTION ST GUINHAWA MALOLOS BULACAN,9994817133,,,,0
+,IF0517,E&E CAR TRADING,,,,4 B2 VALLEY VIEW DRV MONTEREY PH II SILANGAN SAN MATEO RIZAL,9458674515,,,,0
