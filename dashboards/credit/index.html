@@ -653,6 +653,13 @@ async function loadAll() {
         first: parseSheetDate(get(r, k('First TXN'))), last: parseSheetDate(get(r, k('Last TXN'))), expiry: parseSheetDate(get(r, k('Credit Line Expiry Date'))), risk: str(r, k, 'Effective Risk Pricing'), onboarded: parseSheetDate(get(r, k('Original Onboarding Date'))),
         so: normName(get(r, k('Assigned Sales Officer'))), sm: normName(get(r, k('Assigned Sales Manager'))), origCl: parseNum(get(r, k('Original Approved Credit Limit (in PHP)'))), nIncr: parseNum(get(r, k('Total Number of CL Increase (Lifetime)'))), nAuto: parseNum(get(r, k('Total Number of Automatic CL Increase (Lifetime)'))),
         pendingRemit: parseNum(get(r, k('Pending Remittance w/ Netbank'))) };
+      // dealer-level Hold / Blacklisted: the sheet's overall status first, else read from the overall reason
+      { const iR = ck[0].findIndex(h => normHeader(h) === normHeader('Reason for Hold / Blacklisting')); let iS = -1;
+        for (let i = iR - 1; i >= 0; i--) if (normHeader(ck[0][i]) === normHeader('Credit Line Status')) { iS = i; break; }   // the overall status sits just before the reason (AX / AY)
+        if (iS >= 0) { d.ck.allStatus = String(get(r, iS) || '').trim(); d.ck.clStatus = d.ck.allStatus; }
+        const ov = d.ck.allStatus, rs = d.ck.blkReason;
+        d.ck.dealerStatus = /blacklist/i.test(ov) ? 'Blacklisted' : /hold/i.test(ov) ? 'Hold'
+          : /15 ?dpd|timestamp|manual|blacklist/i.test(rs) ? 'Blacklisted' : /multiple failure|dpd|hold/i.test(rs) ? 'Hold' : ''; }
     });
   }
   // onboarding / credit evaluation (matched by Dealer ID; rows without an ID are applicants, keyed by name)
@@ -763,6 +770,7 @@ function flagsOf(d) {
   if (ck) {
     // two independent credit lines (Netbank / Finsso) — each can be Open, Hold, Blacklisted or expired on its own
     const act = (ck.lines || []).filter(x => x.has);
+    if (ck.dealerStatus && !act.some(x => new RegExp(ck.dealerStatus, 'i').test(x.status))) add(ck.dealerStatus === 'Blacklisted' ? 'red' : 'amber', 'Dealer ' + (ck.dealerStatus === 'Blacklisted' ? 'blacklisted' : 'on hold') + ' (Dealer Checker)', ck.blkReason || '');
     act.forEach(x => {
       const why = [x.reason, x.out ? P(x.out) + ' outstanding on this line' : ''].filter(Boolean).join(' · ');
       if (/blacklist/i.test(x.status)) add('red', x.name + ' line blacklisted', why);
@@ -846,8 +854,8 @@ var SEGS = ['Active borrower', 'Past borrower', 'Onboarded — no drawdown', 'Ap
 var TABLES = {};
 function pill(cls, t) { return '<span class="pill ' + cls + '">' + esc(t) + '</span>'; }
 function segPill(s) { return pill(s === 'Active borrower' ? 't-green' : s === 'Past borrower' ? 't-blue' : s === 'Onboarded — no drawdown' ? 't-amber' : 't-grey', s); }
-function clPill(ck) { if (!ck) return ''; return (ck.lines || []).filter(x => x.has && x.status).map(x => pill(/blacklist/i.test(x.status) ? 't-red' : /hold/i.test(x.status) ? 't-amber' : 't-green', x.name + ': ' + x.status + (/expired/i.test(x.reason) ? ' (expired)' : /pending/i.test(x.reason) ? ' (' + x.reason.toLowerCase() + ')' : ''))).join(''); }
-function lineWorst(d) { const L = d.ck ? d.ck.lines.filter(x => x.has) : []; return L.some(x => /blacklist/i.test(x.status)) ? 'Blacklisted' : L.some(x => /hold/i.test(x.status)) ? 'Hold' : L.some(x => /open/i.test(x.status)) ? 'Open' : ''; }
+function clPill(ck) { if (!ck) return ''; const ds = ck.dealerStatus && !(ck.lines || []).some(x => x.has && new RegExp(ck.dealerStatus, 'i').test(x.status)) ? pill(ck.dealerStatus === 'Blacklisted' ? 't-red' : 't-amber', 'Dealer: ' + ck.dealerStatus + (ck.blkReason ? ' — ' + ck.blkReason : '')) : ''; return ds + (ck.lines || []).filter(x => x.has && x.status).map(x => pill(/blacklist/i.test(x.status) ? 't-red' : /hold/i.test(x.status) ? 't-amber' : 't-green', x.name + ': ' + x.status + (/expired/i.test(x.reason) ? ' (expired)' : /pending/i.test(x.reason) ? ' (' + x.reason.toLowerCase() + ')' : ''))).join(''); }
+function lineWorst(d) { const L = d.ck ? d.ck.lines.filter(x => x.has) : [], ds = d.ck && d.ck.dealerStatus; return ds === 'Blacklisted' || L.some(x => /blacklist/i.test(x.status)) ? 'Blacklisted' : ds === 'Hold' || L.some(x => /hold/i.test(x.status)) ? 'Hold' : L.some(x => /open/i.test(x.status)) ? 'Open' : ''; }
 function lineTxt(d, n) { const x = d.ck && d.ck.lines.find(l => l.name === n); return x && x.has ? (x.status || '—') + (x.reason && /expired|pending/i.test(x.reason) ? ' · ' + x.reason : '') : ''; }
 function pesoS(n) { n = n || 0; const a = Math.abs(n); return (n < 0 ? '-' : '') + '₱' + (a >= 1e6 ? (a / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M' : a >= 1e3 ? Math.round(a / 1e3) + 'K' : Math.round(a)); }
 function pc(n) { return n == null || isNaN(n) ? '—' : Math.round(n * 100) + '%'; }
