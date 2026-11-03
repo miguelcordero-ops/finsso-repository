@@ -83,7 +83,7 @@ input,select,textarea{font:inherit;color:inherit}
 /* ── pills / chips / buttons ── */
 .pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
 .p-crit{background:var(--red);color:#fff}.p-high{background:var(--orange-bg);color:var(--orange)}.p-soon{background:var(--amber-bg);color:var(--amber)}.p-ok{background:var(--grey-bg);color:var(--text2)}
-.t-red{background:var(--red-bg);color:var(--red)}.t-orange{background:var(--orange-bg);color:var(--orange)}.t-green{background:var(--green-bg);color:var(--green)}.t-blue{background:var(--blue-bg);color:var(--blue)}.t-grey{background:var(--grey-bg);color:var(--text2)}.t-amber{background:var(--amber-bg);color:var(--amber)}
+.t-red{background:var(--red-bg);color:var(--red)}.t-orange{background:var(--orange-bg);color:var(--orange)}.t-green{background:var(--green-bg);color:var(--green)}.t-blue{background:var(--blue-bg);color:var(--blue)}.t-purple{background:rgba(124,92,230,.14);color:#6d4fd6}.kpi.purple .n{color:#6d4fd6}:root[data-theme='dark'] .kpi.purple .n,:root[data-theme='dark'] .t-purple{color:#b9a4ff}.t-grey{background:var(--grey-bg);color:var(--text2)}.t-amber{background:var(--amber-bg);color:var(--amber)}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{border:1px solid var(--border);background:var(--card);border-radius:99px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--text2);min-height:34px}
 .chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
@@ -518,6 +518,7 @@ function computeSchedule(d) {
   let streak = 0;
   for (let i = h.length - 1; i >= 0 && /^fail/i.test(h[i].status); i--) streak++;
   d.last = last; d.due = due; d.basis = basis; d.interval = interval;
+  d.soldTag = !!(last && /\bsold\b/i.test(last.remarks || ''));      // latest inspection's remarks say "Sold"
   d.failStreak = streak; d.multiFail = streak >= 2 || (d.failFlag && streak >= 1);
   d.daysToDue = diffDays(due, TODAY);
   d.overdue = d.daysToDue < 0; d.overdueDays = d.overdue ? -d.daysToDue : 0;
@@ -554,7 +555,7 @@ function lensRoles() {
 function lensList() {
   const L = S.lens; let list = OPEN;
   if (L.officer !== '*') list = OPEN.filter(d => L.role === 'auditor' ? d.so === L.officer : d.co === L.officer);
-  if (L.role === 'collector' && S.dpd5) list = list.filter(d => d.dpdDays >= 5 || d.multiFail);
+  if (L.role === 'collector' && S.dpd5) list = list.filter(d => d.dpdDays >= 5 || d.multiFail || d.soldTag);
   return list.slice().sort((a, b) => b.score - a.score || a.due - b.due);
 }
 function chipsFor(d) {
@@ -564,6 +565,7 @@ function chipsFor(d) {
   if (d.multiFail) h += '<span class="pill t-red">' + (d.failStreak >= 2 ? d.failStreak + '× failed in a row' : 'Multiple failures') + '</span>';
   else if (d.last && /^fail/i.test(d.last.status)) h += '<span class="pill t-red">Last: Failed</span>';
   if (!d.last) h += '<span class="pill t-blue">First audit</span>';
+  if (d.soldTag) h += '<span class="pill t-purple">Sold</span>';
   if (d.soldFlag) h += '<span class="pill t-grey">Sold flag</span>';
   return h;
 }
@@ -746,7 +748,7 @@ function lensName() { return S.lens.officer === '*' ? 'All officers' : S.lens.of
 function greeting() { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'; }
 function counts(list) {
   return { over: list.filter(d => d.overdue).length, today: list.filter(d => d.daysToDue === 0).length, soon: list.filter(d => d.daysToDue > 0 && d.daysToDue <= 3).length,
-    dpd: list.filter(d => d.dpdOn).length, multi: list.filter(d => d.multiFail).length, first: list.filter(d => !d.last).length };
+    dpd: list.filter(d => d.dpdOn).length, multi: list.filter(d => d.multiFail).length, first: list.filter(d => !d.last).length, sold: list.filter(d => d.soldTag).length };
 }
 function renderHome() {
   const list = lensList(), c = counts(list), L = S.lens;
@@ -754,13 +756,14 @@ function renderHome() {
   const wkF = wk.filter(e => /^fail/i.test(e.status)).length;
   const isCol = L.role === 'collector';
   let h = '<div class="h1">' + greeting() + ', ' + esc((ME.name || '').split(' ')[0] || 'there') + '</div>' +
-    '<div class="sub">' + esc(lensName()) + ' · ' + (isCol ? 'Collections view — accounts at ' + (S.dpd5 ? '5+ DPD or repeat failures' : 'any DPD') : 'Stock audit view — all assigned drawdowns') + ' · ' + list.length + ' open drawdowns</div>';
+    '<div class="sub">' + esc(lensName()) + ' · ' + (isCol ? 'Collections view — accounts at ' + (S.dpd5 ? '5+ DPD, repeat failures or sold' : 'any DPD') : 'Stock audit view — all assigned drawdowns') + ' · ' + list.length + ' open drawdowns</div>';
   h += '<div class="kpis sec">' +
     '<button class="kpi red" data-act="goto" data-f="overdue"><div class="n">' + c.over + '</div><div class="l">Overdue</div><div class="s">past scheduled date</div></button>' +
     '<button class="kpi orange" data-act="goto" data-f="today"><div class="n">' + c.today + '</div><div class="l">Due today</div><div class="s">&nbsp;</div></button>' +
     '<button class="kpi amber" data-act="goto" data-f="soon"><div class="n">' + c.soon + '</div><div class="l">Due in 1–3 days</div><div class="s">&nbsp;</div></button>' +
     '<button class="kpi orange" data-act="goto" data-f="dpd"><div class="n">' + c.dpd + '</div><div class="l">On DPD</div><div class="s">7-day cycle</div></button>' +
     '<button class="kpi red" data-act="goto" data-f="multi"><div class="n">' + c.multi + '</div><div class="l">Failed 2× in a row</div><div class="s">re-audit in 3 days</div></button>' +
+    (isCol ? '<button class="kpi purple" data-act="goto" data-f="sold"><div class="n">' + c.sold + '</div><div class="l">Tagged sold</div><div class="s">latest audit says sold</div></button>' : '') +
     '<button class="kpi green" data-act="done" data-f="week"><div class="n">' + wk.length + '</div><div class="l">Audits this week</div><div class="s">' + mtd.length + ' MTD · ' + wkF + ' failed this week</div></button></div>';
   const top = list.filter(d => d.daysToDue <= 3).slice(0, 6);
   h += '<div class="two sec"><div><div class="sec-h" style="margin-top:0"><h2>Up next — highest priority</h2><button class="btn sm" data-act="nav" data-v="itin">Plan route →</button></div><div class="list">';
@@ -839,13 +842,13 @@ S.dq = ''; S.dsort = 'prio'; S.dflt = 'all'; S.open = {};
 function renderDealers() {
   let h = '<div class="h1">Dealers</div><div class="sub">Every dealer with open drawdowns in this view</div>';
   h += '<div class="toolbar"><input class="search" id="dq" placeholder="Search dealer, city, drawdown ID or plate…" value="' + esc(S.dq) + '"><select class="inp" id="dsort" style="width:auto;min-height:42px"><option value="prio"' + (S.dsort === 'prio' ? ' selected' : '') + '>Sort: priority</option><option value="name"' + (S.dsort === 'name' ? ' selected' : '') + '>Sort: name</option><option value="city"' + (S.dsort === 'city' ? ' selected' : '') + '>Sort: city</option><option value="n"' + (S.dsort === 'n' ? ' selected' : '') + '>Sort: most drawdowns</option></select></div>';
-  h += '<div class="chips" style="margin-bottom:12px">' + [['all', 'All'], ['due', 'Needs audit now'], ['dpd', 'On DPD'], ['multi', 'Repeat failures']].map(x => '<button class="chip' + (S.dflt === x[0] ? ' on' : '') + '" data-act="dflt" data-v="' + x[0] + '">' + x[1] + '</button>').join('') + '</div><div id="dlist"></div>';
+  h += '<div class="chips" style="margin-bottom:12px">' + [['all', 'All'], ['due', 'Needs audit now'], ['dpd', 'On DPD'], ['multi', 'Repeat failures'], ['sold', 'Sold']].map(x => '<button class="chip' + (S.dflt === x[0] ? ' on' : '') + '" data-act="dflt" data-v="' + x[0] + '">' + x[1] + '</button>').join('') + '</div><div id="dlist"></div>';
   return h;
 }
 function paintDealers() {
   const host = document.getElementById('dlist'); if (!host) return;
   let list = lensList(); const q = S.dq.toLowerCase().trim();
-  if (S.dflt === 'due') list = list.filter(d => d.daysToDue <= 0); else if (S.dflt === 'dpd') list = list.filter(d => d.dpdOn); else if (S.dflt === 'multi') list = list.filter(d => d.multiFail);
+  if (S.dflt === 'due') list = list.filter(d => d.daysToDue <= 0); else if (S.dflt === 'dpd') list = list.filter(d => d.dpdOn); else if (S.dflt === 'multi') list = list.filter(d => d.multiFail); else if (S.dflt === 'sold') list = list.filter(d => d.soldTag);
   let g = dealerGroups(list);
   if (q) g = g.filter(x => (x.name + ' ' + (x.dealer.city || '') + ' ' + (x.dealer.address || '')).toLowerCase().includes(q) || x.items.some(d => (d.id + ' ' + d.plate).toLowerCase().includes(q)));
   if (S.dsort === 'name') g.sort((a, b) => a.name.localeCompare(b.name)); else if (S.dsort === 'city') g.sort((a, b) => (a.dealer.city || '~').localeCompare(b.dealer.city || '~') || a.name.localeCompare(b.name)); else if (S.dsort === 'n') g.sort((a, b) => b.items.length - a.items.length);
@@ -861,13 +864,13 @@ function paintDealers() {
 S.ddf = 'all'; S.ddq = ''; S.ddsort = 'prio'; S.ddAll = false; S.ddShow = 30;
 function ddPresetFilter(d) {
   const f = S.ddf;
-  return f === 'all' || (f === 'overdue' && d.overdue) || (f === 'today' && d.daysToDue === 0) || (f === 'soon' && d.daysToDue > 0 && d.daysToDue <= 3) || (f === 'dpd' && d.dpdOn) || (f === 'multi' && d.multiFail) || (f === 'first' && !d.last);
+  return f === 'all' || (f === 'overdue' && d.overdue) || (f === 'today' && d.daysToDue === 0) || (f === 'soon' && d.daysToDue > 0 && d.daysToDue <= 3) || (f === 'dpd' && d.dpdOn) || (f === 'multi' && d.multiFail) || (f === 'first' && !d.last) || (f === 'sold' && d.soldTag);
 }
 function renderDD() {
   let h = '<div class="h1">Drawdowns</div><div class="sub">' + esc(S.ddAll ? 'Whole portfolio' : lensName()) + ' · search by dealer, drawdown ID or plate</div>';
   h += '<div class="toolbar"><input class="search" id="ddq" type="search" placeholder="Search dealer, drawdown ID, plate or model…" value="' + esc(S.ddq) + '" autocomplete="off">' +
     '<select class="inp" id="ddsort" style="width:auto;min-height:42px"><option value="prio"' + (S.ddsort === 'prio' ? ' selected' : '') + '>Sort: priority</option><option value="due"' + (S.ddsort === 'due' ? ' selected' : '') + '>Sort: next due date</option><option value="dealer"' + (S.ddsort === 'dealer' ? ' selected' : '') + '>Sort: dealer A–Z</option><option value="dpd"' + (S.ddsort === 'dpd' ? ' selected' : '') + '>Sort: highest DPD</option><option value="out"' + (S.ddsort === 'out' ? ' selected' : '') + '>Sort: outstanding</option></select></div>';
-  h += '<div class="chips" style="margin-bottom:12px">' + [['all', 'All'], ['overdue', 'Overdue'], ['today', 'Due today'], ['soon', 'Due 1–3 days'], ['dpd', 'On DPD'], ['multi', 'Repeat failures'], ['first', 'First audit']].map(x => '<button class="chip' + (S.ddf === x[0] ? ' on' : '') + '" data-act="ddf" data-v="' + x[0] + '">' + x[1] + '</button>').join('') +
+  h += '<div class="chips" style="margin-bottom:12px">' + [['all', 'All'], ['overdue', 'Overdue'], ['today', 'Due today'], ['soon', 'Due 1–3 days'], ['dpd', 'On DPD'], ['multi', 'Repeat failures'], ['sold', 'Sold'], ['first', 'First audit']].map(x => '<button class="chip' + (S.ddf === x[0] ? ' on' : '') + '" data-act="ddf" data-v="' + x[0] + '">' + x[1] + '</button>').join('') +
     '<button class="chip' + (S.ddAll ? ' on' : '') + '" data-act="ddall">Whole portfolio</button></div><div id="ddlist"></div>';
   return h;
 }
@@ -1216,7 +1219,7 @@ function renderLens() {
     h += '<select class="inp" id="lens-off" style="width:auto;min-height:34px;padding:4px 8px;font-size:12.5px"><option value="*"' + (S.lens.officer === '*' ? ' selected' : '') + '>Everyone</option>' + names.map(n => '<option' + (n === S.lens.officer ? ' selected' : '') + '>' + esc(n) + '</option>').join('') + '</select>';
   }
   if (ME.leader || (roles.auditor && roles.collector)) h += '<div class="seg"><button data-act="role" data-v="auditor" class="' + (S.lens.role === 'auditor' ? 'on' : '') + '">Auditor</button><button data-act="role" data-v="collector" class="' + (S.lens.role === 'collector' ? 'on' : '') + '">Collector</button></div>';
-  if (S.lens.role === 'collector') h += '<button class="chip' + (S.dpd5 ? ' on' : '') + '" data-act="dpd5" style="min-height:30px;padding:4px 10px">5+ DPD or repeat failures</button>';
+  if (S.lens.role === 'collector') h += '<button class="chip' + (S.dpd5 ? ' on' : '') + '" data-act="dpd5" style="min-height:30px;padding:4px 10px">5+ DPD, repeat failures or sold</button>';
   el.innerHTML = h;
   const sel = document.getElementById('lens-off'); if (sel) sel.onchange = () => { S.lens.officer = sel.value; render(); };
 }
