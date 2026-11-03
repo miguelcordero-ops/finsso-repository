@@ -1350,6 +1350,8 @@ async function mergePending() {
   list = list.concat(lsGet('sa-pend-' + ME.email, []));
   let changed = false;
   list.forEach(x => { if (!x.iid || INSP_IDS[x.iid]) return; const date = parseSheetDate(x.date); if (!date || !DD[x.id]) return;
+    // already loaded from BigQuery/CSV under a different Inspection ID? (same loan, same day, same result) -> not pending
+    if (INSP.some(e => !e.pending && e.id === x.id && iso(e.date) === iso(date) && String(e.status).toLowerCase() === String(x.status).toLowerCase())) return;
     INSP.push({ id: x.id, date, who: x.who || '', email: '', status: x.status, iid: x.iid, dealer: x.dealer || DD[x.id].dealer, vs: x.vs || '', remarks: x.remarks || '', poc: '', sold: null, method: '', pending: true }); INSP_IDS[x.iid] = 1; changed = true; });
   lsSet('sa-pend-' + ME.email, INSP.filter(e => e.pending).map(e => ({ id: e.id, date: iso(e.date), who: e.who, status: e.status, iid: e.iid, dealer: e.dealer, vs: e.vs, remarks: e.remarks })));
   if (changed) rebuildHistory();
