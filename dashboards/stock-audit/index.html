@@ -554,7 +554,7 @@ function lensRoles() {
 function lensList() {
   const L = S.lens; let list = OPEN;
   if (L.officer !== '*') list = OPEN.filter(d => L.role === 'auditor' ? d.so === L.officer : d.co === L.officer);
-  if (L.role === 'collector' && S.dpd5) list = list.filter(d => d.dpdDays >= 5);
+  if (L.role === 'collector' && S.dpd5) list = list.filter(d => d.dpdDays >= 5 || d.multiFail);
   return list.slice().sort((a, b) => b.score - a.score || a.due - b.due);
 }
 function chipsFor(d) {
@@ -754,7 +754,7 @@ function renderHome() {
   const wkF = wk.filter(e => /^fail/i.test(e.status)).length;
   const isCol = L.role === 'collector';
   let h = '<div class="h1">' + greeting() + ', ' + esc((ME.name || '').split(' ')[0] || 'there') + '</div>' +
-    '<div class="sub">' + esc(lensName()) + ' · ' + (isCol ? 'Collections view — accounts at ' + (S.dpd5 ? '5+ DPD' : 'any DPD') : 'Stock audit view — all assigned drawdowns') + ' · ' + list.length + ' open drawdowns</div>';
+    '<div class="sub">' + esc(lensName()) + ' · ' + (isCol ? 'Collections view — accounts at ' + (S.dpd5 ? '5+ DPD or repeat failures' : 'any DPD') : 'Stock audit view — all assigned drawdowns') + ' · ' + list.length + ' open drawdowns</div>';
   h += '<div class="kpis sec">' +
     '<button class="kpi red" data-act="goto" data-f="overdue"><div class="n">' + c.over + '</div><div class="l">Overdue</div><div class="s">past scheduled date</div></button>' +
     '<button class="kpi orange" data-act="goto" data-f="today"><div class="n">' + c.today + '</div><div class="l">Due today</div><div class="s">&nbsp;</div></button>' +
@@ -851,7 +851,7 @@ function paintDealers() {
   if (S.dsort === 'name') g.sort((a, b) => a.name.localeCompare(b.name)); else if (S.dsort === 'city') g.sort((a, b) => (a.dealer.city || '~').localeCompare(b.dealer.city || '~') || a.name.localeCompare(b.name)); else if (S.dsort === 'n') g.sort((a, b) => b.items.length - a.items.length);
   host.innerHTML = '<div class="small muted" style="margin-bottom:8px">' + g.length + ' dealers</div><div class="cols3">' + g.slice(0, 120).map(x => {
     const nO = x.items.filter(d => d.overdue).length, nD = x.items.filter(d => d.daysToDue === 0).length;
-    return '<div class="dcard"><div class="dcard-h" data-act="tog" data-k="' + esc(x.key) + '"><div class="item-t">' + esc(x.name) + '</div><div class="addr">' + esc(x.dealer.address || '—') + '</div><div class="item-meta"><span class="pill t-grey">' + esc(x.dealer.city || 'No city') + '</span><span class="pill t-grey">' + x.items.length + ' drawdown' + (x.items.length > 1 ? 's' : '') + '</span>' + (nO ? '<span class="pill t-red">' + nO + ' overdue</span>' : '') + (nD ? '<span class="pill t-orange">' + nD + ' due today</span>' : '') + (x.items.some(d => d.dpdOn) ? '<span class="pill t-orange">DPD</span>' : '') + (x.items.some(d => d.multiFail) ? '<span class="pill t-red">Repeat failure</span>' : '') + (x.dealer.status ? '<span class="pill t-blue">' + esc(x.dealer.status) + '</span>' : '') + '</div><div class="item-act">' + dealerActs(x.dealer, x.name) + '<button class="btn sm" data-act="rt" data-k="' + esc(x.key) + '">' + (S.route.includes(x.key) ? '✓ In route' : '+ Route') + '</button></div></div><div class="dcard-body" id="db-' + esc(x.key) + '" ' + (S.open[x.key] ? '' : 'hidden') + '>' + x.items.map(ddMini).join('') + '</div></div>';
+    return '<div class="dcard"><div class="dcard-h" data-act="tog" data-k="' + esc(x.key) + '"><div class="item-t">' + esc(x.name) + '</div><div class="addr">' + esc(x.dealer.address || '—') + '</div><div class="item-meta"><span class="pill t-grey">' + esc(x.dealer.city || 'No city') + '</span><span class="pill t-grey">' + x.items.length + ' drawdown' + (x.items.length > 1 ? 's' : '') + '</span>' + (nO ? '<span class="pill t-red">' + nO + ' overdue</span>' : '') + (nD ? '<span class="pill t-orange">' + nD + ' due today</span>' : '') + (x.items.some(d => d.dpdOn) ? '<span class="pill t-orange">DPD</span>' : '') + (x.items.some(d => d.multiFail) ? '<span class="pill t-red">Repeat failure</span>' : '') + '</div><div class="item-act">' + dealerActs(x.dealer, x.name) + '<button class="btn sm" data-act="rt" data-k="' + esc(x.key) + '">' + (S.route.includes(x.key) ? '✓ In route' : '+ Route') + '</button></div></div><div class="dcard-body" id="db-' + esc(x.key) + '" ' + (S.open[x.key] ? '' : 'hidden') + '>' + x.items.map(ddMini).join('') + '</div></div>';
   }).join('') + '</div>' + (g.length > 120 ? '<div class="small muted" style="margin-top:8px">Showing 120 of ' + g.length + ' — search to narrow.</div>' : '') + (!g.length ? '<div class="card empty">No dealers match.</div>' : '');
 }
 
@@ -1163,7 +1163,7 @@ async function renderLead(host) {
   const cnt = days.map(d => insp.filter(e => iso(e.date) === iso(d)).length), mx = Math.max(1, ...cnt);
   let h = '<div class="h1">Leadership</div><div class="sub">' + esc(per.label) + ' · ' + fmtD(from) + ' – ' + fmtD(to) + ' · adherence and on-time use the 30/15/7/3 schedule (current officer assignment)</div>';
   h += '<div class="chips" style="margin:12px 0;align-items:center">' + Object.keys(P).filter(k => !/^pm:/.test(k)).map(k => '<button class="chip' + (S.lper === k ? ' on' : '') + '" data-act="lper" data-v="' + k + '">' + esc(P[k].label) + '</button>').join('') + lMonthSel() + '</div>';
-  h += '<div class="kpis"><div class="kpi blue"><div class="n">' + (T.tot || 0) + '</div><div class="l">Audits done</div><div class="s">' + (T.dealers || 0) + ' dealer-visits</div></div>' +
+  h += '<div class="kpis"><button class="kpi blue" data-act="ldone"><div class="n">' + (T.tot || 0) + '</div><div class="l">Audits done</div><div class="s">' + (T.dealers || 0) + ' dealer-visits · tap to see them</div></button>' +
     '<div class="kpi ' + (T.tot && T.fail / T.tot > 0.4 ? 'red' : 'green') + '"><div class="n">' + pct(T.pass || 0, T.tot || 0) + '</div><div class="l">Pass rate</div><div class="s">' + (T.fail || 0) + ' failed</div></div>' +
     '<div class="kpi ' + ((T.done / T.sch) >= 0.85 ? 'green' : 'amber') + '"><div class="n">' + pct(T.done || 0, T.sch || 0) + '</div><div class="l">Adherence</div><div class="s">' + (T.done || 0) + ' of ' + (T.sch || 0) + ' scheduled</div></div>' +
     '<div class="kpi ' + ((T.ont / T.sch) >= 0.7 ? 'green' : 'amber') + '"><div class="n">' + pct(T.ont || 0, T.sch || 0) + '</div><div class="l">On time</div><div class="s">within 3-day grace</div></div>' +
@@ -1216,7 +1216,7 @@ function renderLens() {
     h += '<select class="inp" id="lens-off" style="width:auto;min-height:34px;padding:4px 8px;font-size:12.5px"><option value="*"' + (S.lens.officer === '*' ? ' selected' : '') + '>Everyone</option>' + names.map(n => '<option' + (n === S.lens.officer ? ' selected' : '') + '>' + esc(n) + '</option>').join('') + '</select>';
   }
   if (ME.leader || (roles.auditor && roles.collector)) h += '<div class="seg"><button data-act="role" data-v="auditor" class="' + (S.lens.role === 'auditor' ? 'on' : '') + '">Auditor</button><button data-act="role" data-v="collector" class="' + (S.lens.role === 'collector' ? 'on' : '') + '">Collector</button></div>';
-  if (S.lens.role === 'collector') h += '<button class="chip' + (S.dpd5 ? ' on' : '') + '" data-act="dpd5" style="min-height:30px;padding:4px 10px">5+ DPD only</button>';
+  if (S.lens.role === 'collector') h += '<button class="chip' + (S.dpd5 ? ' on' : '') + '" data-act="dpd5" style="min-height:30px;padding:4px 10px">5+ DPD or repeat failures</button>';
   el.innerHTML = h;
   const sel = document.getElementById('lens-off'); if (sel) sel.onchange = () => { S.lens.officer = sel.value; render(); };
 }
@@ -1237,21 +1237,33 @@ function render() {
   else if (S.view === 'itin') v.innerHTML = renderItin();
   else if (S.view === 'dealers') { v.innerHTML = renderDealers(); paintDealers(); const q = document.getElementById('dq'); q.oninput = () => { S.dq = q.value; paintDealers(); }; document.getElementById('dsort').onchange = function () { S.dsort = this.value; paintDealers(); }; }
   else if (S.view === 'dd') { v.innerHTML = renderDD(); paintDD(); const q = document.getElementById('ddq'); q.oninput = () => { S.ddq = q.value; S.ddShow = 30; clearTimeout(window._ddT); window._ddT = setTimeout(paintDD, 150); }; document.getElementById('ddsort').onchange = function () { S.ddsort = this.value; S.ddShow = 30; paintDD(); }; }
-  else if (S.view === 'done') v.innerHTML = renderDone();
+  else if (S.view === 'done') { v.innerHTML = renderDone(); paintDone(); const q = document.getElementById('doneq'); q.oninput = () => { S.doneQ = q.value; S.doneShow = 50; paintDone(); }; }
   else if (S.view === 'audit') { v.innerHTML = renderAudit(); bindAudit(); }
   else if (S.view === 'lead' && ME.leader) renderLead(v);
   else { S.view = 'home'; v.innerHTML = renderHome(); }
 }
 /* every audit logged (Audits this week card): This week / Month to date / All time, for the lens you are viewing */
-function renderDone() {
+function doneList() {
+  if (S.doneSrc === 'lead') { const per = periodsDef()[S.lper] || periodsDef().mtd; return { list: INSP.filter(e => e.date >= per.from && e.date <= per.to), label: 'All officers · ' + per.label + ' (' + fmtD(per.from) + ' – ' + fmtD(per.to) + ')' }; }
   const w = S.doneWin || 'week';
   const from = w === 'week' ? monday(TODAY) : w === 'mtd' ? new Date(TODAY.getFullYear(), TODAY.getMonth(), 1) : new Date(2000, 0, 1);
-  const list = myAudits(from).slice().sort((a, b) => b.date - a.date);
+  return { list: myAudits(from), label: lensName() };
+}
+function renderDone() {
+  const lead = S.doneSrc === 'lead', w = S.doneWin || 'week';
+  return '<div class="sec-h" style="margin-top:0"><h2>Audits logged</h2><button class="btn sm" data-act="nav" data-v="' + (lead ? 'lead' : 'home') + '">← ' + (lead ? 'Leadership' : 'Home') + '</button></div>' +
+    '<div class="toolbar"><input class="search" id="doneq" placeholder="Filter by dealer or drawdown ID…" value="' + esc(S.doneQ || '') + '">' +
+    (lead ? '' : '<div class="chips">' + [['week', 'This week'], ['mtd', 'Month to date'], ['all', 'All time']].map(x => '<button class="chip' + (w === x[0] ? ' on' : '') + '" data-act="dwin" data-v="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>') + '</div>' +
+    '<div class="sub" id="donesub" style="margin:6px 0 10px"></div><div class="list" id="donelist"></div><div id="donemore"></div>';
+}
+function paintDone() {
+  const host = document.getElementById('donelist'); if (!host) return;
+  const src = doneList(), q = (S.doneQ || '').toLowerCase().trim();
+  const list = src.list.filter(e => { if (!q) return true; const d = DD[e.id]; return (e.id + ' ' + (e.dealer || '') + ' ' + (d ? d.dealer + ' ' + d.plate : '')).toLowerCase().includes(q); }).sort((a, b) => b.date - a.date);
   const nF = list.filter(e => /^fail/i.test(e.status)).length, show = S.doneShow || 50;
-  let h = '<div class="sec-h" style="margin-top:0"><h2>Audits logged</h2><button class="btn sm" data-act="nav" data-v="home">← Home</button></div>' +
-    '<div class="toolbar"><div class="chips">' + [['week', 'This week'], ['mtd', 'Month to date'], ['all', 'All time']].map(x => '<button class="chip' + (w === x[0] ? ' on' : '') + '" data-act="dwin" data-v="' + x[0] + '">' + x[1] + '</button>').join('') + '</div></div>' +
-    '<div class="sub" style="margin:6px 0 10px">' + esc(lensName()) + ' · ' + list.length + ' audit' + (list.length === 1 ? '' : 's') + ' · ' + (list.length - nF) + ' passed · ' + nF + ' failed</div><div class="list">';
-  if (!list.length) h += '<div class="card empty">No audits logged in this period.</div>';
+  document.getElementById('donesub').textContent = src.label + ' · ' + list.length + ' audit' + (list.length === 1 ? '' : 's') + ' · ' + (list.length - nF) + ' passed · ' + nF + ' failed' + (q ? ' · filtered' : '');
+  let h = '';
+  if (!list.length) h += '<div class="card empty">' + (q ? 'No audits match that filter.' : 'No audits logged in this period.') + '</div>';
   list.slice(0, show).forEach(e => {
     const d = DD[e.id], pass = /^pass/i.test(e.status);
     h += '<div class="item' + (pass ? '' : ' crit') + '" data-act="detail" data-id="' + esc(e.id) + '" style="cursor:pointer"><div class="item-top"><div><div class="item-t">' + esc(e.dealer || (d && d.dealer) || '—') + '</div>' +
@@ -1259,9 +1271,8 @@ function renderDone() {
       '<div class="item-meta small muted">' + fmtD(e.date) + ' · ' + esc(e.who || '—') + (e.vs ? ' · ' + esc(e.vs) : '') + (e.pending ? ' <span class="pill t-blue">just submitted</span>' : '') + '</div>' +
       (e.remarks ? '<div class="small">' + esc(e.remarks.length > 160 ? e.remarks.slice(0, 160) + '…' : e.remarks) + '</div>' : '') + '</div>';
   });
-  h += '</div>';
-  if (list.length > show) h += '<div style="text-align:center;margin:12px 0"><button class="btn" data-act="dmore">Show 50 more (' + (list.length - show) + ' left)</button></div>';
-  return h;
+  host.innerHTML = h;
+  document.getElementById('donemore').innerHTML = list.length > show ? '<div style="text-align:center;margin:12px 0"><button class="btn" data-act="dmore">Show 50 more (' + (list.length - show) + ' left)</button></div>' : '';
 }
 function go(view) { S.view = view; render(); window.scrollTo(0, 0); }
 document.getElementById('nav').addEventListener('click', e => { const b = e.target.closest('button[data-view]'); if (!b) return; if (b.dataset.view === 'audit' && (!A || A.done)) newAudit(''); go(b.dataset.view); });
@@ -1277,9 +1288,10 @@ document.addEventListener('click', function (e) {
   else if (a === 'close') closeSheet();
   else if (a === 'nav') go(v);
   else if (a === 'goto') { S.ddf = t.dataset.f; go('dd'); }
-  else if (a === 'done') { S.doneWin = t.dataset.f || S.doneWin || 'week'; S.doneShow = 50; go('done'); }
+  else if (a === 'done') { S.doneSrc = ''; S.doneQ = ''; S.doneWin = t.dataset.f || S.doneWin || 'week'; S.doneShow = 50; go('done'); }
+  else if (a === 'ldone') { S.doneSrc = 'lead'; S.doneQ = ''; S.doneShow = 50; go('done'); }
   else if (a === 'dwin') { S.doneWin = v; S.doneShow = 50; render(); }
-  else if (a === 'dmore') { S.doneShow = (S.doneShow || 50) + 50; render(); }
+  else if (a === 'dmore') { S.doneShow = (S.doneShow || 50) + 50; paintDone(); }
   else if (a === 'win') { S.itinWin = v; render(); }
   else if (a === 'rt') { e.stopPropagation(); S.route = S.route.includes(k) ? S.route.filter(x => x !== k) : S.route.concat(k); saveRoute(); const y = window.scrollY; render(); window.scrollTo(0, y); }
   else if (a === 'rtclear') { S.route = []; saveRoute(); render(); }
