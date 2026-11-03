@@ -536,9 +536,19 @@ function str(r, c, n) { return String(get(r, c(n))).trim(); }
 function colAfter(hdr, name, after) { const a = hdr.findIndex(h => normHeader(h) === normHeader(after)), t = normHeader(name); for (let i = a + 1; i < hdr.length; i++) if (normHeader(hdr[i]) === t) return i; return -1; }
 function nz(v) { return v == null || v === '' || (typeof v === 'number' && isNaN(v)); }
 
+var RAW = null;
 async function loadAll() {
-  const [d2, d3, r2, r3, ck, ob, si, am, du] = await Promise.all([fetchCSV('drawdown.csv'), fetchCSV('drawdownv3.csv', true), fetchCSV('repayment.csv'), fetchCSV('repaymentv3.csv', true),
-    fetchCSV('dealer-checker.csv'), fetchCSV('ob-masterlist.csv', true), fetchCSV('stock-inspection.csv', true), fetchCSV('AuditMapping.csv', true), fetchCSV('dealeruniverse.csv', true)]);
+  // Dealer Universe only adds prospects, so it must never hold the page up: start it with the rest, but give it just a short grace period.
+  const duP = fetchCSV('dealeruniverse.csv', true).catch(() => null);
+  const [d2, d3, r2, r3, ck, ob, si, am] = await Promise.all([fetchCSV('drawdown.csv'), fetchCSV('drawdownv3.csv', true), fetchCSV('repayment.csv'), fetchCSV('repaymentv3.csv', true),
+    fetchCSV('dealer-checker.csv'), fetchCSV('ob-masterlist.csv', true), fetchCSV('stock-inspection.csv', true), fetchCSV('AuditMapping.csv', true)]);
+  RAW = { d2, d3, r2, r3, ck, ob, si, am };
+  const du = await Promise.race([duP, new Promise(res => setTimeout(() => res(undefined), 3000))]);
+  buildModel(du || null);
+  if (du === undefined) duP.then(x => { if (!x) return; try { buildModel(x); render(); } catch (e) { console.warn('Prospects could not be merged', e); } });   // arrived late: add the prospects and redraw
+}
+function buildModel(du) {
+  const { d2, d3, r2, r3, ck, ob, si, am } = RAW;
   LOANS = {}; LOANLIST = []; PAYS = []; AUDITS = []; DL = {}; GROUPS = {}; LN = { loans: {}, pb: {} };
 
   // ── loans, previous versions
