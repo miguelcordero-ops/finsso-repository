@@ -20,16 +20,16 @@ Month,Week,Dealer ID,Planned Fresh Drawdown,Planned Re-Drawdown,Remarks,Updated 
 2026-11,1,IF0486,1,,,malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Yellow
 2026-11,1,IF0375,1,,,malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Green
 2026-11,1,IF0250,1,,,malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Green
-2026-11,1,IF0286,1,,done dd,malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Green
-2026-11,1,IF0460,1,,send orcr for appraisal,malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Green
-2026-11,1,IF0419,1,,sent appraisal yesterday (rejected low unit),malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Green
-2026-11,1,IF0355,1,,done dd yesterday,malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Green
-2026-11,1,IF0516,2,,done dd yesterday,malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Green
-2026-11,1,IF0088,3,,waiting for the result (EWB),malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Yellow
+2026-11,1,IF0286,1,,DD Done,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Green
+2026-11,1,IF0460,1,,send ORCR for appraisal,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Green
+2026-11,1,IF0419,1,,Rejected unit. ,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Yellow
+2026-11,1,IF0355,1,,DD Done,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Green
+2026-11,1,IF0516,2,,DD Done,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Green
+2026-11,1,IF0088,3,,Waiting for EWB result,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Yellow
 2026-11,1,IF0498,1,,,malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Yellow
 2026-11,1,IF0382,,1,done dd yesterday,malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Green
-2026-11,1,IF0017,10,,waiting for the result (PS BANK),malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Green
-2026-11,1,IF0257,2,,the dealer commit within this week,malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Green
+2026-11,1,IF0017,5,,Waiting for the result (PS BANK),hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Green
+2026-11,1,IF0257,2,,The dealer commit within this week,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Green
 2026-11,1,IF0422,1,,,malou.alfonso@carmudi.com.ph,2026-11-05 10:48:49,Yellow
 2026-11,1,IF0342,,1,dd today,malou.alfonso@carmudi.com.ph,2026-11-05 10:50:37,Green
 2026-11,1,IF0403,1,,,marah.villaruz@carmudi.com.ph,2026-11-05 12:19:47,Yellow
@@ -38,3 +38,11 @@ Month,Week,Dealer ID,Planned Fresh Drawdown,Planned Re-Drawdown,Remarks,Updated 
 2026-11,1,IF0067,1,,,marah.villaruz@carmudi.com.ph,2026-11-05 12:19:13,Green
 2026-11,1,IF0055,,1,,marah.villaruz@carmudi.com.ph,2026-11-05 12:20:09,Green
 2026-11,1,IF0106,1,,,marah.villaruz@carmudi.com.ph,2026-11-05 12:20:47,Yellow
+2026-11,2,IF0112,1,,,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Yellow
+2026-11,2,IF0489,1,,,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Yellow
+2026-11,2,IF0498,1,,,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Yellow
+2026-11,2,IF0357,1,,,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Yellow
+2026-11,2,IF0486,1,,,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Yellow
+2026-11,2,IF0422,1,,,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Yellow
+2026-11,2,IF0088,3,,Waiting for EWB result,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Yellow
+2026-11,1,IF0179,5,,,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Green
