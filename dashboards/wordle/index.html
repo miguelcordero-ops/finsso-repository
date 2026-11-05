@@ -290,10 +290,12 @@ td.od{color:var(--red);font-weight:700}
 @keyframes wdpop{50%{transform:scale(1.08)}}
 .wd-row.shake{animation:wdshake .4s}
 @keyframes wdshake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
-.wd-kb{display:flex;flex-direction:column;gap:6px;width:100%;margin-top:6px}
-.wd-krow{display:flex;gap:5px;justify-content:center}
-.wd-key{flex:1;max-width:44px;height:50px;border:0;border-radius:6px;background:var(--grey-bg);font-weight:700;font-size:14px;color:var(--text);padding:0}
-.wd-key.wide{flex:1.6;max-width:68px;font-size:12px}
+.wd-kb{display:flex;flex-direction:column;gap:7px;width:100%;margin:0 auto}
+.wd-krow{display:flex;gap:6px;justify-content:center;width:100%}
+.wd-key{flex:1 1 0;min-width:0;height:var(--kh,52px);border:0;border-radius:8px;background:var(--grey-bg);font-weight:700;font-size:clamp(15px,4.6vw,21px);color:var(--text);padding:0;touch-action:manipulation;user-select:none}
+.wd-key.wide{flex:1.55 1 0;font-size:clamp(11px,3.1vw,15px)}
+.wd-sp{flex:.5 1 0}
+.wd-key:active{filter:brightness(.88)}
 .wd-key.g{background:#16A34A;color:#fff}.wd-key.y{background:#CA8A04;color:#fff}.wd-key.x{background:#6B7280;color:#fff;opacity:.75}
 .wd-end{width:100%;text-align:center;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px;font-size:14px}
 .wd-end.won{background:var(--green-bg);color:var(--green)}.wd-end.lost{background:var(--red-bg);color:var(--red)}
@@ -306,7 +308,6 @@ td.od{color:var(--red);font-weight:700}
 .wd-stat{flex:1;text-align:center}.wd-stat b{display:block;font-size:24px}.wd-stat span{font-size:11px;color:var(--text3)}
 .wd-drow{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:12px}
 .wd-bar{background:var(--primary);color:#fff;padding:1px 6px;border-radius:4px;text-align:right;font-weight:700;min-width:22px}
-@media(max-width:700px){.wd-key{height:46px}}
 .wd-wide{max-width:640px}
 .wd-pts{font-size:22px;font-weight:800}
 .wd-lb{width:100%;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
@@ -324,6 +325,30 @@ td.od{color:var(--red);font-weight:700}
 .wd-chip b{display:block;font-size:22px;line-height:1.1}.wd-chip span{font-size:11px;color:var(--text3)}
 .wd-chip.hot{border-color:var(--primary)}.wd-chip.hot b{color:var(--primary)}
 .wd-streakbox{display:flex;flex-direction:column;align-items:center;gap:6px}
+#wd-kb{position:sticky;bottom:0;width:100%;background:var(--bg);padding:8px 0 calc(10px + env(safe-area-inset-bottom));z-index:60;margin-top:auto}
+.wd-wrap{max-width:600px}
+.wd-wide{max-width:680px}
+@media(min-width:900px){.wd-key{font-size:20px}.wd-key.wide{font-size:14px}}
+@media(max-height:700px){.wd-streaks .wd-chip{padding:3px 12px}.wd-chip b{font-size:18px}.wd-wrap{gap:6px}}
+.wd-wrap{min-height:calc(100vh - 70px);min-height:calc(100dvh - 70px)}
+.wd-chip{display:flex;align-items:baseline;gap:7px;padding:4px 14px;min-width:0}
+.wd-chip b{display:inline;font-size:19px}.wd-chip span{font-size:12px}
+.wd-risk{font-size:12px;color:var(--text2)}
+.wd-link{border:0;background:none;color:var(--primary);font-weight:700;text-decoration:underline;padding:0;font-size:inherit}
+#wd-top{min-height:0}
+.wd-msg{min-height:16px;line-height:16px}
+.wd-wrap{gap:7px}
+@media(max-width:420px){.wd-modes{gap:5px;flex-wrap:nowrap}.wd-mode{padding:6px 11px;font-size:12.5px;white-space:nowrap}}
+@media(max-height:700px){.wd-risk{display:none}}
+.wd-theme{font-size:12px;font-weight:700;color:var(--primary);background:var(--orange-bg);border-radius:999px;padding:3px 12px}
+.wd-how{width:100%;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;line-height:1.5;font-size:14px}
+.wd-how h2{font-size:20px;margin-bottom:8px}.wd-how h3{font-size:14px;margin:14px 0 4px}
+.wd-how p{color:var(--text2)}
+.wd-ex{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.wd-exrow{display:flex;align-items:center;gap:4px;flex-wrap:wrap;font-size:13px;color:var(--text2)}
+.wd-exrow span:last-child{flex-basis:100%;margin-top:2px}
+.wd-cell.sm{width:34px;height:34px;font-size:18px;border-radius:5px}
+.wd-how .wd-btns{margin-top:16px}
 
 </style></head>
 <body>
@@ -611,7 +636,7 @@ function openSheet(html) {
 function closeSheet() { document.getElementById('overlay-root').innerHTML = ''; }
 </script>
 <script>
-/* ── WORDLE — 8 tries. Word of the day + leaderboard come from the Apps Script (wd_ actions); Practice uses the "wordle" tab (wordle.csv) ── */
+/* ── WORDLE — 8 tries. The Word of the day, guesses, streaks and leaderboard all come from the Apps Script (wd_ actions) ── */
 var MAX_TRIES = 8;
 var W = { view: 'play', mode: 'daily', len: 0, ans: null, cat: '', hint: '', guesses: [], res: [], cur: '', done: false, won: false, points: null, busy: false, wait: false, hintShown: false, msg: '', err: '', skip: null, st: null, words: [], period: 'week', board: null, boardErr: '' };
 var KEYROWS = ['QWERTYUIOP', 'ASDFGHJKL', '+ZXCVBNM-'];
@@ -621,19 +646,7 @@ function hash32(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) 
 function apiGet(action, extra) { return fetch(ALLOWLIST_API + '?action=' + action + '&token=' + encodeURIComponent(_idToken || '') + (extra || '') + '&_=' + Date.now()).then(r => r.json()); }
 function apiPost(body) { return fetch(ALLOWLIST_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ idToken: _idToken }, body)) }).then(r => r.json()); }
 
-async function loadAll() {
-  // practice words (the sheet starts at A1, so the first row of the CSV is a word unless it says "Word")
-  try {
-    const g = await fetchCSV('wordle.csv', true), seen = {}, out = [];
-    (g || []).forEach((r, i) => {
-      const raw = String(r[0] || '').trim(); if (i === 0 && /^words?$/i.test(raw)) return;
-      const w = raw.toUpperCase().replace(/[^A-Z]/g, ''); if (w.length < 3 || w.length > 14 || seen[w]) return;
-      seen[w] = 1; out.push({ w, cat: String(r[1] || '').trim(), hint: String(r[2] || '').trim() });
-    });
-    W.words = out;
-  } catch (e) { W.words = []; }
-  await startDaily();
-}
+async function loadAll() { await startDaily(); }
 function scoreGuess(guess, ans) {
   const n = ans.length, res = new Array(n).fill('x'), left = {};
   for (let i = 0; i < n; i++) { if (guess[i] === ans[i]) res[i] = 'g'; else left[ans[i]] = (left[ans[i]] || 0) + 1; }
@@ -660,38 +673,22 @@ function setStreaks(j) { if (j && j.loginStreak != null) W.st = { win: j.winStre
 function streakHtml() {
   const s = W.st; if (!s) return '';
   return '<div class="wd-streaks"><div class="wd-chip' + (s.win ? ' hot' : '') + '" title="Best: ' + s.bestWin + '"><b>' + s.win + '</b><span>Win streak</span></div><div class="wd-chip' + (s.login ? ' hot' : '') + '" title="Best: ' + s.bestLogin + '"><b>' + s.login + '</b><span>Login streak</span></div></div>' +
-    (s.risk ? '<div class="small muted">Win today’s word to keep your ' + s.win + '-day win streak going.</div>' : '');
-}
-function startPractice() {
-  W.view = 'play'; W.mode = 'practice'; resetGame();
-  const pool0 = W.words.filter(x => hash32(x.w) !== W.skip);
-  if (!pool0.length) { W.len = 0; W.err = 'No practice words are available yet.'; return render(); }
-  const key = 'wordle-used:' + (ME ? ME.email : ''); let used = []; try { used = JSON.parse(lsGet(key)) || []; } catch (e) {}
-  let pool = pool0.filter(x => used.indexOf(x.w) < 0);
-  if (!pool.length) { used = []; pool = pool0; }           // every word has been played: start a new round
-  const pick = pool[Math.floor(Math.random() * pool.length)];
-  used.push(pick.w); lsSet(key, JSON.stringify(used));
-  W.len = pick.w.length; W.ans = pick.w; W.cat = pick.cat; W.hint = pick.hint;
-  render();
+    (s.risk ? '<div class="wd-risk">Win today’s word to keep your ' + s.win + '-day streak.</div>' : '');
 }
 async function submitGuess() {
   if (W.done || W.busy || !W.len) return;
   if (W.cur.length < W.len) { W.msg = 'Not enough letters — this word has ' + W.len + '.'; shake(); return paintMsg(); }
   const g = W.cur; W.msg = ''; W.busy = true;
   let res, done, won, extra = {};
-  if (W.mode === 'practice') {
-    res = scoreGuess(g, W.ans); won = g === W.ans; done = won || W.guesses.length + 1 >= MAX_TRIES;
-  } else {
-    W.wait = true; paintMsg();
-    try {
-      const j = await apiPost({ action: 'wd_guess', guess: g });
-      if (!j.ok) { W.busy = false; W.wait = false; W.msg = j.error || 'Could not check that guess.'; if (j.code === 'auth') W.msg = 'Your sign-in expired — reload the page.'; paintMsg(); return; }
-      res = j.result.split(''); won = j.won; done = j.done; extra = j;
-    } catch (e) { W.busy = false; W.wait = false; W.msg = 'Connection problem — your guess was not counted. Try again.'; paintMsg(); return; }
-    W.wait = false;
-  }
+  W.wait = true; paintMsg();
+  try {
+    const j = await apiPost({ action: 'wd_guess', guess: g });
+    if (!j.ok) { W.busy = false; W.wait = false; W.msg = j.error || 'Could not check that guess.'; if (j.code === 'auth') W.msg = 'Your sign-in expired — reload the page.'; paintMsg(); return; }
+    res = j.result.split(''); won = j.won; done = j.done; extra = j;
+  } catch (e) { W.busy = false; W.wait = false; W.msg = 'Connection problem — your guess was not counted. Try again.'; paintMsg(); return; }
+  W.wait = false;
   W.cur = ''; W.guesses.push(g); W.res.push(res); const idx = W.guesses.length - 1;
-  if (done) { W.done = true; W.won = won; if (W.mode === 'daily') { W.ans = extra.word || W.ans; W.points = extra.points == null ? null : extra.points; setStreaks(extra); } }
+  if (done) { W.done = true; W.won = won; W.ans = extra.word || W.ans; W.points = extra.points == null ? null : extra.points; setStreaks(extra); }
   if (W.guesses.length >= 4) W.hintShown = true;
   paintBoard(idx); setTimeout(() => { W.busy = false; paintAll(); }, W.len * 220 + 450);
 }
@@ -703,7 +700,14 @@ function typeKey(k) {
   W.msg = ''; paintBoard(-1); paintMsg();
 }
 function shake() { const row = document.querySelector('.wd-row.cur'); if (row) { row.classList.remove('shake'); void row.offsetWidth; row.classList.add('shake'); } }
-function cellSize() { const n = W.len || 5; const byW = Math.floor((Math.min(window.innerWidth, 520) - 32 - (n - 1) * 5) / n); const byH = Math.floor((window.innerHeight - 400) / MAX_TRIES) - 5; return Math.max(26, Math.min(56, byW, Math.max(34, byH))); }
+function keyH() { return Math.round(Math.max(46, Math.min(64, window.innerHeight * 0.075))); }
+function cellSize() {
+  const n = W.len || 5, wrapW = Math.min(window.innerWidth, 600) - 32;
+  const byW = Math.floor((wrapW - (n - 1) * 5) / n);
+  const b = document.getElementById('wd-board'); let byH = 56;
+  if (b) { const top = b.getBoundingClientRect().top + window.scrollY; byH = Math.floor((window.innerHeight - top - (keyH() * 3 + 12 + 28) - 12) / MAX_TRIES) - 5; }
+  return Math.max(window.innerHeight < 700 ? 24 : 30, Math.min(60, byW, byH));
+}
 function boardHtml(reveal) {
   const n = W.len, sz = cellSize(); let h = '<div class="wd-board" style="--sz:' + sz + 'px;--fs:' + Math.round(sz * 0.52) + 'px">';
   for (let r = 0; r < MAX_TRIES; r++) {
@@ -721,38 +725,41 @@ function keyState() { const st = {}, rank = { x: 1, y: 2, g: 3 }; W.guesses.forE
 function kbHtml() {
   if (W.done || !W.len) return '';
   const st = W.busy ? {} : keyState();
-  return '<div class="wd-kb">' + KEYROWS.map(r => '<div class="wd-krow">' + r.split('').map(k => {
+  return '<div class="wd-kb" style="--kh:' + keyH() + 'px">' + KEYROWS.map((r, ri) => '<div class="wd-krow">' + (ri === 1 ? '<span class="wd-sp"></span>' : '') + r.split('').map(k => {
     const lab = k === '+' ? 'Enter' : (k === '-' ? '⌫' : k);
     return '<button class="wd-key' + (k === '+' || k === '-' ? ' wide' : '') + (st[k] ? ' ' + st[k] : '') + '" data-k="' + k + '">' + lab + '</button>';
-  }).join('') + '</div>').join('') + '</div>';
+  }).join('') + (ri === 1 ? '<span class="wd-sp"></span>' : '') + '</div>').join('') + '</div>';
 }
 function hintHtml() {
   if (!W.len) return '';
-  let h = '<div class="wd-info"><b>' + W.len + '</b> letters' + (W.cat ? ' · Category: <b>' + esc(W.cat) + '</b>' : '') + ' · <b>' + MAX_TRIES + '</b> tries</div>';
-  if (W.hint && !W.done) h += W.hintShown ? '<div class="wd-hint">Hint: ' + esc(W.hint) + '</div>' : '<button class="btn sm" data-act="hint">Show hint</button>';
+  let h = '<div class="wd-info"><b>' + W.len + '</b> letters' + (W.cat ? ' · <b>' + esc(W.cat) + '</b>' : '') + ' · <b>' + MAX_TRIES + '</b> tries';
+  if (W.hint && !W.done && !W.hintShown) h += ' · <button class="wd-link" data-act="hint">Show hint</button>';
+  h += '</div><div class="wd-theme">Hint: it’s inventory funding related</div>';
+  if (W.hint && !W.done && W.hintShown) h += '<div class="wd-hint">Hint: ' + esc(W.hint) + '</div>';
   return h;
 }
 function endHtml() {
   if (!W.done) return '';
-  const daily = W.mode === 'daily';
+  const daily = true;
   let h = '<div class="wd-end ' + (W.won ? 'won' : 'lost') + '"><div class="wd-end-t">' + (W.won ? 'Nailed it in ' + W.guesses.length + (W.guesses.length === 1 ? ' try!' : ' tries!') : 'Out of tries') + '</div>';
   if (daily && W.points != null) h += '<div class="wd-pts">+' + W.points + ' points</div>';
   h += '<div>The word was <b>' + esc(W.ans || '') + '</b>' + (W.hint ? ' — ' + esc(W.hint) : '') + '</div><div class="wd-btns"><button class="btn" data-act="share">Copy result</button>' +
-    (daily ? '<button class="btn" data-act="board">See leaderboard</button>' : '') + '<button class="btn" data-act="practice">' + (daily ? 'Practice' : 'Play another word') + '</button></div></div>';
+    '<button class="btn" data-act="board">See leaderboard</button></div></div>';
   return h;
 }
 function tabsHtml() {
   const t = (a, label, on) => '<button class="wd-mode' + (on ? ' on' : '') + '" data-act="' + a + '">' + label + '</button>';
-  return '<div class="wd-modes">' + t('daily', 'Word of the day', W.view === 'play' && W.mode === 'daily') + t('practice', 'Practice', W.view === 'play' && W.mode === 'practice') + t('board', 'Leaderboard', W.view === 'board') + '</div>';
+  return '<div class="wd-modes">' + t('daily', 'Word of the day', W.view === 'play') + t('board', 'Leaderboard', W.view === 'board') + t('how', 'How to play', W.view === 'how') + '</div>';
 }
 function renderLoading(msg) { document.getElementById('view').innerHTML = '<div class="wd-wrap">' + tabsHtml() + '<div class="loading"><span class="spin"></span>' + esc(msg) + '</div></div>'; }
 function render() {
   if (W.view === 'board') return renderBoard();
+  if (W.view === 'how') return renderHow();
   if (!W.len) {
-    document.getElementById('view').innerHTML = '<div class="wd-wrap">' + tabsHtml() + '<div class="card empty">' + esc(W.err || 'Nothing to play yet.') + '<br><br><button class="btn" data-act="' + (W.mode === 'daily' ? 'daily' : 'practice') + '">Try again</button></div></div>';
+    document.getElementById('view').innerHTML = '<div class="wd-wrap">' + tabsHtml() + '<div class="card empty">' + esc(W.err || 'Nothing to play yet.') + '<br><br><button class="btn" data-act="daily">Try again</button></div></div>';
     return;
   }
-  document.getElementById('view').innerHTML = '<div class="wd-wrap">' + tabsHtml() + '<div id="wd-streak" class="wd-streakbox">' + streakHtml() + '</div>' + (W.mode === 'daily' ? '<div class="small muted">Everyone gets the same word today — it counts for the leaderboard.</div>' : '<div class="small muted">Practice words don’t earn points.</div>') +
+  document.getElementById('view').innerHTML = '<div class="wd-wrap">' + tabsHtml() + '<div id="wd-streak" class="wd-streakbox">' + streakHtml() + '</div>'+
     '<div id="wd-top"></div><div id="wd-msg" class="wd-msg"></div><div id="wd-board"></div><div id="wd-end"></div><div id="wd-kb"></div></div>';
   paintAll();
 }
@@ -761,7 +768,25 @@ function paintBoard(reveal) { const b = document.getElementById('wd-board'); if 
 function paintMsg() { const m = document.getElementById('wd-msg'); if (m) m.textContent = W.wait ? 'Checking…' : (W.msg || ''); }
 function shareText() {
   const rows = W.res.map(r => r.map(s => s === 'g' ? '🟩' : s === 'y' ? '🟨' : '⬛').join('')).join('\n');
-  return 'Finsso Wordle ' + (W.mode === 'daily' ? (new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' })) : 'practice') + ' ' + (W.won ? W.guesses.length : 'X') + '/' + MAX_TRIES + '\n' + rows;
+  return 'Finsso Wordle ' + (new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' })) + ' ' + (W.won ? W.guesses.length : 'X') + '/' + MAX_TRIES + '\n' + rows;
+}
+
+/* ── how to play ── */
+function renderHow() {
+  const ex = (cls, ch) => '<span class="wd-cell sm ' + cls + '">' + ch + '</span>';
+  document.getElementById('view').innerHTML = '<div class="wd-wrap wd-wide">' + tabsHtml() + '<div class="wd-how">' +
+    '<h2>How to play</h2>' +
+    '<p>Guess the <b>word of the day</b> in <b>' + MAX_TRIES + ' tries</b>. Every word is related to inventory funding, and everyone gets the same word. A new one appears every day at midnight (Philippine time).</p>' +
+    '<h3>Making a guess</h3><p>Type or tap the letters, then press <b>Enter</b>. Your guess needs exactly as many letters as the word has (the count is shown above the grid). It doesn’t have to be a dictionary word.</p>' +
+    '<h3>The colors</h3>' +
+    '<div class="wd-ex"><div class="wd-exrow">' + ex('g', 'D') + ex('x', 'E') + ex('x', 'A') + ex('x', 'L') + ex('x', 'E') + ex('x', 'R') + '<span>Green — the letter is in the word and in the right spot.</span></div>' +
+    '<div class="wd-exrow">' + ex('x', 'L') + ex('y', 'O') + ex('x', 'A') + ex('x', 'N') + '<span>Yellow — the letter is in the word, but in a different spot.</span></div>' +
+    '<div class="wd-exrow">' + ex('x', 'F') + ex('x', 'E') + ex('x', 'E') + '<span>Grey — the letter is not in the word (or you’ve used it up).</span></div></div>' +
+    '<h3>Hints</h3><p>The category is shown above the grid. Tap <b>Show hint</b> for a clue about the word. It appears by itself after your 4th try.</p>' +
+    '<h3>Points</h3><p>Win: <b>100 points</b> for a first-try solve, minus 10 for every extra try (try 8 = 30). A streak bonus adds +5 for each day in a row you’ve already won, up to +25. If you run out of tries you still get 5 points for playing.</p>' +
+    '<h3>Streaks</h3><p><b>Win streak</b> — days in a row you’ve solved the word. <b>Login streak</b> — days in a row you’ve opened the game. Miss a day and the streak starts over.</p>' +
+    '<h3>Good to know</h3><p>You get one game per day, and your progress is saved, so you can pick up where you left off on another device. Compare with your teammates on the Leaderboard.</p>' +
+    '<div class="wd-btns"><button class="btn" data-act="daily">Play today’s word</button></div></div></div>';
 }
 
 /* ── leaderboard ── */
@@ -791,7 +816,7 @@ document.addEventListener('click', e => {
   const k = e.target.closest('.wd-key'); if (k) { typeKey(k.dataset.k); return; }
   const pe = e.target.closest('[data-period]'); if (pe) { W.period = pe.dataset.period; showBoard(); return; }
   const a = e.target.closest('[data-act]'); if (!a) return; const act = a.dataset.act;
-  if (act === 'daily') startDaily(); else if (act === 'practice') startPractice(); else if (act === 'board') showBoard();
+  if (act === 'daily') startDaily(); else if (act === 'board') showBoard(); else if (act === 'how') { W.view = 'how'; render(); }
   else if (act === 'hint') { W.hintShown = true; document.getElementById('wd-top').innerHTML = hintHtml(); }
   else if (act === 'share') { const t = shareText(); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { W.msg = 'Result copied.'; paintMsg(); }).catch(() => { W.msg = 'Could not copy — select and copy manually.'; paintMsg(); }); }
 });
