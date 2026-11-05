@@ -959,7 +959,7 @@ function kvs(pairs) { return '<div class="kv2">' + pairs.filter(p => p[1] !== ''
 function renderProfile(host) {
   const d = DL[S.sel]; if (!d) { S.sel = null; return renderHome(host); }
   flagsOf(d); const st = stats(d), ck_ = d.ck, ob = d.ob, un = d.un, am = d.am;
-  const so = (ck_ && ck_.so) || (am && am.sales) || (ob && ob.sales) || '', sm = SO_SM[so] || (ck_ && ck_.sm) || (am && am.sm) || (ob && ob.sm) || '';   // SM from the Mapping tab (old sources only if the SO isn't listed there)
+  const so = (ck_ && ck_.so) || (am && am.sales) || (ob && ob.sales) || '', sm = SO_SM[so] || '';   // SM comes from the Mapping tab only
   const loc = (am && (am.addr || am.city)) || (ob && ob.addr) || (un && un.addr) || '';
   const redN = d.flags.filter(f => f.sev === 'red').length, ambN = d.flags.filter(f => f.sev === 'amber').length;
   let h = searchBox();
