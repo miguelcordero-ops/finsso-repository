@@ -1698,12 +1698,12 @@ function renderDealerBody() {
         { v: n(l.yearModel), t: l.yearModel },
         { v: l.financingType, t: l.financingType },
         { v: t(l.creditDate), t: l.creditDate ? dcDate(l.creditDate) : '' },
-        { v: dpdDays || null, t: dpdDays ? String(dpdDays) : '' },
         { v: isFinite(aging) ? Math.round(aging) : null, t: isFinite(aging) ? String(Math.round(aging)) : l.loanAging },
+        { v: dpdDays || null, t: dpdDays ? String(dpdDays) : '' },
+        { v: out, t: dcPeso(out) },
         { v: due.next ? due.next.label : '', t: due.next ? due.next.label + (due.nextOverdue ? ' (overdue)' : '') : '' },
         { v: due.next ? t(due.next.due) : null, t: due.next ? dcDate(due.next.due) : '' },
         { v: t(l.maturityDate), t: l.maturityDate ? dcDate(l.maturityDate) : '' },
-        { v: out, t: dcPeso(out) },
         { v: latest ? t(latest.date) : null, t: latest ? dcDate(latest.date) : '' },
         { v: latest ? latest.status : 'No Entry Yet', t: latest ? latest.status : 'No Entry Yet' },
         { v: passed, t: String(passed) },
@@ -1712,7 +1712,7 @@ function renderDealerBody() {
       ],
     };
   });
-  const heads = ['Drawdown ID','Loan Tenure','Loan Status','Make Model','Plate','Year Model','Financing Type','Credit Date','DPD Aging','Loan Aging','Next Due','Next Due Date','Final Maturity Date','Outstanding Principal','Latest Act. Inspection','Inspection Remarks','Inspections Passed','Inspections Failed','Sold Tagging'];
+  const heads = ['Drawdown ID','Loan Tenure','Loan Status','Make Model','Plate','Year Model','Financing Type','Credit Date','Loan Aging','DPD Aging','Outstanding Principal','Next Due','Next Due Date','Final Maturity Date','Latest Act. Inspection','Inspection Remarks','Inspections Passed','Inspections Failed','Sold Tagging'];
   dcHeads = heads;
   const leftCols = { 0: 1, 3: 1 }, rightCols = {}; rightCols[heads.indexOf('Outstanding Principal')] = 1; dcOutCol = heads.indexOf('Outstanding Principal');
 
