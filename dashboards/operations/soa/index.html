@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#E8461E">
+<title>SOA Generator — Operations</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{
+  --primary:#E8461E;--accent:#F97316;--bg:#F0F4FD;--card:#FFFFFF;--card2:#F7F8FC;
+  --border:rgba(0,0,0,0.09);--text:#111827;--text2:#4B5563;--text3:#8A92A0;
+  --red:#DC2626;--red-bg:rgba(220,38,38,0.10);--orange:#EA580C;--orange-bg:rgba(234,88,12,0.11);
+  --amber:#B45309;--amber-bg:rgba(245,158,11,0.15);--green:#15803D;--green-bg:rgba(22,163,74,0.12);
+  --blue:#2563EB;--blue-bg:rgba(37,99,235,0.10);--grey-bg:rgba(107,114,128,0.12);
+  --shadow:0 1px 2px rgba(0,0,0,0.05),0 4px 14px rgba(30,41,90,0.07);
+  --nav-h:62px;--r:14px;
+}
+:root[data-theme="dark"]{
+  --bg:#0B0F1A;--card:#161B29;--card2:#1C2233;--border:rgba(255,255,255,0.10);
+  --text:#E5E7EB;--text2:#A1A9B8;--text3:#6B7280;
+  --red:#F87171;--red-bg:rgba(248,113,113,0.14);--orange:#FB923C;--orange-bg:rgba(251,146,60,0.14);
+  --amber:#FBBF24;--amber-bg:rgba(251,191,36,0.14);--green:#4ADE80;--green-bg:rgba(74,222,128,0.13);
+  --blue:#60A5FA;--blue-bg:rgba(96,165,250,0.14);--grey-bg:rgba(156,163,175,0.14);
+  --shadow:0 1px 2px rgba(0,0,0,0.4),0 4px 14px rgba(0,0,0,0.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{color-scheme:light dark}html[data-theme="dark"]{color-scheme:dark}html[data-theme="light"]{color-scheme:light}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;padding-bottom:40px}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+
+/* ── top bar ── */
+.topbar{position:sticky;top:0;z-index:200;background:var(--card);border-bottom:1px solid var(--border);padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top));display:flex;align-items:center;gap:12px}
+.brand{font-weight:700;color:var(--primary);font-size:17px;letter-spacing:-0.3px;white-space:nowrap}
+.brand small{display:block;font-size:11px;color:var(--text3);font-weight:500;letter-spacing:0}
+.top-sp{flex:1}
+.who{display:flex;align-items:center;gap:8px;min-width:0}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--primary));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
+.who-txt{line-height:1.2;min-width:0}.who-txt b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}.who-txt span{font-size:11px;color:var(--text3)}
+.icon-btn{border:1px solid var(--border);background:var(--card2);border-radius:10px;padding:7px 10px;font-size:12px;color:var(--text2)}
+.lens{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+@media(max-width:700px){
+  .topbar{flex-wrap:wrap;row-gap:8px;padding:8px 12px;padding-top:calc(8px + env(safe-area-inset-top))}
+  .who-txt{display:none}
+  .lens{order:5;width:100%}
+  .lens:empty{display:none}
+  .brand{font-size:16px}
+  .main{padding:12px}
+}
+
+/* ── navigation: top tabs on laptop, bottom bar on phone ── */
+.nav{display:flex;gap:4px;position:fixed;left:0;right:0;bottom:0;z-index:250;background:var(--card);border-top:1px solid var(--border);padding:6px 6px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -4px 18px rgba(0,0,0,0.08)}
+.nav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;padding:5px 2px;border-radius:10px;color:var(--text3);min-height:46px;font-weight:600}
+.nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nav button.on{color:var(--primary);background:rgba(232,70,30,0.09)}
+.nav button.hide{display:none}
+.nav .fab{color:#fff;background:linear-gradient(135deg,var(--accent),var(--primary));margin:-14px 4px 0;border-radius:16px;box-shadow:0 6px 16px rgba(232,70,30,0.35);flex:1.15}
+.nav .fab.on{color:#fff;background:linear-gradient(135deg,var(--accent),var(--primary))}
+@media(min-width:900px){
+  body{padding-bottom:30px}
+  .nav{position:sticky;top:55px;bottom:auto;border-top:0;border-bottom:1px solid var(--border);box-shadow:none;padding:0 16px;gap:2px;justify-content:flex-start;z-index:190}
+  .nav button{flex:none;flex-direction:row;gap:7px;font-size:13px;padding:11px 16px;border-radius:0;border-bottom:3px solid transparent;min-height:0}
+  .nav button.on{background:none;border-bottom-color:var(--primary)}
+  .nav .fab{margin:6px 0 6px 10px;border-radius:10px;padding:7px 16px;border-bottom:0;flex:none}
+  .nav .fab.on{border-bottom:0}
+}
+
+/* ── layout ── */
+.main{max-width:1180px;margin:0 auto;padding:16px}
+.h1{font-size:20px;font-weight:700;letter-spacing:-0.3px}.sub{color:var(--text3);font-size:12.5px;margin-top:2px}
+.sec{margin-top:20px}.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}.sec-h h2{font-size:15px;font-weight:700}.sec-h .sub{margin:0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:14px}
+.grid{display:grid;gap:12px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:620px){.kpis{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.kpis{grid-template-columns:repeat(6,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:12px 14px;text-align:left;cursor:pointer;display:block;width:100%}
+.kpi .n{font-size:26px;font-weight:800;letter-spacing:-0.5px;line-height:1.1}.kpi .l{font-size:11.5px;color:var(--text2);margin-top:3px;font-weight:600}.kpi .s{font-size:10.5px;color:var(--text3);margin-top:1px}
+.kpi.red .n{color:var(--red)}.kpi.orange .n{color:var(--orange)}.kpi.amber .n{color:var(--amber)}.kpi.green .n{color:var(--green)}.kpi.blue .n{color:var(--blue)}
+.two{display:grid;gap:14px}@media(min-width:900px){.two{grid-template-columns:1.5fr 1fr}}
+.cols3{display:grid;gap:12px}@media(min-width:760px){.cols3{grid-template-columns:repeat(2,1fr)}}@media(min-width:1100px){.cols3{grid-template-columns:repeat(3,1fr)}}
+
+/* ── pills / chips / buttons ── */
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.p-crit{background:var(--red);color:#fff}.p-high{background:var(--orange-bg);color:var(--orange)}.p-soon{background:var(--amber-bg);color:var(--amber)}.p-ok{background:var(--grey-bg);color:var(--text2)}
+.t-red{background:var(--red-bg);color:var(--red)}.t-orange{background:var(--orange-bg);color:var(--orange)}.t-green{background:var(--green-bg);color:var(--green)}.t-blue{background:var(--blue-bg);color:var(--blue)}.t-grey{background:var(--grey-bg);color:var(--text2)}.t-amber{background:var(--amber-bg);color:var(--amber)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--border);background:var(--card);border-radius:99px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--text2);min-height:34px}
+.chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card)}
+.seg button{border:0;background:none;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--text2)}
+.seg button.on{background:var(--primary);color:#fff}
+.btn{border:1px solid var(--border);background:var(--card);border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.pri{background:linear-gradient(135deg,var(--accent),var(--primary));border-color:transparent;color:#fff}
+.btn.sm{padding:6px 10px;min-height:32px;font-size:12px;border-radius:8px}
+.btn.ghost{background:none}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.search{width:100%;border:1px solid var(--border);background:var(--card);border-radius:10px;padding:10px 12px;min-height:42px}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.toolbar .search{flex:1;min-width:180px}
+.empty{padding:30px 14px;text-align:center;color:var(--text3)}
+.muted{color:var(--text3)}.small{font-size:12px}.b{font-weight:700}
+
+/* ── work items ── */
+.item{background:var(--card);border:1px solid var(--border);border-left:5px solid var(--grey-bg);border-radius:var(--r);box-shadow:var(--shadow);padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.item.crit{border-left-color:var(--red)}.item.high{border-left-color:var(--orange)}.item.soon{border-left-color:var(--amber)}
+.item-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.item-t{font-weight:700;font-size:14px}.item-s{font-size:12px;color:var(--text2)}
+.item-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.item-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.list{display:flex;flex-direction:column;gap:10px}
+.dcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.dcard-h{padding:12px 14px;display:flex;flex-direction:column;gap:6px;cursor:pointer}
+.dcard-body[hidden]{display:none}
+.dcard-body{border-top:1px solid var(--border);background:var(--card2);padding:10px;display:flex;flex-direction:column;gap:8px}
+.dcard .addr{font-size:12px;color:var(--text2)}
+.dd-mini{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--grey-bg);border-radius:10px;padding:9px 11px;display:flex;flex-direction:column;gap:5px}
+.dd-mini.crit{border-left-color:var(--red)}.dd-mini.high{border-left-color:var(--orange)}.dd-mini.soon{border-left-color:var(--amber)}
+.stopno{width:26px;height:26px;border-radius:50%;background:var(--primary);color:#fff;font-weight:800;font-size:12px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.bar{height:8px;border-radius:99px;background:var(--grey-bg);overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--primary));border-radius:99px}
+
+/* ── data table (every column filterable) ── */
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:auto;max-height:calc(100vh - 230px);-webkit-overflow-scrolling:touch}
+table.dt{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px}
+.dt th{position:sticky;top:0;z-index:3;background:var(--card2);text-align:left;padding:0;border-bottom:1px solid var(--border);white-space:nowrap}
+.dt th .th{display:flex;align-items:center;gap:4px;padding:9px 8px 9px 10px;font-weight:700;font-size:11.5px;color:var(--text2)}
+.dt th .th span{flex:1;cursor:pointer;user-select:none}
+.fbtn{border:0;background:none;padding:3px 5px;border-radius:6px;color:var(--text3);font-size:11px}
+.fbtn.on{background:var(--primary);color:#fff}
+.dt td{padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--card)}
+.dt tr:hover td{background:var(--card2)}
+.dt td.fz,.dt th.fz{position:sticky;left:0;z-index:4;box-shadow:2px 0 0 var(--border)}
+.dt th.fz{z-index:6}
+.dt td.num,.dt th.num .th{text-align:right;justify-content:flex-end}
+.dt td.click{cursor:pointer}
+.fpanel{position:fixed;z-index:1200;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,0.25);width:290px;max-width:calc(100vw - 20px);max-height:70vh;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
+.fpanel .row{display:flex;gap:6px}.fpanel button.o{flex:1;border:1px solid var(--border);background:var(--card2);border-radius:8px;padding:7px;font-size:12px;font-weight:600}
+.fpanel input[type=text],.fpanel select{width:100%;border:1px solid var(--border);background:var(--card);border-radius:8px;padding:8px}
+.fpanel .vals{max-height:200px;overflow:auto;border:1px solid var(--border);border-radius:8px;padding:4px}
+.fpanel label{display:flex;gap:8px;align-items:center;padding:5px 6px;font-size:12.5px;border-radius:6px}
+.fpanel label:hover{background:var(--card2)}
+.fpanel h6{font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em}
+@media(max-width:700px){.fpanel{left:8px!important;right:8px;bottom:8px;top:auto!important;width:auto;max-height:78vh}}
+
+/* ── sheet / modal ── */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:900;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:640px;max-height:92vh;border-radius:20px 20px 0 0;overflow:auto;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,0.3)}
+@media(min-width:700px){.scrim{align-items:center}.sheet{border-radius:20px}}
+.sheet h3{font-size:16px;margin-bottom:4px}
+.kv{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 14px;margin:10px 0}
+.kv div{font-size:12.5px}.kv span{display:block;font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.tl{display:flex;flex-direction:column;gap:8px;margin-top:8px}.tl .e{border-left:3px solid var(--grey-bg);padding:2px 0 2px 10px;font-size:12.5px}.tl .e.f{border-left-color:var(--red)}.tl .e.p{border-left-color:var(--green)}
+
+/* ── form ── */
+.form{display:flex;flex-direction:column;gap:14px;max-width:720px}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld>label,.fld>.lab{font-size:12px;font-weight:700;color:var(--text2)}
+.fld .req{color:var(--red)}
+.inp{width:100%;border:1px solid var(--border);background:var(--card);border-radius:10px;padding:11px 12px;min-height:46px;font-size:15px}
+textarea.inp{min-height:84px;resize:vertical}
+.inp[readonly]{background:var(--card2);color:var(--text2)}
+.hint{font-size:11.5px;color:var(--text3)}
+.bigseg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bigseg button{border:2px solid var(--border);background:var(--card);border-radius:12px;padding:14px;font-weight:800;font-size:16px}
+.bigseg button.on.pass{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.bigseg button.on.fail{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.photos{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ph{position:relative;width:76px;height:76px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.ph img{width:100%;height:100%;object-fit:cover}.ph button{position:absolute;top:2px;right:2px;border:0;background:rgba(0,0,0,.6);color:#fff;width:22px;height:22px;border-radius:50%;font-size:13px;line-height:1}
+.addph{width:76px;height:76px;border-radius:10px;border:2px dashed var(--border);background:var(--card2);color:var(--text2);font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.callout{border-radius:12px;padding:10px 12px;font-size:12.5px}
+.callout.warn{background:var(--amber-bg);color:var(--amber)}.callout.bad{background:var(--red-bg);color:var(--red)}.callout.good{background:var(--green-bg);color:var(--green)}.callout.info{background:var(--blue-bg);color:var(--blue)}
+.stickyact{position:sticky;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 8px);display:flex;gap:10px;padding:10px 0;background:linear-gradient(to top,var(--bg) 70%,transparent)}
+@media(min-width:900px){.stickyact{bottom:0}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 14px);background:#111827;color:#fff;padding:10px 16px;border-radius:12px;z-index:2000;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,.35);max-width:90vw}
+.toast.err{background:var(--red)}
+.spin{width:18px;height:18px;border:3px solid var(--grey-bg);border-top-color:var(--primary);border-radius:50%;animation:sp .8s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading{display:flex;flex-direction:column;align-items:center;gap:12px;padding:70px 20px;color:var(--text3)}
+
+/* ── lock ── */
+.lock-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .35s}
+.lock-overlay.unlocking{opacity:0;pointer-events:none}.lock-overlay.hidden{display:none}
+.lock-card{background:var(--card);border:1px solid var(--border);box-shadow:0 30px 80px rgba(30,41,90,0.2);border-radius:26px;padding:34px 30px 26px;width:360px;max-width:92vw;display:flex;flex-direction:column;align-items:center}
+.lock-icon-box{width:62px;height:62px;border-radius:18px;background:linear-gradient(135deg,var(--accent),var(--primary));box-shadow:0 4px 16px rgba(232,70,30,0.30);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.lock-icon-box svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lock-title{font-size:18px;font-weight:700;margin-bottom:6px;text-align:center}.lock-sub{font-size:12.5px;color:var(--text3);margin-bottom:20px;text-align:center;line-height:1.6}
+.lock-signin{min-height:44px;display:flex;justify-content:center}.lock-error-msg{font-size:12px;color:var(--red);margin-top:10px;min-height:16px;text-align:center}
+.lock-contact{font-size:11px;color:var(--text3);text-align:center;margin-top:14px}.lock-contact a{color:var(--primary);text-decoration:underline}
+
+/* ── credit dashboard additions ── */
+.main{max-width:1320px}
+.srch{position:relative;flex:1;min-width:240px}
+.srch .res{position:absolute;left:0;right:0;top:46px;z-index:300;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,.22);max-height:60vh;overflow:auto}
+.srch .res .r{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer}
+.srch .res .r:hover,.srch .res .r.hi{background:var(--card2)}
+.srch .res .r:last-child{border-bottom:0}
+.hero{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;justify-content:space-between}
+.hero h1{font-size:22px;letter-spacing:-.4px}
+.rating{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;font-weight:800;font-size:14px}
+.rating small{font-weight:600;font-size:11px;opacity:.85;display:block}
+.r-red{background:var(--red-bg);color:var(--red)}.r-amber{background:var(--amber-bg);color:var(--amber)}.r-green{background:var(--green-bg);color:var(--green)}.r-grey{background:var(--grey-bg);color:var(--text2)}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin:16px 0 14px;overflow:auto}
+.tabs button{border:0;background:none;padding:10px 14px;font-weight:700;font-size:13px;color:var(--text3);border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button.on{color:var(--primary);border-bottom-color:var(--primary)}
+.flags{display:grid;gap:8px}
+@media(min-width:900px){.flags{grid-template-columns:repeat(2,1fr)}}
+.flag{display:flex;gap:10px;align-items:flex-start;border-radius:12px;padding:10px 12px;border:1px solid var(--border);background:var(--card)}
+.flag .ic{width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff;margin-top:1px}
+.flag.red{background:var(--red-bg);border-color:transparent}.flag.red .ic{background:var(--red)}
+.flag.amber{background:var(--amber-bg);border-color:transparent}.flag.amber .ic{background:#D97706}
+.flag.green{background:var(--green-bg);border-color:transparent}.flag.green .ic{background:#16A34A}
+.flag.info .ic{background:var(--text3)}
+.flag b{display:block;font-size:13px}.flag span{font-size:12px;color:var(--text2)}
+.ckpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:700px){.ckpis{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1100px){.ckpis{grid-template-columns:repeat(6,1fr)}}
+.ck{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:11px 13px}
+.ck .n{font-size:20px;font-weight:800;letter-spacing:-.4px;line-height:1.15}.ck .l{font-size:11.5px;color:var(--text2);font-weight:600;margin-top:3px}.ck .s{font-size:10.5px;color:var(--text3)}
+.ck.red .n{color:var(--red)}.ck.amber .n{color:var(--amber)}.ck.green .n{color:var(--green)}.ck.blue .n{color:var(--blue)}
+.charts{display:grid;gap:12px}@media(min-width:900px){.charts{grid-template-columns:repeat(3,1fr)}}
+.chart{position:relative}.chart h3{font-size:13px;margin-bottom:2px}.chart .sub{margin-bottom:6px}
+.chart svg{width:100%;height:auto;aspect-ratio:600/170;display:block;overflow:visible}
+.chart .tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--border);box-shadow:0 6px 20px rgba(0,0,0,.2);border-radius:8px;padding:6px 9px;font-size:12px;white-space:nowrap;display:none;z-index:5}
+.gridline{stroke:var(--border);stroke-width:1}.axt{fill:var(--text3);font-size:13px}
+.kv2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 18px}
+@media(min-width:900px){.kv2{grid-template-columns:repeat(4,1fr)}}
+.kv2 div{font-size:13px}.kv2 span{display:block;font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.back2{font-size:12.5px;color:var(--primary);font-weight:700;background:none;border:0;padding:0;margin-bottom:8px}
+.wchips{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}.wchips button{border:1px solid var(--border);background:var(--card2);border-radius:99px;padding:2px 8px;font-size:10.5px;font-weight:700;color:var(--text2)}.wchips button.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.ck.win.red .n{color:var(--red)}.ck.win.amber .n{color:var(--amber)}.ck.win.green .n{color:var(--green)}
+td.od{color:var(--red);font-weight:700}
+.ckpis.k4{grid-template-columns:repeat(2,1fr)}@media(min-width:900px){.ckpis.k4{grid-template-columns:repeat(4,1fr)}}.ckpis.k3{grid-template-columns:repeat(2,1fr)}@media(min-width:900px){.ckpis.k3{grid-template-columns:repeat(3,1fr)}}.ck.go:hover{border-color:var(--primary)}#t-exc .dt td:nth-child(6),#t-exc .dt td:nth-child(9){white-space:normal;min-width:240px;max-width:380px}td.od,.od{color:var(--red);font-weight:700}
+/* ── SOA generator ── */
+.soa-form{margin:6px 0 12px}
+.sf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 14px}
+.sf-grid label{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.sf-grid label.wide{grid-column:1/-1}
+.sf-grid input,.sf-grid select{border:1px solid var(--border);background:var(--card2);color:var(--text);border-radius:10px;padding:9px 11px;font-size:13.5px;font-weight:500;text-transform:none;letter-spacing:0;min-height:40px;width:100%}
+.sf-grid input:focus,.sf-grid select:focus{outline:none;border-color:var(--primary)}
+@media(max-width:900px){.sf-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.sf-grid{grid-template-columns:1fr}}
+.sf-act{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.soa-paper{padding:22px 24px;overflow-x:auto}
+.soa-doc{max-width:900px;margin:0 auto;font-size:12.5px;color:var(--text)}
+.soa-doc .sd-co{font-size:20px;font-weight:800;color:#1F3864}
+:root[data-theme="dark"] .soa-doc .sd-co{color:#93B4F0}
+.soa-doc .sd-ad{color:var(--text3);margin-top:2px}
+.soa-doc .sd-ti{font-size:16px;font-weight:800;margin:10px 0 12px}
+.soa-doc .sd-meta{width:100%;border-collapse:collapse}
+.soa-doc .sd-meta th{text-align:left;font-weight:700;padding:4px 8px 4px 0;white-space:nowrap;width:1%}
+.soa-doc .sd-meta td{padding:4px 18px 4px 0}
+.soa-doc .sd-sec{background:#1F3864;color:#fff;font-weight:700;padding:5px 9px;margin:16px 0 8px;border-radius:3px}
+.soa-doc .sd-sum{width:100%;border-collapse:collapse}
+.soa-doc .sd-sum td{padding:5px 9px;border:1px solid var(--border)}
+.soa-doc .sd-sum td.m,.soa-doc .sd-tbl td.m,.soa-doc .sd-tbl th.m{text-align:right;font-variant-numeric:tabular-nums}
+.soa-doc .sd-sum tr.hl td{background:#FFF2CC;font-weight:700;color:#111}
+.soa-doc .sd-tw{overflow-x:auto}
+.soa-doc .sd-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.soa-doc .sd-tbl th{background:#E8EEF7;color:#111;font-weight:700;text-align:left;padding:6px 8px;border:1px solid var(--border);white-space:nowrap}
+:root[data-theme="dark"] .soa-doc .sd-tbl th{background:#26304a;color:#E5E7EB}
+.soa-doc .sd-tbl td{padding:5px 8px;border:1px solid var(--border);vertical-align:top}
+.soa-doc .sd-tbl tr.bd td{font-weight:700;background:var(--card2)}
+.soa-doc .sd-note{margin:6px 0;line-height:1.5}
+.soa-doc .sd-note.it{font-style:italic}.soa-doc .sd-note.bd{font-weight:700}.soa-doc .sd-note.sm{font-size:10.5px;color:var(--text3)}
+.soa-doc .sd-pay{border:1px solid var(--border);margin:12px 0 8px}
+.soa-doc .sd-payh{background:#E8EEF7;color:#111;font-weight:700;padding:5px 9px}
+:root[data-theme="dark"] .soa-doc .sd-payh{background:#26304a;color:#E5E7EB}
+.soa-doc .sd-payr{display:flex;gap:12px;padding:4px 9px;border-top:1px solid var(--border)}
+.soa-doc .sd-payr b{width:130px;flex:none}
+
+</style></head>
+<body>
+<div class="lock-overlay" id="lock-overlay">
+  <div class="lock-card">
+    <div class="lock-icon-box"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+    <div class="lock-title">SOA Generator</div>
+    <div class="lock-sub">Sign in with your Finsso account<br>to access this dashboard</div>
+    <div id="g-signin" class="lock-signin"></div>
+    <div class="lock-error-msg" id="lock-err"></div>
+    <div class="lock-contact">Need access? Contact <a href="mailto:miguel.cordero@finsso.com">miguel.cordero@finsso.com</a></div>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="brand">SOA Generator<small>Operations · Statements of Account</small></div>
+  <div class="top-sp"></div>
+  <div class="who"><div class="avatar" id="avatar">?</div><div class="who-txt"><b id="who-name">—</b><span id="who-role">Operations</span></div></div>
+  <button class="icon-btn" id="theme-btn" title="Light / dark">◐</button>
+</div>
+
+<div class="main" id="view"><div class="loading"><span class="spin"></span>Sign in to continue…</div></div>
+<div id="overlay-root"></div>
+<script>
+var DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-repository/main/data/';
+// ── BigQuery data API ── used when signed in; any failure falls back to the GitHub CSV below ──
+function _timedFetch(u, o, ms) { var c = new AbortController(), t = setTimeout(function () { c.abort(); }, ms || 15000); o.signal = c.signal; return fetch(u, o).finally(function () { clearTimeout(t); }); }
+var DATA_API = 'https://finsso-data-api.miguel-cordero.workers.dev/data/';
+var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv'];
+var _idToken = null, DATA_SRC = {};
+// Some dashboards start loading data before sign-in finishes; wait briefly for the Google token so the BigQuery path can be used.
+var _tokenWait = new Promise(function (res) { window._resolveToken = res; });
+function _noteSrc(name, src) {
+  DATA_SRC[name] = src;
+  try { var n = Object.keys(DATA_SRC), bq = n.filter(function (k) { return DATA_SRC[k] === 'BigQuery'; }).length, el = document.getElementById('who-name'); if (el) el.title = 'Data: ' + bq + '/' + n.length + ' files from BigQuery' + (bq < n.length ? ', rest from GitHub' : ''); } catch (e) {}
+}
+async function bqFetch(name) {
+  if (!_idToken && BQ_FILES.indexOf(name) >= 0) await Promise.race([_tokenWait, new Promise(function (r) { setTimeout(r, 45000); })]);
+  if (_idToken && BQ_FILES.indexOf(name) >= 0) {
+    try {
+      var tab = (typeof ALLOWLIST_TAB !== 'undefined' && ALLOWLIST_TAB) ? ALLOWLIST_TAB : 'Operations';
+      var br = await _timedFetch(DATA_API + name + '?tab=' + encodeURIComponent(tab), { headers: { Authorization: 'Bearer ' + _idToken } }, 15000);
+      if (br.ok) { _noteSrc(name, 'BigQuery'); return parseCSV(await br.text()); }
+      console.warn('Data API ' + br.status + ' for ' + name + ' - using GitHub');
+    } catch (e) { console.warn('Data API unreachable for ' + name + ' - using GitHub'); }
+  }
+  _noteSrc(name, 'GitHub');
+  return null;
+}
+var GOOGLE_CLIENT_ID = '263530903165-4nv0iueb5ftb5hjevr14mqug3rlraav5.apps.googleusercontent.com';
+var ALLOWLIST_API = 'https://script.google.com/a/macros/finsso.com/s/AKfycbznI2kQ8a0ApTS9xbDjY4oLoya5KQlqJ-xHm4X75BwkgIby4Cfqtz2xCupYOeFMBFik/exec';
+var ALLOWLIST_TAB = 'Operations';   // value to put in column B ("Dashboards") of the shared Allowlist tab
+var DAY_MS = 86400000;
+var MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var ME = null;
+var S = { tab: 'overview', prod: 'all', fin: 'all' };
+function parseSheetDate(v) {
+  if (v === null || v === undefined) return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  if (/^\d+(\.\d+)?$/.test(s)) {
+    const serial = Math.floor(parseFloat(s));
+    if (serial < 20000 || serial > 60000) return null;
+    const utcMs = Math.round((serial - 25569) * DAY_MS);
+    const utcDate = new Date(utcMs);
+    return new Date(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate());
+  }
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[1]-1, +m[2]);
+  const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+function parseNum(v) {
+  if (v === null || v === undefined || v === '') return 0;
+  const s = String(v).replace(/[,₱%]/g,'').trim();
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i+1] === '"') { field += '"'; i++; }
+      else if (ch === '"') inQ = false;
+      else field += ch;
+    } else {
+      if (ch === '"') inQ = true;
+      else if (ch === ',') { row.push(field); field = ''; }
+      else if (ch === '\r') { /* skip */ }
+      else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else field += ch;
+    }
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
+}
+// Columns are ALWAYS looked up by header name, never by position — the sheet
+// can gain or lose columns at any time. Header text is whitespace-normalized
+// on both sides (some headers carry doubled spaces, NBSPs or embedded
+// newlines, e.g. "R2  Payment Status", "Plate Number\n(as on ORCR)").
+function normHeader(h) { return String(h == null ? '' : h).replace(/[\s\u00a0]+/g, ' ').trim(); }
+function buildColumnMap(headerRow) {
+  const idx = {};
+  headerRow.forEach((h, i) => { const key = normHeader(h); if (key && !(key in idx)) idx[key] = i; });
+  return function (name) { const k = normHeader(name); return idx[k] !== undefined ? idx[k] : -1; };
+}
+function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
+// Normalizes a person-name field for matching: Google Sheets sometimes stores
+// a non-breaking space (U+00A0) instead of a regular space between a first
+// and last name (seen in real data as "Ricmar Magboo"), and typed sheets
+// like "[Raw] Mapping" use a plain space for the same name — without this,
+// those two strings don't compare equal and the SO silently falls out of
+// every team total. Collapses any run of whitespace (regular or NBSP) to a
+// single regular space, so the two representations always match.
+function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
+
+async function fetchCSV(name, optional) {
+  { const _b = await bqFetch(name); if (_b !== null) return _b; }
+  const url = DATA_BASE + name + '?_=' + Date.now();
+  const r = await fetch(url);
+  if (!r.ok) {
+    if (optional) return null; // e.g. a new export not deployed yet — degrade gracefully
+    throw new Error('Failed to load ' + name + ' (HTTP ' + r.status + ')');
+  }
+  return parseCSV(await r.text());
+}
+
+
+/* ══════════════════════════════════════════════════
+   small utilities
+══════════════════════════════════════════════════ */
+function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function sod(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+var TODAY = sod(new Date());
+function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+function diffDays(a, b) { return Math.round((sod(a) - sod(b)) / DAY_MS); }
+function fmtD(d) { return d ? String(d.getDate()).padStart(2, '0') + ' ' + MONTH_ABBR[d.getMonth()] + ' ' + d.getFullYear() : '—'; }
+function fmtDs(d) { return d ? String(d.getDate()).padStart(2, '0') + ' ' + MONTH_ABBR[d.getMonth()] : '—'; }
+function iso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function peso(n) { return '₱' + Math.round(n || 0).toLocaleString('en-US'); }
+function pct(a, b) { return b ? Math.round(a / b * 100) + '%' : '—'; }
+function mkey(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
+function uid8() { const a = new Uint8Array(4); crypto.getRandomValues(a); return Array.from(a, x => x.toString(16).padStart(2, '0')).join(''); }
+function toast(msg, err) { const t = document.createElement('div'); t.className = 'toast' + (err ? ' err' : ''); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), err ? 6000 : 3200); }
+function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function initials(n) { return String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(s => s[0].toUpperCase()).join('') || '?'; }
+
+
+/* ══════════════════════════════════════════════════
+   DATA TABLE — a filter dropdown on EVERY column
+   (sort A→Z / Z→A, filter by condition, filter by values with checkboxes)
+══════════════════════════════════════════════════ */
+function makeTable(host, cols, rows, o) {
+  o = o || {};
+  const st = { f: {}, sort: o.sort || null, panel: null };
+  let cur = [];
+  const txt = (c, r) => { const v = c.txt ? c.txt(r) : c.val(r); return v == null || v === '' ? '(blank)' : String(v); };
+  const raw = (c, r) => { const v = c.val(r); return v instanceof Date ? v.getTime() : v; };
+  function cond(c, f, r) {
+    const v = raw(c, r), q = f.v;
+    if (f.op === 'empty') return v === '' || v == null || v === 0 && c.type !== 'num';
+    if (f.op === 'nempty') return !(v === '' || v == null);
+    if (c.type === 'num' || c.type === 'date') {
+      const n = c.type === 'date' ? (q ? new Date(q + 'T00:00:00').getTime() : NaN) : parseFloat(q);
+      if (isNaN(n)) return true; const x = Number(v);
+      return f.op === 'eq' ? x === n : f.op === 'gt' ? x > n : f.op === 'lt' ? x < n : f.op === 'gte' ? x >= n : x <= n;
+    }
+    const s = String(v == null ? '' : v).toLowerCase(), t = String(q || '').toLowerCase();
+    return f.op === 'contains' ? s.includes(t) : f.op === 'ncontains' ? !s.includes(t) : f.op === 'eq' ? s === t : s.startsWith(t);
+  }
+  function pass(r) {
+    for (const c of cols) { const f = st.f[c.id]; if (!f) continue;
+      if (f.sel && !f.sel.has(txt(c, r))) return false;
+      if (f.op && !cond(c, f, r)) return false; }
+    return true;
+  }
+  function viewRows() {
+    let r = rows.filter(pass);
+    if (st.sort) { const c = cols.find(x => x.id === st.sort.id), dir = st.sort.dir;
+      r = r.slice().sort((a, b) => { let x = raw(c, a), y = raw(c, b);
+        if (x == null || x === '') return 1; if (y == null || y === '') return -1;
+        return (typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), undefined, { numeric: true })) * dir; }); }
+    return r;
+  }
+  const active = id => { const f = st.f[id]; return !!f && (!!f.sel || !!f.op); };
+  function render() {
+    cur = viewRows();
+    const nF = Object.keys(st.f).filter(active).length;
+    let h = '<div class="toolbar" style="margin:0 0 8px"><span class="small muted">' + cur.length.toLocaleString() + ' of ' + rows.length.toLocaleString() + ' rows' + (nF ? ' · ' + nF + ' filter' + (nF > 1 ? 's' : '') : '') + '</span>' +
+      (nF || st.sort ? '<button class="btn sm ghost" data-t="clear">Clear filters &amp; sort</button>' : '') + '<span style="flex:1"></span>' + (o.csv ? '<button class="btn sm" data-t="csv">Export CSV</button>' : '') + '</div>';
+    h += '<div class="tbl-wrap"' + (o.maxH ? ' style="max-height:' + o.maxH + '"' : '') + '><table class="dt"><thead><tr>';
+    cols.forEach(c => { const srt = st.sort && st.sort.id === c.id ? (st.sort.dir > 0 ? ' ▲' : ' ▼') : '';
+      h += '<th class="' + (c.fz ? 'fz ' : '') + (c.type === 'num' ? 'num' : '') + '"><div class="th"><span data-t="sort" data-c="' + c.id + '">' + esc(c.label) + srt + '</span><button class="fbtn' + (active(c.id) ? ' on' : '') + '" data-t="f" data-c="' + c.id + '" title="Filter">▾</button></div></th>'; });
+    h += '</tr></thead><tbody>';
+    const MAX = 800;
+    cur.slice(0, MAX).forEach((r, i) => { h += '<tr data-i="' + i + '">';
+      cols.forEach(c => { h += '<td class="' + (c.fz ? 'fz ' : '') + (c.type === 'num' ? 'num ' : '') + (o.onRow ? 'click' : '') + '">' + (c.html ? c.html(r) : esc(c.txt ? c.txt(r) : (c.val(r) instanceof Date ? fmtD(c.val(r)) : c.val(r)))) + '</td>'; });
+      h += '</tr>'; });
+    if (!cur.length) h += '<tr><td colspan="' + cols.length + '" class="empty">No rows match these filters.</td></tr>';
+    h += '</tbody></table></div>';
+    if (cur.length > MAX) h += '<div class="small muted" style="margin-top:6px">Showing the first ' + MAX + ' rows — narrow with filters to see the rest.</div>';
+    host.innerHTML = h;
+  }
+  function closePanel() { if (st.panel) { st.panel.remove(); st.panel = null; document.removeEventListener('mousedown', outside, true); } }
+  function outside(e) { if (st.panel && !st.panel.contains(e.target) && !(e.target.closest && e.target.closest('.fbtn'))) closePanel(); }
+  function openPanel(id, anchor) {
+    closePanel();
+    const c = cols.find(x => x.id === id), f = st.f[id] || (st.f[id] = {});
+    const p = document.createElement('div'); p.className = 'fpanel';
+    const ops = c.type === 'num' ? [['eq', '='], ['gt', '>'], ['gte', '≥'], ['lt', '<'], ['lte', '≤']] : c.type === 'date' ? [['eq', 'Is on'], ['gt', 'After'], ['lt', 'Before'], ['gte', 'On or after'], ['lte', 'On or before']] : [['contains', 'Contains'], ['ncontains', 'Does not contain'], ['eq', 'Is exactly'], ['starts', 'Starts with']];
+    const vals = {}; rows.forEach(r => { const t = txt(c, r); vals[t] = (vals[t] || 0) + 1; });
+    const keys = Object.keys(vals).sort((a, b) => c.type === 'num' ? parseFloat(a) - parseFloat(b) : a.localeCompare(b, undefined, { numeric: true }));
+    p.innerHTML = '<div class="row"><button class="o" data-s="asc">Sort A → Z</button><button class="o" data-s="desc">Sort Z → A</button></div>' +
+      '<h6>Filter by condition</h6><select data-k="op"><option value="">None</option>' + ops.concat([['empty', 'Is empty'], ['nempty', 'Is not empty']]).map(x => '<option value="' + x[0] + '"' + (f.op === x[0] ? ' selected' : '') + '>' + x[1] + '</option>').join('') + '</select>' +
+      '<input type="' + (c.type === 'date' ? 'date' : 'text') + '" data-k="v" placeholder="Value" value="' + esc(f.v || '') + '">' +
+      '<h6>Filter by values</h6><input type="text" data-k="q" placeholder="Search values…"><div class="row"><button class="o" data-s="all">Select all</button><button class="o" data-s="none">Clear</button></div><div class="vals" data-k="list"></div>' +
+      '<div class="row"><button class="o" data-s="reset">Reset column</button><button class="o" data-s="done" style="background:var(--primary);color:#fff;border-color:var(--primary)">Done</button></div>';
+    const list = p.querySelector('[data-k=list]');
+    const draw = () => { const q = p.querySelector('[data-k=q]').value.toLowerCase(); const sel = f.sel;
+      list.innerHTML = keys.filter(k => !q || k.toLowerCase().includes(q)).slice(0, 400).map(k => '<label><input type="checkbox" data-v="' + esc(k) + '"' + (!sel || sel.has(k) ? ' checked' : '') + '>' + esc(k) + ' <span class="muted small">(' + vals[k] + ')</span></label>').join('') || '<div class="empty small">No values</div>'; };
+    draw();
+    p.addEventListener('input', e => {
+      if (e.target.dataset.k === 'q') draw();
+      else if (e.target.dataset.k === 'v') { f.v = e.target.value; render(); }
+    });
+    p.addEventListener('change', e => {
+      if (e.target.dataset.k === 'op') { f.op = e.target.value || undefined; render(); }
+      else if (e.target.dataset.v !== undefined) {
+        if (!f.sel) f.sel = new Set(keys);
+        e.target.checked ? f.sel.add(e.target.dataset.v) : f.sel.delete(e.target.dataset.v);
+        if (f.sel.size === keys.length) f.sel = undefined; render();
+      }
+    });
+    p.addEventListener('click', e => {
+      const s = e.target.dataset.s; if (!s) return;
+      if (s === 'asc' || s === 'desc') { st.sort = { id, dir: s === 'asc' ? 1 : -1 }; render(); closePanel(); }
+      else if (s === 'all') { f.sel = undefined; draw(); render(); }
+      else if (s === 'none') { f.sel = new Set(); draw(); render(); }
+      else if (s === 'reset') { delete st.f[id]; render(); closePanel(); }
+      else if (s === 'done') closePanel();
+    });
+    document.body.appendChild(p); st.panel = p;
+    const b = anchor.getBoundingClientRect();
+    if (window.innerWidth > 700) { p.style.top = Math.min(b.bottom + 4, window.innerHeight - 340) + 'px'; p.style.left = Math.max(8, Math.min(b.left - 200, window.innerWidth - 300)) + 'px'; }
+    setTimeout(() => document.addEventListener('mousedown', outside, true), 0);
+  }
+  host.onclick = function (e) {
+    const t = e.target.closest('[data-t]');
+    if (t) {
+      const k = t.dataset.t;
+      if (k === 'sort') { const id = t.dataset.c; st.sort = st.sort && st.sort.id === id ? (st.sort.dir > 0 ? { id, dir: -1 } : null) : { id, dir: 1 }; render(); }
+      else if (k === 'f') openPanel(t.dataset.c, t);
+      else if (k === 'clear') { st.f = {}; st.sort = null; render(); }
+      else if (k === 'csv') exportCsv();
+      return;
+    }
+    const tr = e.target.closest('tr[data-i]');
+    if (tr && o.onRow) o.onRow(cur[+tr.dataset.i]);
+  };
+  function exportCsv() {
+    const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const lines = [cols.map(c => q(c.label)).join(',')].concat(cur.map(r => cols.map(c => { const v = c.val(r); return q(v instanceof Date ? iso(v) : (c.txt && c.type !== 'num' ? c.txt(r) : v)); }).join(',')));
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' })); a.download = (o.csv || 'export') + '.csv'; a.click();
+  }
+  render();
+  return { refresh(newRows) { rows = newRows; render(); }, rows: () => cur, preset(fn) { rows = fn(rows); render(); } };
+}
+
+/* ══════════════════════════════════════════════════
+   sheets (modal) + shared bits
+══════════════════════════════════════════════════ */
+function openSheet(html) {
+  closeSheet();
+  const r = document.getElementById('overlay-root');
+  r.innerHTML = '<div class="scrim" id="scrim"><div class="sheet" id="sheet">' + html + '</div></div>';
+  document.getElementById('scrim').addEventListener('mousedown', e => { if (e.target.id === 'scrim') closeSheet(); });
+  return document.getElementById('sheet');
+}
+function closeSheet() { document.getElementById('overlay-root').innerHTML = ''; }
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   SOA CORE — statement logic, ported 1:1 from the SOA generator Apps Script
+   (CFG, buildStatement_, computeLoan_ and the pure helpers). Only the Sheets,
+   Drive and menu code is left out; two small browser adaptations are marked
+   "BROWSER:" (numeric-string dates from CSV, and date formatting).
+   ══════════════════════════════════════════════════════════════════════ */
+const CFG = {
+  LATE_FEE_PER_DAY: 350,
+  PENALTY_PER_DAY: 500,
+  GRACE_BUSINESS_DAYS: 2,
+  RENEWAL_DAYS_AFTER_CREDIT: 29,  // R1 = Credit Date + 29 (Day 30, crediting date = Day 1); Rk = Credit Date + 30k - 1
+  UPFRONT_INTEREST_DAYS: 30,      // interest deducted upfront at disbursal
+  DEFAULT_TENURE: 180,
+  MIN_PRINCIPAL_90: 0.10,        // 90-day loans: minimum principal at R1 and R2
+  STEP_PRINCIPAL_180: 0.20,      // 180-day loans: principal at R3, R4, R5
+  MATURITY_SHARE_180: 0.40,      // 180-day loans: principal left for maturity (before P0)
+  COMPANY_NAME: 'Finsso Finance Corporation',
+  COMPANY_ADDRESS: 'Unit B, 10F Uptown Bonifacio Tower 1, 11th Drive, BGC, Taguig',
+  PAYMENT_TITLE: 'Payment Details — Inventory Funding',
+  PAYMENT_DETAILS: [
+    ['Bank Name', 'BDO (Banco de Oro)'],
+    ['Branch Name', 'Fort Legends BGC'],
+    ['Branch Address', 'G/F Fort Legend Tower, 3rd Ave, BGC, Taguig'],
+    ['Account Name', 'Finsso Finance Corporation'],
+    ['Account Number', '005688026935'],
+  ],
+};
+
+// ---------------------------------------------------------------- tables
+/** Pure: turns a 2D array (header row first) into {get(row, headerName)} lookups. */
+function makeTable_(vals) {
+  const norm = s => String(s).toLowerCase().replace(/\s+/g, ' ').trim();
+  const idx = {};
+  vals[0].forEach((h, i) => { const k = norm(h); if (k && !(k in idx)) idx[k] = i; });
+  return {
+    rows: vals.slice(1).filter(r => r.some(c => c !== '' && c != null)),
+    get(row, name) { const i = idx[norm(name)]; return i == null ? '' : row[i]; },
+    has(name) { return norm(name) in idx; },
+  };
+}
+
+/** Pure: 90 when the tracker says 90, otherwise the 180-day default. */
+function toTenure_(v) {
+  const n = Math.round(toNum_(v));
+  return n === 90 ? 90 : CFG.DEFAULT_TENURE;
+}
+
+// ---------------------------------------------------------------- statement builder (pure)
+function buildStatement_(data, dealer, onlyId, A) {
+  const { dis, drw, rep } = data;
+  const key = s => String(s || '').trim();
+  const drwById = {};
+  drw.rows.forEach(r => { drwById[key(drw.get(r, 'Drawdown ID'))] = r; });
+
+  const loans = [];
+  dis.rows.forEach(r => {
+    const id = key(dis.get(r, 'Drawdown ID'));
+    if (!id) return;
+    if (key(dis.get(r, 'Dealership Name')).toUpperCase() !== dealer.toUpperCase()) return;
+    if (onlyId && id !== onlyId) return;
+    if (key(dis.get(r, 'Transaction Router')).toLowerCase() === 'cancelled') return;
+    const credit = toDay_(dis.get(r, 'Credit Date to Dealer Bank Account'));
+    const pncm = toDay_(dis.get(r, 'PNCM Date'));
+    if (credit == null || pncm == null) return;      // not yet disbursed
+    if (pncm > A) return;                             // booked after the as-of date
+    const d = drwById[id];
+    // Loan Tenure: Disbursal col E mirrors Drawdown col G; fall back to the Drawdown tab
+    const rawTen = dis.get(r, 'Loan Tenure') !== '' ? dis.get(r, 'Loan Tenure') : (d ? drw.get(d, 'Loan Tenure') : '');
+    loans.push({
+      id,
+      principal: toNum_(dis.get(r, 'Original Principal')),
+      rate: toRate_(dis.get(r, 'Interest Rate per Month')),
+      pncm,
+      credit,
+      tenure: toTenure_(rawTen),
+      // due dates exactly as the Drawdown Tracker has them (fallback: Credit Date + 29/59/..., maturity PNCM + tenure)
+      dues: d ? {
+        r1: toDay_(drw.get(d, 'R1 Due Date')), r2: toDay_(drw.get(d, 'R2 Due Date')),
+        r3: toDay_(pick_(drw, d, ['R3P1 Due Date', 'R3 Due Date'])), r4: toDay_(pick_(drw, d, ['R4P2 Due Date', 'R4 Due Date'])),
+        r5: toDay_(pick_(drw, d, ['R5P3 Due Date', 'R5 Due Date'])), mat: toDay_(drw.get(d, 'Maturity Due Date')),
+      } : {},
+      unit: [key(dis.get(r, 'Year Model')), key(dis.get(r, 'Make Model Variant'))].filter(Boolean).join(' '),
+      plate: key(dis.get(r, 'Plate Number')),
+      dealerName: key(dis.get(r, 'Dealer Name')) || (d ? key(drw.get(d, 'Dealer Name')) : ''),
+      dealerId: d ? key(drw.get(d, 'Dealer ID')) : '',
+      creditLine: d ? key(drw.get(d, 'Credit Line ID')) : '',
+      financing: d ? key(drw.get(d, 'Type of Financing')) : '',
+    });
+  });
+
+  const ids = new Set(loans.map(l => l.id));
+  const pays = rep.rows.map(r => ({
+    id: key(rep.get(r, 'Drawdown ID')),
+    repId: key(rep.get(r, 'Repayment ID')),
+    date: toDay_(rep.get(r, 'Dealer Payment Date')),
+    tag: key(rep.get(r, 'Dealer Payment Type')).toLowerCase(),
+    tagLabel: key(rep.get(r, 'Dealer Payment Type')),
+    received: toNum_(pick_(rep, r, ['Finsso Total Received Amount', 'Finsso Received Amount from Dealer', 'Dealer Payment Amount'])),
+    prin: toNum_(rep.get(r, 'Principal Applied')),
+    int: toNum_(rep.get(r, 'Interest Applied')),
+    ren: toNum_(rep.get(r, 'Renewal Fee Applied')),
+    late: toNum_(rep.get(r, 'Late Fee Applied')),
+    pen: toNum_(rep.get(r, 'Penalty Fee Applied')),
+    extra: toNum_(pick_(rep, r, ['Extra Grace in Days', 'Extra Grace'])),
+    coll: toNum_(pick_(rep, r, ['Collection Fee Applied'])),
+    expColl: toNum_(pick_(rep, r, ['Expected Collection Fee'])),
+  })).filter(p => ids.has(p.id) && (p.date != null ? p.date <= A : (p.extra > 0 || p.expColl > 0)))   // undated rows: grace / collection-fee placeholders
+    .sort((a, b) => (a.date == null ? -Infinity : a.date) - (b.date == null ? -Infinity : b.date));
+
+  // blank Drawdown ID = all OPEN drawdowns of the dealer (closed ones dropped); a chosen ID is always shown
+  const all = loans.map(l => computeLoan_(l, pays.filter(p => p.id === l.id), A));
+  const results = onlyId ? all : all.filter(x => x.status !== 'Closed');
+  const keep = new Set(results.map(x => x.loan.id));
+  // placeholder = row set up before payment (grace and/or collection fee), nothing received or applied yet
+  const isPlaceholder = p => p.received <= 0.005 && p.prin + p.int + p.ren + p.late + p.pen + p.coll <= 0.005;
+  const shownPays = pays.filter(p => keep.has(p.id) && !isPlaceholder(p));
+  const graceGrants = pays.filter(p => keep.has(p.id) && p.extra > 0)
+    .map(p => ({ id: p.id, tag: p.tagLabel, days: p.extra, date: p.date }));
+  const sum = f => results.reduce((s, x) => s + f(x), 0);
+  return {
+    dealer, onlyId, asOf: A, generated: new Date(),
+    head: loans[0] || {},
+    loans: results,
+    tenures: [...new Set(results.map(x => x.loan.tenure))].sort((a, b) => a - b),
+    closedExcluded: all.length - results.length,
+    payments: shownPays,
+    graceGrants,
+    totals: {
+      principal: sum(x => x.loan.principal),
+      outstanding: sum(x => x.outstanding),
+      dueNow: sum(x => x.dueNow),
+      pastDue: sum(x => x.pastDue),
+      payoff: sum(x => x.payoff),
+      received: shownPays.reduce((s, p) => s + p.received, 0),
+    },
+  };
+}
+
+/**
+ * Pure: one loan as of day A. Mirrors the tracker formulas, with TODAY() replaced by A and
+ * only Repayment rows dated on/before A.
+ *
+ * Checkpoints are numbered k = 1..N, where N is maturity (N = 3 for 90-day, 6 for 180-day).
+ * The crediting date C is Day 1.
+ * D(k)   = Credit Date + 30k - 1 = last day of interest period k (Day 30k).
+ *          Renewals are due on D(k): R1 = C + 29 (Day 30), R2 = C + 59 (Day 60) ...
+ * matDue = PNCM + 30N, moved off Sat/Sun to Monday (maturity due date).
+ * Interest for a period = P x rate x days / 30, where days run from the end of the previous
+ * period to this period's due date (or the actual payment date if later). Days 1-30 are the
+ * upfront interest, so over the life of the loan this equals P x rate x (tenor days + 1) / 30.
+ */
+function computeLoan_(L, P, A) {
+  P = P.slice();
+  const K = L.principal, r = L.rate, p = L.pncm, G = CFG.GRACE_BUSINESS_DAYS;
+  const C = L.credit != null ? L.credit : p;      // crediting date = Day 1
+  const is90 = L.tenure === 90;
+  const N = is90 ? 3 : 6;
+  const dues = L.dues || {};
+  // due dates come from the Drawdown Tracker; computed only if a cell is blank
+  const matDue = dues.mat != null ? dues.mat : weekendToMonday_(p + 30 * N);
+  const D = k => (dues['r' + k] != null ? dues['r' + k] : C + CFG.RENEWAL_DAYS_AFTER_CREDIT + 30 * (k - 1));   // Day 30k
+  const DUE = k => (k === N ? matDue : D(k));
+  const END = k => (k === N ? matDue : D(k));     // scheduled end of interest period k
+  const T = k => 'renewal ' + k;
+  const tg = k => x => x.tag === T(k);
+  const isMat = x => x.tag === 'final repayment' || x.tag === 'partial repayment';
+  const sumP = (f, v) => P.reduce((s, x) => s + (f(x) ? v(x) : 0), 0);
+  const prinLE = (d, excl) => sumP(x => x.date <= d && (!excl || x.tag !== excl), x => x.prin);
+  const cover = (f, v, t) => {
+    const need = typeof t === 'function' ? t : () => t;     // t may depend on the payment date
+    let c = 0;
+    for (const x of P) if (f(x)) { c += v(x); if (x.date != null && c >= need(x.date) - 0.005) return x.date; }
+    return null;
+  };
+  const waive = d => d == null ? 0 : Math.max(0, ...P.filter(x => x.date === d).map(x => x.extra));
+  // Extra grace: on the row that cleared the period (old rule) OR on any row tagged with that
+  // period, e.g. a "Renewal 2" row with nothing applied (grace granted before payment)
+  const extTag = f => (f ? Math.max(0, ...P.filter(f).map(x => x.extra)) : 0);
+  const graceEnd = (due, d, f) => workday_(due, G + Math.max(waive(d), extTag(f)));
+  const r2 = x => Math.round(x * 100) / 100;
+
+  // date principal was fully repaid (early payoff), if any
+  let cum = 0, payoffDate = null;
+  for (const x of P) { cum += x.prin; if (cum >= K - 0.005) { payoffDate = x.date; break; } }
+
+  const paid = {}, amt = {};
+  // paid date for a checkpoint
+  const covered = (due, f, v, t) => {
+    if (A < due) return null;
+    if ((typeof t === 'function' ? t(due) : t) <= 0.005) return due;   // nothing billed for this period
+    const d = cover(f, v, t);
+    if (d != null) return d;
+    // Paid off BEFORE this checkpoint fell due: nothing was billed, so it is closed.
+    // A checkpoint already due at payoff stays open (and its fees keep running) until cleared.
+    return payoffDate != null && payoffDate < due ? payoffDate : null;
+  };
+  // Interest is paid oldest period first, whatever row it is entered on: a period closes on the first
+  // payment date where (a) its own renewal (+ 90-day minimum principal / maturity principal) on its tagged
+  // rows is covered, and (b) ALL interest paid so far covers the interest of every earlier period plus
+  // this period's interest accrued to that date.
+  const closeWhen = (due, ownF, ownV, ownNeed, prevInt, intTo) => {
+    if (A < due) return null;
+    if (ownNeed + intTo(due) <= 0.005) return due;          // nothing billed for this period
+    let own = 0, paidInt = 0;
+    for (const x of P) {
+      if (x.date == null) continue;
+      paidInt += x.int;
+      if (ownF(x)) own += ownV(x);
+      if (own >= ownNeed - 0.005 && paidInt >= prevInt + intTo(x.date) - 0.005) return x.date;
+    }
+    return payoffDate != null && payoffDate < due ? payoffDate : null;
+  };
+  const intBefore = k => { let t = 0; for (let j = 1; j < k; j++) t += amt['int' + j] || 0; return t; };
+  // start of interest period k = end of period k-1 (its due date, or its payment date if paid late).
+  // Period 1 starts at Day 30: Days 1-30 are covered by the upfront interest.
+  // Grace applies to interest too: a period paid within its grace (2 business days + Extra Grace) is
+  // treated as paid on its due date (no extra-day interest); after grace, interest counts every day
+  // from the due date. effEnd(k) = the date period k's interest runs to.
+  const fk = k => (k === N ? (x => x.tag === 'final repayment') : tg(k));
+  const effEnd = k => {
+    const due = END(k), pd = paid['R' + k];
+    if (pd != null) return pd <= graceEnd(due, pd, fk(k)) ? due : pd;
+    return A <= graceEnd(due, null, fk(k)) ? due : A;
+  };
+  const effDay = (k, d) => (d <= graceEnd(END(k), d, fk(k)) ? END(k) : d);   // for a payment on day d
+  const start = k => k === 1 ? D(1) : Math.max(END(k - 1), effEnd(k - 1));
+  const intBase = k => r * Math.max(0, K - prinLE(start(k)));
+  // 90-day minimum principal for R1/R2 (never more than what is still outstanding at that cycle)
+  const minPrin = k => (is90 && k <= 2) ? r2(Math.min(CFG.MIN_PRINCIPAL_90 * K, Math.max(0, K - prinLE(DUE(k), T(k))))) : 0;
+
+  const renewal = k => {
+    const due = DUE(k);
+    if (A < due) return 0;
+    const rate = k <= 2 ? 0.01 : 0.015;
+    const g = Math.max(0, K - prinLE(due, T(k)));
+    const o = k <= 2 ? sumP(x => x.tag === T(k) && x.date <= graceEnd(due, null, tg(k)), x => x.prin)
+      : Math.min(CFG.STEP_PRINCIPAL_180 * K, g);
+    const om = k <= 2 ? Math.max(o, minPrin(k)) : o;   // 90-day: 10% is required, not optional
+    const intb = k === 1 ? 0 : intBase(k);              // R1 on time = 0 extra days (upfront covers Day 1-30)
+    const t = rate * (g - om) + intb + om;
+    const d = t <= 0.005 ? null : cover(tg(k), x => x.ren + x.int + x.prin, t);
+    const prior = k === 4 ? [paid.P1] : k === 5 ? [paid.P1, paid.P2] : [];
+    const net = prior.every(v => v != null) && (d == null ? A <= graceEnd(due, null, tg(k)) : d <= graceEnd(due, d, tg(k)));
+    return r2(rate * (g - (net ? o : 0)));
+  };
+  // period in which an early payoff happened: its interest (actual days) is settled with the final payment
+  const kPay = payoffDate == null ? null : Array.from({ length: N - 1 }, (_, i) => i + 2).find(k => END(k) > payoffDate);
+  const idays = {};                                  // interest days billed per period (shown on the SOA)
+  const interest = k => {
+    if (kPay != null && k >= kPay) {
+      if (k !== N) { idays[k] = 0; return 0; }
+      const s0 = start(kPay);
+      idays[k] = Math.max(0, payoffDate - s0);
+      return r2(r * Math.max(0, K - prinLE(s0)) * idays[k] / 30);
+    }
+    const s = start(k);
+    let e = Math.max(END(k), effEnd(k));
+    if (payoffDate != null && payoffDate < e) e = Math.max(s, payoffDate);   // no interest after full payoff
+    idays[k] = Math.max(0, e - s);
+    return r2(r * Math.max(0, K - prinLE(s)) * idays[k] / 30);
+  };
+  const fee = (due, pd, perDay, f) => {
+    if (A < due) return 0;
+    const e = pd != null ? pd : A;
+    return e > graceEnd(due, pd, f) ? perDay * (e - due) : 0;
+  };
+
+  // ---- renewals (k = 1..N-1); 90-day R1/R2 also need the 10% principal to count as paid
+  for (let k = 1; k <= N - 1; k++) {
+    amt['ren' + k] = renewal(k);
+    amt['min' + k] = minPrin(k);
+    const withPrin = is90 && k <= 2;
+    // R period closes only when its renewal AND all interest accrued up to that payment date are paid
+    // (plus the 10% minimum principal on 90-day loans). Until then interest and the late fee keep running.
+    const sK = start(k), balK = Math.max(0, K - prinLE(sK));
+    const intTo = d => r * balK * Math.max(0, Math.max(END(k), effDay(k, d)) - sK) / 30;
+    paid['R' + k] = closeWhen(DUE(k), tg(k), x => x.ren + (withPrin ? x.prin : 0),
+      amt['ren' + k] + amt['min' + k], intBefore(k), intTo);
+    if (!is90 && k >= 3) {
+      const j = k - 2;
+      const step = Math.min(CFG.STEP_PRINCIPAL_180 * K, Math.max(0, K - prinLE(DUE(k), T(k))));
+      amt['prin' + j] = r2(step);
+      paid['P' + j] = covered(DUE(k), tg(k), x => x.prin, step);
+    }
+    amt['int' + k] = A < DUE(k) ? 0 : interest(k);   // R1 interest = days after Day 30 only
+  }
+  // ---- maturity
+  const p0 = sumP(x => x.tag === T(1) || x.tag === T(2), x => x.prin);
+  amt.prinM = r2(Math.max(0, (is90 ? 1 : CFG.MATURITY_SHARE_180) * K - p0));
+  const sM = start(N), balM = Math.max(0, K - prinLE(sM));
+  paid.M = closeWhen(matDue, isMat, x => x.prin, amt.prinM, intBefore(N),
+    d => r * balM * Math.max(0, Math.max(matDue, effDay(N, d)) - sM) / 30);
+  paid.MP = covered(matDue, isMat, x => x.prin, amt.prinM);        // penalty stops when principal is paid
+  paid['R' + N] = paid.M;
+  amt.intM = interest(N);
+
+  // ---- checkpoint line items (amount billed vs applied by tag)
+  const ap = (tagF, v) => sumP(tagF, v);
+  const item = (name, amount, applied, kind) => ({ name, amount: r2(amount), applied: r2(applied), kind });
+  const cpLabel = k => k === N ? 'Maturity' : (is90 || k <= 2) ? 'R' + k : `R${k}/P${k - 2}`;
+  const cps = [];
+  for (let k = 1; k <= N - 1; k++) {
+    const items = [item('Renewal fee', amt['ren' + k], ap(tg(k), x => x.ren), 'fee')];
+    const dd = idays[k] || 0;
+    items.push(item(k === 1 ? `Interest (${dd} day${dd === 1 ? '' : 's'} after R1 due date)` : `Interest (${dd} days)`, amt['int' + k], ap(tg(k), x => x.int), 'fee'));
+    if (is90) items.push(item('Principal (10% minimum)', amt['min' + k], ap(tg(k), x => x.prin), 'prin'));
+    items.push(item('Late fee', fee(DUE(k), paid['R' + k], CFG.LATE_FEE_PER_DAY, tg(k)), ap(tg(k), x => x.late), 'fee'));
+    const c = { cp: cpLabel(k), due: DUE(k), paidR: paid['R' + k], items, f: tg(k) };
+    if (!is90 && k >= 3) {
+      const j = k - 2;
+      items.push(item(`Principal (P${j}, 20%)`, amt['prin' + j], ap(tg(k), x => x.prin), 'prin'));
+      items.push(item('Penalty fee', fee(DUE(k), paid['P' + j], CFG.PENALTY_PER_DAY, tg(k)), ap(tg(k), x => x.pen), 'fee'));
+      c.paidP = paid['P' + j];
+    }
+    cps.push(c);
+  }
+  const finTag = x => x.tag === 'final repayment';
+  cps.push({ cp: 'Maturity', due: matDue, paidR: paid.M, paidP: paid.M, f: finTag, items: [
+    item(`Interest (${idays[N] || 0} days)`, amt.intM, ap(x => x.tag === 'final repayment', x => x.int), 'fee'),
+    item('Principal (balance)', amt.prinM, ap(isMat, x => x.prin), 'prin'),
+    // maturity gets the same 2-business-day grace (+ Extra Grace) as every other due date
+    item('Penalty fee', fee(matDue, paid.MP, CFG.PENALTY_PER_DAY, finTag), ap(finTag, x => x.pen), 'fee'),
+  ]});
+
+  // ---- collection fees: billed via "Expected Collection Fee" on a row tagged with the period
+  //      (Renewal k, or Final/Partial Repayment for maturity); anything else goes to "Other charges"
+  const cycleOf = x => {
+    const m = /^renewal ([1-5])$/.exec(x.tag);
+    if (m) return +m[1] <= N - 1 ? +m[1] : null;
+    return isMat(x) ? N : null;
+  };
+  for (let k = 1; k <= N; k++) {
+    const f = x => cycleOf(x) === k;
+    const billed = sumP(f, x => x.expColl), paidColl = sumP(f, x => x.coll);
+    if (billed > 0.005 || paidColl > 0.005) cps[k - 1].items.push(Object.assign(item('Collection fee', billed, paidColl, 'fee'), { charged: true }));
+  }
+  const otherRows = P.filter(x => cycleOf(x) == null && (x.expColl > 0.005 || x.coll > 0.005));
+  if (otherRows.length) {
+    const dated = otherRows.filter(x => x.date != null).map(x => x.date);
+    cps.push({ cp: 'Other charges', due: dated.length ? Math.min(...dated) : A, f: null, items: [
+      Object.assign(item('Collection fee', sumP(x => otherRows.includes(x), x => x.expColl), sumP(x => otherRows.includes(x), x => x.coll), 'fee'), { charged: true })] });
+  }
+
+  // ---- interest applied oldest period first (each period still shows as its own line)
+  const intItems = [];
+  cps.forEach(c => c.items.forEach(it => { if (it.name.startsWith('Interest')) intItems.push(it); }));
+  let poolInt = intItems.reduce((t, it) => t + it.applied, 0);
+  intItems.forEach(it => { const use = Math.min(it.amount, Math.max(0, poolInt)); it.applied = r2(use); poolInt -= use; });
+  if (poolInt > 0.005 && intItems.length) intItems[intItems.length - 1].applied = r2(intItems[intItems.length - 1].applied + poolInt);
+
+  // ---- balances as of A (only checkpoints already due)
+  const totalPrinPaid = sumP(() => true, x => x.prin);
+  const outstanding = r2(Math.max(0, K - totalPrinPaid));
+  let prinRoom = outstanding;                       // principal due can never exceed what's outstanding
+  const dueLines = [];
+  let dueNow = 0, pastDue = 0, feesDue = 0;
+  cps.forEach(c => {
+    const isDue = A >= c.due;
+    const ext = extTag(c.f);
+    const gEnd = graceEnd(c.due, null, c.f);
+    c.items.forEach(it => {
+      // a collection fee is payable as soon as it is entered, even if its period is not yet due
+      const itemDue = isDue || it.charged;
+      let bal = Math.max(0, it.amount - it.applied);
+      if (it.kind === 'prin') { bal = Math.min(bal, prinRoom); if (isDue) prinRoom -= bal; }
+      it.balance = r2(itemDue ? bal : 0);
+      if (itemDue && it.balance > 0.005) {
+        const late = isDue && A > gEnd;
+        dueLines.push({ cp: c.cp, due: c.due, name: it.name, amount: it.amount, applied: it.applied,
+          balance: it.balance, dpd: Math.max(0, A - c.due),
+          status: !isDue ? 'Due' : late ? 'Past due' : ext > 0 ? `In grace (extended to ${fmtDate_(gEnd, 'd-MMM')})` : 'In grace' });
+        dueNow += it.balance;
+        if (late) pastDue += it.balance;
+        if (it.kind !== 'prin') feesDue += it.balance;
+      }
+    });
+  });
+
+  // ---- accrued interest on the current (not yet due) period, for payoff
+  let accrued = 0;
+  for (let k = 1; k <= N && payoffDate == null; k++) {
+    if (A < END(k)) {
+      const s = start(k);
+      if (A > s) accrued = r * Math.max(0, K - prinLE(s)) * (A - s) / 30;
+      break;
+    }
+  }
+  accrued = r2(accrued);
+
+  // ---- previous checkpoint
+  const tagRows = k => k === N ? x => x.tag === 'final repayment' : tg(k);
+  let prev = null;
+  const prevK = Array.from({ length: N }, (_, i) => N - i).find(k => DUE(k) <= A);
+  if (prevK) {
+    const c = cps[prevK - 1];
+    const owed = c.items.reduce((t, it) => t + it.balance, 0);
+    const pd = Math.max(c.paidR || 0, c.paidP || 0);
+    prev = { cp: cpLabel(prevK), text: owed <= 0.005 && (c.paidR != null || c.paidP != null)
+      ? `${cpLabel(prevK)} settled ${fmtDate_(pd, 'd-MMM-yyyy')}`
+      : owed <= 0.005 ? `${cpLabel(prevK)} settled`
+      : `${cpLabel(prevK)} unpaid (PHP ${owed.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}) - see Amounts Due` };
+  }
+
+  // ---- next due: first upcoming checkpoint not already settled in advance, itemised
+  let next = null;
+  if (outstanding > 0.005) {
+    const skipped = [];
+    for (let k = 1; k <= N; k++) {
+      if (DUE(k) <= A) continue;
+      const f = tagRows(k);
+      const bal = outstanding;
+      const lines = [];
+      if (k < N) {
+        const rate = k <= 2 ? 0.01 : 0.015;
+        const step = is90 ? Math.min(CFG.MIN_PRINCIPAL_90 * K, bal)
+          : k >= 3 ? Math.min(CFG.STEP_PRINCIPAL_180 * K, bal) : 0;
+        lines.push({ name: is90 ? 'Renewal fee (1%, net of 10% principal)'
+          : k <= 2 ? 'Renewal fee (1% of principal)' : 'Renewal fee (1.5%, net of principal step)',
+          est: rate * (bal - step), paid: ap(f, x => x.ren) });
+        if (k >= 2) {
+          const s0 = start(k);
+          lines.push({ name: `Interest (${Math.max(0, END(k) - s0)} days)`, est: r * bal * Math.max(0, END(k) - s0) / 30, paid: ap(f, x => x.int) });
+        }
+        if (is90) lines.push({ name: 'Principal (10% minimum of original)', est: step, paid: ap(f, x => x.prin) });
+        else if (k >= 3) lines.push({ name: `Principal P${k - 2} (20% of original)`, est: step, paid: ap(f, x => x.prin) });
+      } else {
+        const s0 = start(N);
+        lines.push({ name: `Interest (${Math.max(0, matDue - s0)} days)`, est: r * bal * Math.max(0, matDue - s0) / 30, paid: ap(f, x => x.int) });
+        lines.push({ name: 'Principal (remaining balance)', est: bal, paid: 0 });
+      }
+      lines.forEach(l => { l.est = r2(l.est); l.paid = r2(Math.min(l.paid, l.est)); l.balance = r2(Math.max(0, l.est - l.paid)); });
+      const remaining = lines.reduce((t, l) => t + l.balance, 0);
+      if (remaining <= 0.005) { skipped.push(cpLabel(k)); continue; }   // already settled in advance
+      next = { cp: cpLabel(k), due: DUE(k), lines, total: r2(remaining),
+        note: skipped.length ? `${skipped.join(', ')} already settled in advance` : '' };
+      break;
+    }
+  }
+
+  const pastLines = dueLines.filter(l => l.status === 'Past due');
+  let status;
+  if (outstanding <= 0.005 && dueNow <= 0.005) status = 'Closed';
+  else if (pastLines.length) status = 'Overdue (' + [...new Set(pastLines.map(l => l.cp))].join(', ') + '; ' +
+    Math.max(...pastLines.map(l => l.dpd)) + ' DPD)';
+  else if (dueNow > 0.005) status = dueLines.some(l => l.status.startsWith('In grace (extended')) ? 'Due - extended grace' : 'Due - in grace';
+  else status = 'Current';
+
+  return {
+    loan: L, maturity: matDue, outstanding, dueNow: r2(dueNow), pastDue: r2(pastDue),
+    payoff: r2(outstanding + feesDue + accrued), accrued, dueLines, next, prev, status, checkpoints: cps, paid,
+  };
+}
+
+/** Pure: statement notes for the tenures shown on this SOA. */
+function scheduleNotes_(tenures) {
+  const t = tenures && tenures.length ? tenures : [CFG.DEFAULT_TENURE];
+  const both = t.length > 1;
+  const notes = [];
+  if (t.includes(90)) notes.push((both ? '90-day loans: ' : '') +
+    'A renewal fee of 1% and a minimum principal payment of 10% of the original principal are due 29 and 59 days after the crediting date (Day 30 and Day 60, counting the crediting date as Day 1), with interest due on Day 60. The remaining principal and final interest are due at maturity, 90 days from the PNCM date.');
+  notes.push('A maturity date that falls on a Saturday or Sunday moves to the following Monday.');
+  notes.push(`A grace period of ${CFG.GRACE_BUSINESS_DAYS} business days applies to every due date, including the maturity date. Beyond it, a late fee of PHP ${CFG.LATE_FEE_PER_DAY}/day applies to unpaid renewal fees, interest and minimum principal, and a penalty of PHP ${CFG.PENALTY_PER_DAY}/day to unpaid scheduled principal, counted from the due date.`);
+  notes.push('Collection fees, where charged, are listed under the billing period they relate to and are payable together with it.');
+  notes.push('A billing period is settled only when its renewal fee and interest are fully paid; until then, interest and the late fee continue to accrue. Penalty fees stop once the expected principal for that period is paid. This applies even if the loan principal is paid off later.');
+  notes.push('Payoff amount includes outstanding principal, unpaid charges and interest accrued to the statement date. Payments made after the statement date are not reflected.');
+  return notes;
+}
+
+// ---------------------------------------------------------------- helpers (pure)
+const MONTHS_ = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+const MON3_ = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** Any date-ish value -> integer day number (UTC days since epoch), or null. */
+function toDay_(v) {
+  if (v == null || v === '') return null;
+  if (Object.prototype.toString.call(v) === '[object Date]') {
+    if (isNaN(v)) return null;
+    return Math.round(Date.UTC(v.getFullYear(), v.getMonth(), v.getDate()) / 864e5);
+  }
+  if (typeof v === 'number') return Math.floor(v) - 25569;            // Sheets serial
+  const s = String(v).trim();
+  // BROWSER: the CSV feed delivers Sheets serials as text ("46319.62564"); in Apps Script they arrive as numbers
+  if (/^\d+(\.\d+)?$/.test(s)) { const n = parseFloat(s); return n > 20000 && n < 60000 ? Math.floor(n) - 25569 : null; }
+  let m = s.match(/^(\d{1,2})[-\s]([A-Za-z]{3})[A-Za-z]*[-\s,]+(\d{4})/);      // 25-Sep-2026
+  if (m && MONTHS_[m[2].toLowerCase()] != null) return Math.round(Date.UTC(+m[3], MONTHS_[m[2].toLowerCase()], +m[1]) / 864e5);
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);                              // 9/25/2026 15:00
+  if (m) return Math.round(Date.UTC(+m[3], +m[1] - 1, +m[2]) / 864e5);
+  m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);                                    // 2026-09-25
+  if (m) return Math.round(Date.UTC(+m[1], +m[2] - 1, +m[3]) / 864e5);
+  return null;
+}
+/** BROWSER: day number -> text for the patterns the statement uses (d-MMM-yyyy, d-MMM, yyyy-MM-dd). */
+function fmtDate_(d, pattern) {
+  const x = new Date(d * 864e5), dd = x.getUTCDate(), mm = x.getUTCMonth(), yy = x.getUTCFullYear();
+  if (pattern === 'yyyy-MM-dd') return yy + '-' + String(mm + 1).padStart(2, '0') + '-' + String(dd).padStart(2, '0');
+  if (pattern === 'd-MMM') return dd + '-' + MON3_[mm];
+  return dd + '-' + MON3_[mm] + '-' + yy;
+}
+function toNum_(v) {
+  if (typeof v === 'number') return v;
+  const n = parseFloat(String(v || '').replace(/[^0-9.\-]/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+function toRate_(v) {
+  if (typeof v === 'number') return v > 0.5 ? v / 100 : v;
+  const s = String(v || '');
+  const n = toNum_(s);
+  return s.includes('%') || n > 0.5 ? n / 100 : n;
+}
+/** Adds n business days (Mon-Fri) to day number d. */
+function workday_(d, n) {
+  let x = d, left = Math.max(0, Math.round(n));
+  while (left > 0) { x++; const wd = new Date(x * 864e5).getUTCDay(); if (wd !== 0 && wd !== 6) left--; }
+  return x;
+}
+/** Saturday -> Monday (+2), Sunday -> Monday (+1); weekdays unchanged. Same rule as Drawdown col BP. */
+function weekendToMonday_(d) {
+  const wd = new Date(d * 864e5).getUTCDay();
+  return wd === 6 ? d + 2 : wd === 0 ? d + 1 : d;
+}
+/** First non-blank value among several possible header names (tracker headers vary). */
+function pick_(tbl, row, names) {
+  for (const n of names) if (tbl.has(n) && tbl.get(row, n) !== '') return tbl.get(row, n);
+  return '';
+}
+if (typeof module !== 'undefined') module.exports = { CFG, makeTable_, buildStatement_, computeLoan_, scheduleNotes_, toDay_, fmtDate_, toNum_, toRate_, toTenure_ };
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   SOA GENERATOR — page logic (data load, statement document, preview, PDF, Drive repository)
+   ══════════════════════════════════════════════════════════════════════ */
+
+// Paste the Apps Script web app URL here after deploying SOA_WebApp.gs (see the setup notes).
+var SOA_API = 'https://script.google.com/macros/s/AKfycbyhDt6CG98tC4YuFh3RLOIi5pz-TbDtV_tEVHpQ3vz4ws7kLYe56L3DzKxFpcVrbTnl/exec';
+
+var DATA = null;                       // { dis, drw, rep } tables
+var DEALERS = [];                      // [{ name, loans:[{id, unit}] }]
+var G = { dealer: '', loan: '', asOf: '', prepared: '', note: '', busy: false };
+var REPO = { rows: null, folderUrl: '', err: '', loading: false, table: null };
+
+/* ── formatting ── */
+function mny(n) { return Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function dtx(d) { return d == null ? '' : fmtDate_(d, 'd-MMM-yyyy'); }
+function manilaDay(date) {           // today's calendar date in Manila as yyyy-mm-dd
+  const p = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Manila', year: 'numeric', month: '2-digit', day: '2-digit' }).format(date || new Date());
+  return p;
+}
+function manilaStamp(date) {         // 5-Nov-2026 3:42 PM
+  const o = { timeZone: 'Asia/Manila' };
+  const d = new Intl.DateTimeFormat('en-GB', Object.assign({ day: 'numeric', month: 'short', year: 'numeric' }, o)).format(date).replace(/ /g, '-');
+  const t = new Intl.DateTimeFormat('en-US', Object.assign({ hour: 'numeric', minute: '2-digit', hour12: true }, o)).format(date);
+  return d + ' ' + t;
+}
+
+/* ══════════════ data ══════════════ */
+async function loadAll() {
+  const [dis, drw, rep] = await Promise.all([fetchCSV('disbursalv3.csv'), fetchCSV('drawdownv3.csv'), fetchCSV('repaymentv3.csv', true)]);
+  DATA = { dis: makeTable_(dis), drw: makeTable_(drw), rep: makeTable_(rep || [['Drawdown ID']]) };
+  const by = {};
+  DATA.dis.rows.forEach(r => {
+    const id = String(DATA.dis.get(r, 'Drawdown ID') || '').trim(), dn = String(DATA.dis.get(r, 'Dealership Name') || '').trim();
+    if (!id || !dn) return;
+    if (String(DATA.dis.get(r, 'Transaction Router')).trim().toLowerCase() === 'cancelled') return;
+    if (toDay_(DATA.dis.get(r, 'Credit Date to Dealer Bank Account')) == null) return;     // not disbursed yet
+    (by[dn] = by[dn] || []).push({ id, unit: [DATA.dis.get(r, 'Year Model'), DATA.dis.get(r, 'Make Model Variant')].filter(Boolean).join(' '), plate: String(DATA.dis.get(r, 'Plate Number') || '').trim() });
+  });
+  DEALERS = Object.keys(by).sort((a, b) => a.localeCompare(b)).map(n => ({ name: n, loans: by[n] }));
+  G.asOf = manilaDay(new Date());
+  G.prepared = (ME && ME.name) || '';
+}
+
+/* ══════════════ statement → document blocks (shared by preview and PDF) ══════════════ */
+function buildDoc_(st, info) {
+  const B = [], h = st.head, t = st.totals;
+  B.push({ t: 'head', company: info.company || CFG.COMPANY_NAME, address: info.address || CFG.COMPANY_ADDRESS, title: 'STATEMENT OF ACCOUNT' });
+  B.push({ t: 'meta', rows: [
+    ['Dealership', st.dealer, 'As of', dtx(st.asOf)],
+    ['Dealer / Borrower', h.dealerName || '', 'Date generated', manilaStamp(st.generated)],
+    ['Dealer ID', h.dealerId || '', 'Credit Line ID', h.creditLine || ''],
+    ['Type of Financing', h.financing || '', 'Loans included', String(st.loans.length)],
+    ['SOA Reference No.', info.ref || '', st.onlyId ? 'Drawdown' : 'Coverage', st.onlyId || 'All open drawdowns'],
+  ] });
+  B.push({ t: 'section', title: 'ACCOUNT SUMMARY' });
+  B.push({ t: 'summary', rows: [
+    ['Original principal', t.principal], ['Outstanding principal', t.outstanding],
+    ['Total amount due as of statement date', t.dueNow, true], ['   of which past due (beyond grace)', t.pastDue],
+    ['Payoff amount if fully settled on statement date', t.payoff], ['Total payments received to date', t.received],
+  ] });
+  B.push({ t: 'section', title: 'LOANS' });
+  B.push({ t: 'table', headers: ['Drawdown ID', 'Unit / Plate', 'Credit Date (Day 1)', 'Maturity (Tenure)', 'Original Principal', 'Outstanding Principal', 'Amount Due', 'Status'],
+    money: [4, 5, 6], rows: st.loans.map(x => [x.loan.id, [x.loan.unit, x.loan.plate].filter(Boolean).join(' / '), dtx(x.loan.credit),
+      dtx(x.maturity) + ' (' + x.loan.tenure + 'd)', x.loan.principal, x.outstanding, x.dueNow, x.status]) });
+
+  B.push({ t: 'section', title: 'AMOUNTS DUE AS OF ' + dtx(st.asOf).toUpperCase() });
+  const dl = [];
+  st.loans.forEach(x => x.dueLines.forEach(l => dl.push([x.loan.id, l.cp, dtx(l.due), l.name, l.amount, l.applied, l.balance, l.status + (l.dpd ? ' (' + l.dpd + ' DPD)' : '')])));
+  if (dl.length) {
+    dl.push(['', '', '', 'TOTAL AMOUNT DUE', '', '', t.dueNow, '']);
+    B.push({ t: 'table', headers: ['Drawdown ID', 'Checkpoint', 'Due Date', 'Particulars', 'Amount', 'Paid', 'Balance', 'Status'], money: [4, 5, 6], rows: dl, boldRows: [dl.length - 1] });
+  } else B.push({ t: 'note', text: 'No amounts due as of the statement date.', italic: true });
+
+  const nd = st.loans.filter(x => x.next || x.prev);
+  if (nd.length) {
+    B.push({ t: 'section', title: 'NEXT DUE (ESTIMATED IF PAID ON TIME)' });
+    const rows = [], bold = [];
+    nd.forEach(x => {
+      const notes = [x.prev ? 'Previous: ' + x.prev.text : '', x.next && x.next.note].filter(Boolean).join('; ');
+      if (!x.next) { rows.push([x.loan.id, '-', '', 'No further checkpoints', '', '', '', notes]); return; }
+      x.next.lines.forEach((l, i) => rows.push([i ? '' : x.loan.id, i ? '' : x.next.cp, i ? '' : dtx(x.next.due), l.name, l.est, l.paid, l.balance, i ? '' : notes]));
+      bold.push(rows.length); rows.push(['', '', '', 'Total ' + x.next.cp, '', '', x.next.total, '']);
+    });
+    B.push({ t: 'table', headers: ['Drawdown ID', 'Checkpoint', 'Due Date', 'Particulars', 'Est. Amount', 'Paid in Advance', 'Est. Balance', 'Notes'], money: [4, 5, 6], rows, boldRows: bold });
+  }
+
+  B.push({ t: 'section', title: 'PAYMENTS RECEIVED (UP TO STATEMENT DATE)' });
+  if (st.payments.length) B.push({ t: 'table', headers: ['Payment Date', 'Drawdown ID / Type / Ref', 'Received', 'Principal', 'Interest', 'Renewal', 'Late + Penalty', 'Collection Fee'], money: [2, 3, 4, 5, 6, 7],
+    rows: st.payments.map(p => [dtx(p.date), [p.id + ' / ' + p.tagLabel, p.repId].filter(Boolean).join('\n'), p.received, p.prin, p.int, p.ren, p.late + p.pen, p.coll]) });
+  else B.push({ t: 'note', text: 'No payments recorded up to the statement date.', italic: true });
+
+  if (st.graceGrants.length) {
+    B.push({ t: 'section', title: 'GRACE EXTENSIONS GRANTED' });
+    B.push({ t: 'table', headers: ['Recorded', 'Drawdown ID', 'Period', 'Extra Business Days'], money: [], rows: st.graceGrants.map(g => [dtx(g.date), g.id, g.tag, String(g.days)]) });
+  }
+
+  B.push({ t: 'section', title: 'NOTES' });
+  scheduleNotes_(st.tenures).forEach(n => B.push({ t: 'note', text: n }));
+  B.push({ t: 'pay', title: CFG.PAYMENT_TITLE, rows: CFG.PAYMENT_DETAILS });
+  B.push({ t: 'note', text: 'Please indicate the Drawdown ID(s) and SOA Reference No. when remitting, and send proof of payment to your account officer.', italic: true });
+  if (info.payInstr) B.push({ t: 'note', text: String(info.payInstr), bold: true });
+  if (info.preparedBy) B.push({ t: 'note', text: 'Prepared by: ' + info.preparedBy });
+  B.push({ t: 'note', text: 'This is a system-generated statement. Please report any discrepancy within 7 days of receipt.', italic: true, small: true });
+  return B;
+}
+
+/* ══════════════ HTML preview ══════════════ */
+function docHtml_(B) {
+  const cell = (v, money) => money ? (v === '' || v == null ? '' : mny(v)) : esc(v).replace(/\n/g, '<br>');
+  return '<div class="soa-doc">' + B.map(b => {
+    if (b.t === 'head') return '<div class="sd-co">' + esc(b.company) + '</div>' + (b.address ? '<div class="sd-ad">' + esc(b.address) + '</div>' : '') + '<div class="sd-ti">' + esc(b.title) + '</div>';
+    if (b.t === 'meta') return '<table class="sd-meta">' + b.rows.map(r => '<tr><th>' + esc(r[0]) + '</th><td>' + esc(r[1]) + '</td><th>' + esc(r[2]) + '</th><td>' + esc(r[3]) + '</td></tr>').join('') + '</table>';
+    if (b.t === 'section') return '<div class="sd-sec">' + esc(b.title) + '</div>';
+    if (b.t === 'summary') return '<table class="sd-sum">' + b.rows.map(r => '<tr class="' + (r[2] ? 'hl' : '') + '"><td>' + esc(r[0]).replace(/ /g, '&nbsp;') + '</td><td class="m">' + mny(r[1]) + '</td></tr>').join('') + '</table>';
+    if (b.t === 'table') return '<div class="sd-tw"><table class="sd-tbl"><thead><tr>' + b.headers.map((h, i) => '<th class="' + (b.money.indexOf(i) >= 0 ? 'm' : '') + '">' + esc(h) + '</th>').join('') + '</tr></thead><tbody>' +
+      b.rows.map((r, ri) => '<tr class="' + ((b.boldRows || []).indexOf(ri) >= 0 ? 'bd' : '') + '">' + r.map((v, i) => '<td class="' + (b.money.indexOf(i) >= 0 ? 'm' : '') + '">' + cell(v, b.money.indexOf(i) >= 0) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>';
+    if (b.t === 'note') return '<p class="sd-note' + (b.italic ? ' it' : '') + (b.bold ? ' bd' : '') + (b.small ? ' sm' : '') + '">' + esc(b.text) + '</p>';
+    if (b.t === 'pay') return '<div class="sd-pay"><div class="sd-payh">' + esc(b.title) + '</div>' + b.rows.map(r => '<div class="sd-payr"><b>' + esc(r[0]) + '</b><span>' + esc(r[1]) + '</span></div>').join('') + '</div>';
+    return '';
+  }).join('') + '</div>';
+}
+
+/* ══════════════ PDF (jsPDF + autoTable) ══════════════ */
+function docPdf_(B, ref) {
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+  const PW = pdf.internal.pageSize.getWidth(), PH = pdf.internal.pageSize.getHeight(), M = 36, W = PW - 2 * M;
+  const NAVY = [31, 56, 100], LIGHT = [232, 238, 247], GREY = [191, 191, 191];
+  let y = M;
+  const need = h => { if (y + h > PH - M - 18) { pdf.addPage(); y = M; } };
+  const text = (s, o) => {
+    o = o || {};
+    pdf.setFont('helvetica', o.bold && o.italic ? 'bolditalic' : o.bold ? 'bold' : o.italic ? 'italic' : 'normal');
+    pdf.setFontSize(o.size || 8.5); pdf.setTextColor.apply(pdf, o.color || [0, 0, 0]);
+    const lines = pdf.splitTextToSize(String(s), W), lh = (o.size || 8.5) * 1.3;
+    need(lines.length * lh);
+    lines.forEach(l => { pdf.text(l, M, y + (o.size || 8.5)); y += lh; });
+  };
+  const money = v => (v === '' || v == null ? '' : mny(v));
+  const grid = (head, body, o) => {
+    o = o || {};
+    const mset = new Set(o.money || []);
+    const colStyles = {}; (o.money || []).forEach(i => { colStyles[i] = { halign: 'right' }; });
+    pdf.autoTable({
+      startY: y, margin: { left: M, right: M, bottom: M + 18 }, head: head ? [head] : undefined, body,
+      theme: 'grid', styles: { font: 'helvetica', fontSize: o.fs || 7.5, cellPadding: 3, lineColor: GREY, lineWidth: o.noLine ? 0 : 0.5, textColor: [0, 0, 0], overflow: 'linebreak', valign: 'top' },
+      headStyles: { fillColor: LIGHT, textColor: [0, 0, 0], fontStyle: 'bold', valign: 'middle' },
+      columnStyles: Object.assign(colStyles, o.cols || {}),
+      didParseCell: d => {
+        if (d.section === 'head' && mset.has(d.column.index)) d.cell.styles.halign = 'right';
+        if (d.section === 'body' && o.bold && o.bold.indexOf(d.row.index) >= 0) { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = [247, 247, 247]; }
+        if (d.section === 'body' && o.hl && o.hl.indexOf(d.row.index) >= 0) { d.cell.styles.fontStyle = 'bold'; d.cell.styles.fillColor = [255, 242, 204]; }
+      },
+    });
+    y = pdf.lastAutoTable.finalY + 4;
+  };
+  B.forEach(b => {
+    if (b.t === 'head') {
+      text(b.company, { bold: true, size: 15, color: NAVY });
+      if (b.address) text(b.address, { size: 8.5, color: [85, 85, 85] });
+      y += 2; text(b.title, { bold: true, size: 13 }); y += 4;
+    } else if (b.t === 'meta') {
+      pdf.autoTable({ startY: y, margin: { left: M, right: M }, body: b.rows, theme: 'plain',
+        styles: { font: 'helvetica', fontSize: 8.5, cellPadding: 2.5, valign: 'middle' },
+        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 100 }, 1: { cellWidth: 150 }, 2: { fontStyle: 'bold', cellWidth: 90 }, 3: { cellWidth: W - 340 } } });
+      y = pdf.lastAutoTable.finalY + 4;
+    } else if (b.t === 'section') {
+      need(60); y += 6;
+      pdf.setFillColor.apply(pdf, NAVY); pdf.rect(M, y, W, 15, 'F');
+      pdf.setFont('helvetica', 'bold'); pdf.setFontSize(8.5); pdf.setTextColor(255, 255, 255); pdf.text(b.title, M + 4, y + 10.5);
+      y += 19; pdf.setTextColor(0, 0, 0);
+    } else if (b.t === 'summary') {
+      grid(null, b.rows.map(r => [r[0], money(r[1])]), { fs: 8.5, money: [1], hl: b.rows.map((r, i) => r[2] ? i : -1).filter(i => i >= 0), cols: { 0: { cellWidth: W * 0.65 } } });
+    } else if (b.t === 'table') {
+      grid(b.headers, b.rows.map(r => r.map((v, i) => b.money.indexOf(i) >= 0 ? money(v) : String(v == null ? '' : v))), { money: b.money, bold: b.boldRows });
+    } else if (b.t === 'note') {
+      text(b.text, { italic: b.italic, bold: b.bold, size: b.small ? 7 : 8, color: b.small ? [119, 119, 119] : [0, 0, 0] }); y += 2;
+    } else if (b.t === 'pay') {
+      need(90); y += 4;
+      pdf.autoTable({ startY: y, margin: { left: M, right: M }, head: [[{ content: b.title, colSpan: 2 }]], body: b.rows, theme: 'grid',
+        styles: { font: 'helvetica', fontSize: 8, cellPadding: 3, lineColor: GREY, lineWidth: 0.5, textColor: [0, 0, 0] },
+        headStyles: { fillColor: LIGHT, textColor: [0, 0, 0], fontStyle: 'bold' }, columnStyles: { 0: { fontStyle: 'bold', cellWidth: 120 } } });
+      y = pdf.lastAutoTable.finalY + 6;
+    }
+  });
+  const n = pdf.internal.getNumberOfPages();
+  for (let i = 1; i <= n; i++) {
+    pdf.setPage(i); pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7); pdf.setTextColor(119, 119, 119);
+    pdf.text('Page ' + i + ' of ' + n, PW / 2, PH - 20, { align: 'center' });
+    if (ref) pdf.text(ref, M, PH - 20);
+  }
+  return pdf;
+}
+function pdfName_(ref, st) { return (ref + ' - ' + st.dealer + (st.onlyId ? ' - ' + st.onlyId : '') + ' - as of ' + fmtDate_(st.asOf, 'yyyy-MM-dd')).replace(/[\\/:*?"<>|]/g, ''); }
+
+/* ══════════════ web app (Drive + SOA Repository sheet) ══════════════ */
+async function freshToken() {
+  const exp = t => { const j = t && _decodeJwt(t); return j && j.exp ? j.exp * 1000 : 0; };
+  if (_idToken && exp(_idToken) - Date.now() > 120000) return _idToken;
+  const before = _idToken;
+  try { google.accounts.id.prompt(); } catch (e) {}
+  for (let i = 0; i < 40; i++) { await new Promise(r => setTimeout(r, 250)); if (_idToken && _idToken !== before && exp(_idToken) - Date.now() > 120000) return _idToken; }
+  throw new Error('Your Google sign-in has expired. Reload the page and sign in again.');
+}
+async function soaApi(action, payload) {
+  if (!SOA_API) throw new Error('The Drive connection is not set up yet (SOA_API is empty).');
+  const token = await freshToken();
+  const r = await fetch(SOA_API, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action, idToken: token }, payload || {})) });
+  let j; try { j = await r.json(); } catch (e) { throw new Error('The Drive service returned an unexpected response (HTTP ' + r.status + ').'); }
+  if (!j.ok) throw new Error(j.error || 'The Drive service reported an error.');
+  return j;
+}
+
+/* ══════════════ UI ══════════════ */
+function currentStatement() {
+  if (!DATA || !G.dealer) return null;
+  const asOf = toDay_(G.asOf);
+  if (asOf == null) return { err: 'Enter a valid as-of date.' };
+  const st = buildStatement_(DATA, G.dealer, G.loan, asOf);
+  if (!st.loans.length) return { err: G.loan ? 'That drawdown is not disbursed, is cancelled, or was booked after the as-of date.' : 'No open drawdowns for ' + G.dealer + ' as of the selected date' + (st.closedExcluded ? ' (' + st.closedExcluded + ' closed).' : '.') };
+  return { st };
+}
+function infoFor(ref) { return { company: CFG.COMPANY_NAME, address: CFG.COMPANY_ADDRESS, payInstr: G.note.trim(), preparedBy: G.prepared.trim(), ref }; }
+
+function genTabHtml() {
+  const dl = DEALERS.map(d => '<option value="' + esc(d.name) + '"></option>').join('');
+  const d = DEALERS.find(x => x.name === G.dealer);
+  const loanOpts = '<option value="">All open drawdowns</option>' + (d ? d.loans.map(l => '<option value="' + esc(l.id) + '"' + (G.loan === l.id ? ' selected' : '') + '>' + esc(l.id + (l.unit ? ' · ' + l.unit : '') + (l.plate ? ' · ' + l.plate : '')) + '</option>').join('') : '');
+  return '<div class="card soa-form"><div class="sf-grid">' +
+    '<label>Dealer<input id="sf-dealer" list="sf-dealers" placeholder="Start typing a dealership name…" value="' + esc(G.dealer) + '" autocomplete="off"><datalist id="sf-dealers">' + dl + '</datalist></label>' +
+    '<label>Drawdown<select id="sf-loan"' + (d ? '' : ' disabled') + '>' + loanOpts + '</select></label>' +
+    '<label>As-of date<input id="sf-asof" type="date" value="' + esc(G.asOf) + '"></label>' +
+    '<label>Prepared by<input id="sf-prep" type="text" value="' + esc(G.prepared) + '"></label>' +
+    '<label class="wide">Additional payment note (optional, printed in bold)<input id="sf-note" type="text" value="' + esc(G.note) + '"></label></div>' +
+    '<div class="sf-act"><button class="btn" id="sf-dl" disabled>Download PDF</button><button class="btn pri" id="sf-save" disabled>Generate PDF &amp; save to Drive</button>' +
+    '<span class="small muted" id="sf-hint">' + (SOA_API ? 'Saving gives the SOA a reference number, stores the PDF in the shared Drive folder and logs it in the Repository tab.' : 'Drive saving is not connected yet — Download PDF still works (the reference will read DRAFT).') + '</span></div></div>' +
+    '<div id="sf-prev"></div>';
+}
+function paintPreview() {
+  const host = document.getElementById('sf-prev'); if (!host) return;
+  const r = currentStatement();
+  const dlb = document.getElementById('sf-dl'), sv = document.getElementById('sf-save');
+  if (!r) { host.innerHTML = '<div class="card empty">Pick a dealer to preview its Statement of Account.</div>'; dlb.disabled = sv.disabled = true; return; }
+  if (r.err) { host.innerHTML = '<div class="card empty">' + esc(r.err) + '</div>'; dlb.disabled = sv.disabled = true; return; }
+  host.innerHTML = '<div class="card soa-paper">' + docHtml_(buildDoc_(r.st, infoFor('DRAFT - not saved'))) + '</div>';
+  dlb.disabled = G.busy; sv.disabled = G.busy || !SOA_API;
+}
+function wireGen() {
+  const q = id => document.getElementById(id);
+  let tm = null; const soon = () => { clearTimeout(tm); tm = setTimeout(paintPreview, 200); };
+  q('sf-dealer').addEventListener('input', e => {
+    const v = e.target.value.trim(), hit = DEALERS.find(d => d.name.toLowerCase() === v.toLowerCase());
+    if (hit && hit.name !== G.dealer) { G.dealer = hit.name; G.loan = ''; render(); }
+    else if (!hit && G.dealer) { G.dealer = ''; G.loan = ''; const s = q('sf-loan'); s.innerHTML = '<option value="">All open drawdowns</option>'; s.disabled = true; paintPreview(); }
+  });
+  q('sf-loan').addEventListener('change', e => { G.loan = e.target.value; paintPreview(); });
+  q('sf-asof').addEventListener('change', e => { G.asOf = e.target.value; paintPreview(); });
+  q('sf-prep').addEventListener('input', e => { G.prepared = e.target.value; soon(); });
+  q('sf-note').addEventListener('input', e => { G.note = e.target.value; soon(); });
+  q('sf-dl').addEventListener('click', () => {
+    const r = currentStatement(); if (!r || !r.st) return;
+    try { const pdf = docPdf_(buildDoc_(r.st, infoFor('DRAFT - not saved')), 'DRAFT - not saved'); pdf.save(pdfName_('DRAFT', r.st) + '.pdf'); }
+    catch (e) { toast('Could not build the PDF: ' + e.message, true); }
+  });
+  q('sf-save').addEventListener('click', saveToDrive);
+  paintPreview();
+}
+async function saveToDrive() {
+  const r = currentStatement(); if (!r || !r.st || G.busy) return;
+  const st = r.st, btn = document.getElementById('sf-save'), dlb = document.getElementById('sf-dl');
+  G.busy = true; btn.disabled = dlb.disabled = true; btn.textContent = 'Reserving reference…';
+  try {
+    const t = st.totals, ids = st.onlyId || st.loans.map(x => x.loan.id).join(', ');
+    const rs = await soaApi('reserve', { dealer: st.dealer, dealerId: st.head.dealerId || '', ids, asOf: fmtDate_(st.asOf, 'yyyy-MM-dd'), loans: st.loans.length,
+      outstanding: t.outstanding, dueNow: t.dueNow, pastDue: t.pastDue, payoff: t.payoff });
+    btn.textContent = 'Building PDF…';
+    st.generated = new Date();
+    const name = pdfName_(rs.ref, st), pdf = docPdf_(buildDoc_(st, infoFor(rs.ref)), rs.ref);
+    const b64 = pdf.output('datauristring').split(',')[1];
+    btn.textContent = 'Saving to Drive…';
+    const sv = await soaApi('save', { ref: rs.ref, name, pdf: b64 });
+    REPO.rows = null;
+    openSheet('<h3>' + esc(rs.ref) + ' saved</h3><div class="sub">' + esc(st.dealer) + (st.onlyId ? ' · ' + esc(st.onlyId) : '') + ' · as of ' + dtx(st.asOf) + '</div>' +
+      '<p style="margin:12px 0">The PDF is in the shared Drive folder and logged in the Repository tab.</p>' +
+      '<div class="stickyact" style="position:static;display:flex;gap:8px;flex-wrap:wrap"><a class="btn pri" href="' + esc(sv.url) + '" target="_blank" rel="noopener">Open PDF</a>' +
+      '<button class="btn" data-act="repo">View repository</button><button class="btn ghost" data-act="closesheet">Close</button></div>');
+    toast(rs.ref + ' saved to Drive');
+  } catch (e) {
+    toast(e.message, true);
+  } finally {
+    G.busy = false; btn.textContent = 'Generate PDF & save to Drive'; paintPreview();
+  }
+}
+
+/* ── Repository tab ── */
+function repoTabHtml() {
+  if (!SOA_API) return '<div class="card empty">The Repository reads the SOA Repository sheet through the Apps Script web app, which isn’t connected yet.<br><span class="small">Deploy <b>SOA_WebApp.gs</b> and paste its URL into <b>SOA_API</b> at the top of this page’s script.</span></div>';
+  return '<div class="toolbar"><button class="btn sm" data-act="repo-refresh">Refresh</button><a class="btn sm" id="repo-folder" href="#" target="_blank" rel="noopener" hidden>Open Drive folder</a><span class="small muted" id="repo-note"></span></div><div id="repo-tbl"></div>';
+}
+async function loadRepo(force) {
+  const tbl = document.getElementById('repo-tbl'); if (!tbl) return;
+  if (REPO.rows && !force) return paintRepo();
+  tbl.innerHTML = '<div class="loading"><span class="spin"></span>Loading the SOA repository…</div>';
+  try {
+    const j = await soaApi('list');
+    REPO.rows = (j.rows || []).map(r => Object.assign({}, r, { at: r.at ? new Date(r.at) : null, asOfD: r.asOf ? new Date(r.asOf + 'T00:00:00') : null }));
+    REPO.folderUrl = j.folderUrl || ''; REPO.err = '';
+  } catch (e) { REPO.err = e.message; REPO.rows = null; }
+  paintRepo();
+}
+function paintRepo() {
+  const tbl = document.getElementById('repo-tbl'); if (!tbl) return;
+  if (REPO.err) { tbl.innerHTML = '<div class="card empty">Could not load the repository: ' + esc(REPO.err) + '<br><br><button class="btn" data-act="repo-refresh">Try again</button></div>'; return; }
+  const f = document.getElementById('repo-folder'); if (f && REPO.folderUrl) { f.href = REPO.folderUrl; f.hidden = false; }
+  const note = document.getElementById('repo-note'); if (note) note.textContent = REPO.rows.length.toLocaleString() + ' statements · newest first';
+  const dt = d => d ? fmtD(d) + ' ' + new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: '2-digit', hour12: true }).format(d) : '';
+  REPO.table = makeTable(tbl, [
+    { id: 'ref', label: 'SOA Ref No.', val: r => r.ref, fz: true },
+    { id: 'at', label: 'Generated', val: r => r.at, type: 'date', txt: r => dt(r.at) },
+    { id: 'by', label: 'Generated by', val: r => r.by || '' },
+    { id: 'dl', label: 'Dealership', val: r => r.dealer || '' },
+    { id: 'di', label: 'Dealer ID', val: r => r.dealerId || '' },
+    { id: 'ids', label: 'Drawdown ID(s)', val: r => r.ids || '' },
+    { id: 'ao', label: 'As-of', val: r => r.asOfD, type: 'date' },
+    { id: 'ln', label: 'Loans', val: r => r.loans, type: 'num' },
+    { id: 'os', label: 'Outstanding', val: r => r.outstanding, type: 'num', txt: r => mny(r.outstanding) },
+    { id: 'du', label: 'Amount due', val: r => r.dueNow, type: 'num', txt: r => mny(r.dueNow) },
+    { id: 'pd', label: 'Past due', val: r => r.pastDue, type: 'num', txt: r => mny(r.pastDue) },
+    { id: 'po', label: 'Payoff', val: r => r.payoff, type: 'num', txt: r => mny(r.payoff) },
+    { id: 'pdf', label: 'PDF', val: r => r.url ? 'Saved' : 'Pending', html: r => r.url ? '<a href="' + esc(r.url) + '" target="_blank" rel="noopener" style="color:var(--primary);font-weight:700">Open PDF</a>' : '<span class="pill t-amber">Pending</span>' },
+  ], REPO.rows, { sort: { id: 'at', dir: -1 }, csv: 'soa-repository', maxH: 'calc(100vh - 260px)' });
+}
+
+/* ── shell ── */
+function render() {
+  const host = document.getElementById('view'); if (!host || !DATA) return;
+  if (!S.tab || (S.tab !== 'gen' && S.tab !== 'repo')) S.tab = 'gen';
+  host.innerHTML = '<div class="hero"><div><h1>SOA Generator</h1><div class="sub">Statements of Account for the v3 (180/90-day) loans · ' + numS(DEALERS.length) + ' dealers · data as of ' + fmtD(TODAY) + '</div></div></div>' +
+    '<div class="tabs" id="tabs">' + [['gen', 'Generate SOA'], ['repo', 'Repository']].map(t => '<button data-act="tab" data-t="' + t[0] + '" class="' + (S.tab === t[0] ? 'on' : '') + '">' + t[1] + '</button>').join('') + '</div>' +
+    '<div id="tabbody">' + (S.tab === 'gen' ? genTabHtml() : repoTabHtml()) + '</div>';
+  if (S.tab === 'gen') wireGen(); else if (SOA_API) loadRepo(false);
+}
+function numS(n) { return Math.round(n || 0).toLocaleString('en-US'); }
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if (!t) return; const a = t.dataset.act;
+  if (a === 'tab') { S.tab = t.dataset.t; render(); window.scrollTo(0, 0); }
+  else if (a === 'closesheet') closeSheet();
+  else if (a === 'repo') { closeSheet(); S.tab = 'repo'; REPO.rows = null; render(); }
+  else if (a === 'repo-refresh') loadRepo(true);
+});
+
+document.getElementById('theme-btn').addEventListener('click', () => { const r = document.documentElement; const cur = r.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); r.dataset.theme = cur === 'dark' ? 'light' : 'dark'; });
+var ALLOWLIST = null;
+async function _loadAllowlist() {
+  if (ALLOWLIST !== null) return ALLOWLIST;
+  for (let a = 0; a < 3; a++) {
+    if (a) await new Promise(r => setTimeout(r, a * 500));
+    try {
+      const r = await fetch(ALLOWLIST_API + '?action=allowlist&tab=' + encodeURIComponent(ALLOWLIST_TAB) + '&_=' + Date.now()), j = await r.json();
+      const list = (j.emails || []).map(s => String(s).toLowerCase().trim()).filter(Boolean);
+      const entries = Array.isArray(j.entries) ? j.entries.map(e => ({ email: String(e.email || '').toLowerCase().trim(), unrestricted: !!e.unrestricted, teams: (e.teams || []).map(String) })) : null;
+      return (ALLOWLIST = { emails: list, entries });
+    } catch (e) {}
+  }
+  return null;
+}
+async function _isAllowed(email) {
+  const data = await _loadAllowlist(); if (!data) return { ok: false, reason: 'load-failed' };
+  email = String(email).toLowerCase().trim(); const at = email.indexOf('@'), dom = at >= 0 ? email.slice(at) : '';
+  if (!data.entries) return data.emails.indexOf(email) >= 0 || (dom && data.emails.indexOf(dom) >= 0) ? { ok: true } : { ok: false, reason: 'not-listed' };
+  const exact = data.entries.filter(e => e.email === email), pool = exact.length ? exact : data.entries.filter(e => dom && e.email === dom);
+  // "Team <name>" tags only scope the sales dashboards, so only rows that grant this dashboard (unrestricted for Operations) count here
+  return pool.some(e => e.unrestricted) ? { ok: true } : { ok: false, reason: 'not-listed' };
+}
+function _decodeJwt(t) { try { const p = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'); return JSON.parse(decodeURIComponent(escape(atob(p)))); } catch (e) { return null; } }
+function _authError(m) { const e = document.getElementById('lock-err'); if (e) e.textContent = m; }
+function _logAccess(email) { try { fetch(ALLOWLIST_API + '?action=log&tab=' + encodeURIComponent(ALLOWLIST_TAB) + '&email=' + encodeURIComponent(email) + '&ua=' + encodeURIComponent(navigator.userAgent) + '&dashboard=' + encodeURIComponent(location.origin + location.pathname), { mode: 'no-cors' }).catch(() => {}); } catch (e) {} }
+var _booted = false;
+async function _grant(profile) {
+  if (_booted) return; _booted = true; ME = profile; _logAccess(profile.email);
+  document.getElementById('avatar').textContent = initials(profile.name || profile.email); document.getElementById('who-name').textContent = profile.name || profile.email;
+  const s = document.getElementById('lock-overlay'); s.classList.add('unlocking'); setTimeout(() => s.classList.add('hidden'), 400);
+  document.getElementById('view').innerHTML = '<div class="loading"><span class="spin"></span>Loading the v3 trackers…<div class="small">Disbursal, drawdown and repayment data for the statements.</div></div>';
+  try { await loadAll(); } catch (e) { _booted = false; document.getElementById('view').innerHTML = '<div class="card empty">Could not load the data: ' + esc(e.message) + '<br><br><button class="btn" onclick="location.reload()">Retry</button></div>'; return; }
+  render();
+}
+async function _onGoogleCredential(resp) {
+  _idToken = resp && resp.credential; if (_idToken && window._resolveToken) window._resolveToken(); try{FinssoProfile.set(_idToken)}catch(e){}
+  _authError(''); const data = _decodeJwt(resp && resp.credential);
+  if (!data || !data.email) return _authError('Could not read your Google account. Try again.');
+  if (data.email_verified === false) return _authError('Your Google email is not verified.');
+  const r = await _isAllowed(data.email);
+  if (r.ok) _grant({ email: String(data.email).toLowerCase(), name: data.name || '' });
+  else if (r.reason === 'load-failed') _authError('Could not verify access right now — check your connection and try again.');
+  else { try { google.accounts.id.disableAutoSelect(); } catch (e) {} _authError(data.email + ' does not have access to the Operations dashboard. Ask the admin to add “Operations” next to your email in the Allowlist.'); }
+}
+function _initGoogleAuth() {
+  if (!window.google || !google.accounts || !google.accounts.id) return setTimeout(_initGoogleAuth, 200);
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: _onGoogleCredential, auto_select: true, cancel_on_tap_outside: false });
+  google.accounts.id.renderButton(document.getElementById('g-signin'), { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'signin_with', logo_alignment: 'center', width: 260 });
+  google.accounts.id.prompt();
+}
+_loadAllowlist();
+if (document.readyState !== 'loading') _initGoogleAuth(); else document.addEventListener('DOMContentLoaded', _initGoogleAuth);
+</script>
+<script>
+/* ── Finsso profile chip: avatar + name + role, with a "Your access" panel (role from Allowlist column C) ── */
+var FinssoProfile = (function () {
+  var PAGES = [
+    { tab: 'Overview', name: 'PH Core Synergy Report', href: '/dashboards/core/' }, { tab: 'DPD', name: 'DPD Aging Dashboard', href: '/dashboards/dpd/' },
+    { tab: 'SalesWeekly', name: 'Sales Weekly Review', href: '/dashboards/weekly-review/' }, { tab: 'SalesPerf', name: 'Sales Team Performance', href: '/dashboards/sales-team/' },
+    { tab: 'DealerUniverse', name: 'Dealer Universe', href: '/dashboards/dealer-universe/' }, { tab: 'StockAudit', name: 'Stock Audit', href: '/dashboards/stock-audit/' },
+    { tab: 'Credit', name: 'Dealer Credit Profile', href: '/dashboards/credit/' }, { tab: 'Operations', name: 'Operations Overview', href: '/dashboards/operations/' }
+  ];
+  var st = { email: '', name: '', role: '', fallback: '', access: null, loaded: false, open: false, token: '' };
+  var chip = null, pop = null;
+  function apiUrl() { return window.FP_API || (typeof ALLOWLIST_API !== 'undefined' ? ALLOWLIST_API : (typeof SA_API !== 'undefined' ? SA_API : '')); }
+  function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function ini(n) { return String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(function (s) { return s[0].toUpperCase(); }).join('') || '?'; }
+  function here() { var p = location.pathname.replace(/index\.html$/, ''); return PAGES.filter(function (d) { return p.indexOf(d.href) === 0; })[0] || null; }
+
+  function css() {
+    if (document.getElementById('fp-css')) return;
+    var s = document.createElement('style'); s.id = 'fp-css';
+    s.textContent =
+      '.fp-who{position:relative;display:flex;align-items:center;gap:8px;min-width:0;cursor:pointer;border-radius:12px;padding:3px 8px 3px 3px;visibility:hidden;font-family:inherit;text-align:left}' +
+      '.fp-who.fp-ready{visibility:visible}.fp-who:hover,.fp-who.fp-open{background:rgba(128,128,128,.14)}' +
+      '.fp-who:focus-visible{outline:2px solid var(--primary,#E8461E);outline-offset:1px}' +
+      '.fp-who .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent,#F97316),var(--primary,#E8461E));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}' +
+      '.fp-who .who-txt{line-height:1.2;min-width:0;color:var(--text,inherit)}' +
+      '.fp-who .who-txt b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}' +
+      '.fp-who .who-txt span{display:block;font-size:11px;color:var(--text3,var(--text2,#8a8f98));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}' +
+      '@media(max-width:700px){.fp-who .who-txt{display:none}}' +
+      '.fp-pop{position:absolute;top:calc(100% + 8px);right:0;width:min(320px,92vw);z-index:100000;border:1px solid rgba(128,128,128,.35);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.35);padding:14px;font-size:13px;line-height:1.35;cursor:default;text-align:left;font-weight:400}' +
+      '.fp-head{display:flex;gap:10px;align-items:center}.fp-head .fp-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent,#F97316),var(--primary,#E8461E));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:none}' +
+      '.fp-head b{display:block;font-size:14px}.fp-head small{display:block;opacity:.65;word-break:break-all}' +
+      '.fp-role{margin:10px 0 2px;display:flex;align-items:center;gap:6px}.fp-pill{display:inline-block;padding:2px 10px;border-radius:999px;background:rgba(232,70,30,.15);color:var(--primary,#E8461E);font-weight:600;font-size:12px}' +
+      '.fp-sec{margin:12px 0 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;font-weight:700}' +
+      '.fp-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;max-height:260px;overflow:auto}' +
+      '.fp-list li{display:flex;justify-content:space-between;gap:8px;align-items:baseline;padding:6px 8px;border-radius:8px}.fp-list li:hover{background:rgba(128,128,128,.14)}' +
+      '.fp-list a{color:var(--primary,#E8461E);text-decoration:none;font-weight:600}.fp-list a:hover{text-decoration:underline}' +
+      '.fp-list em{font-style:normal;font-size:11px;opacity:.65;text-align:right}.fp-list li.fp-cur{background:rgba(128,128,128,.12)}.fp-list li.fp-cur a{color:inherit;cursor:default;text-decoration:none}' +
+      '.fp-msg{opacity:.7;padding:4px 8px}' +
+      '.fp-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid rgba(128,128,128,.3);font-size:12px}' +
+      '.fp-foot a{color:inherit;opacity:.7}.fp-out{font:inherit;font-size:12px;border:1px solid rgba(128,128,128,.45);background:transparent;color:inherit;border-radius:8px;padding:5px 12px;cursor:pointer}.fp-out:hover{background:rgba(128,128,128,.18)}';
+    document.head.appendChild(s);
+  }
+
+  function mount() {
+    if (chip) return chip;
+    css();
+    chip = document.querySelector('.who');
+    if (!chip) {
+      chip = document.createElement('div'); chip.className = 'who';
+      chip.innerHTML = '<div class="avatar" id="avatar">?</div><div class="who-txt"><b id="who-name">—</b><span id="who-role"></span></div>';
+      var host = document.querySelector('.header-right') || document.querySelector('.topbar-top') || document.querySelector('.topbar') || document.body;
+      host.insertBefore(chip, host.firstChild);
+      if (host.classList && host.classList.contains('header-right')) host.style.alignItems = 'center';
+    }
+    chip.classList.add('fp-who'); chip.setAttribute('role', 'button'); chip.setAttribute('tabindex', '0'); chip.setAttribute('aria-haspopup', 'true'); chip.title = chip.title || 'Your profile and access';
+    var r = document.getElementById('who-role'); if (r && !st.fallback) st.fallback = r.textContent || '';
+    chip.addEventListener('click', function (ev) { if (pop && pop.contains(ev.target)) return; toggle(); });
+    chip.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggle(); } if (ev.key === 'Escape') close(); });
+    document.addEventListener('click', function (ev) { if (st.open && chip && !chip.contains(ev.target)) close(); });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') close(); });
+    return chip;
+  }
+
+  function paintRole() {
+    var el = document.getElementById('who-role'); if (!el) return;
+    var cur = here(), txt = st.role || el.getAttribute('data-fp-app') || st.fallback || (cur ? cur.name : '');
+    if (txt) el.textContent = txt;
+  }
+
+  function decode(t) { try { var p = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'); return JSON.parse(decodeURIComponent(escape(atob(p)))); } catch (e) { return null; } }
+
+  function set(token) {
+    mount(); var d = decode(token) || {};
+    st.token = token; st.email = String(d.email || '').toLowerCase(); st.name = d.name || st.email;
+    var a = document.getElementById('avatar'), n = document.getElementById('who-name');
+    if (a) a.textContent = ini(st.name); if (n && !n.textContent.trim() || (n && n.textContent === '—')) n.textContent = st.name;
+    var r = document.getElementById('who-role');
+    if (r && !r.__fp) { r.__fp = true; new MutationObserver(function () { if (st.role && r.textContent !== st.role) r.textContent = st.role; else if (!st.role && r.textContent) { r.setAttribute('data-fp-app', r.textContent); } }).observe(r, { childList: true, characterData: true, subtree: true }); }
+    paintRole(); chip.classList.add('fp-ready'); load();
+  }
+
+  function load() {
+    var key = 'fp_access_' + st.email, now = Date.now(), c = null;
+    try { c = JSON.parse(sessionStorage.getItem(key) || 'null'); } catch (e) {}
+    if (c && now - c.at < 5 * 60e3) { apply(c.data); return; }
+    var api = apiUrl(); if (!api || !st.token) { st.loaded = true; return; }
+    fetch(api + (api.indexOf('?') >= 0 ? '&' : '?') + 'action=access&id_token=' + encodeURIComponent(st.token))
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (j && j.ok) { try { sessionStorage.setItem(key, JSON.stringify({ at: Date.now(), data: j })); } catch (e) {} apply(j); } else { st.loaded = true; render(); } })
+      .catch(function () { st.loaded = true; render(); });
+  }
+  function apply(j) { st.access = j.dashboards || []; st.role = j.role || ''; st.loaded = true; paintRole(); render(); }
+
+  function tone() {
+    var c = getComputedStyle(document.body).color.match(/\d+/g) || [0, 0, 0], lum = (0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]);
+    return lum > 140 ? { bg: '#1b1f27', fg: '#e8eaed' } : { bg: '#ffffff', fg: '#1f2328' };
+  }
+  function render() {
+    if (!pop) return;
+    var t = tone(); pop.style.background = t.bg; pop.style.color = t.fg;
+    var cur = here(), h = '<div class="fp-head"><div class="fp-av">' + esc(ini(st.name)) + '</div><div><b>' + esc(st.name) + '</b><small>' + esc(st.email) + '</small></div></div>';
+    h += '<div class="fp-role">Role: ' + (st.role ? '<span class="fp-pill">' + esc(st.role) + '</span>' : '<span style="opacity:.6">not set</span>') + '</div>';
+    h += '<div class="fp-sec">Your access</div>';
+    if (!st.loaded) h += '<div class="fp-msg">Loading…</div>';
+    else if (st.access && st.access.length) {
+      h += '<ul class="fp-list">' + st.access.map(function (d) {
+        var isCur = cur && d.href === cur.href, scope = d.scope === 'team' ? (d.teams || []).map(function (x) { return /^team\b/i.test(x) ? x : 'Team ' + x; }).join(', ') + ' data only' : 'Full access';
+        return '<li class="' + (isCur ? 'fp-cur' : '') + '"><a href="' + esc(d.href) + '"' + (isCur ? ' aria-current="page"' : '') + '>' + esc(d.name) + '</a><em>' + (isCur ? 'you are here · ' : '') + esc(scope) + '</em></li>';
+      }).join('') + '</ul>';
+    } else h += '<div class="fp-msg">' + (cur ? 'You are signed in to <b>' + esc(cur.name) + '</b>. The full list of your dashboards could not be loaded right now.' : 'Your access list could not be loaded right now.') + '</div>';
+    h += '<div class="fp-foot"><a href="mailto:miguel.cordero@finsso.com?subject=' + encodeURIComponent('Dashboard access request') + '">Need more access?</a><button type="button" class="fp-out">Sign out</button></div>';
+    pop.innerHTML = h;
+    var o = pop.querySelector('.fp-out'); if (o) o.onclick = function (ev) { ev.stopPropagation(); try { google.accounts.id.disableAutoSelect(); } catch (e) {} try { sessionStorage.removeItem('fp_access_' + st.email); } catch (e) {} location.reload(); };
+  }
+  function toggle() { st.open ? close() : openP(); }
+  function openP() { if (!chip) return; pop = document.createElement('div'); pop.className = 'fp-pop'; pop.setAttribute('role', 'dialog'); pop.addEventListener('click', function (e) { e.stopPropagation(); }); chip.appendChild(pop); chip.classList.add('fp-open'); st.open = true; render(); place(); }
+  function place() { if (!pop || !chip) return; var r = chip.getBoundingClientRect(), w = Math.min(320, window.innerWidth * 0.92), left = Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8)); pop.style.position = 'fixed'; pop.style.top = (r.bottom + 8) + 'px'; pop.style.left = left + 'px'; pop.style.right = 'auto'; pop.style.maxHeight = (window.innerHeight - r.bottom - 20) + 'px'; pop.style.overflowY = 'auto'; }
+  window.addEventListener('resize', place);
+  function close() { if (pop && pop.parentNode) pop.parentNode.removeChild(pop); pop = null; if (chip) chip.classList.remove('fp-open'); st.open = false; }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
+  return { set: set, mount: mount };
+})();
+
+</script>
+</body></html>
