@@ -70,15 +70,16 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{color-scheme:light dark}
 html[data-theme="dark"]{color-scheme:dark}
-html[data-theme="light"]{color-scheme:light}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+/* Page glow on its own fixed GPU layer (a fixed background-attachment repaints every scroll frame) */
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;transform:translateZ(0);
   background:
     radial-gradient(ellipse at 15% 10%, var(--grad-1) 0%, transparent 55%),
     radial-gradient(ellipse at 85% 90%, var(--grad-2) 0%, transparent 55%),
-    radial-gradient(ellipse at 50% 50%, var(--grad-3) 0%, transparent 80%),
-    var(--bg);
-  background-attachment:fixed;
+    radial-gradient(ellipse at 50% 50%, var(--grad-3) 0%, transparent 80%)}
+html[data-theme="light"]{color-scheme:light}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);
   color:var(--text);
   font-size:13px;
   line-height:1.5;
@@ -91,9 +92,8 @@ a{color:inherit;text-decoration:none}
   background:var(--surface-a);
   border-bottom:1px solid var(--border2);
   border-top:1px solid var(--surface-hi);
-  box-shadow:0 8px 32px rgba(99,102,241,0.08),0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
-  backdrop-filter:blur(28px) saturate(180%);
-  -webkit-backdrop-filter:blur(28px) saturate(180%);
+  box-shadow:0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
+  background:linear-gradient(var(--surface-a),var(--surface-a)),var(--bg);
   padding:14px var(--pad);
   display:flex;flex-direction:column;gap:0;
   position:sticky;top:0;z-index:300;
@@ -120,11 +120,9 @@ a{color:inherit;text-decoration:none}
 .date-control input[type=date]:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(232,70,30,0.10)}
 
 .tab-nav{
-  background:var(--surface-b);
+  background:linear-gradient(var(--surface-b),var(--surface-b)),var(--bg);
   border-bottom:1px solid var(--border2);
-  box-shadow:0 4px 16px rgba(99,102,241,0.06),inset 0 1px 0 var(--surface-hi);
-  backdrop-filter:blur(28px) saturate(180%);
-  -webkit-backdrop-filter:blur(28px) saturate(180%);
+  box-shadow:0 2px 6px rgba(0,0,0,0.05),inset 0 1px 0 var(--surface-hi);
   padding:0 var(--pad);display:flex;gap:0;overflow-x:auto;
   position:sticky;top:54px;z-index:260;
 }
@@ -149,9 +147,7 @@ a{color:inherit;text-decoration:none}
   background:var(--surface-b);
   border:1px solid var(--border);
   border-top:1px solid var(--surface-hi);
-  box-shadow:0 8px 32px rgba(99,102,241,0.08),0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
-  backdrop-filter:blur(16px) saturate(150%);
-  -webkit-backdrop-filter:blur(16px) saturate(150%);
+  box-shadow:0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
   border-radius:var(--rcard);padding:16px;overflow-x:auto;
 }
 .card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px}
@@ -203,10 +199,8 @@ tr:hover td{background:var(--tr-hover)}
 .data-status.stale{color:#c8860a}
 
 .filter-bar{
-  background:var(--surface-c);
+  background:linear-gradient(var(--surface-c),var(--surface-c)),var(--bg);
   border-bottom:1px solid var(--border2);
-  backdrop-filter:blur(20px) saturate(160%);
-  -webkit-backdrop-filter:blur(20px) saturate(160%);
   padding:10px var(--pad);
   display:flex;flex-wrap:wrap;align-items:center;gap:14px;
   position:sticky;top:96px;z-index:250;
@@ -432,7 +426,7 @@ const FX_PHP_PER_USD = 60; // fixed conversion rate for the currency toggle
 
 let drawdownRows = [];   // one row per loan
 let repaymentRows = [];  // one row per repayment transaction
-let onboardMap = {};     // dealerId -> earliest "credit line issued" date
+let onboardMap = {};     // dealerId -> earliest "Original Onboarding Date" (Dealer Checker)
 let selectedDate = null;
 let dataLoadedAt = null;
 let minDataDate = null;
@@ -598,7 +592,7 @@ async function loadData() {
     const [ddGrid, rpGrid, obGrid, ddGrid3, rpGrid3] = await Promise.all([
       fetchCSV('drawdown.csv'),
       fetchCSV('repayment.csv'),
-      fetchCSV('ob-masterlist.csv'),
+      fetchCSV('dealer-checker.csv'),
       optCSV('drawdownv3.csv'),
       optCSV('repaymentv3.csv'),
     ]);
@@ -682,14 +676,14 @@ async function loadData() {
       }
     }
 
-    // ── OB Masterlist (dealer onboarding dates) ──
+    // ── Dealer Checker (dealer onboarding dates) — same source as the Sales Team Performance dashboard ──
     const obCol = buildColumnMap(obGrid[0]);
     onboardMap = {};
     for (let i = 1; i < obGrid.length; i++) {
       const r = obGrid[i];
       const dealerId = get(r, obCol('Dealer ID')).trim();
       if (!dealerId) continue;
-      const d = parseSheetDate(get(r, obCol('Original Credit Line issuance Date')));
+      const d = parseSheetDate(get(r, obCol('Original Onboarding Date')));
       if (d && (!onboardMap[dealerId] || d < onboardMap[dealerId])) onboardMap[dealerId] = d;
     }
 
