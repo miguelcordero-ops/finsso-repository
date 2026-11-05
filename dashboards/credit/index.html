@@ -536,19 +536,22 @@ function str(r, c, n) { return String(get(r, c(n))).trim(); }
 function colAfter(hdr, name, after) { const a = hdr.findIndex(h => normHeader(h) === normHeader(after)), t = normHeader(name); for (let i = a + 1; i < hdr.length; i++) if (normHeader(hdr[i]) === t) return i; return -1; }
 function nz(v) { return v == null || v === '' || (typeof v === 'number' && isNaN(v)); }
 
-var RAW = null;
+var RAW = null, SO_SM = {};
 async function loadAll() {
   // Dealer Universe only adds prospects, so it must never hold the page up: start it with the rest, but give it just a short grace period.
   const duP = fetchCSV('dealeruniverse.csv', true).catch(() => null);
-  const [d2, d3, r2, r3, ck, ob, si, am] = await Promise.all([fetchCSV('drawdown.csv'), fetchCSV('drawdownv3.csv', true), fetchCSV('repayment.csv'), fetchCSV('repaymentv3.csv', true),
-    fetchCSV('dealer-checker.csv'), fetchCSV('ob-masterlist.csv', true), fetchCSV('stock-inspection.csv', true), fetchCSV('AuditMapping.csv', true)]);
-  RAW = { d2, d3, r2, r3, ck, ob, si, am };
+  const [d2, d3, r2, r3, ck, ob, si, am, mp] = await Promise.all([fetchCSV('drawdown.csv'), fetchCSV('drawdownv3.csv', true), fetchCSV('repayment.csv'), fetchCSV('repaymentv3.csv', true),
+    fetchCSV('dealer-checker.csv'), fetchCSV('ob-masterlist.csv', true), fetchCSV('stock-inspection.csv', true), fetchCSV('AuditMapping.csv', true), fetchCSV('mapping.csv', true).catch(() => null)]);
+  RAW = { d2, d3, r2, r3, ck, ob, si, am, mp };
   const du = await Promise.race([duP, new Promise(res => setTimeout(() => res(undefined), 3000))]);
   buildModel(du || null);
   if (du === undefined) duP.then(x => { if (!x) return; try { buildModel(x); render(); } catch (e) { console.warn('Prospects could not be merged', e); } });   // arrived late: add the prospects and redraw
 }
 function buildModel(du) {
-  const { d2, d3, r2, r3, ck, ob, si, am } = RAW;
+  const { d2, d3, r2, r3, ck, ob, si, am, mp } = RAW;
+  // Sales Officer -> Sales Manager comes from the "[Raw] Mapping" tab (L2 - Sales Officer / L1 - Sales Manager)
+  SO_SM = {};
+  if (mp && mp.length > 1) { const mc = buildColumnMap(mp[0]); mp.slice(1).forEach(r => { const so = normName(get(r, mc('L2 - Sales Officer'))), sm = normName(get(r, mc('L1 - Sales Manager'))); if (so && sm) SO_SM[so] = sm; }); }
   LOANS = {}; LOANLIST = []; PAYS = []; AUDITS = []; DL = {}; GROUPS = {}; LN = { loans: {}, pb: {} };
 
   // ── loans, previous versions
@@ -956,7 +959,7 @@ function kvs(pairs) { return '<div class="kv2">' + pairs.filter(p => p[1] !== ''
 function renderProfile(host) {
   const d = DL[S.sel]; if (!d) { S.sel = null; return renderHome(host); }
   flagsOf(d); const st = stats(d), ck_ = d.ck, ob = d.ob, un = d.un, am = d.am;
-  const so = (ck_ && ck_.so) || (am && am.sales) || (ob && ob.sales) || '', sm = (ck_ && ck_.sm) || (am && am.sm) || (ob && ob.sm) || '';
+  const so = (ck_ && ck_.so) || (am && am.sales) || (ob && ob.sales) || '', sm = SO_SM[so] || (ck_ && ck_.sm) || (am && am.sm) || (ob && ob.sm) || '';   // SM from the Mapping tab (old sources only if the SO isn't listed there)
   const loc = (am && (am.addr || am.city)) || (ob && ob.addr) || (un && un.addr) || '';
   const redN = d.flags.filter(f => f.sev === 'red').length, ambN = d.flags.filter(f => f.sev === 'amber').length;
   let h = searchBox();
