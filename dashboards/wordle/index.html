@@ -319,6 +319,11 @@ td.od{color:var(--red);font-weight:700}
 .wd-rules{width:100%;font-size:12px;color:var(--text2);background:var(--card2);border-radius:12px;padding:10px 12px;line-height:1.5}
 @media(max-width:480px){.wd-lbr{grid-template-columns:28px 1fr 44px 44px 36px 34px 44px;padding:8px;font-size:12px}}
 @media(max-width:480px){.wd-lbh{font-size:9.5px;letter-spacing:-.2px}}
+.wd-streaks{display:flex;gap:10px;justify-content:center}
+.wd-chip{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:6px 16px;text-align:center;min-width:104px}
+.wd-chip b{display:block;font-size:22px;line-height:1.1}.wd-chip span{font-size:11px;color:var(--text3)}
+.wd-chip.hot{border-color:var(--primary)}.wd-chip.hot b{color:var(--primary)}
+.wd-streakbox{display:flex;flex-direction:column;align-items:center;gap:6px}
 
 </style></head>
 <body>
@@ -608,7 +613,7 @@ function closeSheet() { document.getElementById('overlay-root').innerHTML = ''; 
 <script>
 /* ── WORDLE — 8 tries. Word of the day + leaderboard come from the Apps Script (wd_ actions); Practice uses the "wordle" tab (wordle.csv) ── */
 var MAX_TRIES = 8;
-var W = { view: 'play', mode: 'daily', len: 0, ans: null, cat: '', hint: '', guesses: [], res: [], cur: '', done: false, won: false, points: null, busy: false, wait: false, hintShown: false, msg: '', err: '', skip: null, words: [], period: 'week', board: null, boardErr: '' };
+var W = { view: 'play', mode: 'daily', len: 0, ans: null, cat: '', hint: '', guesses: [], res: [], cur: '', done: false, won: false, points: null, busy: false, wait: false, hintShown: false, msg: '', err: '', skip: null, st: null, words: [], period: 'week', board: null, boardErr: '' };
 var KEYROWS = ['QWERTYUIOP', 'ASDFGHJKL', '+ZXCVBNM-'];
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -647,8 +652,15 @@ async function startDaily() {
     W.done = !!j.done; W.won = !!j.won; W.points = j.points == null ? null : j.points;
     if (j.word) W.ans = j.word;
     W.hintShown = W.guesses.length >= 4;
+    setStreaks(j);
   } catch (e) { W.err = e.message; if (e.code === 'auth') W.err += ' — reload the page and sign in again.'; }
   render();
+}
+function setStreaks(j) { if (j && j.loginStreak != null) W.st = { win: j.winStreak || 0, login: j.loginStreak || 0, bestWin: j.bestWin || 0, bestLogin: j.bestLogin || 0, risk: !!j.winAtRisk }; }
+function streakHtml() {
+  const s = W.st; if (!s) return '';
+  return '<div class="wd-streaks"><div class="wd-chip' + (s.win ? ' hot' : '') + '" title="Best: ' + s.bestWin + '"><b>' + s.win + '</b><span>Win streak</span></div><div class="wd-chip' + (s.login ? ' hot' : '') + '" title="Best: ' + s.bestLogin + '"><b>' + s.login + '</b><span>Login streak</span></div></div>' +
+    (s.risk ? '<div class="small muted">Win today’s word to keep your ' + s.win + '-day win streak going.</div>' : '');
 }
 function startPractice() {
   W.view = 'play'; W.mode = 'practice'; resetGame();
@@ -679,7 +691,7 @@ async function submitGuess() {
     W.wait = false;
   }
   W.cur = ''; W.guesses.push(g); W.res.push(res); const idx = W.guesses.length - 1;
-  if (done) { W.done = true; W.won = won; if (W.mode === 'daily') { W.ans = extra.word || W.ans; W.points = extra.points == null ? null : extra.points; } }
+  if (done) { W.done = true; W.won = won; if (W.mode === 'daily') { W.ans = extra.word || W.ans; W.points = extra.points == null ? null : extra.points; setStreaks(extra); } }
   if (W.guesses.length >= 4) W.hintShown = true;
   paintBoard(idx); setTimeout(() => { W.busy = false; paintAll(); }, W.len * 220 + 450);
 }
@@ -740,11 +752,11 @@ function render() {
     document.getElementById('view').innerHTML = '<div class="wd-wrap">' + tabsHtml() + '<div class="card empty">' + esc(W.err || 'Nothing to play yet.') + '<br><br><button class="btn" data-act="' + (W.mode === 'daily' ? 'daily' : 'practice') + '">Try again</button></div></div>';
     return;
   }
-  document.getElementById('view').innerHTML = '<div class="wd-wrap">' + tabsHtml() + (W.mode === 'daily' ? '<div class="small muted">Everyone gets the same word today — it counts for the leaderboard.</div>' : '<div class="small muted">Practice words don’t earn points.</div>') +
+  document.getElementById('view').innerHTML = '<div class="wd-wrap">' + tabsHtml() + '<div id="wd-streak" class="wd-streakbox">' + streakHtml() + '</div>' + (W.mode === 'daily' ? '<div class="small muted">Everyone gets the same word today — it counts for the leaderboard.</div>' : '<div class="small muted">Practice words don’t earn points.</div>') +
     '<div id="wd-top"></div><div id="wd-msg" class="wd-msg"></div><div id="wd-board"></div><div id="wd-end"></div><div id="wd-kb"></div></div>';
   paintAll();
 }
-function paintAll() { if (!document.getElementById('wd-board')) return; document.getElementById('wd-top').innerHTML = hintHtml(); paintBoard(-1); document.getElementById('wd-end').innerHTML = endHtml(); document.getElementById('wd-kb').innerHTML = kbHtml(); paintMsg(); }
+function paintAll() { if (!document.getElementById('wd-board')) return; const sb = document.getElementById('wd-streak'); if (sb) sb.innerHTML = streakHtml(); document.getElementById('wd-top').innerHTML = hintHtml(); paintBoard(-1); document.getElementById('wd-end').innerHTML = endHtml(); document.getElementById('wd-kb').innerHTML = kbHtml(); paintMsg(); }
 function paintBoard(reveal) { const b = document.getElementById('wd-board'); if (!b) return; b.innerHTML = boardHtml(reveal); if (reveal >= 0) { const k = document.getElementById('wd-kb'); if (k) setTimeout(() => { k.innerHTML = kbHtml(); }, W.len * 220 + 300); } }
 function paintMsg() { const m = document.getElementById('wd-msg'); if (m) m.textContent = W.wait ? 'Checking…' : (W.msg || ''); }
 function shareText() {
@@ -772,7 +784,7 @@ function renderBoard() {
       W.board.rows.map(r => '<div class="wd-lbr' + (r.me ? ' me' : '') + '"><span>' + medal(r.rank) + '</span><span class="nm">' + esc(r.name) + '</span><span><b>' + r.points + '</b></span><span>' + r.games + '</span><span>' + r.wins + '</span><span>' + (r.avgTries == null ? '—' : r.avgTries) + '</span><span>' + (r.streak || 0) + '</span></div>').join('') + '</div>' +
       '<div class="small muted" style="margin-top:8px">' + (W.board.yourRank ? 'You are #' + W.board.yourRank + ' of ' + W.board.total + '.' : 'You haven’t played in this period yet.') + (W.board.rows.length < W.board.total ? ' Showing the top ' + W.board.rows.length + '.' : '') + '</div>';
   }
-  document.getElementById('view').innerHTML = '<div class="wd-wrap wd-wide">' + tabsHtml() + '<div class="wd-modes">' + chips + '</div>' + body +
+  document.getElementById('view').innerHTML = '<div class="wd-wrap wd-wide">' + tabsHtml() + streakHtml() + '<div class="wd-modes">' + chips + '</div>' + body +
     '<div class="wd-rules"><b>How points work</b><br>Win: 100 points for a first-try solve, minus 10 for every extra try (try 8 = 30). Streak bonus: +5 for each day in a row you’ve already won, up to +25. Lose: 5 points for playing. Only the Word of the day counts; one game per person per day. Avg = average tries on wins.</div></div>';
 }
 document.addEventListener('click', e => {
