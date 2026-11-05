@@ -115,13 +115,17 @@ function counts(g){
   if(g.soon&&!g.items.length)return '<span>Coming soon</span>';
   return '<span>'+live+' dashboard'+(live===1?'':'s')+'</span>'+(soon?'<span>· '+soon+' coming soon</span>':'');
 }
+var EXTRA=[{title:'Wordle',href:'/dashboards/wordle/',icon:'search',desc:'A quick break: guess the Finsso word in 8 tries. New word every day, plus unlimited practice.'}];
+function extras(){
+  return '<div class="grid" style="margin-top:22px">'+EXTRA.map(function(i){return '<a class="card" href="'+i.href+'"><div class="card-icon">'+ico(i.icon)+'</div><div class="card-title">'+esc(i.title)+'</div><div class="card-desc">'+esc(i.desc)+'</div><span class="badge live">Live</span></a>';}).join('')+'</div>';
+}
 function home(){
   return '<div class="folders">'+GROUPS.map(function(g){
     var tag=g.soon?'div':'a', href=g.soon?'':' href="#/'+g.id+'"';
     return '<'+tag+' class="folder'+(g.soon?' disabled':'')+'"'+href+'>'+
       '<div class="ficon">'+ico(g.icon)+'</div><div class="ftitle">'+esc(g.title)+'</div>'+
       '<div class="fdesc">'+esc(g.desc)+'</div><div class="fmeta">'+counts(g)+(g.soon?'':'<span class="arrow">→</span>')+'</div></'+tag+'>';
-  }).join('')+'</div>';
+  }).join('')+'</div>'+extras();
 }
 function group(g){
   var cards=g.items.map(function(i){
