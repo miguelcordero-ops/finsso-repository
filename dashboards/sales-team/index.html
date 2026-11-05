@@ -472,7 +472,7 @@ const DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-re
 // ── BigQuery data API ── used when signed in; any failure falls back to the GitHub CSV below ──
 function _timedFetch(u, o, ms) { var c = new AbortController(), t = setTimeout(function () { c.abort(); }, ms || 15000); o.signal = c.signal; return fetch(u, o).finally(function () { clearTimeout(t); }); }
 var DATA_API = 'https://finsso-data-api.miguel-cordero.workers.dev/data/';
-var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv'];
+var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv','stock-audits-v2.csv'];
 var _idToken = null, DATA_SRC = {};
 // Some dashboards start loading data before sign-in finishes; wait briefly for the Google token so the BigQuery path can be used.
 var _tokenWait = new Promise(function (res) { window._resolveToken = res; });
@@ -708,7 +708,7 @@ async function loadData() {
   const errEl = document.getElementById('error-box');
   loadingEl.classList.remove('hidden');
   try {
-    const [ddGrid, rpGrid, dd3Grid, rp3Grid, visitGrid, dcGrid, obGrid, mapGrid, siGrid] = await Promise.all([
+    const [ddGrid, rpGrid, dd3Grid, rp3Grid, visitGrid, dcGrid, obGrid, mapGrid, siGrid, sa2Grid] = await Promise.all([
       fetchCSV('drawdown.csv'),
       fetchCSV('repayment.csv'),
       fetchCSV('drawdownv3.csv', true),     // "[Raw] Drawdown v3" — 180-day product (optional)
@@ -718,6 +718,7 @@ async function loadData() {
       fetchCSV('ob-masterlist.csv', true),  // full "[Raw] OB Masterlist" sheet
       fetchCSV('mapping.csv', true),        // "[Raw] Mapping": L0/L1/L2 org rows
       fetchCSV('stock-inspection.csv', true), // "[Raw] Stock Inspection" — Dealer Status card
+      fetchCSV('stock-audits-v2.csv', true),  // "Stock Audits v2" — audits logged in the Stock Audit app
     ]);
 
     // ── SO → Team mapping — the ONLY source of truth. Sheet format is
@@ -1010,19 +1011,28 @@ async function loadData() {
 
     // ── Stock inspections, grouped by Drawdown ID (optional) ──
     inspectionsByLoan = {};
-    if (siGrid && siGrid.length > 1) {
-      const siC = buildColumnMap(siGrid[0]);
-      for (let i = 1; i < siGrid.length; i++) {
-        const r = siGrid[i];
-        const id = get(r, siC('Drawdown ID')).trim();
+    // Both audit sources (the form-response tab and "Stock Audits v2"). A v3 drawdown ID carries a trailing "*" that the audit
+    // sheets may omit, so audits are keyed without it. An audit already seen (same Inspection ID, or drawdown + date + inspector) is skipped.
+    const seenAudit = {};
+    [siGrid, sa2Grid].forEach((grid, gi) => {
+      if (!grid || grid.length < 2) return;
+      const siC = buildColumnMap(grid[0]);
+      for (let i = 1; i < grid.length; i++) {
+        const r = grid[i];
+        const id = get(r, siC('Drawdown ID')).trim().replace(/\*+$/, '');
         if (!id) continue;
+        const date = parseSheetDate(get(r, siC('Date')));
+        const iid = get(r, siC('Inspection ID')).trim().toLowerCase();
+        const key = iid ? 'i:' + iid : 'k:' + id.toLowerCase() + '|' + (date ? date.toISOString().slice(0, 10) : '') + '|' + get(r, siC('Inspector')).trim().toLowerCase();
+        if (gi > 0 && seenAudit[key]) continue;
+        seenAudit[key] = 1;
         (inspectionsByLoan[id] = inspectionsByLoan[id] || []).push({
-          date: parseSheetDate(get(r, siC('Date'))),
+          date,
           status: get(r, siC('Stock Inspection Status')).trim(),
           dateSold: parseSheetDate(get(r, siC('Date Vehicle Sold'))),
         });
       }
-    }
+    });
 
     dataLoadedAt = new Date();
     loadingEl.classList.add('hidden');
@@ -1663,7 +1673,7 @@ function renderDealerBody() {
     return (b.creditDate ? b.creditDate.getTime() : 0) - (a.creditDate ? a.creditDate.getTime() : 0);
   });
   dcRows = rowsSrc.map(l => {
-    const ins = (inspectionsByLoan[l.id] || []).slice().sort((x, y) => (y.date ? y.date.getTime() : 0) - (x.date ? x.date.getTime() : 0));
+    const ins = (inspectionsByLoan[String(l.id).replace(/\*+$/, '')] || []).slice().sort((x, y) => (y.date ? y.date.getTime() : 0) - (x.date ? x.date.getTime() : 0));
     const passed = ins.filter(x => /^pass/i.test(x.status)).length;
     const failed = ins.filter(x => /^fail/i.test(x.status)).length;
     const latest = ins[0];
