@@ -242,7 +242,7 @@ async function bqFetch(name) {
     try {
       var tab = (typeof ALLOWLIST_TAB !== 'undefined' && ALLOWLIST_TAB) ? ALLOWLIST_TAB : 'StockAudit';
       var br = await _timedFetch(DATA_API + name + '?tab=' + encodeURIComponent(tab), { headers: { Authorization: 'Bearer ' + _idToken } }, 15000);
-      if (br.ok) { _noteSrc(name, 'BigQuery'); return parseCSV(await br.text()); }
+      if (br.ok) { _noteSrc(name, 'BigQuery'); return await br.text(); }
       console.warn('Data API ' + br.status + ' for ' + name + ' - using GitHub');
     } catch (e) { console.warn('Data API unreachable for ' + name + ' - using GitHub'); }
   }
@@ -285,23 +285,33 @@ function parseNum(v) {
   return isNaN(n) ? 0 : n;
 }
 function parseCSV(text) {
-  const rows = [];
-  let row = [], field = '', inQ = false;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    if (inQ) {
-      if (ch === '"' && text[i+1] === '"') { field += '"'; i++; }
-      else if (ch === '"') inQ = false;
-      else field += ch;
+  // fast reader: slices whole fields instead of appending character by character
+  const rows = [], n = text.length;
+  let row = [], i = 0, nl = -1;
+  while (i < n) {
+    let f;
+    if (text.charCodeAt(i) === 34) {
+      let j = i + 1; f = '';
+      for (;;) {
+        const k = text.indexOf('"', j);
+        if (k < 0) { f += text.slice(j); j = n; break; }
+        if (text.charCodeAt(k + 1) === 34) { f += text.slice(j, k + 1); j = k + 2; }
+        else { f += text.slice(j, k); j = k + 1; break; }
+      }
+      i = j;
+      // anything glued after the closing quote (rare) stays part of the field
+      while (i < n) { const c = text.charCodeAt(i); if (c === 44 || c === 10) break; if (c !== 13) f += text[i]; i++; }
     } else {
-      if (ch === '"') inQ = true;
-      else if (ch === ',') { row.push(field); field = ''; }
-      else if (ch === '\r') { /* skip */ }
-      else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
-      else field += ch;
+      if (nl < i) { nl = text.indexOf('\n', i); if (nl < 0) nl = n; }
+      let k = text.indexOf(',', i); if (k < 0 || k > nl) k = nl;
+      f = text.slice(i, k); i = k;
+      if (f.indexOf('\r') >= 0) f = f.replace(/\r/g, '');
     }
+    if (i >= n) { row.push(f); break; }
+    if (text.charCodeAt(i) === 44) { row.push(f); i++; if (i >= n) { row.push(''); break; } }
+    else { row.push(f); rows.push(row); row = []; i++; }   // newline
   }
-  if (field.length || row.length) { row.push(field); rows.push(row); }
+  if (row.length) rows.push(row);
   return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
 }
 // Columns are ALWAYS looked up by header name, never by position — the sheet
@@ -327,7 +337,19 @@ function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
 function parsePhones(raw) {
   return String(raw || '').split(/[\/|,;&\n]+|\s+and\s+|\s{2,}/i).map(x => x.replace(/\D/g, '')).filter(x => x.length >= 7 && x.length <= 13).map(x => x[0] === '0' || x.slice(0, 2) === '63' ? x : '0' + x);
 }
-async function fetchCSV(name, optional) {
+/* ── device cache (IndexedDB): the last copy of each core file, so a repeat visit shows the page straight away and refreshes quietly behind it ── */
+var _idb = null;
+function idbOpen() {
+  if (_idb) return _idb;
+  _idb = new Promise(function (res) {
+    try { var rq = indexedDB.open('finsso-stock-audit', 1); rq.onupgradeneeded = function () { rq.result.createObjectStore('csv'); }; rq.onsuccess = function () { res(rq.result); }; rq.onerror = rq.onblocked = function () { res(null); }; }
+    catch (e) { res(null); }
+  });
+  return _idb;
+}
+async function idbGet(key) { const db = await idbOpen(); if (!db) return null; return new Promise(function (res) { try { const r = db.transaction('csv').objectStore('csv').get(key); r.onsuccess = function () { res(r.result || null); }; r.onerror = function () { res(null); }; } catch (e) { res(null); } }); }
+async function idbSet(key, val) { const db = await idbOpen(); if (!db) return; try { db.transaction('csv', 'readwrite').objectStore('csv').put(val, key); } catch (e) {} }
+async function fetchText(name, optional) {
   { const _b = await bqFetch(name); if (_b !== null) return _b; }
   const url = DATA_BASE + name + '?_=' + Date.now();
   const r = await fetch(url);
@@ -335,9 +357,9 @@ async function fetchCSV(name, optional) {
     if (optional) return null; // e.g. a new export not deployed yet — degrade gracefully
     throw new Error('Failed to load ' + name + ' (HTTP ' + r.status + ')');
   }
-  return parseCSV(await r.text());
+  return await r.text();
 }
-
+async function fetchCSV(name, optional) { const t = await fetchText(name, optional); return t === null ? null : parseCSV(t); }
 
 /* ══════════════════════════════════════════════════
    small utilities
@@ -383,8 +405,21 @@ var V3_DPD_COLS = ['R1 DPD', 'R2 DPD', 'R3 DPD', 'P1 DPD', 'R4 DPD', 'P2 DPD', '
 /* Drawdowns come ONLY from the drawdown trackers (drawdown.csv = previous versions, drawdownv3.csv = v3),
    payments from repayment.csv / repaymentv3.csv. Dealer details and the assigned stock audit officer /
    collections officer come from AuditMapping.csv (one row per dealer). */
-async function loadCore() {
-  const [d2, d3, r2, r3, si, am, sa2] = await Promise.all([fetchCSV('drawdown.csv'), fetchCSV('drawdownv3.csv', true), fetchCSV('repayment.csv'), fetchCSV('repaymentv3.csv', true), fetchCSV('stock-inspection.csv'), fetchCSV('AuditMapping.csv'), fetchCSV('stock-audits-v2.csv', true)]);
+var CORE_FILES = [['drawdown.csv', 0], ['drawdownv3.csv', 1], ['repayment.csv', 0], ['repaymentv3.csv', 1], ['stock-inspection.csv', 0], ['AuditMapping.csv', 0], ['stock-audits-v2.csv', 1]];
+var _coreSig = '';
+/* download step only (no parsing) — can start before sign-in checks finish */
+function fetchCoreTexts() { return Promise.all(CORE_FILES.map(function (f) { return fetchText(f[0], !!f[1]); })); }
+async function loadCoreCachedTexts(email) {
+  const hit = await Promise.all(CORE_FILES.map(function (f) { return idbGet(email + '|' + f[0]); }));
+  if (hit.some(function (t, i) { return t === null && !CORE_FILES[i][1]; })) return null;   // a required file is missing -> no usable cache
+  return hit.map(function (t) { return t === null ? null : t.t; });
+}
+function sigOf(texts) { return (texts || []).map(function (t) { return t === null ? '-' : t.length + ':' + t.slice(-64); }).join('|'); }
+function saveCoreCache(email, texts) { texts.forEach(function (t, i) { if (t !== null) idbSet(email + '|' + CORE_FILES[i][0], { t: t, ts: Date.now() }); }); }
+async function loadCore(texts) { buildCore(texts || await fetchCoreTexts()); }
+function buildCore(texts, quiet) {
+  const g = texts.map(function (t) { return t === null ? null : parseCSV(t); });
+  const [d2, d3, r2, r3, si, am, sa2] = g;
   // ── dealers + officer mapping (AuditMapping.csv)
   DEALERS = {};
   const ac = buildColumnMap(am[0]);
@@ -1346,6 +1381,10 @@ async function _onGoogleCredential(resp) {
   if (ME) { document.getElementById('lock-overlay').classList.add('unlocking'); setTimeout(() => document.getElementById('lock-overlay').classList.add('hidden'), 400); toast('Signed in again'); return; }
   if (_booting) return; _booting = true;
   _authError('Checking access…');
+  const em = String(data.email).toLowerCase();
+  // start downloading the data right now, while the access check runs (they used to run one after the other)
+  const freshP = fetchCoreTexts(); freshP.catch(function () {});
+  const cachedP = loadCoreCachedTexts(em);
   const j = await whoami(ID_TOKEN);
   if (!j) { _booting = false; return _authError('Could not reach the access service — check your connection and try again.'); }
   if (!j.ok) { _booting = false; try { google.accounts.id.disableAutoSelect(); } catch (e) {} return _authError(j.error || (data.email + ' is not on the Stock Audit access list. Ask the admin to add you.')); }
@@ -1353,18 +1392,34 @@ async function _onGoogleCredential(resp) {
   _authError('');
   document.getElementById('lock-overlay').classList.add('unlocking'); setTimeout(() => document.getElementById('lock-overlay').classList.add('hidden'), 400);
   document.getElementById('view').innerHTML = '<div class="loading"><span class="spin"></span>Loading your schedule…</div>';
+  let shown = false;
   try {
-    await loadCore();
-    await mergePending();
-  } catch (e) { document.getElementById('view').innerHTML = '<div class="card empty">Could not load the data: ' + esc(e.message) + '<br><br><button class="btn" onclick="location.reload()">Retry</button></div>'; return; }
+    // 1) saved copy from the last visit -> show the page immediately
+    const cached = await cachedP;
+    if (cached) { try { buildCore(cached); await mergePending(true); shown = true; } catch (e) { shown = false; } }
+    if (shown) {
+      document.querySelector('#nav [data-view=lead]').classList.toggle('hide', !ME.leader);
+      setDefaultLens(); loadRoute(); render();
+    }
+    // 2) fresh copy (already downloading) -> update quietly
+    const fresh = await freshP;
+    const sig = sigOf(fresh);
+    saveCoreCache(em, fresh);
+    if (!shown || sig !== sigOf(cached)) {
+      buildCore(fresh);
+      if (shown) { await mergePending(); if (!(typeof A !== 'undefined' && A && A.busy)) render(); toast('Data refreshed'); }
+      else mergePending().then(function () { if (!(typeof A !== 'undefined' && A && A.busy)) render(); });   // recent in-app audits join a moment later, without holding up the first screen
+    } else { mergePending().then(function () { render(); }); }
+  } catch (e) { if (!shown) { document.getElementById('view').innerHTML = '<div class="card empty">Could not load the data: ' + esc(e.message) + '<br><br><button class="btn" onclick="location.reload()">Retry</button></div>'; return; } console.warn('Background refresh failed', e); }
+  if (shown) return;
   document.querySelector('#nav [data-view=lead]').classList.toggle('hide', !ME.leader);
   setDefaultLens(); loadRoute(); render();
   const r = lensRoles(); if (!r.auditor && !r.collector && !ME.leader) toast('No drawdowns are assigned to “' + (ME.name || ME.email) + '” in the drawdown sheet.', true);
 }
-async function mergePending() {
+async function mergePending(localOnly) {
   // audits submitted from this app that the exported CSV does not contain yet
   let list = [];
-  try { const r = await fetch(SA_API + '?action=sa_recent&token=' + encodeURIComponent(ID_TOKEN) + '&_=' + Date.now()); const j = await r.json(); if (j.ok) list = j.rows || []; } catch (e) {}
+  if (!localOnly) try { const r = await fetch(SA_API + '?action=sa_recent&token=' + encodeURIComponent(ID_TOKEN) + '&_=' + Date.now()); const j = await r.json(); if (j.ok) list = j.rows || []; } catch (e) {}
   list = list.concat(lsGet('sa-pend-' + ME.email, []));
   let changed = false;
   list.forEach(x => { if (!x.iid || INSP_IDS[x.iid]) return; const date = parseSheetDate(x.date); if (!date || !DD[x.id]) return;
