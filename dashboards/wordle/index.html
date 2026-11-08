@@ -637,7 +637,7 @@ function closeSheet() { document.getElementById('overlay-root').innerHTML = ''; 
 </script>
 <script>
 /* ── WORDLE — 8 tries. The Word of the day, guesses, streaks and leaderboard all come from the Apps Script (wd_ actions) ── */
-var MAX_TRIES = 8;
+var MAX_TRIES = 8, HINT_AFTER = 3;
 var W = { view: 'play', mode: 'daily', len: 0, ans: null, cat: '', hint: '', guesses: [], res: [], cur: '', done: false, won: false, points: null, busy: false, wait: false, hintShown: false, msg: '', err: '', skip: null, st: null, words: [], period: 'week', board: null, boardErr: '' };
 var KEYROWS = ['QWERTYUIOP', 'ASDFGHJKL', '+ZXCVBNM-'];
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -664,7 +664,7 @@ async function startDaily() {
     (j.guesses || []).forEach(x => { W.guesses.push(x.g); W.res.push(x.r.split('')); });
     W.done = !!j.done; W.won = !!j.won; W.points = j.points == null ? null : j.points;
     if (j.word) W.ans = j.word;
-    W.hintShown = W.guesses.length >= 4;
+    W.hintShown = W.guesses.length >= HINT_AFTER;
     setStreaks(j);
   } catch (e) { W.err = e.message; if (e.code === 'auth') W.err += ' — reload the page and sign in again.'; }
   render();
@@ -689,7 +689,8 @@ async function submitGuess() {
   W.wait = false;
   W.cur = ''; W.guesses.push(g); W.res.push(res); const idx = W.guesses.length - 1;
   if (done) { W.done = true; W.won = won; W.ans = extra.word || W.ans; W.points = extra.points == null ? null : extra.points; setStreaks(extra); }
-  if (W.guesses.length >= 4) W.hintShown = true;
+  if (extra.hint) W.hint = extra.hint;
+  if (W.guesses.length >= HINT_AFTER) W.hintShown = true;
   paintBoard(idx); setTimeout(() => { W.busy = false; paintAll(); }, W.len * 220 + 450);
 }
 function typeKey(k) {
@@ -732,10 +733,11 @@ function kbHtml() {
 }
 function hintHtml() {
   if (!W.len) return '';
-  let h = '<div class="wd-info"><b>' + W.len + '</b> letters' + (W.cat ? ' · <b>' + esc(W.cat) + '</b>' : '') + ' · <b>' + MAX_TRIES + '</b> tries';
-  if (W.hint && !W.done && !W.hintShown) h += ' · <button class="wd-link" data-act="hint">Show hint</button>';
-  h += '</div><div class="wd-theme">Hint: it’s inventory funding related</div>';
-  if (W.hint && !W.done && W.hintShown) h += '<div class="wd-hint">Hint: ' + esc(W.hint) + '</div>';
+  let h = '<div class="wd-info"><b>' + W.len + '</b> letters · <b>' + MAX_TRIES + '</b> tries</div><div class="wd-theme">Hint: it’s inventory funding related</div>';
+  if (!W.done) {
+    if (W.guesses.length >= HINT_AFTER && W.hint) h += '<div class="wd-hint">Clue: ' + esc(W.hint) + '</div>';
+    else h += '<div class="small muted">A clue unlocks after your ' + HINT_AFTER + 'rd try</div>';
+  }
   return h;
 }
 function endHtml() {
@@ -782,7 +784,7 @@ function renderHow() {
     '<div class="wd-ex"><div class="wd-exrow">' + ex('g', 'D') + ex('x', 'E') + ex('x', 'A') + ex('x', 'L') + ex('x', 'E') + ex('x', 'R') + '<span>Green — the letter is in the word and in the right spot.</span></div>' +
     '<div class="wd-exrow">' + ex('x', 'L') + ex('y', 'O') + ex('x', 'A') + ex('x', 'N') + '<span>Yellow — the letter is in the word, but in a different spot.</span></div>' +
     '<div class="wd-exrow">' + ex('x', 'F') + ex('x', 'E') + ex('x', 'E') + '<span>Grey — the letter is not in the word (or you’ve used it up).</span></div></div>' +
-    '<h3>Hints</h3><p>The category is shown above the grid. Tap <b>Show hint</b> for a clue about the word. It appears by itself after your 4th try.</p>' +
+    '<h3>Clues</h3><p>The words are all about inventory funding, and they’re kept short and simple. After your <b>3rd try</b>, a clue about the word appears above the grid.</p>' +
     '<h3>Points</h3><p>Win: <b>100 points</b> for a first-try solve, minus 10 for every extra try (try 8 = 30). A streak bonus adds +5 for each day in a row you’ve already won, up to +25. If you run out of tries you still get 5 points for playing.</p>' +
     '<h3>Streaks</h3><p><b>Win streak</b> — days in a row you’ve solved the word. <b>Login streak</b> — days in a row you’ve opened the game. Miss a day and the streak starts over.</p>' +
     '<h3>Good to know</h3><p>You get one game per day, and your progress is saved, so you can pick up where you left off on another device. Compare with your teammates on the Leaderboard.</p>' +
