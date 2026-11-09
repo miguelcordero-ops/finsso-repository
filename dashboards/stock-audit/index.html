@@ -371,6 +371,19 @@ var TODAY = sod(new Date());
 function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
 function diffDays(a, b) { return Math.round((sod(a) - sod(b)) / DAY_MS); }
 function fmtD(d) { return d ? String(d.getDate()).padStart(2, '0') + ' ' + MONTH_ABBR[d.getMonth()] + ' ' + d.getFullYear() : '—'; }
+/* submission time of an audit ("Timestamp" column; the Form and the app both write it). parseSheetDate drops the time, so this reads the full date-time. */
+function parseTs(v) {
+  if (typeof v === 'number' && v > 0) return new Date(v);
+  const t = String(v == null ? '' : v).trim(); if (!t) return null;
+  let m = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})[ T,]+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AP]M)?/i);
+  if (m) { let h = +m[4]; if (m[7]) { h = h % 12 + (/p/i.test(m[7]) ? 12 : 0); } return new Date(+m[3], +m[1] - 1, +m[2], h, +m[5], +(m[6] || 0)); }
+  m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (m) return new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0));
+  return null;
+}
+function fmtT(ts) { if (!ts) return ''; let h = ts.getHours(); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return h + ':' + String(ts.getMinutes()).padStart(2, '0') + ' ' + ap; }
+function fmtDT(e) { return fmtD(e.date) + (e.ts ? ' · ' + fmtT(e.ts) : ''); }
+function byTime(a, b) { return (a.date - b.date) || ((a.ts ? a.ts.getTime() : 0) - (b.ts ? b.ts.getTime() : 0)); }
 function fmtDs(d) { return d ? String(d.getDate()).padStart(2, '0') + ' ' + MONTH_ABBR[d.getMonth()] : '—'; }
 function iso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 function peso(n) { return '₱' + Math.round(n || 0).toLocaleString('en-US'); }
@@ -512,7 +525,7 @@ function showInspection(ik, back) {
   const row = (k, v) => v ? '<div><span>' + k + '</span>' + esc(v) + '</div>' : '';
   let h = '<h3>' + esc(e.dealer || (d && d.dealer) || '') + ' · ' + esc(e.id) + '</h3><div class="sub">' + esc(d ? vehicleLabel(d) : '') + (d && d.plate ? ' · ' + esc(d.plate) : '') + '</div>' +
     '<div class="item-meta" style="margin:10px 0"><span class="pill ' + (pass ? 't-green' : 't-red') + '">' + esc(e.status) + '</span>' + (e.pending ? ' <span class="pill t-blue">just submitted</span>' : '') + '</div>' +
-    '<div class="kv">' + row('Audit date', fmtD(e.date)) + row('Inspector', e.who) + row('Vehicle status', e.vs) + row('Person contacted', e.person + (e.poc ? ' — ' + e.poc : (e.person ? '' : ''))) +
+    '<div class="kv">' + row('Audit date', fmtDT(e)) + row('Inspector', e.who) + row('Vehicle status', e.vs) + row('Person contacted', e.person + (e.poc ? ' — ' + e.poc : (e.person ? '' : ''))) +
     (e.sold ? row('Date vehicle sold', fmtD(e.sold)) : '') + row('Sales method', e.method) + row('Collateral location', e.loc) + '</div>' +
     (e.remarks ? '<div class="b" style="margin-top:12px">Remarks</div><div class="small" style="white-space:pre-wrap;margin-top:4px">' + esc(e.remarks) + '</div>' : '');
   if (e.photos && e.photos.length) {
@@ -543,7 +556,7 @@ function buildInsp(grids) {
         vs: String(get(r, sc('Vehicle Status - F'))).trim() || String(get(r, sc('Vehicle Status - S'))).trim(),
         remarks: String(get(r, sc('Additional Remarks from SIO - F'))).trim() || String(get(r, sc('Additional Remarks from SIO - S'))).trim(),
         poc: String(get(r, sc('POC Name'))).trim(), sold: parseSheetDate(get(r, sc('Date Vehicle Sold'))), method: String(get(r, sc('Sales Method'))).trim(),
-        person: String(get(r, sc('Person Contacted'))).trim(), loc: String(get(r, sc('Collateral Location (Barangay, City and Province)'))).trim(),
+        ts: parseTs(get(r, sc('Timestamp'))), person: String(get(r, sc('Person Contacted'))).trim(), loc: String(get(r, sc('Collateral Location (Barangay, City and Province)'))).trim(),
         photos: (function () { const out = []; PHOTO_COLS.forEach(function (c) { const urls = String(get(r, sc(c[0]))).split(/[,\s]+/).filter(function (u) { return /^https?:\/\//i.test(u); }); if (!urls.length) return; const g = out.find(function (x) { return x.label === c[1]; }); if (g) g.urls = g.urls.concat(urls); else out.push({ label: c[1], urls: urls }); }); return out; })() };
       const key = e.iid ? 'i:' + e.iid.toLowerCase() : 'k:' + id.toLowerCase() + '|' + iso(date) + '|' + e.who.toLowerCase();
       if (gi > 0 && seen[key]) return;
@@ -567,7 +580,7 @@ setInterval(function () { if (!document.hidden) refreshInsp(); }, 3 * 60 * 1000)
 document.addEventListener('visibilitychange', function () { if (!document.hidden && Date.now() - _lastInspRefresh > 90 * 1000) refreshInsp(); });
 function rebuildHistory() {
   ALLDD.forEach(d => d.hist = []);
-  INSP.sort((a, b) => a.date - b.date);
+  INSP.sort(byTime);
   INSP.forEach(e => { const d = DD[e.id]; if (d) d.hist.push(e); });
   computeAll();
 }
@@ -812,7 +825,7 @@ function showDetail(id) {
   h += '<div class="item-act" style="margin-bottom:8px">' + (d.open ? '<button class="btn pri" data-act="audit" data-id="' + esc(d.id) + '">Start audit</button>' : '') + dealerActs(dl, d.dealer) + '<button class="btn" data-act="close">Close</button></div>';
   h += '<div class="b" style="margin-top:12px">Audit history (' + d.hist.length + ')</div><div class="tl">';
   d.hist.slice().reverse().slice(0, 10).forEach(e => {
-    h += '<div class="e ' + (/^pass/i.test(e.status) ? 'p' : 'f') + '" data-act="insp" data-ik="' + esc(inspKey(e)) + '" style="cursor:pointer" title="Tap for details and photos"><b>' + esc(e.status) + '</b> · ' + fmtD(e.date) + ' · ' + esc(e.who || '—') + (e.pending ? ' <span class="pill t-blue">just submitted</span>' : '') + (e.vs ? '<br><span class="muted">' + esc(e.vs) + '</span>' : '') + (e.remarks ? '<br>' + esc(e.remarks) : '') + '</div>'; });
+    h += '<div class="e ' + (/^pass/i.test(e.status) ? 'p' : 'f') + '" data-act="insp" data-ik="' + esc(inspKey(e)) + '" style="cursor:pointer" title="Tap for details and photos"><b>' + esc(e.status) + '</b> · ' + fmtDT(e) + ' · ' + esc(e.who || '—') + (e.pending ? ' <span class="pill t-blue">just submitted</span>' : '') + (e.vs ? '<br><span class="muted">' + esc(e.vs) + '</span>' : '') + (e.remarks ? '<br>' + esc(e.remarks) : '') + '</div>'; });
   if (!d.hist.length) h += '<div class="muted small">No audits recorded yet.</div>';
   h += '</div>';
   openSheet(h);
@@ -1166,8 +1179,8 @@ async function submitAudit() {
     }
     if (!j.ok) { closeSheet(); A.busy = false; if (j.code === 'auth') { showLock('Your sign-in expired — sign in again, then press Submit.'); } else toast(j.error || 'Upload failed', true); paintAudit(); return; }
     setP('Done', 100);
-    INSP.push({ id: d.id, date: new Date(A.date + 'T00:00:00'), who: ME.name, email: ME.email, status: A.status, iid: A.iid, dealer: d.dealer, vs: A.vs, remarks: A.remarks.trim(), poc: A.poc.trim(), sold: null, method: A.method, pending: true });
-    INSP_IDS[A.iid] = 1; rebuildHistory(); lsSet('sa-pend-' + ME.email, INSP.filter(e => e.pending).map(e => ({ id: e.id, date: iso(e.date), who: e.who, status: e.status, iid: e.iid, dealer: e.dealer, vs: e.vs, remarks: e.remarks })));
+    INSP.push({ id: d.id, date: new Date(A.date + 'T00:00:00'), who: ME.name, email: ME.email, status: A.status, ts: new Date(), iid: A.iid, dealer: d.dealer, vs: A.vs, remarks: A.remarks.trim(), poc: A.poc.trim(), sold: null, method: A.method, pending: true });
+    INSP_IDS[A.iid] = 1; rebuildHistory(); lsSet('sa-pend-' + ME.email, INSP.filter(e => e.pending).map(e => ({ id: e.id, date: iso(e.date), ts: e.ts ? e.ts.getTime() : 0, who: e.who, status: e.status, iid: e.iid, dealer: e.dealer, vs: e.vs, remarks: e.remarks })));
     closeSheet(); A.busy = false; A.done = { ddId: d.id, status: A.status, urls: j.urls || {} }; render();
   } catch (e) {
     closeSheet(); A.busy = false; toast('Upload failed: ' + (e && typeof e.message === 'string' && e.message ? e.message : (e && e.type ? 'a photo could not be read' : String(e))).replace(/\.\s*$/, '') + '. Your form is still here — try again.', true); paintAudit();
@@ -1196,7 +1209,7 @@ function buildEvents() {
   const ev = [];
   Object.keys(LN.loans).forEach(id => {
     const l = LN.loans[id]; if (!l.credit) return;
-    const ins = (by[id] || []).slice().sort((a, b) => a.date - b.date);
+    const ins = (by[id] || []).slice().sort(byTime);
     let cur = COVERAGE_START && l.credit >= COVERAGE_START ? addDays(l.credit, 30) : null;
     ins.forEach(a => {
       if (cur) ev.push({ id, due: cur, done: a });
@@ -1346,7 +1359,7 @@ function renderDone() {
 function paintDone() {
   const host = document.getElementById('donelist'); if (!host) return;
   const src = doneList(), q = (S.doneQ || '').toLowerCase().trim();
-  const list = src.list.filter(e => { if (!q) return true; const d = DD[e.id]; return (e.id + ' ' + (e.dealer || '') + ' ' + (d ? d.dealer + ' ' + d.plate : '')).toLowerCase().includes(q); }).sort((a, b) => b.date - a.date);
+  const list = src.list.filter(e => { if (!q) return true; const d = DD[e.id]; return (e.id + ' ' + (e.dealer || '') + ' ' + (d ? d.dealer + ' ' + d.plate : '')).toLowerCase().includes(q); }).sort((a, b) => byTime(b, a));
   const nF = list.filter(e => /^fail/i.test(e.status)).length, show = S.doneShow || 50;
   document.getElementById('donesub').textContent = src.label + ' · ' + list.length + ' audit' + (list.length === 1 ? '' : 's') + ' · ' + (list.length - nF) + ' passed · ' + nF + ' failed' + (q ? ' · filtered' : '');
   let h = '';
@@ -1355,7 +1368,7 @@ function paintDone() {
     const d = DD[e.id], pass = /^pass/i.test(e.status);
     h += '<div class="item' + (pass ? '' : ' crit') + '" data-act="detail" data-id="' + esc(e.id) + '" style="cursor:pointer"><div class="item-top"><div><div class="item-t">' + esc(e.dealer || (d && d.dealer) || '—') + '</div>' +
       '<div class="item-s">' + esc(e.id) + (d && d.plate ? ' · ' + esc(d.plate) : '') + (d && d.model ? ' · ' + esc(d.model) : '') + '</div></div><span class="pill ' + (pass ? 't-green' : 't-red') + '">' + esc(e.status || '—') + '</span></div>' +
-      '<div class="item-meta small muted">' + fmtD(e.date) + ' · ' + esc(e.who || '—') + (e.vs ? ' · ' + esc(e.vs) : '') + (e.pending ? ' <span class="pill t-blue">just submitted</span>' : '') + '</div>' +
+      '<div class="item-meta small muted">' + fmtDT(e) + ' · ' + esc(e.who || '—') + (e.vs ? ' · ' + esc(e.vs) : '') + (e.pending ? ' <span class="pill t-blue">just submitted</span>' : '') + '</div>' +
       (e.remarks ? '<div class="small">' + esc(e.remarks.length > 160 ? e.remarks.slice(0, 160) + '…' : e.remarks) + '</div>' : '') + '</div>';
   });
   host.innerHTML = h;
@@ -1472,8 +1485,8 @@ async function mergePending(localOnly) {
   list.forEach(x => { if (!x.iid || INSP_IDS[x.iid]) return; const date = parseSheetDate(x.date); if (!date || !DD[x.id]) return;
     // already loaded from BigQuery/CSV under a different Inspection ID? (same loan, same day, same result) -> not pending
     if (INSP.some(e => !e.pending && e.id === x.id && iso(e.date) === iso(date) && String(e.status).toLowerCase() === String(x.status).toLowerCase())) return;
-    INSP.push({ id: x.id, date, who: x.who || '', email: '', status: x.status, iid: x.iid, dealer: x.dealer || DD[x.id].dealer, vs: x.vs || '', remarks: x.remarks || '', poc: '', sold: null, method: '', pending: true }); INSP_IDS[x.iid] = 1; changed = true; });
-  lsSet('sa-pend-' + ME.email, INSP.filter(e => e.pending).map(e => ({ id: e.id, date: iso(e.date), who: e.who, status: e.status, iid: e.iid, dealer: e.dealer, vs: e.vs, remarks: e.remarks })));
+    INSP.push({ id: x.id, date, ts: parseTs(x.ts), who: x.who || '', email: '', status: x.status, iid: x.iid, dealer: x.dealer || DD[x.id].dealer, vs: x.vs || '', remarks: x.remarks || '', poc: '', sold: null, method: '', pending: true }); INSP_IDS[x.iid] = 1; changed = true; });
+  lsSet('sa-pend-' + ME.email, INSP.filter(e => e.pending).map(e => ({ id: e.id, date: iso(e.date), ts: e.ts ? e.ts.getTime() : 0, who: e.who, status: e.status, iid: e.iid, dealer: e.dealer, vs: e.vs, remarks: e.remarks })));
   if (changed) rebuildHistory();
 }
 function _initGoogleAuth() {
