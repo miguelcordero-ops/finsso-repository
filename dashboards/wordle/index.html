@@ -364,7 +364,7 @@ td.od{color:var(--red);font-weight:700}
 </div>
 
 <div class="topbar">
-  <div class="brand">Wordle<small>Finsso words · 8 tries</small></div>
+  <div class="brand">Wordle<small>Finsso words · 6 tries</small></div>
   <div class="top-sp"></div>
   <div class="who"><div class="avatar" id="avatar">?</div><div class="who-txt"><b id="who-name">—</b><span id="who-role">Wordle</span></div></div>
   <button class="icon-btn" id="theme-btn" title="Light / dark">◐</button>
@@ -636,8 +636,8 @@ function openSheet(html) {
 function closeSheet() { document.getElementById('overlay-root').innerHTML = ''; }
 </script>
 <script>
-/* ── WORDLE — 8 tries. The Word of the day, guesses, streaks and leaderboard all come from the Apps Script (wd_ actions) ── */
-var MAX_TRIES = 8, HINT_AFTER = 3;
+/* ── WORDLE — 6 tries. The Word of the day, guesses, streaks and leaderboard all come from the Apps Script (wd_ actions) ── */
+var MAX_TRIES = 6, HINT_AFTER = 4;
 var W = { view: 'play', mode: 'daily', len: 0, ans: null, cat: '', hint: '', guesses: [], res: [], cur: '', done: false, won: false, points: null, busy: false, wait: false, hintShown: false, msg: '', err: '', skip: null, st: null, words: [], period: 'week', board: null, boardErr: '' };
 var KEYROWS = ['QWERTYUIOP', 'ASDFGHJKL', '+ZXCVBNM-'];
 function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -733,10 +733,10 @@ function kbHtml() {
 }
 function hintHtml() {
   if (!W.len) return '';
-  let h = '<div class="wd-info"><b>' + W.len + '</b> letters · <b>' + MAX_TRIES + '</b> tries</div><div class="wd-theme">Hint: it’s inventory funding related</div>';
+  let h = '<div class="wd-info"><b>' + W.len + '</b> letters · <b>' + MAX_TRIES + '</b> tries</div>';
   if (!W.done) {
     if (W.guesses.length >= HINT_AFTER && W.hint) h += '<div class="wd-hint">Clue: ' + esc(W.hint) + '</div>';
-    else h += '<div class="small muted">A clue unlocks after your ' + HINT_AFTER + 'rd try</div>';
+    else h += '<div class="small muted">A clue unlocks after your ' + HINT_AFTER + 'th try</div>';
   }
   return h;
 }
@@ -778,14 +778,14 @@ function renderHow() {
   const ex = (cls, ch) => '<span class="wd-cell sm ' + cls + '">' + ch + '</span>';
   document.getElementById('view').innerHTML = '<div class="wd-wrap wd-wide">' + tabsHtml() + '<div class="wd-how">' +
     '<h2>How to play</h2>' +
-    '<p>Guess the <b>word of the day</b> in <b>' + MAX_TRIES + ' tries</b>. Every word is related to inventory funding, and everyone gets the same word. A new one appears every day at midnight (Philippine time).</p>' +
+    '<p>Guess the <b>word of the day</b> in <b>' + MAX_TRIES + ' tries</b>. Everyone gets the same word. A new one appears every day at midnight (Philippine time).</p>' +
     '<h3>Making a guess</h3><p>Type or tap the letters, then press <b>Enter</b>. Your guess needs exactly as many letters as the word has (the count is shown above the grid). It doesn’t have to be a dictionary word.</p>' +
     '<h3>The colors</h3>' +
     '<div class="wd-ex"><div class="wd-exrow">' + ex('g', 'D') + ex('x', 'E') + ex('x', 'A') + ex('x', 'L') + ex('x', 'E') + ex('x', 'R') + '<span>Green — the letter is in the word and in the right spot.</span></div>' +
     '<div class="wd-exrow">' + ex('x', 'L') + ex('y', 'O') + ex('x', 'A') + ex('x', 'N') + '<span>Yellow — the letter is in the word, but in a different spot.</span></div>' +
     '<div class="wd-exrow">' + ex('x', 'F') + ex('x', 'E') + ex('x', 'E') + '<span>Grey — the letter is not in the word (or you’ve used it up).</span></div></div>' +
-    '<h3>Clues</h3><p>The words are all about inventory funding, and they’re kept short and simple. After your <b>3rd try</b>, a clue about the word appears above the grid.</p>' +
-    '<h3>Points</h3><p>Win: <b>100 points</b> for a first-try solve, minus 10 for every extra try (try 8 = 30). A streak bonus adds +5 for each day in a row you’ve already won, up to +25. If you run out of tries you still get 5 points for playing.</p>' +
+    '<h3>Clues</h3><p>The words are kept short and simple. After your <b>4th try</b>, a clue about the word appears above the grid.</p>' +
+    '<h3>Points</h3><p>Win: <b>100 points</b> for a first-try solve, minus 10 for every extra try (try 6 = 50). A streak bonus adds +5 for each day in a row you’ve already won, up to +25. If you run out of tries you still get 5 points for playing.</p>' +
     '<h3>Streaks</h3><p><b>Win streak</b> — days in a row you’ve solved the word. <b>Login streak</b> — days in a row you’ve opened the game. Miss a day and the streak starts over.</p>' +
     '<h3>Good to know</h3><p>You get one game per day, and your progress is saved, so you can pick up where you left off on another device. Compare with your teammates on the Leaderboard.</p>' +
     '<div class="wd-btns"><button class="btn" data-act="daily">Play today’s word</button></div></div></div>';
@@ -812,7 +812,7 @@ function renderBoard() {
       '<div class="small muted" style="margin-top:8px">' + (W.board.yourRank ? 'You are #' + W.board.yourRank + ' of ' + W.board.total + '.' : 'You haven’t played in this period yet.') + (W.board.rows.length < W.board.total ? ' Showing the top ' + W.board.rows.length + '.' : '') + '</div>';
   }
   document.getElementById('view').innerHTML = '<div class="wd-wrap wd-wide">' + tabsHtml() + streakHtml() + '<div class="wd-modes">' + chips + '</div>' + body +
-    '<div class="wd-rules"><b>How points work</b><br>Win: 100 points for a first-try solve, minus 10 for every extra try (try 8 = 30). Streak bonus: +5 for each day in a row you’ve already won, up to +25. Lose: 5 points for playing. Only the Word of the day counts; one game per person per day. Avg = average tries on wins.</div></div>';
+    '<div class="wd-rules"><b>How points work</b><br>Win: 100 points for a first-try solve, minus 10 for every extra try (try 6 = 50). Streak bonus: +5 for each day in a row you’ve already won, up to +25. Lose: 5 points for playing. Only the Word of the day counts; one game per person per day. Avg = average tries on wins.</div></div>';
 }
 document.addEventListener('click', e => {
   const k = e.target.closest('.wd-key'); if (k) { typeKey(k.dataset.k); return; }
