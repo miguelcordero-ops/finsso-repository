@@ -501,8 +501,9 @@ function buildCore(texts, quiet) {
 }
 /* inspections from one or more grids (same headers). A v3 tracker ID carries a trailing "*"; the audit sheet may omit it.
    A row from a later grid is skipped when the same audit (Inspection ID, or drawdown + date + inspector) is already loaded. */
-var PHOTO_COLS = [['Geo-tagged Photo of the Showroom', 'Showroom'], ['Collateral Pictures (Geo-tagged Photos) - S', 'Collateral (sold)'], ['Motor Vehicle Inspection Report (MVIR) - S', 'MVIR (sold)'],
-  ['Collateral Pictures (Geo-tagged Photos) - F', 'Collateral'], ['Motor Vehicle Inspection Report (MVIR) - F', 'MVIR']];
+/* "- S" columns = the Passed path of the form, "- F" = the Failed path; both are the same kind of photo, so they share one label */
+var PHOTO_COLS = [['Geo-tagged Photo of the Showroom', 'Showroom'], ['Collateral Pictures (Geo-tagged Photos) - S', 'Collateral'], ['Collateral Pictures (Geo-tagged Photos) - F', 'Collateral'],
+  ['Motor Vehicle Inspection Report (MVIR) - S', 'MVIR'], ['Motor Vehicle Inspection Report (MVIR) - F', 'MVIR']];
 function driveId(u) { const m = String(u).match(/[?&]id=([-\w]{10,})/) || String(u).match(/\/d\/([-\w]{10,})/); return m ? m[1] : ''; }
 function inspKey(e) { return e.iid || (e.id + '|' + iso(e.date) + '|' + e.who); }
 function showInspection(ik, back) {
@@ -543,7 +544,7 @@ function buildInsp(grids) {
         remarks: String(get(r, sc('Additional Remarks from SIO - F'))).trim() || String(get(r, sc('Additional Remarks from SIO - S'))).trim(),
         poc: String(get(r, sc('POC Name'))).trim(), sold: parseSheetDate(get(r, sc('Date Vehicle Sold'))), method: String(get(r, sc('Sales Method'))).trim(),
         person: String(get(r, sc('Person Contacted'))).trim(), loc: String(get(r, sc('Collateral Location (Barangay, City and Province)'))).trim(),
-        photos: PHOTO_COLS.map(function (c) { return { label: c[1], urls: String(get(r, sc(c[0]))).split(/[,\s]+/).filter(function (u) { return /^https?:\/\//i.test(u); }) }; }).filter(function (g) { return g.urls.length; }) };
+        photos: (function () { const out = []; PHOTO_COLS.forEach(function (c) { const urls = String(get(r, sc(c[0]))).split(/[,\s]+/).filter(function (u) { return /^https?:\/\//i.test(u); }); if (!urls.length) return; const g = out.find(function (x) { return x.label === c[1]; }); if (g) g.urls = g.urls.concat(urls); else out.push({ label: c[1], urls: urls }); }); return out; })() };
       const key = e.iid ? 'i:' + e.iid.toLowerCase() : 'k:' + id.toLowerCase() + '|' + iso(date) + '|' + e.who.toLowerCase();
       if (gi > 0 && seen[key]) return;
       seen[key] = 1;
