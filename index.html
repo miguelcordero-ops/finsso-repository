@@ -142,7 +142,7 @@ function counts(g){
   if(g.soon&&!g.items.length)return '<span>Coming soon</span>';
   return '<span>'+live+' dashboard'+(live===1?'':'s')+'</span>'+(soon?'<span>· '+soon+' coming soon</span>':'');
 }
-var EXTRA=[{title:'Finsso Wordle',href:'/dashboards/wordle/',icon:'search',desc:'Guess the inventory-funding word in 8 tries. A new word every day, with points, streaks and a leaderboard.'}];
+var EXTRA=[{title:'Finsso Wordle',href:'/dashboards/wordle/',icon:'search',desc:'Guess the daily finance word in 6 tries. A new word every day, with points, streaks and a leaderboard.'}];
 function extras(){
   return EXTRA.map(function(i){return '<a class="wordle-card" href="'+i.href+'"><div class="wc-tiles"><i class="g">W</i><i class="y">O</i><i class="x">R</i><i class="g">D</i><i class="y">L</i><i class="g">E</i></div><div class="wc-txt"><span class="wc-new">New · Daily</span><div class="wc-title">'+esc(i.title)+'</div><div class="wc-desc">'+esc(i.desc)+'</div></div><span class="wc-btn">Play today’s word →</span></a>';}).join('');
 }
