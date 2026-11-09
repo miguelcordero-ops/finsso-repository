@@ -257,7 +257,7 @@ var MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','N
 var DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 var ID_TOKEN = '';
 var ME = null;                 // { email, name, leader }
-var S = { view: 'home', lens: { role: 'auditor', officer: '' }, dpd1: true, dpd5: false, itinWin: 'week', route: [], q: '' };
+var S = { view: 'home', lens: { role: 'auditor', officer: '' }, dpd1: true, itinWin: 'week', route: [], q: '' };
 
 /* ── helpers copied from the other dashboards (header-name lookup, CSV parsing, date parsing) ── */
 function parseSheetDate(v) {
@@ -405,7 +405,7 @@ var V3_DPD_COLS = ['R1 DPD', 'R2 DPD', 'R3 DPD', 'P1 DPD', 'R4 DPD', 'P2 DPD', '
 /* Drawdowns come ONLY from the drawdown trackers (drawdown.csv = previous versions, drawdownv3.csv = v3),
    payments from repayment.csv / repaymentv3.csv. Dealer details and the assigned stock audit officer /
    collections officer come from AuditMapping.csv (one row per dealer). */
-var CORE_FILES = [['drawdown.csv', 0], ['drawdownv3.csv', 1], ['repayment.csv', 0], ['repaymentv3.csv', 1], ['stock-inspection.csv', 0], ['AuditMapping.csv', 0], ['stock-audits-v2.csv', 1]];
+var CORE_FILES = [['drawdown.csv', 0], ['drawdownv3.csv', 1], ['repayment.csv', 0], ['repaymentv3.csv', 1], ['stock-inspection.csv', 0], ['AuditMapping.csv', 0], ['stock-audits-v2.csv', 1], ['ob-masterlist.csv', 1]];
 var _coreSig = '';
 /* download step only (no parsing) — can start before sign-in checks finish */
 function fetchCoreTexts() { return Promise.all(CORE_FILES.map(function (f) { return fetchText(f[0], !!f[1]); })); }
@@ -417,9 +417,24 @@ async function loadCoreCachedTexts(email) {
 function sigOf(texts) { return (texts || []).map(function (t) { return t === null ? '-' : t.length + ':' + t.slice(-64); }).join('|'); }
 function saveCoreCache(email, texts) { texts.forEach(function (t, i) { if (t !== null) idbSet(email + '|' + CORE_FILES[i][0], { t: t, ts: Date.now() }); }); }
 async function loadCore(texts) { buildCore(texts || await fetchCoreTexts()); }
+/* dealer (owner / authorized representative) names come from the onboarding list, matched by Dealer ID, else by dealership name */
+var OWNERS = { id: {}, name: {} };
+function ownerKey(s) { return normName(s).toLowerCase().replace(/[^a-z0-9]/g, ''); }
+function buildOwners(ob) {
+  OWNERS = { id: {}, name: {} };
+  if (!ob || !ob.length) return;
+  const oc = buildColumnMap(ob[0]);
+  ob.slice(1).forEach(r => {
+    const nm = normName(get(r, oc('Name of Owner/Authorized Representative'))); if (!nm) return;
+    const id = String(get(r, oc('Dealer ID'))).trim(), dn = normName(get(r, oc('Dealership Name')));
+    if (id) OWNERS.id[id] = nm; if (dn) OWNERS.name[ownerKey(dn)] = nm;
+  });
+}
+function dealerOwner(d) { return OWNERS.id[d.dealerId] || OWNERS.name[ownerKey(d.dealer)] || ''; }
 function buildCore(texts, quiet) {
   const g = texts.map(function (t) { return t === null ? null : parseCSV(t); });
-  const [d2, d3, r2, r3, si, am, sa2] = g;
+  const [d2, d3, r2, r3, si, am, sa2, ob] = g;
+  buildOwners(ob);
   // ── dealers + officer mapping (AuditMapping.csv)
   DEALERS = {};
   const ac = buildColumnMap(am[0]);
@@ -591,7 +606,7 @@ function lensRoles() {
 function lensList() {
   const L = S.lens; let list = OPEN;
   if (L.officer !== '*') list = OPEN.filter(d => L.role === 'auditor' ? d.so === L.officer : d.co === L.officer);
-  if (L.role === 'collector' && (S.dpd5 || S.dpd1)) { const mn = S.dpd5 ? 5 : 1; list = list.filter(d => d.dpdDays >= mn || d.multiFail || d.soldTag); }
+  if (L.role === 'collector' && S.dpd1) list = list.filter(d => d.dpdDays >= 1 || d.multiFail || d.soldTag);
   return list.slice().sort((a, b) => b.score - a.score || a.due - b.due);
 }
 function chipsFor(d) {
@@ -759,7 +774,8 @@ function itemHtml(d, opts) {
 function showDetail(id) {
   const d = DD[id]; if (!d) return; if (d.open && !d.due) computeSchedule(d);
   const dl = dealerOf(d);
-  let h = '<h3>' + esc(d.dealer) + ' · ' + esc(d.id) + '</h3><div class="sub">' + esc(vehicleLabel(d)) + (d.plate ? ' · ' + esc(d.plate) : '') + '</div>';
+  const own = dealerOwner(d);
+  let h = '<h3>' + esc(d.dealer) + ' · ' + esc(d.id) + '</h3>' + (own ? '<div class="sub">Dealer: <b>' + esc(own) + '</b></div>' : '') + '<div class="sub">' + esc(vehicleLabel(d)) + (d.plate ? ' · ' + esc(d.plate) : '') + '</div>';
   if (d.open) h += '<div class="item-meta" style="margin:10px 0">' + chipsFor(d) + '</div><div class="callout info small">Next audit due <b>' + fmtD(d.due) + '</b> — ' + esc(d.basis) + '.</div>';
   h += '<div class="kv"><div><span>Loan status</span>' + esc(d.status || '—') + '</div><div><span>Outstanding</span>' + peso(d.out) + '</div><div><span>Credit date</span>' + fmtD(d.credit) + '</div><div><span>DPD</span>' + (d.dpdDays || (d.inDpd ? 'Yes' : '0')) + '</div>' +
     '<div><span>Sales officer (SO)</span>' + esc(dl.sales || '—') + '</div><div><span>Sales manager (SM)</span>' + esc(dl.sm || '—') + '</div><div><span>Dealer phone</span>' + (dl.phones && dl.phones.length ? dl.phones.map(p => '<a href="tel:' + esc(p) + '">' + esc(p) + '</a>').join('<br>') : '—') + '</div><div><span>Audit officer</span>' + esc(d.so || '—') + '</div><div><span>Collections officer</span>' + esc(d.co || '—') + '</div><div><span>City</span>' + esc(dl.city || '—') + '</div><div><span>Address</span>' + esc(dl.address || '—') + '</div></div>';
@@ -791,7 +807,7 @@ function renderHome() {
   const wkF = wk.filter(e => /^fail/i.test(e.status)).length;
   const isCol = L.role === 'collector';
   let h = '<div class="h1">' + greeting() + ', ' + esc((ME.name || '').split(' ')[0] || 'there') + '</div>' +
-    '<div class="sub">' + esc(lensName()) + ' · ' + (isCol ? 'Collections view — accounts at ' + (S.dpd5 ? '5+ DPD, repeat failures or sold' : S.dpd1 ? '1+ DPD, repeat failures or sold' : 'any DPD') : 'Stock audit view — all assigned drawdowns') + ' · ' + list.length + ' open drawdowns</div>';
+    '<div class="sub">' + esc(lensName()) + ' · ' + (isCol ? 'Collections view — accounts at ' + (S.dpd1 ? '1+ DPD, repeat failures or sold' : 'any DPD') : 'Stock audit view — all assigned drawdowns') + ' · ' + list.length + ' open drawdowns</div>';
   h += '<div class="kpis sec">' +
     '<button class="kpi red" data-act="goto" data-f="overdue"><div class="n">' + c.over + '</div><div class="l">Overdue</div><div class="s">past scheduled date</div></button>' +
     '<button class="kpi orange" data-act="goto" data-f="today"><div class="n">' + c.today + '</div><div class="l">Due today</div><div class="s">&nbsp;</div></button>' +
@@ -1257,7 +1273,7 @@ function renderLens() {
     h += '<select class="inp" id="lens-off" style="width:auto;min-height:34px;padding:4px 8px;font-size:12.5px"><option value="*"' + (S.lens.officer === '*' ? ' selected' : '') + '>Everyone</option>' + names.map(n => '<option' + (n === S.lens.officer ? ' selected' : '') + '>' + esc(n) + '</option>').join('') + '</select>';
   }
   if (ME.leader || (roles.auditor && roles.collector)) h += '<div class="seg"><button data-act="role" data-v="auditor" class="' + (S.lens.role === 'auditor' ? 'on' : '') + '">Auditor</button><button data-act="role" data-v="collector" class="' + (S.lens.role === 'collector' ? 'on' : '') + '">Collector</button></div>';
-  if (S.lens.role === 'collector') h += '<button class="chip' + (S.dpd1 && !S.dpd5 ? ' on' : '') + '" data-act="dpd1" style="min-height:30px;padding:4px 10px">1+ DPD, repeat failures or sold</button><button class="chip' + (S.dpd5 ? ' on' : '') + '" data-act="dpd5" style="min-height:30px;padding:4px 10px">5+ DPD only</button>';
+  if (S.lens.role === 'collector') h += '<button class="chip' + (S.dpd1 ? ' on' : '') + '" data-act="dpd1" style="min-height:30px;padding:4px 10px">1+ DPD, repeat failures or sold</button>';
   el.innerHTML = h;
   const sel = document.getElementById('lens-off'); if (sel) sel.onchange = () => { S.lens.officer = sel.value; render(); };
 }
@@ -1342,8 +1358,7 @@ document.addEventListener('click', function (e) {
   else if (a === 'ddall') { S.ddAll = !S.ddAll; S.ddShow = 30; render(); }
   else if (a === 'ddmore') { S.ddShow += 30; paintDD(); }
   else if (a === 'role') { S.lens.role = v; render(); }
-  else if (a === 'dpd1') { S.dpd1 = !S.dpd1; if (S.dpd1) S.dpd5 = false; render(); }
-  else if (a === 'dpd5') { S.dpd5 = !S.dpd5; if (S.dpd5) S.dpd1 = false; render(); }
+  else if (a === 'dpd1') { S.dpd1 = !S.dpd1; render(); }
   else if (a === 'lper') { S.lper = v; render(); }
   else if (a === 'res') { readForm(); A.status = v; const ok = v === 'Passed' ? VS_PASS : VS_FAIL; if (!ok.includes(A.vs)) A.vs = ''; paintAudit(); }
   else if (a === 'rmph') { A.photos[k].splice(+t.dataset.i, 1); readForm(); paintAudit(); }
