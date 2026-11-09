@@ -1636,7 +1636,9 @@ function renderDealerBody() {
   const openLoans = loans.filter(dcIsOpen);
   const atRisk = openLoans.filter(dcIsOverdue);
   const atRiskAmt = atRisk.reduce((a, l) => a + (l.outstandingSheet || 0), 0);
-  const kv = rows => '<div class="dc-kv">' + rows.map(r => r.sub
+  dcSummary = [];
+  const kv = rows => { rows.forEach(r => dcSummary.push([r[0], r[1]])); return kvHtml(rows); };
+  const kvHtml = rows => '<div class="dc-kv">' + rows.map(r => r.sub
     ? '<div class="k sub">' + r[0] + '</div><div class="v"><i>' + r[1] + '</i></div>'
     : '<div class="k">' + r[0] + '</div><div class="v">' + r[1] + '</div>').join('') + '</div>';
 
@@ -1730,7 +1732,7 @@ function renderDealerBody() {
     '<div class="dc-grid"><div>' + left1 + '</div><div>' + right1 + '</div></div>' +
     '<div class="dc-grid" style="padding-top:0"><div>' + left2 + '</div><div>' + right2 + '</div></div>' +
     '<div class="dc-band" style="font-size:15px">' + (includeHist ? 'All Accounts (incl. historical)' : 'Open Accounts') + '</div>' +
-    '<div class="dc-tbar"><span id="dc-count"></span><span class="dc-key"><i class="k-od"></i>Overdue</span><span class="dc-key"><i class="k-dpd"></i>In DPD, not overdue</span><button type="button" id="dc-clear">Clear sort &amp; filters</button>' +
+    '<div class="dc-tbar"><span id="dc-count"></span><span class="dc-key"><i class="k-od"></i>Overdue</span><span class="dc-key"><i class="k-dpd"></i>In DPD, not overdue</span><button type="button" id="dc-clear">Clear sort &amp; filters</button><button type="button" id="dc-csv" title="Download this dealer\u2019s summary and the accounts exactly as currently shown (filters and sort applied)">Download CSV</button>' +
     '<span class="dc-hint">click a header to sort · type under a header to filter (numbers accept &gt; &lt; &gt;= &lt;= =)</span></div>' +
     '<div class="dc-table-wrap"><table><thead>' +
     '<tr id="dc-hrow">' + heads.map((h, i) => '<th data-c="' + i + '" class="srt' + (i === 0 ? ' fz' : '') + '">' + h + '<span class="ar"></span></th>').join('') + '</tr>' +
@@ -1749,6 +1751,7 @@ function renderDealerBody() {
     dcFilters[+inp.dataset.c] = inp.value;
     dcPaintRows();
   }));
+  document.getElementById('dc-csv').addEventListener('click', dcExportCsv);
   document.getElementById('dc-clear').addEventListener('click', () => {
     dcSort = { col: null, dir: 1 }; dcFilters = {};
     body.querySelectorAll('#dc-frow input').forEach(i => { i.value = ''; });
@@ -1771,6 +1774,30 @@ function dcMatch(cell, q) {
   }
   return String(cell.t).toLowerCase().indexOf(q.toLowerCase()) >= 0;
 }
+var dcSummary = [], dcVisible = [];
+function dcPlain(h) { const t = document.createElement('div'); t.innerHTML = String(h == null ? '' : h); return t.textContent.replace(/\s+/g, ' ').trim(); }
+function dcCsvCell(v) { v = String(v == null ? '' : v); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+/* CSV of the Single dealer card exactly as shown: the dealer summary, then the accounts table with the current filters and sort applied */
+function dcExportCsv() {
+  const sel = document.getElementById('dc-dealer'), id = sel.value; if (!id) return;
+  const name = sel.selectedOptions[0] ? sel.selectedOptions[0].text : id;
+  const includeHist = document.getElementById('dc-hist').value === 'yes';
+  const L = [];
+  const add = a => L.push(a.map(dcCsvCell).join(','));
+  add(['Dealer Status', name]); add(['Exported', new Date().toLocaleString('en-PH')]); add(['Accounts shown', (includeHist ? 'All accounts (incl. historical)' : 'Open accounts') + ' — ' + dcVisible.length + ' of ' + dcRows.length]);
+  const act = Object.keys(dcFilters).filter(c => (dcFilters[c] || '').trim()).map(c => dcHeads[c] + ': ' + dcFilters[c]);
+  if (act.length) add(['Filters', act.join('; ')]);
+  if (dcSort.col !== null) add(['Sorted by', dcHeads[dcSort.col] + (dcSort.dir === 1 ? ' (ascending)' : ' (descending)')]);
+  L.push(''); add(['Field', 'Value']);
+  let risk = 0;
+  dcSummary.forEach(r => { let k = dcPlain(r[0]).replace(/:$/, ''); if (/^at risk/i.test(k)) { k = risk++ === 0 ? 'At risk (in DPD) - accounts' : 'At risk (in DPD) - outstanding principal'; } add([k, dcPlain(r[1])]); });
+  L.push(''); add(dcHeads);
+  dcVisible.forEach(r => add(r.cells.map(c => c.t)));
+  const blob = new Blob(['\ufeff' + L.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'), d = new Date(), pad = n => String(n).padStart(2, '0');
+  a.href = URL.createObjectURL(blob); a.download = 'dealer-' + String(id).replace(/[^\w-]+/g, '') + '-' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '.csv';
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
 function dcPaintRows() {
   let rows = dcRows.filter(r => Object.keys(dcFilters).every(c => dcMatch(r.cells[c], dcFilters[c] || '')));
   if (dcSort.col !== null) {
@@ -1783,6 +1810,7 @@ function dcPaintRows() {
       return String(x).localeCompare(String(y), undefined, { numeric: true, sensitivity: 'base' }) * dir;
     });
   }
+  dcVisible = rows;
   document.getElementById('dc-tbody').innerHTML = rows.length ? rows.map(r =>
     '<tr class="' + (r.hist ? 'hist ' : '') + (r.state || '') + '">' + r.cells.map((cell, i) =>
       '<td class="' + (dcCols[i].fz ? 'fz ' : '') + (dcCols[i].left ? 'l ' : '') + (dcCols[i].right ? 'rr' : '') + '">' + dcEsc(cell.t) + '</td>').join('') + '</tr>'
