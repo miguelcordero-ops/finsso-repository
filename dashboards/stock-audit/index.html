@@ -405,7 +405,7 @@ var V3_DPD_COLS = ['R1 DPD', 'R2 DPD', 'R3 DPD', 'P1 DPD', 'R4 DPD', 'P2 DPD', '
 /* Drawdowns come ONLY from the drawdown trackers (drawdown.csv = previous versions, drawdownv3.csv = v3),
    payments from repayment.csv / repaymentv3.csv. Dealer details and the assigned stock audit officer /
    collections officer come from AuditMapping.csv (one row per dealer). */
-var CORE_FILES = [['drawdown.csv', 0], ['drawdownv3.csv', 1], ['repayment.csv', 0], ['repaymentv3.csv', 1], ['stock-inspection.csv', 0], ['AuditMapping.csv', 0], ['stock-audits-v2.csv', 1], ['dealer-checker.csv', 1]];
+var CORE_FILES = [['drawdown.csv', 0], ['drawdownv3.csv', 1], ['repayment.csv', 0], ['repaymentv3.csv', 1], ['stock-inspection.csv', 0], ['AuditMapping.csv', 0], ['stock-audits-v2.csv', 1], ['ob-masterlist.csv', 1]];
 var _coreSig = '';
 /* download step only (no parsing) — can start before sign-in checks finish */
 function fetchCoreTexts() { return Promise.all(CORE_FILES.map(function (f) { return fetchText(f[0], !!f[1]); })); }
@@ -417,7 +417,7 @@ async function loadCoreCachedTexts(email) {
 function sigOf(texts) { return (texts || []).map(function (t) { return t === null ? '-' : t.length + ':' + t.slice(-64); }).join('|'); }
 function saveCoreCache(email, texts) { texts.forEach(function (t, i) { if (t !== null) idbSet(email + '|' + CORE_FILES[i][0], { t: t, ts: Date.now() }); }); }
 async function loadCore(texts) { buildCore(texts || await fetchCoreTexts()); }
-/* the dealer's name comes from the onboarded dealers sheet (dealer-checker.csv, header "Dealer Name"), matched by Dealer ID, else by dealership name */
+/* the dealer's name comes from the OB masterlist (ob-masterlist.csv, header "Name of Owner/Authorized Representative"), matched by Dealer ID, else by dealership name */
 var OWNERS = { id: {}, name: {} };
 function ownerKey(s) { return normName(s).toLowerCase().replace(/[^a-z0-9]/g, ''); }
 function buildOwners(ob) {
@@ -425,7 +425,7 @@ function buildOwners(ob) {
   if (!ob || !ob.length) return;
   const oc = buildColumnMap(ob[0]);
   ob.slice(1).forEach(r => {
-    const nm = normName(get(r, oc('Dealer Name'))); if (!nm) return;
+    const nm = normName(get(r, oc('Name of Owner/Authorized Representative'))); if (!nm) return;
     const id = String(get(r, oc('Dealer ID'))).trim(), dn = normName(get(r, oc('Dealership Name')));
     if (id) OWNERS.id[id] = nm; if (dn) OWNERS.name[ownerKey(dn)] = nm;
   });
