@@ -1,4 +1,4 @@
-46143,Dealer ID, ,Assigned SM,Assigned SO,Dealer Status,Dealership Address,Dealership Address,Latitude,Longitude,City Extract,Ongoing Drawdowns,,[OLD] Assigned Inspection Officer,[OLD] Assigned Collections Officer,Assigned Stock Audit Officer,Assigned Collections Officer
+46143,Dealer ID,Dealership Name,Assigned SM,Assigned SO,Dealer Status,Dealership Address,Dealership Address,Latitude,Longitude,City Extract,Ongoing Drawdowns,,[OLD] Assigned Inspection Officer,[OLD] Assigned Collections Officer,Assigned Stock Audit Officer,Assigned Collections Officer
 ,IF0001,EMC PRADO AUTO INC,Albert Dalupang,Albert Dalupang,AUM Inactive,"66 MAAYUSIN STREET, BRGY UP VILLAGE, QUEZON CITY, 1101",9189425321,14.6472544,121.0583242,Quezon City,0,,Anton Belmonte,Anton Belmonte,Randy Celorico,Anton Belmonte
 ,IF0002,DCP-DASH CAR PRO TRADING CORP (Dashcarr Pro),Albert Dalupang,Albert Dalupang,AUM Active,"154 DR. ALEJOS ST, BRGY SALVACION, LA LOMA, QUEZON CITY, 1114",9954593150,14.6263289,120.99421,Quezon City,28,,Michael John Pineda,Michael John Pineda,Randy Celorico,Michael John Pineda
 ,IF0003,OKSCARS AUTOFINANCING CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,AUM Inactive,"NO 1E DARIUS ST, KINGSVILLE EXECUTIVE SUBDIVISION, BRGY MAYAMOT, ANTIPOLO CITY, RIZAL, 1870",9173840096,27.5158689,-97.856109,Kingsville,0,,Michael John Pineda,Michael John Pineda,Reynante Estacion,Anton Belmonte
@@ -466,18 +466,18 @@
 ,IF0465,RONY.082 AUTO TRADING,Malou Alfonso,Candyce Aguete,,LOT 7 BLK 9 DAVID ST GOODWILL HOMES 2 BAGBAG QUEZON CITY ,9260645457,,,,0,,,,Reynante Estacion,Michael John Pineda
 ,IF0466,RSPEED CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,,18 BFIC M GREGORIO ST CANUMAY WEST VALENZUELA CITY,9175310588,,,,1,,,,Randy Celorico,Nathaniel Ruelos
 ,IF0467,BJ CAR TRADING,Malou Alfonso,Candyce Aguete,,64 NINANG IMELDA ST BF HOMES NORTH CALOOCAN CITY,09427165889/09253772012,,,,0,,,,Randy Celorico,Anton Belmonte
-,IF0468,THEHANDJOB AUTO DETAILING SERVICES,,,,342 MAHUSAY ST. IBAYO MARILAO BULACAN,9190872919,,,,0,,,,Randy Celorico,Anton Belmonte
+,IF0468,THEHANDJOB AUTO DETAILING SERVICES,Malou Alfonso,Myrnalyn Bankingkito,,342 MAHUSAY ST. IBAYO MARILAO BULACAN,9190872919,,,,0,,,,Randy Celorico,Anton Belmonte
 ,IF0469,A S AUTO TRADING,Malou Alfonso,Myrnalyn Bankingkito,,61 ANTIQUE ST RAMON MAGSAYSAY BAGO BANTAY QUEZON CITY ,9452352013,,,,1,,,,Randy Celorico,Nathaniel Ruelos
 ,IF0470,ROROD AUTOWORK'S TRADING,Albert Dalupang,Zhesa Resurrecion,,4 ST. FRANCIS 5 CANLALAY BINAN LAGUNA,9157806288,,,,0,,,,Bernard Gombio,Bernard Gombio
 ,IF0471,DON ROBERT CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,,"179 A, 1216 24TH AVE, J.P. RIZAL EXT, TAGUIG CITY",9163309248,,,,0,,,,Randy Celorico,Nathaniel Ruelos
 ,IF0472,C2G CAR TRADING,Albert Dalupang,Zhesa Resurrecion,,39-A J OCAMPO ST BRGY. DIGMAN BACOOR CAVITE ,9271345757,,,,0,,,,Bernard Gombio,Bernard Gombio
-,IF0473,TERRY AUTO TRADING,,,,"LOT 18 BLK 4 SAINT ANDREW, DON BOSCO VILLAGE BETTER LIVING PARANAQUE CITY",9695319252,,,,0,,,,Bernard Gombio,Bernard Gombio
+,IF0473,TERRY AUTO TRADING,Albert Dalupang,Zhesa Resurrecion,,"LOT 18 BLK 4 SAINT ANDREW, DON BOSCO VILLAGE BETTER LIVING PARANAQUE CITY",9695319252,,,,0,,,,Bernard Gombio,Bernard Gombio
 ,IF0474,J&E CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,,4 GLORIA AVE TANDANG SORA QUEZON CITY,9665575757,,,,0,,,,Randy Celorico,Nathaniel Ruelos
 ,IF0475,LIAM CARSS CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,,"129 DIAMOND DR, ST. FRANCIS SUBDIVISION PANDAYAN MEYCAUAYAN BULACAN",9178509242,,,,1,,,,Reynante Estacion,Anton Belmonte
 ,IF0476,JND CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,,8 PEACOCK ST. FRANCIS SUBDIVISION PANDAYAN MEYCAUAYAN BULACAN,9057423698,,,,0,,,,Reynante Estacion,Anton Belmonte
 ,IF0477,A DRIAN CAR TRADING,Malou Alfonso,Rose Batacan,,2254 JUAN LUNA ST BRGY. 153 GAGALANGIN TONDO MANILA,9674790138,,,,0,,,,Randy Celorico,Anton Belmonte
 ,IF0478,GERTHS AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,,85 SAN ANTONIO ST. SAN ANTONIO QUEZON CITY,9684089046,,,,1,,,,Randy Celorico,Nathaniel Ruelos
-,IF0479,BOSSTRAB AUTOGARAGE CAR TRADING,,,,316 SITIO IBABA BRGY CORALAN STA MARIA LAGUNA ,9203109829,,,,0,,,,Bernard Gombio,Bernard Gombio
+,IF0479,BOSSTRAB AUTOGARAGE CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,,316 SITIO IBABA BRGY CORALAN STA MARIA LAGUNA ,9203109829,,,,0,,,,Bernard Gombio,Bernard Gombio
 ,IF0480,IBS01 CAR TRADING,Albert Dalupang,Albert Dalupang,,BLK 4 LOT 10 TALISAY ST MEADOWOOD VILL PH2 BACOOR CAVITE,9272240798,,,,0,,,,Bernard Gombio,Bernard Gombio
 ,IF0481,PIP-LUXURY CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,,"B6 L17 GL1 Thompson St., Lancaster, General Trias, Cavite",9756309461,,,,0,,,,Bernard Gombio,Bernard Gombio
 ,IF0482,LODS CAR ACCESSORIES STORE,Albert Dalupang,Albert Dalupang,,BLK 3 LOT 7 SIMON ST. STARKVILLE SUBD CARSADANG BAGO II IMUS CAVITE,9165606021,,,,0,,,,Bernard Gombio,Bernard Gombio
@@ -506,11 +506,11 @@
 ,IF0505,DRL AUTO TRADING,Albert Dalupang,Albert Dalupang,,55 PRESIDENTS AVE B.F. HOMES PARANAQUE,9190090511,,,,2,,,,Bernard Gombio,Bernard Gombio
 ,IF0506,NASIR/ALICE CAR TRADING,Albert Dalupang,Ricmar Magboo,,126 COLONGAN ROSARIO BATANGAS,9516304405,,,,1,,,,Reynante Estacion,Michael John Pineda
 ,IF0507,INTIA AUTO TRADING,Albert Dalupang,Zhesa Resurrecion,,BLK3 LOT 10 MA AMANDO ST VILMA SUBD BAYAN LUMA 5 IMUS CAVITE,9353107611,,,,0,,,,Bernard Gombio,Bernard Gombio
-,IF0508,JMM AUTO CARE SERVICES,,,,5 B FRONTE ST VILL EAST STO DOMINGO CAINTA RIZAL,9063104090,,,,0,,,,Reynante Estacion,Richard Fanuncio
+,IF0508,JMM AUTO CARE SERVICES,Marah Luriely A. Villaruz,Elvira Ladea,,5 B FRONTE ST VILL EAST STO DOMINGO CAINTA RIZAL,9063104090,,,,0,,,,Reynante Estacion,Richard Fanuncio
 ,IF0509,CARL V CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,,2 SANCHEZ ST FORTUNE EXEC TOWNHOMES MARIKINA CITY,9297502170,,,,0,,,,Reynante Estacion,Michael John Pineda
-,IF0510,ATIKHA AUTO TRADING,,,,MOJON BRGY TAMPOY SAN JOSE BATANGAS,9230839259,,,,0,,,,Reynante Estacion,Michael John Pineda
+,IF0510,ATIKHA AUTO TRADING,Albert Dalupang,Ricmar Magboo,,MOJON BRGY TAMPOY SAN JOSE BATANGAS,9230839259,,,,0,,,,Reynante Estacion,Michael John Pineda
 ,IF0511,HAYNO CAR TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,,13 KASAYAHAN ST BATASAN HILLS QUEZON CITY ,9951706805,,,,0,,,,Randy Celorico,Nathaniel Ruelos
-,IF0512,REDCARS AUTO TRADING,,,,253 PUROK 4 BRGY BULAKLAKAN LIPA CITY BATANGAS,9915841652,,,,0,,,,Reynante Estacion,Michael John Pineda
+,IF0512,REDCARS AUTO TRADING,Albert Dalupang,Ricmar Magboo,,253 PUROK 4 BRGY BULAKLAKAN LIPA CITY BATANGAS,9915841652,,,,0,,,,Reynante Estacion,Michael John Pineda
 ,IF0513,KENNETH CAR TRADING,Malou Alfonso,Rose Batacan,,4 NEWTON AVE. GREENLAND SUBD AMPID 1 SAN MATEO RIZAL,9072863508,,,,0,,,,Reynante Estacion,Richard Fanuncio
 ,IF0514,JPC CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,,59 R MAGSAYSAY ST BAYUGO JALA-JALA RIZAL,9510150260,,,,0,,,,Reynante Estacion,Richard Fanuncio
 ,IF0515,SALAH CAR AGENT SERVICES,Marah Luriely A. Villaruz,Rhoyland Alagon,,39 TURQUOISE ST NORTHVIEW 1 SUBD TALA BATASAN HILLS QUEZON CITY,9050712457,,,,0,,,,Randy Celorico,Nathaniel Ruelos
