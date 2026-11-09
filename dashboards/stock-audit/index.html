@@ -149,6 +149,7 @@ table.dt{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px}
 .sheet h3{font-size:16px;margin-bottom:4px}
 .kv{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 14px;margin:10px 0}
 .kv div{font-size:12.5px}.kv span{display:block;font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.ph-grid{display:flex;flex-wrap:wrap;gap:8px}.ph{display:flex;flex-direction:column;gap:3px;width:112px;font-size:11px;color:var(--text3);text-decoration:none}.ph img{width:112px;height:112px;object-fit:cover;border-radius:10px;background:var(--card2)}.tl .e[data-act]:hover{background:var(--card2)}
 .tl{display:flex;flex-direction:column;gap:8px;margin-top:8px}.tl .e{border-left:3px solid var(--grey-bg);padding:2px 0 2px 10px;font-size:12.5px}.tl .e.f{border-left-color:var(--red)}.tl .e.p{border-left-color:var(--green)}
 
 /* ── form ── */
@@ -500,6 +501,32 @@ function buildCore(texts, quiet) {
 }
 /* inspections from one or more grids (same headers). A v3 tracker ID carries a trailing "*"; the audit sheet may omit it.
    A row from a later grid is skipped when the same audit (Inspection ID, or drawdown + date + inspector) is already loaded. */
+var PHOTO_COLS = [['Geo-tagged Photo of the Showroom', 'Showroom'], ['Collateral Pictures (Geo-tagged Photos) - S', 'Collateral (sold)'], ['Motor Vehicle Inspection Report (MVIR) - S', 'MVIR (sold)'],
+  ['Collateral Pictures (Geo-tagged Photos) - F', 'Collateral'], ['Motor Vehicle Inspection Report (MVIR) - F', 'MVIR']];
+function driveId(u) { const m = String(u).match(/[?&]id=([-\w]{10,})/) || String(u).match(/\/d\/([-\w]{10,})/); return m ? m[1] : ''; }
+function inspKey(e) { return e.iid || (e.id + '|' + iso(e.date) + '|' + e.who); }
+function showInspection(ik, back) {
+  const e = INSP.find(x => inspKey(x) === ik); if (!e) return;
+  const d = DD[e.id], pass = /^pass/i.test(e.status);
+  const row = (k, v) => v ? '<div><span>' + k + '</span>' + esc(v) + '</div>' : '';
+  let h = '<h3>' + esc(e.dealer || (d && d.dealer) || '') + ' · ' + esc(e.id) + '</h3><div class="sub">' + esc(d ? vehicleLabel(d) : '') + (d && d.plate ? ' · ' + esc(d.plate) : '') + '</div>' +
+    '<div class="item-meta" style="margin:10px 0"><span class="pill ' + (pass ? 't-green' : 't-red') + '">' + esc(e.status) + '</span>' + (e.pending ? ' <span class="pill t-blue">just submitted</span>' : '') + '</div>' +
+    '<div class="kv">' + row('Audit date', fmtD(e.date)) + row('Inspector', e.who) + row('Vehicle status', e.vs) + row('Person contacted', e.person + (e.poc ? ' — ' + e.poc : (e.person ? '' : ''))) +
+    (e.sold ? row('Date vehicle sold', fmtD(e.sold)) : '') + row('Sales method', e.method) + row('Collateral location', e.loc) + '</div>' +
+    (e.remarks ? '<div class="b" style="margin-top:12px">Remarks</div><div class="small" style="white-space:pre-wrap;margin-top:4px">' + esc(e.remarks) + '</div>' : '');
+  if (e.photos && e.photos.length) {
+    h += '<div class="b" style="margin-top:14px">Photos</div>';
+    e.photos.forEach(g => {
+      h += '<div class="small muted" style="margin:8px 0 4px">' + esc(g.label) + ' (' + g.urls.length + ')</div><div class="ph-grid">';
+      g.urls.forEach((u, i) => { const id = driveId(u);
+        h += '<a class="ph" href="' + esc(u) + '" target="_blank" rel="noopener">' + (id ? '<img loading="lazy" referrerpolicy="no-referrer" src="https://drive.google.com/thumbnail?id=' + esc(id) + '&sz=w400" alt="" onerror="this.remove()">' : '') + '<span>Open photo ' + (i + 1) + '</span></a>'; });
+      h += '</div>';
+    });
+    h += '<div class="small muted" style="margin-top:6px">Photos open in Google Drive — you need to be signed in with an account that has access.</div>';
+  } else h += '<div class="small muted" style="margin-top:12px">' + (e.pending ? 'Photos will show here once this audit has synced.' : 'No photos recorded for this audit.') + '</div>';
+  h += '<div class="item-act" style="margin-top:12px"><button class="btn" data-act="detail" data-id="' + esc(e.id) + '">← Back to ' + esc(e.id) + '</button><button class="btn" data-act="close">Close</button></div>';
+  openSheet(h);
+}
 function buildInsp(grids) {
   INSP = []; INSP_IDS = {}; COVERAGE_START = null; const seen = {};
   grids.forEach(function (si, gi) {
@@ -514,7 +541,9 @@ function buildInsp(grids) {
         iid: String(get(r, sc('Inspection ID'))).trim(), dealer: normName(get(r, sc('Dealership Name'))),
         vs: String(get(r, sc('Vehicle Status - F'))).trim() || String(get(r, sc('Vehicle Status - S'))).trim(),
         remarks: String(get(r, sc('Additional Remarks from SIO - F'))).trim() || String(get(r, sc('Additional Remarks from SIO - S'))).trim(),
-        poc: String(get(r, sc('POC Name'))).trim(), sold: parseSheetDate(get(r, sc('Date Vehicle Sold'))), method: String(get(r, sc('Sales Method'))).trim() };
+        poc: String(get(r, sc('POC Name'))).trim(), sold: parseSheetDate(get(r, sc('Date Vehicle Sold'))), method: String(get(r, sc('Sales Method'))).trim(),
+        person: String(get(r, sc('Person Contacted'))).trim(), loc: String(get(r, sc('Collateral Location (Barangay, City and Province)'))).trim(),
+        photos: PHOTO_COLS.map(function (c) { return { label: c[1], urls: String(get(r, sc(c[0]))).split(/[,\s]+/).filter(function (u) { return /^https?:\/\//i.test(u); }) }; }).filter(function (g) { return g.urls.length; }) };
       const key = e.iid ? 'i:' + e.iid.toLowerCase() : 'k:' + id.toLowerCase() + '|' + iso(date) + '|' + e.who.toLowerCase();
       if (gi > 0 && seen[key]) return;
       seen[key] = 1;
@@ -782,7 +811,7 @@ function showDetail(id) {
   h += '<div class="item-act" style="margin-bottom:8px">' + (d.open ? '<button class="btn pri" data-act="audit" data-id="' + esc(d.id) + '">Start audit</button>' : '') + dealerActs(dl, d.dealer) + '<button class="btn" data-act="close">Close</button></div>';
   h += '<div class="b" style="margin-top:12px">Audit history (' + d.hist.length + ')</div><div class="tl">';
   d.hist.slice().reverse().slice(0, 10).forEach(e => {
-    h += '<div class="e ' + (/^pass/i.test(e.status) ? 'p' : 'f') + '"><b>' + esc(e.status) + '</b> · ' + fmtD(e.date) + ' · ' + esc(e.who || '—') + (e.pending ? ' <span class="pill t-blue">just submitted</span>' : '') + (e.vs ? '<br><span class="muted">' + esc(e.vs) + '</span>' : '') + (e.remarks ? '<br>' + esc(e.remarks) : '') + '</div>'; });
+    h += '<div class="e ' + (/^pass/i.test(e.status) ? 'p' : 'f') + '" data-act="insp" data-ik="' + esc(inspKey(e)) + '" style="cursor:pointer" title="Tap for details and photos"><b>' + esc(e.status) + '</b> · ' + fmtD(e.date) + ' · ' + esc(e.who || '—') + (e.pending ? ' <span class="pill t-blue">just submitted</span>' : '') + (e.vs ? '<br><span class="muted">' + esc(e.vs) + '</span>' : '') + (e.remarks ? '<br>' + esc(e.remarks) : '') + '</div>'; });
   if (!d.hist.length) h += '<div class="muted small">No audits recorded yet.</div>';
   h += '</div>';
   openSheet(h);
@@ -1342,6 +1371,7 @@ document.addEventListener('click', function (e) {
   const a = t.dataset.act, id = t.dataset.id, v = t.dataset.v, k = t.dataset.k;
   if (a === 'audit') { closeSheet(); newAudit(id); go('audit'); }
   else if (a === 'detail') showDetail(id);
+  else if (a === 'insp') showInspection(t.dataset.ik);
   else if (a === 'close') closeSheet();
   else if (a === 'nav') go(v);
   else if (a === 'goto') { S.ddf = t.dataset.f; go('dd'); }
