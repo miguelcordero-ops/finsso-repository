@@ -47,14 +47,14 @@ Month,Week,Dealer ID,Planned Fresh Drawdown,Planned Re-Drawdown,Remarks,Updated 
 2026-11,2,IF0088,3,,Waiting for EWB result,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Yellow
 2026-11,1,IF0179,5,,,hannah.ibay@carmudi.com.ph,2026-11-05 12:23:50,Green
 2026-11,1,IF0462,1,,,hannah.ibay@carmudi.com.ph,2026-11-06 11:49:55,Green
-2026-11,2,IF0419,1,,,malou.alfonso@carmudi.com.ph,2026-11-06 12:23:03,Yellow
+2026-11,2,IF0419,1,,Low value unit,hannah.ibay@carmudi.com.ph,2026-11-09 11:56:40,Yellow
 2026-11,2,IF0382,1,,,malou.alfonso@carmudi.com.ph,2026-11-06 12:23:03,Yellow
-2026-11,2,IF0017,5,,,malou.alfonso@carmudi.com.ph,2026-11-06 12:23:03,Green
+2026-11,2,IF0017,5,,Waiting for bidding result,hannah.ibay@carmudi.com.ph,2026-11-09 11:56:40,Green
 2026-11,2,IF0257,2,,,malou.alfonso@carmudi.com.ph,2026-11-06 12:23:03,Green
-2026-11,2,IF0375,1,,,malou.alfonso@carmudi.com.ph,2026-11-06 12:23:03,Green
-2026-11,2,IF0460,1,,,malou.alfonso@carmudi.com.ph,2026-11-06 12:23:03,Green
-2026-11,2,IF0054,1,,,malou.alfonso@carmudi.com.ph,2026-11-06 12:23:03,Green
-2026-11,2,IF0333,1,,,malou.alfonso@carmudi.com.ph,2026-11-06 12:23:03,Green
+2026-11,2,IF0375,,,,hannah.ibay@carmudi.com.ph,2026-11-09 11:56:40,
+2026-11,2,IF0460,1,,Waiting for documents,hannah.ibay@carmudi.com.ph,2026-11-09 11:56:40,Green
+2026-11,2,IF0054,1,,,hannah.ibay@carmudi.com.ph,2026-11-09 11:56:40,Yellow
+2026-11,2,IF0333,1,,For possible transfer to Ricmar,hannah.ibay@carmudi.com.ph,2026-11-09 11:56:40,Green
 2026-11,1,IF0338,1,,,marah.villaruz@carmudi.com.ph,2026-11-06 13:05:27,Green
 2026-11,1,IF0485,1,,,marah.villaruz@carmudi.com.ph,2026-11-06 13:06:33,Green
 2026-11,2,IF0045,3,1,,marah.villaruz@carmudi.com.ph,2026-11-06 13:08:00,Green
@@ -65,7 +65,7 @@ Month,Week,Dealer ID,Planned Fresh Drawdown,Planned Re-Drawdown,Remarks,Updated 
 2026-11,2,IF0363,1,,,marah.villaruz@carmudi.com.ph,2026-11-06 13:22:56,Green
 2026-11,2,IF0327,1,,,marah.villaruz@carmudi.com.ph,2026-11-06 13:23:18,Yellow
 2026-11,2,IF0067,1,,,marah.villaruz@carmudi.com.ph,2026-11-06 13:23:56,Green
-2026-11,2,IF0179,5,,,hannah.ibay@carmudi.com.ph,2026-11-06 15:54:07,Green
-2026-11,2,IF0250,1,,,hannah.ibay@carmudi.com.ph,2026-11-06 15:54:07,Green
+2026-11,2,IF0179,5,,Waiting for bidding result,hannah.ibay@carmudi.com.ph,2026-11-09 11:56:40,Green
+2026-11,2,IF0250,1,,,hannah.ibay@carmudi.com.ph,2026-11-09 11:56:40,Yellow
 2026-11,2,IF0205,1,,Push DD the last cancelled unit,hannah.ibay@carmudi.com.ph,2026-11-09 10:25:30,Yellow
 2026-11,2,IF0007,2,,,hannah.ibay@carmudi.com.ph,2026-11-09 10:25:30,Yellow
