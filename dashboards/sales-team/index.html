@@ -985,9 +985,9 @@ async function loadData() {
         if (!dealerId) continue;
         dealerRows.push({
           dealerId,
-          name: g(r, 'Dealership Name') || nameFromLoans[dealerId] || obNames[dealerId] || '(unnamed)',
+          name: g(r, 'Dealership Name') || obNames[dealerId] || '(unnamed)',   // Dealer Checker name; backup = OB Masterlist (by Dealer ID)
           gcd: g(r, 'GCD Code'),
-          so: normName(g(r, 'Assigned Sales Officer')) || soFallback(dealerId, g(r, 'Dealership Name') || nameFromLoans[dealerId] || obNames[dealerId]),
+          so: normName(g(r, 'Assigned Sales Officer')) || soFallback(dealerId, g(r, 'Dealership Name') || obNames[dealerId]),
           familyGroup: g(r, 'Same Group'),
           openLoansSheet: g(r, 'No. of open Loans'),
           lifetimeTxn: g(r, "Lifetime TXN's"),
