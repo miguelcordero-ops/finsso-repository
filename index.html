@@ -116,24 +116,24 @@ var I={
   money:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',
   shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'
 };
-var DPD={title:'DPD Aging Dashboard',href:'/dashboards/dpd/',icon:'dpd',desc:'Open loans by Days Past Due, month-on-month across the portfolio, with toggleable DPD definitions.'};
+var DPD={title:'DPD Aging Dashboard',href:'/dashboards/collections/dpd-aging/',icon:'dpd',desc:'Open loans by Days Past Due, month-on-month across the portfolio, with toggleable DPD definitions.'};
 var GROUPS=[
   {id:'core',title:'Core & Leadership',icon:'chart',desc:'Portfolio-wide reporting for leadership.',items:[
-    {title:'PH Core Synergy Report',href:'/dashboards/core/',icon:'chart',desc:'Transaction & Dealer Metrics — disbursements, DIF AUM, repossessions, and dealer onboarding, MTD vs LMTD.'},
+    {title:'PH Core Synergy Report',href:'/dashboards/core/core-synergy-report/',icon:'chart',desc:'Transaction & Dealer Metrics — disbursements, DIF AUM, repossessions, and dealer onboarding, MTD vs LMTD.'},
     DPD]},
   {id:'sales',title:'Sales',icon:'team',desc:'Dealer pipeline, drawdowns and sales team performance.',items:[
-    {title:'Sales Weekly Review',href:'/dashboards/weekly-review/',icon:'cal',desc:'Onboarded dealers with weekly actual drawdowns and planned fresh / re-drawdown inputs and remarks, by month.'},
-    {title:'Sales Team Performance',href:'/dashboards/sales-team/',icon:'team',desc:'Team Marah, Albert & Malou — visits, onboarding, drawdowns, GMV & AUM, per team and per sales officer.'},
-    {title:'Dealer Universe',href:'/dashboards/dealer-universe/',icon:'search',desc:'All dealers with IF / CF / MP tags and the IF funnel — visited, applied, onboarded and activated.'}]},
+    {title:'Sales Weekly Review',href:'/dashboards/sales/weekly-review/',icon:'cal',desc:'Onboarded dealers with weekly actual drawdowns and planned fresh / re-drawdown inputs and remarks, by month.'},
+    {title:'Sales Team Performance',href:'/dashboards/sales/team-performance/',icon:'team',desc:'Team Marah, Albert & Malou — visits, onboarding, drawdowns, GMV & AUM, per team and per sales officer.'},
+    {title:'Dealer Universe',href:'/dashboards/sales/dealer-universe/',icon:'search',desc:'All dealers with IF / CF / MP tags and the IF funnel — visited, applied, onboarded and activated.'}]},
   {id:'collections',title:'Collections',icon:'shield',desc:'Past-due monitoring, stock audits and recoveries.',items:[
     DPD,
-    {title:'Stock Audit',href:'/dashboards/stock-audit/',icon:'check',desc:'Field app for stock auditors and collections officers — prioritised audit schedule, itinerary, dealer and drawdown views, and photo audit uploads.'},
+    {title:'Stock Audit',href:'/dashboards/collections/stock-audit/',icon:'check',desc:'Field app for stock auditors and collections officers — prioritised audit schedule, itinerary, dealer and drawdown views, and photo audit uploads.'},
     {title:'Repossession Dashboard',soon:true,icon:'dpd',desc:'Repossessed unit inventory, liquidation status, and recovery tracking.'}]},
   {id:'credit',title:'Credit',icon:'money',desc:'Dealer credit profiles, exposure and risk flags.',items:[
-    {title:'Dealer Credit Profile',href:'/dashboards/credit/',icon:'shield',desc:'Single-dealer credit view — credit line, exposure, full loan, payment and stock audit history, plus automatic risk flags.'}]},
+    {title:'Dealer Credit Profile',href:'/dashboards/credit/dealer-credit-profile/',icon:'shield',desc:'Single-dealer credit view — credit line, exposure, full loan, payment and stock audit history, plus automatic risk flags.'}]},
   {id:'operations',title:'Operations',icon:'check',desc:'Drawdown, disbursal and repayment tracking for operations management.',items:[
-    {title:'Operations Overview',href:'/dashboards/operations/',icon:'chart',desc:'Drawdown, disbursal and repayment trackers in one view — loan book, disbursal pipeline, collections, remittances and exceptions to fix.'},
-    {title:'SOA Generator',href:'/dashboards/operations/soa/',icon:'chart',desc:'Generate dealer Statements of Account for the v3 loans as of any date, save the PDF to the shared Drive and browse the SOA repository.'}]}
+    {title:'Operations Overview',href:'/dashboards/operations/overview/',icon:'chart',desc:'Drawdown, disbursal and repayment trackers in one view — loan book, disbursal pipeline, collections, remittances and exceptions to fix.'},
+    {title:'SOA Generator',href:'/dashboards/operations/soa-generator/',icon:'chart',desc:'Generate dealer Statements of Account for the v3 loans as of any date, save the PDF to the shared Drive and browse the SOA repository.'}]}
 ];
 function ico(k){return '<svg viewBox="0 0 24 24">'+(I[k]||I.folder)+'</svg>';}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}

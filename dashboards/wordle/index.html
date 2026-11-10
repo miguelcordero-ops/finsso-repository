@@ -3,6 +3,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#E8461E">
 <title>Finsso Wordle</title>
+<link rel="preconnect" href="https://finsso-data-api.miguel-cordero.workers.dev" crossorigin>
+<link rel="preconnect" href="https://accounts.google.com" crossorigin>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{
@@ -417,6 +419,8 @@ function parseSheetDate(v) {
     const utcDate = new Date(utcMs);
     return new Date(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate());
   }
+  const dm = s.match(/^(\d{1,2})-([A-Za-z]{3})[a-z]*-(\d{4})$/);   // 9-Oct-2026
+  if (dm) { const mi = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(dm[2].toLowerCase()); if (mi >= 0) return new Date(+dm[3], mi, +dm[1]); }  // MON_IDX_
   const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (m) return new Date(+m[3], +m[1]-1, +m[2]);
   const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
@@ -430,7 +434,7 @@ function parseNum(v) {
   const n = parseFloat(s);
   return isNaN(n) ? 0 : n;
 }
-function parseCSV(text) {
+function parseCSVSlow(text) {
   const rows = [];
   let row = [], field = '', inQ = false;
   for (let i = 0; i < text.length; i++) {
@@ -448,6 +452,37 @@ function parseCSV(text) {
     }
   }
   if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
+}
+function parseCSV(text) {
+  // fast reader: slices whole fields instead of appending character by character
+  const rows = [], n = text.length;
+  let row = [], i = 0, nl = -1;
+  while (i < n) {
+    let f;
+    if (text.charCodeAt(i) === 34) {
+      let j = i + 1; f = '';
+      for (;;) {
+        const k = text.indexOf('"', j);
+        if (k < 0) { f += text.slice(j); j = n; break; }
+        if (text.charCodeAt(k + 1) === 34) { f += text.slice(j, k + 1); j = k + 2; }
+        else { f += text.slice(j, k); j = k + 1; break; }
+      }
+      i = j;
+      // anything glued after the closing quote (rare) stays part of the field
+      while (i < n) { const c = text.charCodeAt(i); if (c === 44 || c === 10) break; if (c === 34) return parseCSVSlow(text); if (c !== 13) f += text[i]; i++; }
+    } else {
+      if (nl < i) { nl = text.indexOf('\n', i); if (nl < 0) nl = n; }
+      let k = text.indexOf(',', i); if (k < 0 || k > nl) k = nl;
+      f = text.slice(i, k); i = k;
+      if (f.indexOf('"') >= 0) return parseCSVSlow(text);   // stray quote mid-field: use the exact legacy reader
+      if (f.indexOf('\r') >= 0) f = f.replace(/\r/g, '');
+    }
+    if (i >= n) { row.push(f); break; }
+    if (text.charCodeAt(i) === 44) { row.push(f); i++; if (i >= n) { row.push(''); break; } }
+    else { row.push(f); rows.push(row); row = []; i++; }   // newline
+  }
+  if (row.length) rows.push(row);
   return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
 }
 // Columns are ALWAYS looked up by header name, never by position — the sheet
@@ -888,10 +923,10 @@ if (document.readyState !== 'loading') _initGoogleAuth(); else document.addEvent
 /* ── Finsso profile chip: avatar + name + role, with a "Your access" panel (role from Allowlist column C) ── */
 var FinssoProfile = (function () {
   var PAGES = [
-    { tab: 'Overview', name: 'PH Core Synergy Report', href: '/dashboards/core/' }, { tab: 'DPD', name: 'DPD Aging Dashboard', href: '/dashboards/dpd/' },
-    { tab: 'SalesWeekly', name: 'Sales Weekly Review', href: '/dashboards/weekly-review/' }, { tab: 'SalesPerf', name: 'Sales Team Performance', href: '/dashboards/sales-team/' },
-    { tab: 'DealerUniverse', name: 'Dealer Universe', href: '/dashboards/dealer-universe/' }, { tab: 'StockAudit', name: 'Stock Audit', href: '/dashboards/stock-audit/' },
-    { tab: 'Credit', name: 'Dealer Credit Profile', href: '/dashboards/credit/' }, { tab: 'Operations', name: 'Operations Overview', href: '/dashboards/operations/' }, { tab: 'Wordle', name: 'Wordle', href: '/dashboards/wordle/' }
+    { tab: 'Overview', name: 'PH Core Synergy Report', href: '/dashboards/core/core-synergy-report/' }, { tab: 'DPD', name: 'DPD Aging Dashboard', href: '/dashboards/collections/dpd-aging/' },
+    { tab: 'SalesWeekly', name: 'Sales Weekly Review', href: '/dashboards/sales/weekly-review/' }, { tab: 'SalesPerf', name: 'Sales Team Performance', href: '/dashboards/sales/team-performance/' },
+    { tab: 'DealerUniverse', name: 'Dealer Universe', href: '/dashboards/sales/dealer-universe/' }, { tab: 'StockAudit', name: 'Stock Audit', href: '/dashboards/collections/stock-audit/' },
+    { tab: 'Credit', name: 'Dealer Credit Profile', href: '/dashboards/credit/dealer-credit-profile/' }, { tab: 'Operations', name: 'Operations Overview', href: '/dashboards/operations/overview/' }, { tab: 'Wordle', name: 'Wordle', href: '/dashboards/wordle/' }
   ];
   var st = { email: '', name: '', role: '', fallback: '', access: null, loaded: false, open: false, token: '' };
   var chip = null, pop = null;

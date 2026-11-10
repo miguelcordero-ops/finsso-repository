@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Weekly Review</title>
+<link rel="preconnect" href="https://finsso-data-api.miguel-cordero.workers.dev" crossorigin>
+<link rel="preconnect" href="https://accounts.google.com" crossorigin>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{
+  --primary:#E8461E;
+  --accent:#F97316;
+  --bg:#F0F4FD;
+  --surface:rgba(255,255,255,0.68);
+  --border:rgba(255,255,255,0.75);
+  --border2:rgba(0,0,0,0.08);
+  --text:#111827;
+  --text2:#4B5563;
+  --text3:#9CA3AF;
+  --tbl-hdr:rgba(255,255,255,0.50);
+  --tbl-bdr:rgba(0,0,0,0.05);
+  --tbl-bdr2:rgba(0,0,0,0.09);
+  --total-bg:rgba(232,70,30,0.07);
+  --warn-bg:rgba(245,158,11,0.12);
+  --warn-text:#92400E;
+  --pad:24px;
+  --gap:16px;
+  --rcard:16px;
+  --rctrl:8px;
+
+  --surface-a:rgba(255,255,255,0.72);
+  --surface-b:rgba(255,255,255,0.65);
+  --surface-c:rgba(255,255,255,0.55);
+  --surface-d:rgba(255,255,255,0.80);
+  --surface-hi:rgba(255,255,255,0.95);
+  --chip-hover:rgba(255,255,255,0.9);
+  --overlay-tint:rgba(240,244,253,0.82);
+  --lock-tint:rgba(220,230,255,0.60);
+  --lock-card-bg:rgba(255,255,255,0.82);
+  --spinner-track:rgba(0,0,0,0.08);
+  --grad-1:#FFE8D6;
+  --grad-2:#DDE8FF;
+  --grad-3:#F5F0FF;
+  --tr-hover:rgba(255,248,245,0.7);
+  --section-bg:rgba(232,70,30,0.05);
+}
+:root[data-theme="dark"]{
+  --bg:#0B0F1A;
+  --surface:rgba(30,35,50,0.65);
+  --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.10);
+  --text:#E5E7EB;
+  --text2:#9CA3AF;
+  --text3:#6B7280;
+  --tbl-hdr:rgba(255,255,255,0.04);
+  --tbl-bdr:rgba(255,255,255,0.06);
+  --tbl-bdr2:rgba(255,255,255,0.10);
+  --total-bg:rgba(232,70,30,0.16);
+  --warn-bg:rgba(245,158,11,0.14);
+  --warn-text:#FBBF24;
+
+  --surface-a:rgba(24,28,40,0.78);
+  --surface-b:rgba(24,28,40,0.65);
+  --surface-c:rgba(24,28,40,0.55);
+  --surface-d:rgba(24,28,40,0.82);
+  --surface-hi:rgba(255,255,255,0.06);
+  --chip-hover:rgba(255,255,255,0.10);
+  --overlay-tint:rgba(11,15,26,0.88);
+  --lock-tint:rgba(11,15,26,0.78);
+  --lock-card-bg:rgba(24,28,40,0.88);
+  --spinner-track:rgba(255,255,255,0.10);
+  --grad-1:#3A2A1E;
+  --grad-2:#1B2438;
+  --grad-3:#241E33;
+  --tr-hover:rgba(255,255,255,0.05);
+  --section-bg:rgba(232,70,30,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:light dark}
+html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="light"]{color-scheme:light}
+/* Page glow lives on its own fixed GPU layer - a fixed background-attachment repaints on every scroll frame. */
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;transform:translateZ(0);
+  background:
+    radial-gradient(ellipse at 15% 10%, var(--grad-1) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 90%, var(--grad-2) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, var(--grad-3) 0%, transparent 80%)}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  font-size:13px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  transition:background-color 0.2s, color 0.2s;
+}
+a{color:inherit;text-decoration:none}
+
+.topbar{
+  background:var(--surface-a);
+  border-bottom:1px solid var(--border2);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
+  padding:14px var(--pad);
+  display:flex;flex-direction:column;gap:0;
+  position:sticky;top:0;z-index:300;
+}
+.report-title{font-size:20px;font-weight:600;color:var(--primary);letter-spacing:-0.3px}
+.report-subtitle{font-size:12px;color:var(--text3);margin-top:3px}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.topbar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
+.theme-toggle{
+  font-size:12px;padding:5px 10px;border-radius:var(--rctrl);
+  border:1px solid var(--border2);background:var(--surface-d);
+  color:var(--text2);cursor:pointer;transition:all 0.15s;
+}
+.theme-toggle:hover{background:var(--chip-hover)}
+
+.main{padding:20px var(--pad);max-width:1100px;margin:0 auto}
+.section-title{font-size:16px;font-weight:600;color:var(--primary);text-align:center;margin-bottom:4px}
+.section-sub{font-size:11px;color:var(--text3);text-align:center;margin-bottom:20px}
+
+.warn-banner{
+  max-width:1100px;margin:0 auto 14px;padding:8px 16px;border-radius:10px;
+  background:var(--warn-bg);color:var(--warn-text);font-size:11px;text-align:center;
+}
+.warn-banner.hidden{display:none}
+
+.card{
+  background:var(--surface-b);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 2px 8px rgba(0,0,0,0.06),inset 0 1px 0 var(--surface-hi);
+  border-radius:var(--rcard);padding:16px;overflow-x:auto;
+  margin-bottom:var(--gap);
+}
+.card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px}
+.card-unit{font-size:10px;color:var(--text3);font-weight:400;margin-left:4px}
+
+.charts-section{display:grid;grid-template-columns:1fr;gap:var(--gap)}
+.charts-section.hidden{display:none}
+@media (min-width:820px){ .charts-section{grid-template-columns:1fr 1fr} }
+.chart-svg{width:100%;height:220px;display:block;overflow:visible}
+.chart-bar,.chart-dot{cursor:pointer;transition:opacity 0.12s}
+.chart-bar:hover,.chart-dot:hover{opacity:0.72}
+.chart-tooltip{
+  position:fixed;pointer-events:none;z-index:1000;
+  background:var(--surface-d);border:1px solid var(--border2);
+  padding:4px 9px;border-radius:6px;font-size:11px;color:var(--text);
+  box-shadow:0 4px 12px rgba(0,0,0,0.14);white-space:nowrap;
+}
+.chart-tooltip.hidden{display:none}
+
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+  text-align:left;padding:6px 10px;
+  color:var(--text3);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;
+  background:var(--tbl-hdr);
+  border-bottom:1px solid var(--tbl-bdr2);
+  white-space:nowrap;
+}
+th.r,td.r{text-align:right}
+td{padding:6px 10px;color:var(--text2);border-bottom:1px solid var(--tbl-bdr);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--tr-hover)}
+tr.section-row td{font-weight:700;color:var(--primary);background:var(--section-bg);font-size:10px;text-transform:uppercase;letter-spacing:0.05em}
+td.metric-label{color:var(--text);font-weight:500}
+
+/* Locks the month header row in place while scrolling down through the
+   metrics table — stays visible below the sticky topbar + filter bar.
+   --sticky-offset is computed in JS (updateStickyOffset()) from those two
+   elements' actual rendered height, so it stays correct if their content
+   ever wraps to more lines (e.g. many team chips on a narrow screen).
+   IMPORTANT: position:sticky only tracks the page scroll if nothing between
+   the <th> and the page sets a non-"visible" overflow — .card's own
+   overflow-x:auto silently forces overflow-y to "auto" too (a CSS spec
+   quirk: an axis left as "visible" gets converted to "auto" the moment the
+   other axis isn't "visible"), which turns .card itself into the sticky
+   element's reference frame instead of the page — and since .card never
+   actually scrolls internally, the header just never appears to stick.
+   .metrics-card below overrides that back to overflow-x:visible so the
+   page is what the header sticks against; the trade-off is this table no
+   longer gets its own horizontal scrollbar on very narrow screens (it'll
+   scroll the whole page horizontally instead if it doesn't fit). */
+.metrics-card{ overflow-x:visible; }
+#metrics-head th{
+  position:sticky;top:var(--sticky-offset, 96px);z-index:200;
+  /* Two background layers: a light brand-tinted wash (--section-bg, already
+     used elsewhere for the same tint) painted over the opaque --surface-d,
+     so the frozen month labels read as a clearly distinct band rather than
+     blending into whatever data row is currently scrolled underneath. */
+  background:linear-gradient(var(--section-bg), var(--section-bg)), var(--surface-d);
+  color:var(--text);font-weight:700;
+  box-shadow:0 2px 0 var(--primary);
+}
+
+.filter-bar{
+  background:var(--surface-c);
+  border:1px solid var(--border2);
+  border-radius:var(--rcard);
+  padding:10px 16px;
+  display:flex;flex-wrap:wrap;align-items:center;gap:14px;
+  position:sticky;top:54px;z-index:250;
+  margin-bottom:var(--gap);
+}
+.filter-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.filter-group-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;margin-right:2px}
+.filter-chip{
+  font-size:11px;padding:4px 10px;border-radius:9999px;
+  border:1px solid var(--border2);background:var(--surface-b);
+  color:var(--text2);cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.filter-chip:hover{background:var(--chip-hover)}
+.filter-chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+.loading-overlay{
+  position:fixed;inset:0;
+  background:var(--overlay-tint);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:999;gap:14px;
+}
+.loading-overlay.hidden{display:none}
+.spinner{width:36px;height:36px;border:3px solid var(--spinner-track);border-top-color:var(--primary);border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--text2)}
+.error-box{
+  background:var(--surface-d);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  border-radius:var(--rcard);padding:20px 28px;text-align:center;max-width:380px;
+}
+.error-box h3{color:#A32D2D;margin-bottom:8px;font-size:14px}
+.error-box p{color:var(--text2);font-size:12px;line-height:1.6}
+.error-box button{margin-top:12px;padding:8px 18px;background:var(--primary);color:#fff;border:none;border-radius:var(--rctrl);cursor:pointer;font-size:13px}
+
+.data-status{font-size:11px;color:var(--text3);text-align:right;margin-top:4px}
+
+/* ── Dealer Status card (top of page) — styled after the Dealer Status
+   sheet: black title bands, serif type, label/value grid. ── */
+.dealer-card{padding:0;overflow:hidden;font-family:'Times New Roman',Times,serif;color:var(--text);
+  /* wider than the 1100px content column so the accounts table needs far less side-scrolling */
+  width:min(1680px,calc(100vw - 40px));position:relative;left:50%;transform:translateX(-50%);font-size:14px}
+@media(max-width:1180px){.dealer-card{width:100%;left:0;transform:none}}
+.dc-band{background:#000;color:#fff;text-align:center;font-size:19px;letter-spacing:.04em;padding:10px 12px;text-transform:uppercase}
+.dc-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 22px;padding:12px 16px 6px}
+.dc-controls label{font-weight:700;font-size:14px}
+.dc-controls select,.dc-controls input{font:inherit;font-size:14px;padding:4px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--surface-d);color:var(--text)}
+.dc-controls select#dc-dealer{width:380px;max-width:100%;font-weight:700;text-overflow:ellipsis}
+.dc-controls input{width:180px}
+.dc-controls select#dc-hist{width:130px}
+.dc-controls select#dc-group{width:200px}
+.dc-scope{font-size:12px;font-style:italic;color:var(--text3);text-align:center;padding:0 16px 6px}
+.dc-grid{display:grid;grid-template-columns:1fr;gap:0 64px;padding:6px 56px 14px}
+@media(min-width:760px){.dc-grid{grid-template-columns:1fr 1fr}}
+.dc-kv{display:grid;grid-template-columns:250px 1fr;gap:4px 16px;font-size:14px;align-content:start;margin-top:8px}
+.dc-kv .k{font-weight:700}
+.dc-kv .k.sub{font-style:italic;font-weight:400;color:var(--text3);text-align:right}
+.dc-kv .v{color:var(--text2)}
+.dc-empty{padding:18px;text-align:center;font-size:12px;color:var(--text3);font-style:italic}
+.dc-table-wrap{overflow:auto;max-height:520px;padding:0 0 10px}
+.dc-table-wrap table{font-size:13px;min-width:0;width:100%}
+.dc-table-wrap th{white-space:normal;line-height:1.2;padding:6px 6px}
+.dc-table-wrap td{white-space:normal;padding:5px 6px}
+.dc-table-wrap td.l,.dc-table-wrap td.fz{white-space:nowrap}
+.dc-table-wrap th{background:#eef0f6;color:var(--text);text-transform:none;letter-spacing:0;font-size:12px;text-align:center;border:1px solid var(--tbl-bdr2);position:sticky;top:0;z-index:2}
+.dc-table-wrap td{border:1px solid var(--tbl-bdr);text-align:center}
+.dc-table-wrap td.l{text-align:left}.dc-table-wrap td.rr{text-align:right}
+.dc-table-wrap tr.hist td{color:var(--text3);font-style:italic}
+.dc-tbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:8px 14px;font-size:12px;color:var(--text2)}
+.dc-tbar button{font:inherit;font-size:12px;padding:3px 10px;border-radius:6px;border:1px solid var(--border2);background:var(--surface-d);color:var(--text2);cursor:pointer}
+.dc-tbar button:hover{background:var(--chip-hover)}
+.dc-tbar .dc-hint{color:var(--text3);font-style:italic;margin-left:auto}
+.dc-table-wrap th.srt{cursor:pointer;user-select:none}
+.dc-table-wrap th.srt:hover{filter:brightness(.96)}
+.dc-table-wrap th.flt{padding:3px 4px;z-index:2}
+.dc-table-wrap th.flt input{width:100%;min-width:52px;font:inherit;font-size:12px;font-weight:400;padding:2px 5px;border:1px solid var(--border2);border-radius:4px;background:var(--surface-hi);color:var(--text)}
+.dc-table-wrap th.flt.fz{z-index:3}
+/* Frozen Drawdown ID column — opaque so scrolled cells never show through. */
+.dc-table-wrap th.fz,.dc-table-wrap td.fz{position:sticky;left:0;box-shadow:1px 0 0 var(--tbl-bdr2)}
+.dc-table-wrap td.fz{z-index:1;background:#fbfbfd;font-weight:600}
+.dc-table-wrap th.fz{z-index:3;background:#eef0f6}
+:root[data-theme="dark"] .dc-table-wrap th{background:#232838}
+:root[data-theme="dark"] .dc-table-wrap td.fz{background:#161a26}
+:root[data-theme="dark"] .dc-table-wrap th.fz{background:#232838}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dc-table-wrap td.fz{background:#161a26}:root:not([data-theme="light"]) .dc-table-wrap th.fz{background:#232838}}
+
+.lock-overlay{
+  position:fixed;inset:0;
+  background:var(--lock-tint);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;
+  transition:opacity 0.35s ease;
+}
+.lock-overlay.unlocking{opacity:0;pointer-events:none}
+.lock-overlay.hidden{display:none}
+.lock-card{
+  background:var(--lock-card-bg);
+  border:1px solid var(--border);
+  border-top:1px solid var(--surface-hi);
+  box-shadow:0 80px 120px rgba(99,102,241,0.18),0 8px 32px rgba(0,0,0,0.08),inset 0 1px 0 var(--surface-hi);
+  border-radius:28px;
+  padding:36px 32px 28px;
+  width:360px;max-width:90vw;
+  display:flex;flex-direction:column;align-items:center;
+}
+.lock-icon-box{
+  width:62px;height:62px;border-radius:18px;
+  background:linear-gradient(135deg,var(--accent),var(--primary));
+  border:1px solid rgba(232,70,30,0.35);
+  box-shadow:0 4px 16px rgba(232,70,30,0.30);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;
+}
+.lock-icon-box svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lock-title{font-size:17px;font-weight:600;color:var(--text);letter-spacing:-0.3px;margin-bottom:6px;text-align:center}
+.lock-sub{font-size:12px;color:var(--text3);margin-bottom:22px;text-align:center;line-height:1.6}
+.lock-signin{min-height:44px;display:flex;justify-content:center}
+.lock-error-msg{font-size:11px;color:#DC2626;margin-top:10px;min-height:16px;text-align:center}
+.lock-footer{font-size:10px;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.06em;text-align:center;margin-top:20px}
+.lock-contact{font-size:11px;color:var(--text3);text-align:center;margin-top:6px}
+.lock-contact a{color:var(--primary);text-decoration:underline}
+
+@media(max-width:600px){
+  body{font-size:12px}
+  .topbar{padding:10px 14px}
+  .main{padding:12px 14px}
+  .report-title{font-size:15px}
+  .filter-bar{top:89px;padding:8px 14px;gap:10px}
+  .card{padding:12px}
+  table{font-size:9px}
+  th{padding:4px 6px;font-size:8px}
+  td{padding:4px 6px;font-size:9px}
+}
+</style>
+<style>
+.main{max-width:none}
+.wr-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:12px}
+.wr-bar label{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.wr-bar select,.wr-bar input[type=search]{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--border2);border-radius:var(--rctrl);background:var(--surface-d);color:var(--text)}
+.wr-bar input[type=search]{width:220px}
+.wr-count{font-size:12px;color:var(--text3);margin-left:auto}
+.wr-wrap{overflow:auto;max-height:calc(100vh - 260px);border:1px solid var(--tbl-bdr2);border-radius:12px;background:var(--wr-cell,#fff);contain:layout paint;overscroll-behavior:contain}
+body{background-attachment:scroll}
+table.wr{border-collapse:separate;border-spacing:0;font-size:12.5px;table-layout:fixed}
+table.wr th,table.wr td{padding:0 8px;border-bottom:1px solid var(--tbl-bdr);border-right:1px solid var(--tbl-bdr);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;background:var(--wr-cell,#fff)}
+table.wr tbody tr.r td{height:38px}
+table.wr tbody tr.sp td{padding:0;border:0;background:transparent}
+table.wr thead th{position:sticky;top:0;z-index:4;height:30px;background:var(--wr-head,#eef0f6);color:var(--text);font-size:11.5px;font-weight:700;text-transform:none;letter-spacing:0;white-space:normal;line-height:1.15}
+table.wr thead tr.sub th{top:30px;z-index:4;font-weight:600;color:var(--text2)}
+table.wr thead th.wk{background:var(--wr-wk,#e3e8f7)}
+table.wr thead tr.sub th.wk{background:var(--wr-wk2,#edf0fa)}
+table.wr td.l,table.wr th.l{text-align:left}
+table.wr td.rr,table.wr th.rr{text-align:right}
+table.wr .fz{position:sticky;z-index:3;background:var(--wr-fz,#fbfbfd)}
+table.wr td.fz.name{font-weight:600}
+table.wr .c0{left:0}table.wr .c1{left:210px}table.wr .c2{left:360px}table.wr .c3{left:464px}table.wr .c4{left:568px}table.wr .fzend{box-shadow:2px 0 0 var(--tbl-bdr2)}
+table.wr thead th.fz{z-index:6;background:var(--wr-head,#eef0f6)}
+table.wr td.wkstart,table.wr th.wkstart{border-left:2px solid var(--tbl-bdr2)}
+table.wr td.act{font-weight:700}
+table.wr td.act.future{color:var(--text3);font-weight:400}
+table.wr td.in{padding:0 4px;background:var(--wr-in,#fffdf5)}
+table.wr td.in input{font:inherit;font-size:12.5px;width:100%;border:1px solid var(--border2);border-radius:5px;padding:3px 5px;background:var(--surface-hi);color:var(--text)}
+table.wr td.in input.num{text-align:right}
+table.wr td.in select.cs{font:inherit;font-size:12.5px;width:100%;border:1px solid var(--border2);border-radius:5px;padding:3px 4px;background:var(--surface-hi);color:var(--text)}
+table.wr td.in select.cs.dirty{border-color:var(--primary)}
+table.wr td.due{color:var(--text3)}table.wr td.due.has{font-weight:700;color:var(--text)}
+table.wr td.cg{background:#bbf7d0 !important;color:#14532d}
+table.wr td.cy{background:#fde68a !important;color:#713f12}
+table.wr td.cg.due.has,table.wr td.cg.act{color:#14532d}table.wr td.cy.due.has,table.wr td.cy.act{color:#713f12}
+table.wr td.cg input,table.wr td.cg select,table.wr td.cy input,table.wr td.cy select{background:rgba(255,255,255,.65);color:#111}
+.dotg,.doty{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle;margin:0 2px 0 6px}
+.dotg{background:#22c55e}.doty{background:#eab308}
+:root[data-theme="dark"] table.wr td.cg{background:#166534 !important;color:#f0fdf4}
+:root[data-theme="dark"] table.wr td.cy{background:#854d0e !important;color:#fef9c3}
+:root[data-theme="dark"] table.wr td.cg.due.has,:root[data-theme="dark"] table.wr td.cg.act{color:#f0fdf4}
+:root[data-theme="dark"] table.wr td.cy.due.has,:root[data-theme="dark"] table.wr td.cy.act{color:#fef9c3}
+:root[data-theme="dark"] table.wr td.cg input,:root[data-theme="dark"] table.wr td.cg select,:root[data-theme="dark"] table.wr td.cy input,:root[data-theme="dark"] table.wr td.cy select{background:rgba(0,0,0,.35);color:#fff}
+@media (prefers-color-scheme:dark){
+:root:not([data-theme="light"]) table.wr td.cg{background:#166534 !important;color:#f0fdf4}
+:root:not([data-theme="light"]) table.wr td.cy{background:#854d0e !important;color:#fef9c3}
+:root:not([data-theme="light"]) table.wr td.cg.due.has,:root:not([data-theme="light"]) table.wr td.cg.act{color:#f0fdf4}
+:root:not([data-theme="light"]) table.wr td.cy.due.has,:root:not([data-theme="light"]) table.wr td.cy.act{color:#fef9c3}
+:root:not([data-theme="light"]) table.wr td.cg input,:root:not([data-theme="light"]) table.wr td.cg select,:root:not([data-theme="light"]) table.wr td.cy input,:root:not([data-theme="light"]) table.wr td.cy select{background:rgba(0,0,0,.35);color:#fff}}
+table.wr td.in input.dirty{border-color:var(--primary);background:rgba(232,70,30,.10)}
+table.wr td.in input:focus{outline:2px solid var(--primary);outline-offset:0}
+table.wr tfoot td{position:sticky;bottom:0;z-index:3;font-weight:700;height:34px;background:var(--wr-head,#eef0f6)}
+table.wr tfoot td.fz{z-index:5;background:var(--wr-head,#eef0f6)}
+.wr-pager{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.wr-pager button,#wr-clear{font:inherit;font-size:13px;padding:5px 12px;border:1px solid var(--border2);border-radius:var(--rctrl);background:var(--surface-hi);color:var(--text);cursor:pointer}
+.wr-pager button:disabled{opacity:.35;cursor:default}
+.wr-pager button:not(:disabled):hover,#wr-clear:hover{border-color:var(--primary);color:var(--primary)}
+#wr-pglabel{min-width:190px;text-align:center}
+.wr-bar label.wr-pin{text-transform:none;letter-spacing:0;font-weight:500;display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+table.wr thead th.fz.wk{background:var(--wr-wk,#e3e8f7)}
+table.wr thead tr.sub th.fz.wk{background:var(--wr-wk2,#edf0fa)}
+table.wr td.ck{text-align:center}
+:root{--wf-bg:#ffffff;--wf-hover:#eef1f8}
+:root[data-theme="dark"]{--wf-bg:#1b2133;--wf-hover:#273049}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--wf-bg:#1b2133;--wf-hover:#273049}}
+table.wr thead th .hc{display:flex;align-items:center;gap:4px;justify-content:space-between}
+table.wr thead th .hl{flex:1;min-width:0;overflow:visible;text-overflow:clip;white-space:normal;font-size:11px;line-height:1.1}
+table.wr thead th.rr .hc{justify-content:flex-end}table.wr thead th.rr .hl{text-align:right}
+table.wr thead th:not(.l):not(.rr) .hl{text-align:center}
+table.wr thead th .sa{font-size:9px;color:var(--primary)}
+.fbtn{flex:none;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:0;border-radius:4px;background:transparent;color:var(--text3);cursor:pointer;padding:0}
+.fbtn:hover{background:var(--wf-hover);color:var(--text)}
+.fbtn.on{background:var(--primary);color:#fff}
+.wf-panel{position:fixed;z-index:99999;width:280px;display:flex;flex-direction:column;background:var(--wf-bg) !important;color:var(--text);border:1px solid var(--border2);border-radius:10px;box-shadow:0 10px 36px rgba(0,0,0,.32);font-size:13px;padding:6px 0;overflow:hidden}
+.wf-title{padding:6px 14px 8px;font-weight:700;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.wf-item{display:block;width:100%;text-align:left;font:inherit;padding:7px 14px;border:0;background:transparent;color:var(--text);cursor:pointer}
+.wf-item:hover{background:var(--wf-hover)}
+.wf-sep{height:1px;background:var(--border2);margin:6px 0}
+.wf-sec{padding:2px 14px 6px;font-weight:600;color:var(--text);display:flex;justify-content:space-between;align-items:center}
+.wf-links{font-weight:400;font-size:12px}.wf-links a{color:var(--primary);cursor:pointer}
+.wf-cond{padding:0 14px;display:flex;flex-direction:column;gap:6px}
+.wf-panel select,.wf-panel input[type=text],.wf-panel input[type=search]{font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--border2);border-radius:6px;background:var(--wf-bg);color:var(--text);width:100%;box-sizing:border-box}
+.wf-search{margin:0 14px 4px;width:calc(100% - 28px) !important}
+.wf-count{padding:2px 14px 4px;font-size:11px;color:var(--text3)}
+.wf-list{overflow:auto;min-height:60px;max-height:240px;padding:0 6px}
+.wf-val{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:6px;cursor:pointer}
+.wf-val:hover{background:var(--wf-hover)}
+.wf-val span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wf-val em{font-style:normal;color:var(--text3);font-size:11px}
+.wf-none{padding:10px;color:var(--text3);font-style:italic}
+.wf-foot{display:flex;justify-content:flex-end;gap:8px;padding:8px 14px 4px;border-top:1px solid var(--border2);margin-top:6px}
+.wf-foot button{font:inherit;font-size:13px;padding:6px 14px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text);cursor:pointer}
+.wf-foot .wf-ok{background:var(--primary);border-color:var(--primary);color:#fff;font-weight:600}
+table.wr td.ck input.ckb{width:17px;height:17px;cursor:pointer;accent-color:var(--primary);vertical-align:middle}
+table.wr td.ck input.ckb.dirty{outline:2px solid var(--primary);outline-offset:1px}
+.wr-savebar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:none;align-items:center;justify-content:center;gap:14px;padding:10px 16px;background:var(--surface-hi);border-top:1px solid var(--border2);box-shadow:0 -4px 16px rgba(0,0,0,.10);font-size:13px}
+.wr-savebar.show{display:flex}
+.wr-savebar button{font:inherit;font-size:13px;font-weight:600;padding:7px 16px;border-radius:8px;border:1px solid var(--border2);cursor:pointer;background:var(--surface-d);color:var(--text)}
+.wr-savebar button.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.wr-savebar button:disabled{opacity:.5;cursor:default}
+.wr-msg{font-size:12px;color:var(--text2)}
+.wr-msg.err{color:#B91C1C;font-weight:600}
+.wr-msg.ok{color:#047857;font-weight:600}
+.wr-tabs{display:flex;gap:6px;margin-bottom:12px}
+.wr-tab{padding:7px 16px;border-radius:999px;border:1px solid var(--border2);background:var(--surface-d);font-size:13px;font-weight:600;color:var(--text2);cursor:default}
+.wr-tab.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.wr-tab.soon{opacity:.45}
+:root{--wr-cell:#fff;--wr-fz:#fbfbfd;--wr-head:#eef0f6;--wr-wk:#e3e8f7;--wr-wk2:#edf0fa;--wr-in:#fffdf5}
+:root[data-theme="dark"]{--wr-cell:#12151f;--wr-fz:#161a26;--wr-head:#232838;--wr-wk:#2a3350;--wr-wk2:#242b42;--wr-in:#1a1d2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--wr-cell:#12151f;--wr-fz:#161a26;--wr-head:#232838;--wr-wk:#2a3350;--wr-wk2:#242b42;--wr-in:#1a1d2a}}
+
+/* scroll performance: no live blur behind sticky/fixed bars - give them a near-solid surface instead */
+:root{--sticky-solid:rgba(255,255,255,0.97)}
+:root[data-theme="dark"]{--sticky-solid:rgba(24,28,40,0.97)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--sticky-solid:rgba(24,28,40,0.97)}}
+.topbar,.filter-bar,.wr-savebar{background:var(--sticky-solid) !important}
+#metrics-head th{background:linear-gradient(var(--section-bg),var(--section-bg)),var(--sticky-solid) !important}
+</style>
+</head>
+<body>
+
+<div class="lock-overlay" id="lock-overlay">
+  <div class="lock-card">
+    <div class="lock-icon-box">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+    </div>
+    <div class="lock-title">Sales Weekly Review</div>
+    <div class="lock-sub">Sign in with your Finsso account<br>to access this dashboard</div>
+    <div id="g-signin" class="lock-signin"></div>
+    <div class="lock-error-msg" id="lock-err"></div>
+    <div class="lock-footer">Restricted access</div>
+    <div class="lock-contact">Need access? Contact <a href="mailto:miguel.cordero@finsso.com">miguel.cordero@finsso.com</a></div>
+  </div>
+</div>
+
+<div class="loading-overlay hidden" id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text">Loading data…</div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-top">
+    <div style="flex:1">
+      <div class="report-title">Sales Weekly Review</div>
+      <div class="report-subtitle">onboarded dealers · actual drawdowns per week · planned drawdowns &amp; remarks</div>
+      <div class="data-status" id="data-status-global" style="text-align:left">Loading…</div>
+    </div>
+    <div class="header-right">
+      <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="wr-tabs">
+    <span class="wr-tab active">Dealer Weekly Plan</span>
+    <span class="wr-tab soon" title="Coming next">Tab 2</span>
+    <span class="wr-tab soon" title="Coming next">Tab 3</span>
+  </div>
+
+  <div class="filter-bar" id="filter-bar" style="position:static">
+    <div class="filter-group" id="filter-team"><span class="filter-group-label">Team</span></div>
+  </div>
+
+  <div class="wr-bar">
+    <label for="wr-month">Month</label><select id="wr-month"></select>
+    <label for="wr-so">Officer</label><select id="wr-so"></select>
+    <input id="wr-search" type="search" placeholder="Search dealer name or ID…" autocomplete="off">
+    <span class="wr-pager"><button type="button" id="wr-prev" title="Previous week (Alt+←)">◀</button><span id="wr-pglabel"></span><button type="button" id="wr-next" title="Next week (Alt+→)">▶</button></span>
+    <button type="button" id="wr-clear" style="display:none">Clear filters</button>
+    <span class="wr-count" id="wr-count"></span>
+  </div>
+  <div class="wr-msg" id="wr-banner" style="margin-bottom:8px"></div>
+
+  <div class="wr-wrap" id="wr-wrap">
+    <table class="wr" id="wr-table"><thead id="wr-head"></thead><tbody id="wr-body"></tbody><tfoot id="wr-foot"></tfoot></table>
+  </div>
+  <div style="height:70px"></div>
+</div>
+
+<div class="wr-savebar" id="wr-savebar">
+  <span id="wr-dirty">0 unsaved changes</span>
+  <button type="button" class="primary" id="wr-save">Save changes</button>
+  <button type="button" id="wr-discard">Discard</button>
+  <span class="wr-msg" id="wr-savemsg"></span>
+</div>
+
+<div class="error-box" id="error-box" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9998">
+  <h3>Couldn't load data</h3>
+  <p id="error-msg">Something went wrong fetching the dashboard data.</p>
+  <button onclick="location.reload()">Retry</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════════════════
+const DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-repository/main/data/';
+// ── BigQuery data API ── used when signed in; any failure falls back to the GitHub CSV below ──
+function _timedFetch(u, o, ms) { var c = new AbortController(), t = setTimeout(function () { c.abort(); }, ms || 15000); o.signal = c.signal; return fetch(u, o).finally(function () { clearTimeout(t); }); }
+var DATA_API = 'https://finsso-data-api.miguel-cordero.workers.dev/data/';
+var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv'];
+var _idToken = null, DATA_SRC = {};
+// Some dashboards start loading data before sign-in finishes; wait briefly for the Google token so the BigQuery path can be used.
+var _tokenWait = new Promise(function (res) { window._resolveToken = res; });
+function _noteSrc(name, src) {
+  DATA_SRC[name] = src;
+  try { var n = Object.keys(DATA_SRC), bq = n.filter(function (k) { return DATA_SRC[k] === 'BigQuery'; }).length, el = document.getElementById('who-name'); if (el) el.title = 'Data: ' + bq + '/' + n.length + ' files from BigQuery' + (bq < n.length ? ', rest from GitHub' : ''); } catch (e) {}
+}
+async function bqFetch(name) {
+  if (!_idToken && BQ_FILES.indexOf(name) >= 0) await Promise.race([_tokenWait, new Promise(function (r) { setTimeout(r, 45000); })]);
+  if (_idToken && BQ_FILES.indexOf(name) >= 0) {
+    try {
+      var tab = (typeof ALLOWLIST_TAB !== 'undefined' && ALLOWLIST_TAB) ? ALLOWLIST_TAB : 'SalesWeekly';
+      var br = await _timedFetch(DATA_API + name + '?tab=' + encodeURIComponent(tab), { headers: { Authorization: 'Bearer ' + _idToken } }, 15000);
+      if (br.ok) { _noteSrc(name, 'BigQuery'); return parseCSV(await br.text()); }
+      console.warn('Data API ' + br.status + ' for ' + name + ' - using GitHub');
+    } catch (e) { console.warn('Data API unreachable for ' + name + ' - using GitHub'); }
+  }
+  _noteSrc(name, 'GitHub');
+  return null;
+}
+const DAY_MS = 86400000;
+const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const ALL_TEAMS = '__ALL__';
+// Save/load endpoint = the WeeklyReview Apps Script web app (/exec URL).
+// Paste it here after deploying WeeklyReview-AppsScript.gs. Until then the
+// page works read-only (inputs can be typed but Save stays disabled).
+var WR_API = 'https://script.google.com/a/macros/finsso.com/s/AKfycbznI2kQ8a0ApTS9xbDjY4oLoya5KQlqJ-xHm4X75BwkgIby4Cfqtz2xCupYOeFMBFik/exec';
+function wrConfigured() { return /^https:\/\/script\.google\.com\/.+\/exec/.test(WR_API); }
+
+let SO_TEAM_MAP = {}, TEAMS = [];
+let dealerRows = [], loansByDealer = {};
+let dataLoadedAt = null;
+let ACCESS = null, ID_TOKEN = '', USER_EMAIL = '', _dataReady = false, _rendered = false;
+let selectedTeam = ALL_TEAMS, selectedSO = '', selectedMonth = null, searchQ = '';
+let saved = {};   // key "week|dealerId" -> {fresh, redraw, remarks, by, at}   (as last loaded from server)
+let edits = {};   // key -> {fresh, redraw, remarks, conf}  (unsaved, full set for that row)
+let weeks = [], loanDealer = {}, latestVisit = {}, duesByDealer = {};
+
+function teamOf(so) { return SO_TEAM_MAP[so] || null; }
+function esc(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmtDate(d) { return d ? String(d.getDate()).padStart(2, '0') + '-' + MONTH_ABBR[d.getMonth()] + '-' + d.getFullYear() : '—'; }
+function peso(n) { return '₱' + Math.round(n || 0).toLocaleString('en-US'); }
+function monthKey(y, m) { return y + '-' + String(m + 1).padStart(2, '0'); }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// LOAD DATA (drawdown v2 + v3 180-day, dealer checker, mapping — by header name)
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadData() {
+  const loadingEl = document.getElementById('loading-overlay');
+  const errEl = document.getElementById('error-box');
+  loadingEl.classList.remove('hidden');
+  try {
+    const [ddGrid, dd3Grid, dcGrid, obGrid, mapGrid, siGrid] = await Promise.all([
+      fetchCSV('drawdown.csv'),
+      fetchCSV('drawdownv3.csv', true),
+      fetchCSV('dealer-checker.csv'),
+      fetchCSV('ob-masterlist.csv', true),
+      fetchCSV('mapping.csv', true),
+      fetchCSV('visits.csv', true), // "[Raw] Visits" — latest IF visit
+    ]);
+
+    if (mapGrid) {
+      const mCol = buildColumnMap(mapGrid[0]);
+      const loaded = {}, teamsFound = [];
+      for (let i = 1; i < mapGrid.length; i++) {
+        const r = mapGrid[i];
+        const so = normName(get(r, mCol('L2 - Sales Officer')));
+        const manager = normName(get(r, mCol('L1 - Sales Manager')));
+        if (!so || !manager) continue;
+        const team = manager.split(/\s+/)[0];
+        if (teamsFound.indexOf(team) < 0) teamsFound.push(team);
+        loaded[so] = team;
+      }
+      SO_TEAM_MAP = loaded; TEAMS = teamsFound;
+    }
+
+    // Loans (credited drawdowns) per dealer: v2 + v3 (180-day), header-name lookups.
+    loansByDealer = {}; loanDealer = {};
+    const names = {};
+    duesByDealer = {};
+    const isPending = (st, re) => { st = String(st || '').trim().toLowerCase(); return !!st && re.test(st); };
+    function addLoans(grid, isV3) {
+      if (!grid || grid.length < 2) return;
+      const c = buildColumnMap(grid[0]);
+      for (let i = 1; i < grid.length; i++) {
+        const r = grid[i];
+        const id = get(r, c('Drawdown ID')).trim();
+        const dealerId = get(r, c('Dealer ID')).trim();
+        if (!id || !dealerId) continue;
+        const nm = get(r, c('Dealership Name')).trim();
+        if (nm && !names[dealerId]) names[dealerId] = nm;
+        const creditDate = parseSheetDate(get(r, c('Credit Date to Dealer Bank Account')));
+        if (!creditDate) continue; // not credited -> not a drawdown made
+        (loansByDealer[dealerId] = loansByDealer[dealerId] || []).push({ id, creditDate }); loanDealer[id] = dealerId;
+        // Dues of OPEN loans only: renewals (R) and maturity (M) that are still unpaid
+        const lst = get(r, c('Loan Status')).trim().toLowerCase();
+        if (lst && lst !== 'closed' && lst !== 'cancelled') {
+          const add = (type, dateCol, ok) => { const dt = parseSheetDate(get(r, c(dateCol))); if (dt && ok) (duesByDealer[dealerId] = duesByDealer[dealerId] || []).push({ id, type, date: dt }); };
+          if (!isV3) {
+            add('R', 'Renewal 1 Due Date', isPending(get(r, c('Renewal 1 Payment Status')), /^(renewal not yet due|renewal overdue|not renewed)$/));
+            add('R', 'Renewal 2 Due Date', isPending(get(r, c('Renewal 2 Payment Status')), /^(renewal not yet due|renewal overdue|not renewed)$/));
+            add('M', 'Final Maturity Date', isPending(get(r, c('Full Payment Status')), /^(maturity not yet due|maturity overdue|pending maturity)$/));
+          } else {
+            const open = st => isPending(st, /^(?!.*(paid|closed|n\/a|not applicable)).+$/);
+            [['R1 Due Date', 'R1 Payment Status'], ['R2 Due Date', 'R2 Payment Status'], ['R3P1 Due Date', 'R3 Payment Status'], ['R4P2 Due Date', 'R4 Payment Status'], ['R5P3 Due Date', 'R5 Payment Status']]
+              .forEach(p => add('R', p[0], open(get(r, c(p[1])))));
+            add('M', c('Maturity Due Date') >= 0 ? 'Maturity Due Date' : 'Maturity Date', open(get(r, c('Maturity Payment Status'))));
+          }
+        }
+      }
+    }
+    addLoans(ddGrid, false); addLoans(dd3Grid, true);
+
+    const obNames = {};
+    if (obGrid) {
+      const oc = buildColumnMap(obGrid[0]);
+      for (let i = 1; i < obGrid.length; i++) {
+        const id = get(obGrid[i], oc('Dealer ID')).trim(), nm = get(obGrid[i], oc('Dealership Name')).trim();
+        if (id && nm && !obNames[id]) obNames[id] = nm;
+      }
+    }
+
+    // Dealer master: only dealers WITH an Original Onboarding Date are "onboarded".
+    dealerRows = [];
+    const dc = buildColumnMap(dcGrid[0]);
+    const g = (r, n) => get(r, dc(n)).trim();
+    for (let i = 1; i < dcGrid.length; i++) {
+      const r = dcGrid[i];
+      const dealerId = g(r, 'Dealer ID');
+      if (!dealerId) continue;
+      const onboardingDate = parseSheetDate(g(r, 'Original Onboarding Date'));
+      if (!onboardingDate) continue;
+      const loans = loansByDealer[dealerId] || [];
+      let first = parseSheetDate(g(r, 'First TXN')), last = parseSheetDate(g(r, 'Last TXN'));
+      loans.forEach(l => { // widen with v2+v3 loan dates (Dealer Checker excludes 180-day loans)
+        if (!first || l.creditDate < first) first = l.creditDate;
+        if (!last || l.creditDate > last) last = l.creditDate;
+      });
+      dealerRows.push({
+        dealerId,
+        name: g(r, 'Dealership Name') || names[dealerId] || obNames[dealerId] || '(unnamed)',
+        so: normName(g(r, 'Assigned Sales Officer')),
+        onboardingDate, first, last,
+        availCredit: parseNum(g(r, 'Total Available Credit Limit')),
+        clStatus: g(r, 'Credit Line Status'), gcd: g(r, 'GCD Code'), drawPower: parseNum(g(r, 'Total Available Drawing Power')),
+      });
+    }
+    dealerRows.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Latest IF visit per dealer from "[Raw] Visits" (Visit Type = IF Visit): matched on Clean GCD / GCD
+    // to the Dealer Checker "GCD Code", else on dealership name.
+    latestVisit = {};
+    if (siGrid && siGrid.length > 1) {
+      const vc = buildColumnMap(siGrid[0]);
+      const byGcd = {}, byName = {};
+      dealerRows.forEach(d => { if (d.gcd) byGcd[d.gcd.toUpperCase()] = d.dealerId; byName[normName(d.name).toLowerCase()] = d.dealerId; });
+      for (let i = 1; i < siGrid.length; i++) {
+        const r = siGrid[i];
+        if (get(r, vc('Visit Type')).trim().toLowerCase() !== 'if visit') continue;
+        const dt = parseSheetDate(get(r, vc('Visited Date'))); if (!dt) continue;
+        const gcd = (get(r, vc('Clean GCD')).trim() || get(r, vc('GCD')).trim() || get(r, vc('Dealer GCD')).trim()).toUpperCase();
+        const did = (gcd && byGcd[gcd]) || byName[normName(get(r, vc('Dealer Name')) || get(r, vc('DealerShip Name')) || get(r, vc('ID'))).toLowerCase()];
+        if (!did) continue;
+        const by = normName(get(r, vc('Executive Name')));
+        if (!latestVisit[did] || dt > latestVisit[did].date) latestVisit[did] = { date: dt, by, remarks: get(r, vc('Remarks')).replace(/\s+/g, ' ').trim() };
+      }
+    }
+    dataLoadedAt = new Date();
+    document.getElementById('data-status-global').textContent = 'Data loaded ' + dataLoadedAt.toLocaleTimeString() + ' · ' + dealerRows.length + ' onboarded dealers';
+    loadingEl.classList.add('hidden');
+    return true;
+  } catch (e) {
+    loadingEl.classList.add('hidden');
+    document.getElementById('error-msg').textContent = e.message || String(e);
+    errEl.style.display = 'block';
+    return false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// WEEKS — calendar rows (Sunday–Saturday) that touch the selected month
+// ═══════════════════════════════════════════════════════════════════════════
+function buildWeeks(year, month) {
+  // Calendar rows, Sunday–Saturday: Week 1 is the row that contains the 1st of the month,
+  // so it can start in the previous month (e.g. Oct 2026 Week 1 = 27 Sep – 3 Oct) and the
+  // last week can run into the next month. A month has 4–6 such rows.
+  const first = new Date(year, month, 1), lastDay = new Date(year, month + 1, 0);
+  let from = new Date(year, month, 1 - first.getDay());
+  const out = [];
+  for (let n = 1; from <= lastDay; n++) {
+    const to = new Date(from.getFullYear(), from.getMonth(), from.getDate() + 6);
+    const f = d => d.getDate() + ' ' + MONTH_ABBR[d.getMonth()];
+    out.push({ n, from, to, label: 'Week ' + n, range: f(from) + ' – ' + f(to) });
+    from = new Date(from.getFullYear(), from.getMonth(), from.getDate() + 7);
+  }
+  return out;
+}
+function actualCount(dealerId, wk) {
+  const loans = loansByDealer[dealerId] || [];
+  let n = 0;
+  loans.forEach(l => { if (l.creditDate >= wk.from && l.creditDate <= wk.to) n++; });
+  return n;
+}
+function todayStart() { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SCOPE (same Allowlist "Team <SM first name>" tags as Sales Team Performance)
+// ═══════════════════════════════════════════════════════════════════════════
+function allowedTeamOptions() {
+  if (!ACCESS || ACCESS.unrestricted) return [ALL_TEAMS].concat(TEAMS);
+  const lowers = ACCESS.teams.map(t => t.toLowerCase());
+  return TEAMS.filter(t => lowers.indexOf(t.toLowerCase()) >= 0);
+}
+function dealersInScope() {
+  const lowers = (!ACCESS || ACCESS.unrestricted) ? null : ACCESS.teams.map(t => t.toLowerCase());
+  const q = searchQ.trim().toLowerCase();
+  const mEnd = new Date(selectedMonth.y, selectedMonth.m + 1, 0);
+  return dealerRows.filter(d => {
+    if (d.onboardingDate > mEnd) return false; // not yet onboarded by the end of the selected month
+    const team = teamOf(d.so);
+    if (lowers && (!team || lowers.indexOf(team.toLowerCase()) < 0)) return false; // hard guard for team-tagged users
+    if (selectedTeam !== ALL_TEAMS && team !== selectedTeam) return false;
+    if (selectedSO && d.so !== selectedSO) return false;
+    if (q && d.name.toLowerCase().indexOf(q) < 0 && d.dealerId.toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SAVED INPUTS (live from the Apps Script, so everyone sees the latest)
+// ═══════════════════════════════════════════════════════════════════════════
+function dirtyCount() { return Object.keys(edits).length; }
+async function loadSaved() {
+  saved = {};
+  if (!wrConfigured() || !ID_TOKEN) { setBanner(wrConfigured() ? '' : 'Save endpoint not configured yet — inputs can be typed but not saved. (Set WR_API after deploying the Apps Script.)', wrConfigured() ? '' : 'err'); return; }
+  try {
+    const url = WR_API + '?action=load&month=' + encodeURIComponent(monthKey(selectedMonth.y, selectedMonth.m)) + '&token=' + encodeURIComponent(ID_TOKEN) + '&_=' + Date.now();
+    const r = await fetch(url);
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'load failed');
+    (j.rows || []).forEach(x => { x.conf = (x.conf === true || String(x.conf).toLowerCase() === 'yes') ? 'green' : (String(x.conf || '').toLowerCase() === 'green' || String(x.conf || '').toLowerCase() === 'yellow' ? String(x.conf).toLowerCase() : ''); saved[x.week + '|' + x.dealerId] = x; });
+    setBanner('');
+  } catch (e) { setBanner('Couldn\'t load saved inputs: ' + (e.message || e), 'err'); }
+}
+function setBanner(t, cls) { const b = document.getElementById('wr-banner'); b.textContent = t || ''; b.className = 'wr-msg' + (cls ? ' ' + cls : ''); }
+function cur(key) { return edits[key] || saved[key] || { fresh: '', redraw: '', remarks: '', conf: '' }; }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════════════
+// Layout: info columns (frozen) + Week 1 (frozen, optional) + ONE paged week (◀ ▶ to move).
+// Fixed-width table (fast) and VIRTUALIZED rows: only rows near the viewport exist in the DOM.
+const WR_ROW_H = 38, WR_BUF = 10, WR_HEAD_H = 60;
+// [label, width, align classes, key]
+const WR_FROZEN = [ ['Dealer', 170, 'l name', 'dealer'], ['Assigned Officer', 120, 'l', 'so'], ['Onboarding Date', 104, '', 'onb'], ['Last Txn', 104, '', 'last'], ['Total Available Credit Limit', 104, 'rr', 'limit'], ['Available Drawing Power', 104, 'rr', 'dp'], ['Credit Line Status', 72, '', 'cls'] ];
+const WR_SCROLL = [ ['Latest IF Visit', 104, '', 'lvd'], ['Visited By (IF)', 130, 'l', 'lvb'], ['Visit Remarks', 170, 'l', 'lvr'] ]; // not frozen — scroll with the weeks
+const WR_INFO_W = () => WR_FROZEN.concat(WR_SCROLL).reduce((a, c) => a + c[1], 0);
+// one week block = 7 columns
+const WR_BLOCK_COLS = [['Actual Drawdowns', 'act'], ['Renewals Due', 'ren'], ['Maturities Due', 'mat'], ['Confidence', 'conf'], ['Planned Fresh Drawdown', 'fresh'], ['Planned Re-Drawdown', 'redraw'], ['Remarks', 'remarks']];
+const WR_W_PAGED = [100, 96, 100, 106, 116, 116, 320]; // Remarks stretches to the room that's left
+const WR_NC = WR_BLOCK_COLS.length;
+let curList = [], baseCount = 0, curActs = {}, rsStart = -1, rsEnd = -1, wrTodayStart = null;
+let pageIdx = null, filters = {}, shown = [], tblW = 0;
+
+// ── dues (renewal / maturity) per dealer per week, from the open loans' due dates ──
+let _dueCache = {};
+function dueItems(dealerId, wk, type) {
+  const list = duesByDealer[dealerId] || [], out = [];
+  for (let i = 0; i < list.length; i++) { const x = list[i]; if (x.type === type && x.date >= wk.from && x.date <= wk.to) out.push(x); }
+  return out;
+}
+function dueCount(dealerId, wk, type) {
+  const k = dealerId + '|' + wk.n + '|' + type;
+  return k in _dueCache ? _dueCache[k] : (_dueCache[k] = dueItems(dealerId, wk, type).length);
+}
+
+function pageList() { return weeks; }
+function defaultPageIdx() {
+  const t = todayStart();
+  const i = weeks.findIndex(w => t >= w.from && t <= w.to);
+  return i >= 0 ? i : 0;
+}
+function layoutBlocks() {
+  if (pageIdx === null) pageIdx = defaultPageIdx();
+  pageIdx = Math.max(0, Math.min(pageIdx, weeks.length - 1));
+  let x = WR_INFO_W();
+  let widths = WR_W_PAGED.slice();
+  const avail = (document.getElementById('wr-wrap').clientWidth || 1400) - x - 4;
+  const base = widths.reduce((a, c) => a + c, 0);
+  if (avail > base) { const k = avail / base; widths = widths.map(w => Math.floor(w * k)); }          // wide screen: stretch to fill
+  else widths[WR_NC - 1] = Math.max(130, avail - widths.slice(0, WR_NC - 1).reduce((a, c) => a + c, 0)); // narrower: Remarks takes the rest
+  shown = [{ w: weeks[pageIdx], wi: pageIdx, widths }];
+  tblW = Math.max(x + widths.reduce((a, c) => a + c, 0), (document.getElementById('wr-wrap').clientWidth || 0) - 2);
+}
+function frozenLefts() { let x = 0; return WR_FROZEN.map(c => { const l = x; x += c[1]; return l; }); }
+
+function hcell(id, label) {
+  const on = filterActive(id) ? ' on' : '', sorted = sortSpec && sortSpec.id === id ? '<span class="sa">' + (sortSpec.dir === 1 ? '▲' : '▼') + '</span>' : '';
+  return '<div class="hc"><span class="hl">' + label + '</span>' + sorted + '<button type="button" class="fbtn' + on + '" data-col="' + id + '" title="Filter / sort">' + FUNNEL + '</button></div>';
+}
+function renderHead() {
+  layoutBlocks();
+  const table = document.getElementById('wr-table');
+  table.style.width = tblW + 'px';
+  let cg = '<colgroup>' + WR_FROZEN.concat(WR_SCROLL).map(c => '<col style="width:' + c[1] + 'px">').join('');
+  shown.forEach(b => { cg += b.widths.map(w => '<col style="width:' + w + 'px">').join(''); });
+  cg += '</colgroup>';
+  const fl = frozenLefts(), lastF = WR_FROZEN.length - 1;
+  const thCls = c => (c[2].indexOf('l') >= 0 ? 'l' : '') + (c[2].indexOf('rr') >= 0 ? ' rr' : '');
+  let h1 = '<tr>' + WR_FROZEN.map((c, i) => '<th class="fz ' + thCls(c) + (i === lastF ? ' fzend' : '') + '" rowspan="2" style="left:' + fl[i] + 'px">' + hcell(c[3], c[0]) + '</th>').join('');
+  h1 += WR_SCROLL.map(c => '<th class="' + thCls(c) + '" rowspan="2">' + hcell(c[3], c[0]) + '</th>').join('');
+  let h2 = '<tr class="sub">';
+  shown.forEach(b => {
+    h1 += '<th class="wk wkstart" colspan="' + WR_NC + '">' + b.w.label + ' <span style="font-weight:400;color:var(--text3)">(' + b.w.range + ')</span></th>';
+    WR_BLOCK_COLS.forEach((c, i) => { h2 += '<th class="wk' + (i === 0 ? ' wkstart' : '') + '">' + hcell(b.w.n + '|' + c[1], c[0]) + '</th>'; });
+  });
+  document.getElementById('wr-head').innerHTML = h1 + '</tr>' + h2 + '</tr>';
+  const old = table.querySelector('colgroup'); if (old) old.remove();
+  table.insertAdjacentHTML('afterbegin', cg);
+  updatePager();
+}
+
+function updatePager() {
+  const w = weeks[pageIdx];
+  document.getElementById('wr-pglabel').textContent = w ? w.label + ' · ' + w.range + '  (' + (pageIdx + 1) + ' of ' + weeks.length + ')' : '';
+  document.getElementById('wr-prev').disabled = pageIdx <= 0;
+  document.getElementById('wr-next').disabled = pageIdx >= weeks.length - 1;
+  document.getElementById('wr-clear').style.display = activeFilterKeys().length ? '' : 'none';
+}
+function goPage(delta) {
+  const n = Math.max(0, Math.min(weeks.length - 1, pageIdx + delta));
+  if (n === pageIdx) return;
+  pageIdx = n; renderHead(); refreshBody(false);
+}
+
+// ── Google-Sheets-style column filters ───────────────────────────────────────
+// Every column header has a funnel button -> panel with sort A→Z / Z→A, "filter by condition"
+// and "filter by values" (search + checkboxes). Info-column filters always apply; week-column
+// filters apply to the week currently on screen.
+let sortSpec = null; // { id, dir: 1 | -1 }
+const FUNNEL = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M1.5 2.5h13l-5 6v4.6l-3 1.4V8.5z" fill="currentColor"/></svg>';
+const BLANK = '(blank)';
+function colDef(id) {
+  const p = id.split('|');
+  const dstr = d => d ? fmtDate(d) : BLANK;
+  const T = (label, get) => ({ type: 'text', label, get: d => { const s = String(get(d) == null ? '' : get(d)).trim(); return s || BLANK; } });
+  const Nn = (label, get, fmt) => ({ type: 'num', label, num: d => { const x = get(d); return x == null || x === '' || !isFinite(+x) ? null : +x; }, get: d => { const x = get(d); return x == null || x === '' || !isFinite(+x) ? BLANK : fmt(+x); } });
+  const D = (label, get) => ({ type: 'date', label, num: d => { const x = get(d); return x ? x.getTime() : null; }, get: d => dstr(get(d)) });
+  if (p.length === 1) {
+    switch (p[0]) {
+      case 'dealer': return T('Dealer', d => d.name);
+      case 'so': return T('Assigned Officer', d => d.so);
+      case 'onb': return D('Onboarding Date', d => d.onboardingDate);
+      case 'last': return D('Last Txn', d => d.last);
+      case 'limit': return Nn('Total Available Credit Limit', d => d.availCredit, peso);
+      case 'dp': return Nn('Available Drawing Power', d => d.drawPower, peso);
+      case 'cls': return T('Credit Line Status', d => d.clStatus);
+      case 'lvd': return D('Latest IF Visit', d => (latestVisit[d.dealerId] || {}).date);
+      case 'lvb': return T('Visited By (IF)', d => (latestVisit[d.dealerId] || {}).by);
+      case 'lvr': return T('Visit Remarks', d => (latestVisit[d.dealerId] || {}).remarks);
+    }
+    return null;
+  }
+  const n = p[0], f = p[1], wk = weeks.find(w => String(w.n) === n); if (!wk) return null;
+  const key = d => n + '|' + d.dealerId;
+  switch (f) {
+    case 'act': return Nn('Actual Drawdowns', d => wk.from > wrTodayStart ? null : actualCount(d.dealerId, wk), String);
+    case 'ren': return Nn('Renewals Due', d => dueCount(d.dealerId, wk, 'R'), String);
+    case 'mat': return Nn('Maturities Due', d => dueCount(d.dealerId, wk, 'M'), String);
+    case 'conf': return { type: 'text', label: 'Confidence', get: d => { const c = cur(key(d)).conf; return c === 'green' ? 'Green' : c === 'yellow' ? 'Yellow' : BLANK; } };
+    case 'fresh': return Nn('Planned Fresh Drawdown', d => cur(key(d)).fresh, String);
+    case 'redraw': return Nn('Planned Re-Drawdown', d => cur(key(d)).redraw, String);
+    case 'remarks': return T('Remarks', d => cur(key(d)).remarks);
+  }
+  return null;
+}
+function filterActive(id) { const f = filters[id]; return !!f && (!!f.sel || !!f.op); }
+function activeFilterKeys() {
+  const vis = {}; shown.forEach(b => { vis[b.w.n] = 1; });
+  return Object.keys(filters).filter(id => filterActive(id) && (id.indexOf('|') < 0 || vis[id.split('|')[0]]));
+}
+const OPS_NUM = [['', 'None'], ['empty', 'Is empty'], ['any', 'Is not empty'], ['gt', 'Greater than'], ['ge', 'Greater than or equal to'], ['lt', 'Less than'], ['le', 'Less than or equal to'], ['eq', 'Is equal to'], ['ne', 'Is not equal to']];
+const OPS_TXT = [['', 'None'], ['empty', 'Is empty'], ['any', 'Is not empty'], ['contains', 'Text contains'], ['ncontains', 'Text does not contain'], ['eq', 'Text is exactly']];
+function condPass(def, op, v, d) {
+  if (def.type === 'text') {
+    const s = def.get(d) === BLANK ? '' : def.get(d).toLowerCase(), q = String(v || '').trim().toLowerCase();
+    return op === 'empty' ? !s : op === 'any' ? !!s : op === 'contains' ? s.indexOf(q) >= 0 : op === 'ncontains' ? s.indexOf(q) < 0 : op === 'eq' ? s === q : true;
+  }
+  const x = def.num(d), t = parseFloat(v);
+  if (op === 'empty') return x == null; if (op === 'any') return x != null;
+  if (x == null || !isFinite(t)) return false;
+  return op === 'gt' ? x > t : op === 'ge' ? x >= t : op === 'lt' ? x < t : op === 'le' ? x <= t : op === 'eq' ? x === t : op === 'ne' ? x !== t : true;
+}
+function applyFilters(list) {
+  const tests = [];
+  activeFilterKeys().forEach(id => {
+    const f = filters[id], def = colDef(id); if (!def) return;
+    if (f.sel) tests.push(d => f.sel.has(def.get(d)));
+    if (f.op) tests.push(d => condPass(def, f.op, f.v, d));
+  });
+  return tests.length ? list.filter(d => tests.every(t => t(d))) : list;
+}
+function applySort(list) {
+  if (!sortSpec) return list;
+  const def = colDef(sortSpec.id); if (!def) return list;
+  const dir = sortSpec.dir, numeric = def.type !== 'text';
+  const dec = list.map((d, i) => ({ d, i, k: numeric ? def.num(d) : def.get(d) }));
+  dec.sort((a, b) => {
+    const ab = numeric ? a.k == null : a.k === BLANK, bb = numeric ? b.k == null : b.k === BLANK;
+    if (ab || bb) return ab && bb ? a.i - b.i : ab ? 1 : -1;           // blanks always last
+    const c = numeric ? a.k - b.k : String(a.k).localeCompare(String(b.k), undefined, { numeric: true, sensitivity: 'base' });
+    return c ? c * dir : a.i - b.i;
+  });
+  return dec.map(x => x.d);
+}
+
+// the dropdown panel
+let wfPanel = null;
+function closeFilterPanel() { if (wfPanel) { wfPanel.remove(); wfPanel = null; document.removeEventListener('mousedown', wfOutside, true); document.removeEventListener('keydown', wfKey, true); } }
+function wfOutside(e) { if (wfPanel && !wfPanel.contains(e.target) && !(e.target.closest && e.target.closest('.fbtn'))) closeFilterPanel(); }
+function wfKey(e) { if (e.key === 'Escape') closeFilterPanel(); }
+function openFilterPanel(id, anchor) {
+  closeFilterPanel();
+  const def = colDef(id); if (!def) return;
+  const base = dealersInScope();
+  const counts = {}; base.forEach(d => { const s = def.get(d); counts[s] = (counts[s] || 0) + 1; });
+  let vals = Object.keys(counts);
+  const ord = def.type === 'text'
+    ? (a, b) => (a === BLANK) - (b === BLANK) || a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+    : (() => { const m = {}; base.forEach(d => { m[def.get(d)] = def.num(d); }); return (a, b) => (a === BLANK) - (b === BLANK) || (m[a] - m[b]); })();
+  vals.sort(ord);
+  const f = filters[id] || {};
+  const tmp = new Set(f.sel ? Array.from(f.sel) : vals);
+  const ops = def.type === 'text' ? OPS_TXT : OPS_NUM;
+  const panel = document.createElement('div'); panel.className = 'wf-panel';
+  panel.innerHTML =
+    '<div class="wf-title">' + esc(def.label) + '</div>' +
+    '<button type="button" class="wf-item" data-sort="1">Sort A → Z</button><button type="button" class="wf-item" data-sort="-1">Sort Z → A</button>' +
+    '<div class="wf-sep"></div>' +
+    (def.type === 'date' ? '' : '<div class="wf-sec">Filter by condition</div><div class="wf-cond"><select class="wf-op">' + ops.map(o => '<option value="' + o[0] + '"' + (f.op === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('') + '</select><input type="text" class="wf-v" placeholder="Value" value="' + esc(f.v || '') + '"></div><div class="wf-sep"></div>') +
+    '<div class="wf-sec">Filter by values <span class="wf-links"><a data-all="1">Select all</a> · <a data-all="0">Clear</a></span></div>' +
+    '<input type="search" class="wf-search" placeholder="Search"><div class="wf-count"></div><div class="wf-list"></div>' +
+    '<div class="wf-foot"><button type="button" class="wf-cancel">Cancel</button><button type="button" class="wf-ok">OK</button></div>';
+  document.body.appendChild(panel); wfPanel = panel;
+  const list = panel.querySelector('.wf-list'), search = panel.querySelector('.wf-search'), cnt = panel.querySelector('.wf-count');
+  const opSel = panel.querySelector('.wf-op'), vIn = panel.querySelector('.wf-v');
+  const syncCond = () => { if (vIn) vIn.style.display = (opSel.value === '' || opSel.value === 'empty' || opSel.value === 'any') ? 'none' : ''; };
+  if (opSel) { syncCond(); opSel.onchange = syncCond; }
+  const MAXN = 400;
+  const draw = () => {
+    const q = search.value.trim().toLowerCase();
+    const shownVals = vals.filter(v => !q || v.toLowerCase().indexOf(q) >= 0);
+    cnt.textContent = tmp.size + ' of ' + vals.length + ' selected' + (shownVals.length > MAXN ? ' · showing first ' + MAXN + ', search to narrow' : '');
+    list.innerHTML = shownVals.slice(0, MAXN).map(v => '<label class="wf-val"><input type="checkbox" data-v="' + esc(v) + '"' + (tmp.has(v) ? ' checked' : '') + '><span>' + esc(v) + '</span><em>' + counts[v] + '</em></label>').join('') || '<div class="wf-none">No matches</div>';
+    panel._shown = shownVals;
+  };
+  draw();
+  search.oninput = draw;
+  list.onchange = e => { const cb = e.target; if (!cb.dataset || cb.dataset.v === undefined) return; if (cb.checked) tmp.add(cb.dataset.v); else tmp.delete(cb.dataset.v); cnt.textContent = tmp.size + ' of ' + vals.length + ' selected'; };
+  panel.addEventListener('click', e => {
+    const a = e.target.closest('a[data-all]');
+    if (a) { (panel._shown || vals).forEach(v => { if (a.dataset.all === '1') tmp.add(v); else tmp.delete(v); }); draw(); return; }
+    const s = e.target.closest('[data-sort]');
+    if (s) { sortSpec = { id, dir: +s.dataset.sort }; closeFilterPanel(); renderHead(); refreshBody(true); return; }
+    if (e.target.closest('.wf-cancel')) { closeFilterPanel(); return; }
+    if (e.target.closest('.wf-ok')) {
+      const nf = {};
+      if (tmp.size < vals.length) nf.sel = new Set(tmp);
+      if (opSel && opSel.value) { nf.op = opSel.value; nf.v = vIn.value; }
+      if (nf.sel || nf.op) filters[id] = nf; else delete filters[id];
+      closeFilterPanel(); renderHead(); refreshBody(true);
+    }
+  });
+  // position under the button, kept inside the window
+  const r = anchor.getBoundingClientRect(), w = 280;
+  panel.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.left)) + 'px';
+  panel.style.top = Math.min(window.innerHeight - 120, r.bottom + 4) + 'px';
+  panel.style.maxHeight = Math.max(240, window.innerHeight - r.bottom - 16) + 'px';
+  setTimeout(() => { document.addEventListener('mousedown', wfOutside, true); document.addEventListener('keydown', wfKey, true); search.focus(); }, 0);
+}
+document.getElementById('wr-head').addEventListener('click', e => {
+  const b = e.target.closest('.fbtn'); if (!b) return; e.stopPropagation(); openFilterPanel(b.dataset.col, b);
+});
+
+function render() {
+  weeks = buildWeeks(selectedMonth.y, selectedMonth.m);
+  wrTodayStart = todayStart(); _dueCache = {};
+  renderHead();
+  refreshBody(true);
+}
+function refreshBody(resetScroll) {
+  const base = dealersInScope();
+  baseCount = base.length;
+  curList = applySort(applyFilters(base));
+  curActs = {};
+  curList.forEach(d => { curActs[d.dealerId] = weeks.map(w => w.from > wrTodayStart ? null : actualCount(d.dealerId, w)); });
+  document.getElementById('wr-count').textContent = (curList.length === baseCount ? baseCount : curList.length + ' of ' + baseCount) + ' dealers · ' + MONTH_ABBR[selectedMonth.m] + ' ' + selectedMonth.y;
+  rsStart = rsEnd = -1;
+  if (resetScroll) document.getElementById('wr-wrap').scrollTop = 0;
+  paintRows(true);
+  requestAnimationFrame(() => paintRows(false));
+  renderFoot();
+  updateSaveBar();
+  updatePager();
+}
+
+function dueTitle(items) { return items.map(x => x.id + ' · ' + fmtDate(x.date)).join('\n'); }
+function rowHtml(d) {
+  const acts = curActs[d.dealerId], fl = frozenLefts(), last = WR_FROZEN.length - 1, lv = latestVisit[d.dealerId];
+  let html = '<tr class="r" data-d="' + esc(d.dealerId) + '">' +
+    '<td class="fz l name" style="left:' + fl[0] + 'px" title="' + esc(d.name) + ' · ' + esc(d.dealerId) + '">' + esc(d.name) + '</td>' +
+    '<td class="fz l" style="left:' + fl[1] + 'px" title="' + esc(d.so) + '">' + esc(d.so || '—') + '</td>' +
+    '<td class="fz" style="left:' + fl[2] + 'px">' + fmtDate(d.onboardingDate) + '</td><td class="fz" style="left:' + fl[3] + 'px">' + fmtDate(d.last) + '</td>' +
+    '<td class="fz rr" style="left:' + fl[4] + 'px">' + peso(d.availCredit) + '</td>' +
+    '<td class="fz rr" style="left:' + fl[5] + 'px">' + peso(d.drawPower) + '</td>' +
+    '<td class="fz fzend" style="left:' + fl[last] + 'px">' + esc(d.clStatus || '—') + '</td>' +
+    (lv ? '<td>' + fmtDate(lv.date) + '</td><td class="l" title="' + esc(lv.by) + '">' + esc(lv.by || '—') + '</td><td class="l" title="' + esc(lv.remarks) + '">' + esc(lv.remarks || '—') + '</td>' : '<td>—</td><td class="l">—</td><td class="l">—</td>');
+  shown.forEach(b => {
+    const w = b.w, key = w.n + '|' + d.dealerId, v = cur(key);
+    const a = acts[b.wi], future = a === null;
+    const ed = edits[key], sv = saved[key] || {};
+    const dirty = fld => ed && String(ed[fld] == null ? '' : ed[fld]) !== String(sv[fld] == null ? '' : sv[fld]) ? ' dirty' : '';
+    const who = sv.by ? 'Last saved by ' + sv.by + (sv.at ? ' · ' + sv.at : '') : '';
+    const col = v.conf === 'green' ? ' cg' : v.conf === 'yellow' ? ' cy' : '';
+    const rI = dueItems(d.dealerId, w, 'R'), mI = dueItems(d.dealerId, w, 'M');
+    html += '<td class="act wkstart' + (future ? ' future' : '') + col + '">' + (future ? '–' : a) + '</td>' +
+      '<td class="due' + (rI.length ? ' has' : '') + col + '"' + (rI.length ? ' title="' + esc(dueTitle(rI)) + '"' : '') + '>' + (rI.length || '–') + '</td>' +
+      '<td class="due' + (mI.length ? ' has' : '') + col + '"' + (mI.length ? ' title="' + esc(dueTitle(mI)) + '"' : '') + '>' + (mI.length || '–') + '</td>' +
+      '<td class="in' + col + '"><select class="cs' + dirty('conf') + '" data-k="' + key + '" data-f="conf" title="' + esc(who || 'Mark how confident this plan is') + '"><option value="">—</option><option value="green"' + (v.conf === 'green' ? ' selected' : '') + '>Green</option><option value="yellow"' + (v.conf === 'yellow' ? ' selected' : '') + '>Yellow</option></select></td>' +
+      '<td class="in' + col + '"><input class="num' + dirty('fresh') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="fresh" value="' + esc(v.fresh) + '" title="' + esc(who) + '"></td>' +
+      '<td class="in' + col + '"><input class="num' + dirty('redraw') + '" type="number" min="0" step="1" data-k="' + key + '" data-f="redraw" value="' + esc(v.redraw) + '" title="' + esc(who) + '"></td>' +
+      '<td class="in' + col + '"><input class="rem' + dirty('remarks') + '" type="text" maxlength="2000" data-k="' + key + '" data-f="remarks" value="' + esc(v.remarks) + '" title="' + esc(who) + '"></td>';
+  });
+  return html + '</tr>';
+}
+
+// Paint only the rows around the viewport. force=true repaints even if the window is unchanged.
+function paintRows(force) {
+  const body = document.getElementById('wr-body'), wrap = document.getElementById('wr-wrap');
+  const n = curList.length, ncols = WR_FROZEN.length + WR_SCROLL.length + shown.length * WR_NC;
+  if (!n) { body.innerHTML = '<tr><td colspan="' + ncols + '" style="padding:18px;text-align:left;color:var(--text3);font-style:italic">No dealers match the current filters.</td></tr>'; rsStart = rsEnd = -1; return; }
+  const first = Math.max(0, Math.floor((wrap.scrollTop - WR_HEAD_H) / WR_ROW_H));
+  const vis = Math.ceil(wrap.clientHeight / WR_ROW_H) + 1;
+  if (!force && rsStart >= 0 && first >= rsStart + 2 && first + vis <= rsEnd - 2) return;
+  if (!force && rsStart === 0 && first + vis <= rsEnd - 2) return;
+  const start = Math.max(0, first - WR_BUF), end = Math.min(n, first + vis + WR_BUF);
+  if (!force && start === rsStart && end === rsEnd) return;
+  const ae = document.activeElement; let keep = null;
+  if (ae && ae.dataset && ae.dataset.k && body.contains(ae)) keep = { k: ae.dataset.k, f: ae.dataset.f, s: ae.selectionStart, e: ae.selectionEnd };
+  let html = '<tr class="sp"><td colspan="' + ncols + '" style="height:' + (start * WR_ROW_H) + 'px"></td></tr>';
+  for (let i = start; i < end; i++) html += rowHtml(curList[i]);
+  html += '<tr class="sp"><td colspan="' + ncols + '" style="height:' + ((n - end) * WR_ROW_H) + 'px"></td></tr>';
+  body.innerHTML = html;
+  rsStart = start; rsEnd = end;
+  if (keep) {
+    const el = body.querySelector('[data-k="' + keep.k + '"][data-f="' + keep.f + '"]');
+    if (el) { el.focus(); try { el.setSelectionRange(keep.s, keep.e); } catch (x) {} }
+  }
+}
+let _scrollRaf = 0;
+document.getElementById('wr-wrap').addEventListener('scroll', () => {
+  if (_scrollRaf) return;
+  _scrollRaf = requestAnimationFrame(() => { _scrollRaf = 0; paintRows(false); });
+}, { passive: true });
+
+function renderFoot() {
+  const fl = frozenLefts(), last = WR_FROZEN.length - 1;
+  let lim = 0, dp = 0;
+  curList.forEach(d => { lim += d.availCredit || 0; dp += d.drawPower || 0; });
+  let foot = '<tr><td class="fz l" colspan="4" style="left:0">Total (' + curList.length + ' dealers)</td>' +
+    '<td class="fz rr" style="left:' + fl[4] + 'px">' + peso(lim) + '</td><td class="fz rr" style="left:' + fl[5] + 'px">' + peso(dp) + '</td><td class="fz fzend" style="left:' + fl[last] + 'px"></td>' +
+    '<td colspan="' + WR_SCROLL.length + '"></td>';
+  shown.forEach(b => {
+    let act = 0, ren = 0, mat = 0, g = 0, y = 0, fresh = 0, redraw = 0;
+    curList.forEach(d => {
+      const a = curActs[d.dealerId][b.wi]; if (a) act += a;
+      ren += dueCount(d.dealerId, b.w, 'R'); mat += dueCount(d.dealerId, b.w, 'M');
+      const v = cur(b.w.n + '|' + d.dealerId), f = parseFloat(v.fresh), rd = parseFloat(v.redraw);
+      if (v.conf === 'green') g++; else if (v.conf === 'yellow') y++;
+      if (isFinite(f)) fresh += f; if (isFinite(rd)) redraw += rd;
+    });
+    foot += '<td class="wkstart">' + act + '</td><td>' + ren + '</td><td>' + mat + '</td><td>' + (g || y ? '<span class="dotg"></span>' + g + ' <span class="doty"></span>' + y : '') + '</td><td>' + fresh + '</td><td>' + redraw + '</td><td></td>';
+  });
+  document.getElementById('wr-foot').innerHTML = foot + '</tr>';
+}
+
+function updateSaveBar() {
+  const n = dirtyCount();
+  document.getElementById('wr-savebar').classList.toggle('show', n > 0);
+  document.getElementById('wr-dirty').textContent = n + ' unsaved row' + (n === 1 ? '' : 's');
+  document.getElementById('wr-save').disabled = !wrConfigured() || !ID_TOKEN;
+  document.getElementById('wr-save').title = wrConfigured() ? '' : 'Save endpoint not configured yet';
+}
+
+// edits: a row's FULL set of fields is tracked together, and dropped again if it
+// ends up equal to what's saved.
+const WR_FIELDS = ['fresh', 'redraw', 'remarks', 'conf'];
+function onInput(e) {
+  const el = e.target; if (!el.dataset || !el.dataset.k) return;
+  const key = el.dataset.k, fld = el.dataset.f;
+  const base = Object.assign({ fresh: '', redraw: '', remarks: '', conf: '' }, saved[key] || {});
+  const row = Object.assign({}, edits[key] || { fresh: base.fresh, redraw: base.redraw, remarks: base.remarks, conf: base.conf });
+  row[fld] = el.value;
+  const same = WR_FIELDS.every(f => String(row[f]) === String(base[f] == null ? '' : base[f]));
+  if (same) delete edits[key]; else edits[key] = row;
+  el.classList.toggle('dirty', !!edits[key] && String(row[fld]) !== String(base[fld] == null ? '' : base[fld]));
+  if (fld === 'conf') { // recolour this week's cells in the row straight away
+    const tr = el.closest('tr'), c = row.conf;
+    tr.querySelectorAll('td:nth-child(n+' + (WR_FROZEN.length + WR_SCROLL.length + 1) + ')').forEach(td => { td.classList.toggle('cg', c === 'green'); td.classList.toggle('cy', c === 'yellow'); });
+  }
+  renderFoot();
+  updateSaveBar();
+}
+// ═══════════════════════════════════════════════════════════════════════════
+// SAVE
+// ═══════════════════════════════════════════════════════════════════════════
+async function saveEdits() {
+  const msg = document.getElementById('wr-savemsg'), btn = document.getElementById('wr-save');
+  if (!wrConfigured() || !ID_TOKEN) return;
+  const rows = Object.keys(edits).map(k => {
+    const [week, dealerId] = k.split('|');
+    return { week: +week, dealerId, fresh: edits[k].fresh, redraw: edits[k].redraw, remarks: edits[k].remarks, conf: edits[k].conf };
+  });
+  if (!rows.length) return;
+  btn.disabled = true; msg.className = 'wr-msg'; msg.textContent = 'Saving…';
+  try {
+    const r = await fetch(WR_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'save', idToken: ID_TOKEN, month: monthKey(selectedMonth.y, selectedMonth.m), rows }) });
+    const j = await r.json();
+    if (!j.ok) {
+      if (j.code === 'auth') { msg.className = 'wr-msg err'; msg.textContent = 'Sign-in expired — refreshing. Click Save again in a few seconds.'; if (window.google && google.accounts && google.accounts.id) google.accounts.id.prompt(); }
+      else { msg.className = 'wr-msg err'; msg.textContent = 'Not saved: ' + (j.error || 'unknown error'); }
+      btn.disabled = false; return;
+    }
+    edits = {};
+    await loadSaved();
+    render();
+    msg.className = 'wr-msg ok'; msg.textContent = 'Saved ' + j.saved + ' row' + (j.saved === 1 ? '' : 's') + ' ✓' + (j.github === false ? ' (GitHub mirror pending)' : '');
+    setTimeout(() => { if (!dirtyCount()) msg.textContent = ''; }, 4000);
+  } catch (e) { msg.className = 'wr-msg err'; msg.textContent = 'Not saved: ' + (e.message || e); }
+  btn.disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CONTROLS / INIT
+// ═══════════════════════════════════════════════════════════════════════════
+function buildMonthSelect() {
+  const sel = document.getElementById('wr-month'); sel.innerHTML = '';
+  const now = new Date(); let y = now.getFullYear(), m = now.getMonth();
+  let minD = null; dealerRows.forEach(d => { if (!minD || d.onboardingDate < minD) minD = d.onboardingDate; });
+  const stop = minD ? new Date(minD.getFullYear(), minD.getMonth(), 1) : new Date(y, m - 11, 1);
+  for (let i = 0; i < 36; i++) {
+    const d = new Date(y, m - i, 1); if (d < stop) break;
+    const o = document.createElement('option'); o.value = d.getFullYear() + '-' + d.getMonth();
+    o.textContent = MONTH_ABBR[d.getMonth()] + ' ' + d.getFullYear() + (i === 0 ? ' (current)' : '');
+    sel.appendChild(o);
+  }
+  selectedMonth = { y: now.getFullYear(), m: now.getMonth() };
+  sel.value = selectedMonth.y + '-' + selectedMonth.m;
+}
+function buildSOSelect() {
+  const sel = document.getElementById('wr-so'); const prev = selectedSO;
+  const lowers = (!ACCESS || ACCESS.unrestricted) ? null : ACCESS.teams.map(t => t.toLowerCase());
+  const sos = Object.keys(SO_TEAM_MAP).filter(so => {
+    const t = SO_TEAM_MAP[so];
+    if (lowers && lowers.indexOf(t.toLowerCase()) < 0) return false;
+    return selectedTeam === ALL_TEAMS || t === selectedTeam;
+  }).sort();
+  sel.innerHTML = '<option value="">All officers</option>' + sos.map(s => '<option value="' + esc(s) + '">' + esc(s) + '</option>').join('');
+  selectedSO = sos.indexOf(prev) >= 0 ? prev : ''; sel.value = selectedSO;
+}
+function buildTeamChips() {
+  const container = document.getElementById('filter-team');
+  container.querySelectorAll('.filter-chip').forEach(el => el.remove());
+  allowedTeamOptions().forEach(t => {
+    const el = document.createElement('span');
+    el.className = 'filter-chip' + (t === selectedTeam ? ' active' : '');
+    el.textContent = t === ALL_TEAMS ? 'Whole Sales Team' : 'Team ' + t;
+    el.onclick = () => { if (selectedTeam === t) return; selectedTeam = t; buildTeamChips(); buildSOSelect(); render(); };
+    container.appendChild(el);
+  });
+}
+function confirmDiscardIfDirty() { return !dirtyCount() || window.confirm('You have unsaved changes for this month. Discard them?'); }
+
+async function tryRender() {
+  if (_rendered || !_dataReady || !ACCESS) return;
+  _rendered = true;
+  const options = allowedTeamOptions();
+  if (!options.length) {
+    document.querySelector('.main').innerHTML = '<div class="warn-banner">Your access is tagged "Team ' + esc(ACCESS.teams.join(', ')) + '", but no team by that name exists in the Mapping sheet right now. Ask the admin to check your Allowlist tag.</div>';
+    return;
+  }
+  selectedTeam = ACCESS.unrestricted ? ALL_TEAMS : options[0];
+  buildMonthSelect(); buildTeamChips(); buildSOSelect();
+  await loadSaved();
+  render();
+}
+
+document.addEventListener('input', onInput);
+document.addEventListener('change', e => { if (e.target.tagName === 'SELECT' && e.target.dataset && e.target.dataset.k) onInput(e); });
+document.getElementById('wr-prev').onclick = () => goPage(-1);
+document.getElementById('wr-next').onclick = () => goPage(1);
+document.getElementById('wr-clear').onclick = () => { filters = {}; sortSpec = null; renderHead(); refreshBody(true); };
+document.addEventListener('keydown', e => {
+  if (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { e.preventDefault(); goPage(e.key === 'ArrowRight' ? 1 : -1); }
+});
+document.getElementById('wr-save').onclick = saveEdits;
+document.getElementById('wr-discard').onclick = () => { edits = {}; render(); document.getElementById('wr-savemsg').textContent = ''; };
+document.getElementById('wr-month').onchange = async function () {
+  if (!confirmDiscardIfDirty()) { this.value = selectedMonth.y + '-' + selectedMonth.m; return; }
+  const [y, m] = this.value.split('-').map(Number); selectedMonth = { y, m }; edits = {}; filters = {}; sortSpec = null; pageIdx = null;
+  await loadSaved(); render();
+};
+document.getElementById('wr-so').onchange = function () { selectedSO = this.value; render(); };
+let _sT = null;
+document.getElementById('wr-search').oninput = function () { searchQ = this.value; clearTimeout(_sT); _sT = setTimeout(render, 180); };
+window.addEventListener('resize', () => { if (curList.length) paintRows(false); });
+window.addEventListener('beforeunload', e => { if (dirtyCount()) { e.preventDefault(); e.returnValue = ''; } });
+
+async function init() {
+  const ok = await loadData();
+  if (!ok) return;
+  _dataReady = true;
+  tryRender();
+}
+init();
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('theme-toggle-btn');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  try { localStorage.setItem('finsso-theme', theme); } catch (e) {}
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+(function initTheme() {
+  let stored = null;
+  try { stored = localStorage.getItem('finsso-theme'); } catch (e) {}
+  const preferred = stored || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(preferred);
+})();
+
+function parseSheetDate(v) {
+  if (v === null || v === undefined) return null;
+  const s = String(v).trim();
+  if (!s) return null;
+  if (/^\d+(\.\d+)?$/.test(s)) {
+    const serial = Math.floor(parseFloat(s));
+    if (serial < 20000 || serial > 60000) return null;
+    const utcMs = Math.round((serial - 25569) * DAY_MS);
+    const utcDate = new Date(utcMs);
+    return new Date(utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate());
+  }
+  const dm = s.match(/^(\d{1,2})-([A-Za-z]{3})[a-z]*-(\d{4})$/);   // 9-Oct-2026
+  if (dm) { const mi = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(dm[2].toLowerCase()); if (mi >= 0) return new Date(+dm[3], mi, +dm[1]); }  // MON_IDX_
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[1]-1, +m[2]);
+  const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+function parseNum(v) {
+  if (v === null || v === undefined || v === '') return 0;
+  const s = String(v).replace(/[,₱%]/g,'').trim();
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+function parseCSVSlow(text) {
+  const rows = [];
+  let row = [], field = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"' && text[i+1] === '"') { field += '"'; i++; }
+      else if (ch === '"') inQ = false;
+      else field += ch;
+    } else {
+      if (ch === '"') inQ = true;
+      else if (ch === ',') { row.push(field); field = ''; }
+      else if (ch === '\r') { /* skip */ }
+      else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else field += ch;
+    }
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
+}
+function parseCSV(text) {
+  // fast reader: slices whole fields instead of appending character by character
+  const rows = [], n = text.length;
+  let row = [], i = 0, nl = -1;
+  while (i < n) {
+    let f;
+    if (text.charCodeAt(i) === 34) {
+      let j = i + 1; f = '';
+      for (;;) {
+        const k = text.indexOf('"', j);
+        if (k < 0) { f += text.slice(j); j = n; break; }
+        if (text.charCodeAt(k + 1) === 34) { f += text.slice(j, k + 1); j = k + 2; }
+        else { f += text.slice(j, k); j = k + 1; break; }
+      }
+      i = j;
+      // anything glued after the closing quote (rare) stays part of the field
+      while (i < n) { const c = text.charCodeAt(i); if (c === 44 || c === 10) break; if (c === 34) return parseCSVSlow(text); if (c !== 13) f += text[i]; i++; }
+    } else {
+      if (nl < i) { nl = text.indexOf('\n', i); if (nl < 0) nl = n; }
+      let k = text.indexOf(',', i); if (k < 0 || k > nl) k = nl;
+      f = text.slice(i, k); i = k;
+      if (f.indexOf('"') >= 0) return parseCSVSlow(text);   // stray quote mid-field: use the exact legacy reader
+      if (f.indexOf('\r') >= 0) f = f.replace(/\r/g, '');
+    }
+    if (i >= n) { row.push(f); break; }
+    if (text.charCodeAt(i) === 44) { row.push(f); i++; if (i >= n) { row.push(''); break; } }
+    else { row.push(f); rows.push(row); row = []; i++; }   // newline
+  }
+  if (row.length) rows.push(row);
+  return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ''));
+}
+// Columns are ALWAYS looked up by header name, never by position — the sheet
+// can gain or lose columns at any time. Header text is whitespace-normalized
+// on both sides (some headers carry doubled spaces, NBSPs or embedded
+// newlines, e.g. "R2  Payment Status", "Plate Number\n(as on ORCR)").
+function normHeader(h) { return String(h == null ? '' : h).replace(/[\s\u00a0]+/g, ' ').trim(); }
+function buildColumnMap(headerRow) {
+  const idx = {};
+  headerRow.forEach((h, i) => { const key = normHeader(h); if (key && !(key in idx)) idx[key] = i; });
+  return function (name) { const k = normHeader(name); return idx[k] !== undefined ? idx[k] : -1; };
+}
+function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
+// Normalizes a person-name field for matching: Google Sheets sometimes stores
+// a non-breaking space (U+00A0) instead of a regular space between a first
+// and last name (seen in real data as "Ricmar Magboo"), and typed sheets
+// like "[Raw] Mapping" use a plain space for the same name — without this,
+// those two strings don't compare equal and the SO silently falls out of
+// every team total. Collapses any run of whitespace (regular or NBSP) to a
+// single regular space, so the two representations always match.
+function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
+
+async function fetchCSV(name, optional) {
+  { const _b = await bqFetch(name); if (_b !== null) return _b; }
+  const url = DATA_BASE + name + '?_=' + Date.now();
+  const r = await fetch(url);
+  if (!r.ok) {
+    if (optional) return null; // e.g. a new export not deployed yet — degrade gracefully
+    throw new Error('Failed to load ' + name + ' (HTTP ' + r.status + ')');
+  }
+  return parseCSV(await r.text());
+}
+
+/* ══════════════════════════════════════════════════
+   GOOGLE SIGN-IN + ALLOWLIST GATE
+   Requires HTTPS (won't work from file://). Uses the same
+   Access Control sheet/service as every other Finsso dashboard.
+   Allowlist label for this dashboard: 'SalesWeekly' (column B of the
+   Allowlist tab; blank = all dashboards; 'Team <SM first name>' = scoped).
+══════════════════════════════════════════════════ */
+var GOOGLE_CLIENT_ID = '263530903165-4nv0iueb5ftb5hjevr14mqug3rlraav5.apps.googleusercontent.com';
+var ALLOWLIST_API = 'https://script.google.com/a/macros/finsso.com/s/AKfycbznI2kQ8a0ApTS9xbDjY4oLoya5KQlqJ-xHm4X75BwkgIby4Cfqtz2xCupYOeFMBFik/exec';
+var ALLOWLIST_TAB = 'SalesWeekly';
+var ALLOWLIST = null;
+var _allowlistLoading = null;
+
+async function _loadAllowlist() {
+  if (ALLOWLIST !== null) return ALLOWLIST;
+  if (_allowlistLoading) return _allowlistLoading;
+  _allowlistLoading = (async function () {
+    for (var attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) await new Promise(function (res) { setTimeout(res, attempt * 500); });
+      try {
+        var url = ALLOWLIST_API + (ALLOWLIST_API.indexOf('?') >= 0 ? '&' : '?') + 'action=allowlist&tab=' + encodeURIComponent(ALLOWLIST_TAB) + '&_=' + Date.now();
+        var r = await fetch(url);
+        var j = await r.json();
+        var list = (j.emails || []).map(function (s) { return String(s).toLowerCase().trim(); }).filter(Boolean);
+        // "entries" (email/domain + unrestricted flag + team tags) comes from the
+        // updated Apps Script; an older deployment only sends "emails", in which
+        // case everyone on the list is treated as unrestricted.
+        var entries = Array.isArray(j.entries) ? j.entries.map(function (e) {
+          return { email: String(e.email || '').toLowerCase().trim(), unrestricted: !!e.unrestricted, teams: (e.teams || []).map(String) };
+        }) : null;
+        ALLOWLIST = { emails: list, entries: entries };
+        return ALLOWLIST;
+      } catch (e) { /* retry */ }
+    }
+    return null;
+  })();
+  try { return await _allowlistLoading; }
+  finally { _allowlistLoading = null; }
+}
+async function _isAllowed(email) {
+  var data = await _loadAllowlist();
+  if (!data) return { ok: false, reason: 'load-failed' };
+  email = String(email).toLowerCase().trim();
+  var at = email.indexOf('@'), dom = at >= 0 ? email.slice(at) : '';
+  if (!data.entries) { // legacy response: plain email/domain list, no scoping
+    if (data.emails.indexOf(email) >= 0 || (dom && data.emails.indexOf(dom) >= 0)) return { ok: true, access: { unrestricted: true, teams: [] } };
+    return { ok: false, reason: 'not-listed' };
+  }
+  // An exact-email row always beats a whole-domain row ("@finsso.com"), so a
+  // team-tagged SM isn't silently widened by a blanket domain entry.
+  var exact = data.entries.filter(function (e) { return e.email === email; });
+  var pool = exact.length ? exact : data.entries.filter(function (e) { return dom && e.email === dom; });
+  if (!pool.length) return { ok: false, reason: 'not-listed' };
+  if (pool.some(function (e) { return e.unrestricted; })) return { ok: true, access: { unrestricted: true, teams: [] } };
+  var teams = [];
+  pool.forEach(function (e) { e.teams.forEach(function (t) { if (teams.indexOf(t) < 0) teams.push(t); }); });
+  if (!teams.length) return { ok: false, reason: 'not-listed' };
+  return { ok: true, access: { unrestricted: false, teams: teams } };
+}
+function _decodeJwt(t) {
+  try {
+    var p = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(decodeURIComponent(escape(atob(p))));
+  } catch (e) { return null; }
+}
+function _authError(msg) { var e = document.getElementById('lock-err'); if (e) e.textContent = msg; }
+function _logAccess(email) {
+  try {
+    var url = ALLOWLIST_API + (ALLOWLIST_API.indexOf('?') >= 0 ? '&' : '?') + 'action=log&tab=' + encodeURIComponent(ALLOWLIST_TAB)
+      + '&email=' + encodeURIComponent(email) + '&ua=' + encodeURIComponent(navigator.userAgent)
+      + '&dashboard=' + encodeURIComponent(location.origin + location.pathname);
+    fetch(url, { mode: 'no-cors' }).catch(function () {});
+  } catch (e) {}
+}
+function _grantAccess(profile, access) {
+  ACCESS = access || { unrestricted: true, teams: [] };
+  if (profile && profile.idToken) ID_TOKEN = profile.idToken;
+  USER_EMAIL = profile && profile.email || '';
+  tryRender();
+  var s = document.getElementById('lock-overlay');
+  if (s) { s.classList.add('unlocking'); setTimeout(function () { s.classList.add('hidden'); }, 400); }
+  _logAccess(profile.email);
+}
+async function _onGoogleCredential(resp) {
+  _idToken = resp && resp.credential; if (_idToken && window._resolveToken) window._resolveToken(); try{FinssoProfile.set(_idToken)}catch(e){}
+  _authError('');
+  var data = _decodeJwt(resp && resp.credential);
+  if (!data || !data.email) { _authError('Could not read your Google account. Try again.'); return; }
+  if (data.email_verified === false) { _authError('Your Google email is not verified.'); return; }
+  var result = await _isAllowed(data.email);
+  if (result.ok) {
+    _grantAccess({ email: String(data.email).toLowerCase(), name: data.name || '', idToken: resp.credential }, result.access);
+  } else if (result.reason === 'load-failed') {
+    _authError('Could not verify access right now — check your connection and try again.');
+  } else {
+    if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
+    _authError(data.email + ' is not on the access list. Ask the admin to add you.');
+  }
+}
+function _initGoogleAuth() {
+  if (!window.google || !google.accounts || !google.accounts.id) { return setTimeout(_initGoogleAuth, 200); }
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: _onGoogleCredential, auto_select: true, cancel_on_tap_outside: false });
+  google.accounts.id.renderButton(document.getElementById('g-signin'), { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'signin_with', logo_alignment: 'center', width: 260 });
+  google.accounts.id.prompt();
+}
+_loadAllowlist();
+if (document.readyState !== 'loading') _initGoogleAuth();
+else document.addEventListener('DOMContentLoaded', _initGoogleAuth);
+</script>
+<script>
+/* ── Finsso profile chip: avatar + name + role, with a "Your access" panel (role from Allowlist column C) ── */
+var FinssoProfile = (function () {
+  var PAGES = [
+    { tab: 'Overview', name: 'PH Core Synergy Report', href: '/dashboards/core/core-synergy-report/' }, { tab: 'DPD', name: 'DPD Aging Dashboard', href: '/dashboards/collections/dpd-aging/' },
+    { tab: 'SalesWeekly', name: 'Sales Weekly Review', href: '/dashboards/sales/weekly-review/' }, { tab: 'SalesPerf', name: 'Sales Team Performance', href: '/dashboards/sales/team-performance/' },
+    { tab: 'DealerUniverse', name: 'Dealer Universe', href: '/dashboards/sales/dealer-universe/' }, { tab: 'StockAudit', name: 'Stock Audit', href: '/dashboards/collections/stock-audit/' },
+    { tab: 'Credit', name: 'Dealer Credit Profile', href: '/dashboards/credit/dealer-credit-profile/' }, { tab: 'Operations', name: 'Operations Overview', href: '/dashboards/operations/overview/' }
+  ];
+  var st = { email: '', name: '', role: '', fallback: '', access: null, loaded: false, open: false, token: '' };
+  var chip = null, pop = null;
+  function apiUrl() { return window.FP_API || (typeof ALLOWLIST_API !== 'undefined' ? ALLOWLIST_API : (typeof SA_API !== 'undefined' ? SA_API : '')); }
+  function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function ini(n) { return String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(function (s) { return s[0].toUpperCase(); }).join('') || '?'; }
+  function here() { var p = location.pathname.replace(/index\.html$/, ''); return PAGES.filter(function (d) { return p.indexOf(d.href) === 0; })[0] || null; }
+
+  function css() {
+    if (document.getElementById('fp-css')) return;
+    var s = document.createElement('style'); s.id = 'fp-css';
+    s.textContent =
+      '.fp-who{position:relative;display:flex;align-items:center;gap:8px;min-width:0;cursor:pointer;border-radius:12px;padding:3px 8px 3px 3px;visibility:hidden;font-family:inherit;text-align:left}' +
+      '.fp-who.fp-ready{visibility:visible}.fp-who:hover,.fp-who.fp-open{background:rgba(128,128,128,.14)}' +
+      '.fp-who:focus-visible{outline:2px solid var(--primary,#E8461E);outline-offset:1px}' +
+      '.fp-who .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent,#F97316),var(--primary,#E8461E));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}' +
+      '.fp-who .who-txt{line-height:1.2;min-width:0;color:var(--text,inherit)}' +
+      '.fp-who .who-txt b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}' +
+      '.fp-who .who-txt span{display:block;font-size:11px;color:var(--text3,var(--text2,#8a8f98));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}' +
+      '@media(max-width:700px){.fp-who .who-txt{display:none}}' +
+      '.fp-pop{position:absolute;top:calc(100% + 8px);right:0;width:min(320px,92vw);z-index:100000;border:1px solid rgba(128,128,128,.35);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.35);padding:14px;font-size:13px;line-height:1.35;cursor:default;text-align:left;font-weight:400}' +
+      '.fp-head{display:flex;gap:10px;align-items:center}.fp-head .fp-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent,#F97316),var(--primary,#E8461E));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:none}' +
+      '.fp-head b{display:block;font-size:14px}.fp-head small{display:block;opacity:.65;word-break:break-all}' +
+      '.fp-role{margin:10px 0 2px;display:flex;align-items:center;gap:6px}.fp-pill{display:inline-block;padding:2px 10px;border-radius:999px;background:rgba(232,70,30,.15);color:var(--primary,#E8461E);font-weight:600;font-size:12px}' +
+      '.fp-sec{margin:12px 0 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;font-weight:700}' +
+      '.fp-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;max-height:260px;overflow:auto}' +
+      '.fp-list li{display:flex;justify-content:space-between;gap:8px;align-items:baseline;padding:6px 8px;border-radius:8px}.fp-list li:hover{background:rgba(128,128,128,.14)}' +
+      '.fp-list a{color:var(--primary,#E8461E);text-decoration:none;font-weight:600}.fp-list a:hover{text-decoration:underline}' +
+      '.fp-list em{font-style:normal;font-size:11px;opacity:.65;text-align:right}.fp-list li.fp-cur{background:rgba(128,128,128,.12)}.fp-list li.fp-cur a{color:inherit;cursor:default;text-decoration:none}' +
+      '.fp-msg{opacity:.7;padding:4px 8px}' +
+      '.fp-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid rgba(128,128,128,.3);font-size:12px}' +
+      '.fp-foot a{color:inherit;opacity:.7}.fp-out{font:inherit;font-size:12px;border:1px solid rgba(128,128,128,.45);background:transparent;color:inherit;border-radius:8px;padding:5px 12px;cursor:pointer}.fp-out:hover{background:rgba(128,128,128,.18)}';
+    document.head.appendChild(s);
+  }
+
+  function mount() {
+    if (chip) return chip;
+    css();
+    chip = document.querySelector('.who');
+    if (!chip) {
+      chip = document.createElement('div'); chip.className = 'who';
+      chip.innerHTML = '<div class="avatar" id="avatar">?</div><div class="who-txt"><b id="who-name">—</b><span id="who-role"></span></div>';
+      var host = document.querySelector('.header-right') || document.querySelector('.topbar-top') || document.querySelector('.topbar') || document.body;
+      host.insertBefore(chip, host.firstChild);
+      if (host.classList && host.classList.contains('header-right')) host.style.alignItems = 'center';
+    }
+    chip.classList.add('fp-who'); chip.setAttribute('role', 'button'); chip.setAttribute('tabindex', '0'); chip.setAttribute('aria-haspopup', 'true'); chip.title = chip.title || 'Your profile and access';
+    var r = document.getElementById('who-role'); if (r && !st.fallback) st.fallback = r.textContent || '';
+    chip.addEventListener('click', function (ev) { if (pop && pop.contains(ev.target)) return; toggle(); });
+    chip.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggle(); } if (ev.key === 'Escape') close(); });
+    document.addEventListener('click', function (ev) { if (st.open && chip && !chip.contains(ev.target)) close(); });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') close(); });
+    return chip;
+  }
+
+  function paintRole() {
+    var el = document.getElementById('who-role'); if (!el) return;
+    var cur = here(), txt = st.role || el.getAttribute('data-fp-app') || st.fallback || (cur ? cur.name : '');
+    if (txt) el.textContent = txt;
+  }
+
+  function decode(t) { try { var p = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'); return JSON.parse(decodeURIComponent(escape(atob(p)))); } catch (e) { return null; } }
+
+  function set(token) {
+    mount(); var d = decode(token) || {};
+    st.token = token; st.email = String(d.email || '').toLowerCase(); st.name = d.name || st.email;
+    var a = document.getElementById('avatar'), n = document.getElementById('who-name');
+    if (a) a.textContent = ini(st.name); if (n && !n.textContent.trim() || (n && n.textContent === '—')) n.textContent = st.name;
+    var r = document.getElementById('who-role');
+    if (r && !r.__fp) { r.__fp = true; new MutationObserver(function () { if (st.role && r.textContent !== st.role) r.textContent = st.role; else if (!st.role && r.textContent) { r.setAttribute('data-fp-app', r.textContent); } }).observe(r, { childList: true, characterData: true, subtree: true }); }
+    paintRole(); chip.classList.add('fp-ready'); load();
+  }
+
+  function load() {
+    var key = 'fp_access_' + st.email, now = Date.now(), c = null;
+    try { c = JSON.parse(sessionStorage.getItem(key) || 'null'); } catch (e) {}
+    if (c && now - c.at < 5 * 60e3) { apply(c.data); return; }
+    var api = apiUrl(); if (!api || !st.token) { st.loaded = true; return; }
+    fetch(api + (api.indexOf('?') >= 0 ? '&' : '?') + 'action=access&id_token=' + encodeURIComponent(st.token))
+      .then(function (r) { return r.json(); })
+      .then(function (j) { if (j && j.ok) { try { sessionStorage.setItem(key, JSON.stringify({ at: Date.now(), data: j })); } catch (e) {} apply(j); } else { st.loaded = true; render(); } })
+      .catch(function () { st.loaded = true; render(); });
+  }
+  function apply(j) { st.access = j.dashboards || []; st.role = j.role || ''; st.loaded = true; paintRole(); render(); }
+
+  function tone() {
+    var c = getComputedStyle(document.body).color.match(/\d+/g) || [0, 0, 0], lum = (0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]);
+    return lum > 140 ? { bg: '#1b1f27', fg: '#e8eaed' } : { bg: '#ffffff', fg: '#1f2328' };
+  }
+  function render() {
+    if (!pop) return;
+    var t = tone(); pop.style.background = t.bg; pop.style.color = t.fg;
+    var cur = here(), h = '<div class="fp-head"><div class="fp-av">' + esc(ini(st.name)) + '</div><div><b>' + esc(st.name) + '</b><small>' + esc(st.email) + '</small></div></div>';
+    h += '<div class="fp-role">Role: ' + (st.role ? '<span class="fp-pill">' + esc(st.role) + '</span>' : '<span style="opacity:.6">not set</span>') + '</div>';
+    h += '<div class="fp-sec">Your access</div>';
+    if (!st.loaded) h += '<div class="fp-msg">Loading…</div>';
+    else if (st.access && st.access.length) {
+      h += '<ul class="fp-list">' + st.access.map(function (d) {
+        var isCur = cur && d.href === cur.href, scope = d.scope === 'team' ? (d.teams || []).map(function (x) { return /^team\b/i.test(x) ? x : 'Team ' + x; }).join(', ') + ' data only' : 'Full access';
+        return '<li class="' + (isCur ? 'fp-cur' : '') + '"><a href="' + esc(d.href) + '"' + (isCur ? ' aria-current="page"' : '') + '>' + esc(d.name) + '</a><em>' + (isCur ? 'you are here · ' : '') + esc(scope) + '</em></li>';
+      }).join('') + '</ul>';
+    } else h += '<div class="fp-msg">' + (cur ? 'You are signed in to <b>' + esc(cur.name) + '</b>. The full list of your dashboards could not be loaded right now.' : 'Your access list could not be loaded right now.') + '</div>';
+    h += '<div class="fp-foot"><a href="mailto:miguel.cordero@finsso.com?subject=' + encodeURIComponent('Dashboard access request') + '">Need more access?</a><button type="button" class="fp-out">Sign out</button></div>';
+    pop.innerHTML = h;
+    var o = pop.querySelector('.fp-out'); if (o) o.onclick = function (ev) { ev.stopPropagation(); try { google.accounts.id.disableAutoSelect(); } catch (e) {} try { sessionStorage.removeItem('fp_access_' + st.email); } catch (e) {} location.reload(); };
+  }
+  function toggle() { st.open ? close() : openP(); }
+  function openP() { if (!chip) return; pop = document.createElement('div'); pop.className = 'fp-pop'; pop.setAttribute('role', 'dialog'); pop.addEventListener('click', function (e) { e.stopPropagation(); }); chip.appendChild(pop); chip.classList.add('fp-open'); st.open = true; render(); place(); }
+  function place() { if (!pop || !chip) return; var r = chip.getBoundingClientRect(), w = Math.min(320, window.innerWidth * 0.92), left = Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8)); pop.style.position = 'fixed'; pop.style.top = (r.bottom + 8) + 'px'; pop.style.left = left + 'px'; pop.style.right = 'auto'; pop.style.maxHeight = (window.innerHeight - r.bottom - 20) + 'px'; pop.style.overflowY = 'auto'; }
+  window.addEventListener('resize', place);
+  function close() { if (pop && pop.parentNode) pop.parentNode.removeChild(pop); pop = null; if (chip) chip.classList.remove('fp-open'); st.open = false; }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount); else mount();
+  return { set: set, mount: mount };
+})();
+
+</script>
+</body></html>
