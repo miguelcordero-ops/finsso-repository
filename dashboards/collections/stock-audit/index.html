@@ -276,7 +276,7 @@ function parseSheetDate(v) {
   }
   const dm = s.match(/^(\d{1,2})-([A-Za-z]{3})[a-z]*-(\d{4})$/);   // 9-Oct-2026
   if (dm) { const mi = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(dm[2].toLowerCase()); if (mi >= 0) return new Date(+dm[3], mi, +dm[1]); }  // MON_IDX_
-  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T,]+\d{1,2}:\d{2}(?::\d{2})?\s*(?:[AP]M)?)?$/i);   // m/d/yyyy, optionally followed by a time
   if (m) return new Date(+m[3], +m[1]-1, +m[2]);
   const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
@@ -397,7 +397,8 @@ function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDat
 function diffDays(a, b) { return Math.round((sod(a) - sod(b)) / DAY_MS); }
 function fmtD(d) { return d ? String(d.getDate()).padStart(2, '0') + ' ' + MONTH_ABBR[d.getMonth()] + ' ' + d.getFullYear() : '—'; }
 /* submission time of an audit ("Timestamp" column; the Form and the app both write it). parseSheetDate drops the time, so this reads the full date-time. */
-function parseTs(v) {
+function parseTs(v) { const d = parseTs0(v); return d && (d.getHours() || d.getMinutes() || d.getSeconds()) ? d : null; }   // a 00:00:00 time means "no time recorded"
+function parseTs0(v) {
   if (typeof v === 'number' && v > 0) return new Date(v);
   const t = String(v == null ? '' : v).trim(); if (!t) return null;
   let m = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})[ T,]+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AP]M)?/i);
@@ -581,7 +582,7 @@ function buildInsp(grids) {
         vs: String(get(r, sc('Vehicle Status - F'))).trim() || String(get(r, sc('Vehicle Status - S'))).trim(),
         remarks: String(get(r, sc('Additional Remarks from SIO - F'))).trim() || String(get(r, sc('Additional Remarks from SIO - S'))).trim(),
         poc: String(get(r, sc('POC Name'))).trim(), sold: parseSheetDate(get(r, sc('Date Vehicle Sold'))), method: String(get(r, sc('Sales Method'))).trim(),
-        ts: parseTs(get(r, sc('Timestamp'))), person: String(get(r, sc('Person Contacted'))).trim(), loc: String(get(r, sc('Collateral Location (Barangay, City and Province)'))).trim(),
+        ts: parseTs(get(r, sc('Timestamp'))) || parseTs(get(r, sc('Date'))), person: String(get(r, sc('Person Contacted'))).trim(), loc: String(get(r, sc('Collateral Location (Barangay, City and Province)'))).trim(),
         photos: (function () { const out = []; PHOTO_COLS.forEach(function (c) { const urls = String(get(r, sc(c[0]))).split(/[,\s]+/).filter(function (u) { return /^https?:\/\//i.test(u); }); if (!urls.length) return; const g = out.find(function (x) { return x.label === c[1]; }); if (g) g.urls = g.urls.concat(urls); else out.push({ label: c[1], urls: urls }); }); return out; })() };
       const key = e.iid ? 'i:' + e.iid.toLowerCase() : 'k:' + id.toLowerCase() + '|' + iso(date) + '|' + e.who.toLowerCase();
       if (gi > 0 && seen[key]) return;
