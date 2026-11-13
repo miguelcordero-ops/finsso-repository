@@ -278,7 +278,7 @@ function parseSheetDate(v) {
   }
   const dm = s.match(/^(\d{1,2})-([A-Za-z]{3})[a-z]*-(\d{4})$/);   // 9-Oct-2026
   if (dm) { const mi = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(dm[2].toLowerCase()); if (mi >= 0) return new Date(+dm[3], mi, +dm[1]); }  // MON_IDX_
-  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T,]+\d{1,2}:\d{2}(?::\d{2})?\s*(?:[AP]M)?)?$/i);   // m/d/yyyy, optionally followed by a time
   if (m) return new Date(+m[3], +m[1]-1, +m[2]);
   const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
@@ -366,7 +366,7 @@ function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
 // table; otherwise, or if the API fails for any reason, it falls back to the GitHub CSV so nothing breaks.
 function _timedFetch(u, o, ms) { var c = new AbortController(), t = setTimeout(function () { c.abort(); }, ms || 15000); o.signal = c.signal; return fetch(u, o).finally(function () { clearTimeout(t); }); }
 var DATA_API = 'https://finsso-data-api.miguel-cordero.workers.dev/data/';
-var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv'];
+var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','stock-audits-v2.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv'];
 var _idToken = null, DATA_SRC = {};
 async function fetchCSV(name, optional) {
   if (_idToken && BQ_FILES.indexOf(name) >= 0) {
@@ -575,15 +575,15 @@ var RAW = null, SO_SM = {};
 async function loadAll() {
   // Dealer Universe only adds prospects, so it must never hold the page up: start it with the rest, but give it just a short grace period.
   const duP = fetchCSV('dealeruniverse.csv', true).catch(() => null);
-  const [d2, d3, r2, r3, ck, ob, si, am, mp] = await Promise.all([fetchCSV('drawdown.csv'), fetchCSV('drawdownv3.csv', true), fetchCSV('repayment.csv'), fetchCSV('repaymentv3.csv', true),
-    fetchCSV('dealer-checker.csv'), fetchCSV('ob-masterlist.csv', true), fetchCSV('stock-inspection.csv', true), fetchCSV('AuditMapping.csv', true), fetchCSV('mapping.csv', true).catch(() => null)]);
-  RAW = { d2, d3, r2, r3, ck, ob, si, am, mp };
+  const [d2, d3, r2, r3, ck, ob, si, am, mp, sa2] = await Promise.all([fetchCSV('drawdown.csv'), fetchCSV('drawdownv3.csv', true), fetchCSV('repayment.csv'), fetchCSV('repaymentv3.csv', true),
+    fetchCSV('dealer-checker.csv'), fetchCSV('ob-masterlist.csv', true), fetchCSV('stock-inspection.csv', true), fetchCSV('AuditMapping.csv', true), fetchCSV('mapping.csv', true).catch(() => null), fetchCSV('stock-audits-v2.csv', true).catch(() => null)]);
+  RAW = { d2, d3, r2, r3, ck, ob, si, am, mp, sa2 };
   const du = await Promise.race([duP, new Promise(res => setTimeout(() => res(undefined), 3000))]);
   buildModel(du || null);
   if (du === undefined) duP.then(x => { if (!x) return; try { buildModel(x); render(); } catch (e) { console.warn('Prospects could not be merged', e); } });   // arrived late: add the prospects and redraw
 }
 function buildModel(du) {
-  const { d2, d3, r2, r3, ck, ob, si, am, mp } = RAW;
+  const { d2, d3, r2, r3, ck, ob, si, am, mp, sa2 } = RAW;
   // Sales Officer -> Sales Manager comes from the "[Raw] Mapping" tab (L2 - Sales Officer / L1 - Sales Manager)
   SO_SM = {};
   if (mp && mp.length > 1) { const mc = buildColumnMap(mp[0]); mp.slice(1).forEach(r => { const so = normName(get(r, mc('L2 - Sales Officer'))), sm = normName(get(r, mc('L1 - Sales Manager'))); if (so && sm) SO_SM[so] = sm; }); }
@@ -660,17 +660,26 @@ function buildModel(du) {
   PAYS.forEach(p => { LOANS[p.id].pays.push(p); });
   PAYS.sort((a, b) => b.date - a.date);
 
-  // ── stock audits (v3 tracker IDs may carry a trailing "*")
-  if (si) {
-    const sc = buildColumnMap(si[0]);
-    si.slice(1).forEach(r => {
-      let id = str(r, sc, 'Drawdown ID'); const date = parseSheetDate(get(r, sc('Date'))); if (!id || !date) return;
-      if (!LOANS[id] && LOANS[id + '*']) id = id + '*';
-      if (!LOANS[id]) return;
-      const e = { id, date, who: normName(get(r, sc('Inspector'))), status: str(r, sc, 'Stock Inspection Status'), vs: str(r, sc, 'Vehicle Status - F') || str(r, sc, 'Vehicle Status - S'),
-        remarks: str(r, sc, 'Additional Remarks from SIO - F') || str(r, sc, 'Additional Remarks from SIO - S'), poc: str(r, sc, 'POC Name'), method: str(r, sc, 'Sales Method'), sold: parseSheetDate(get(r, sc('Date Vehicle Sold'))),
-        dealerId: LOANS[id].dealerId };
-      AUDITS.push(e); LOANS[id].audits.push(e);
+  // ── stock audits: the form-response tab (stock-inspection.csv) AND the Stock Audit app's tab (stock-audits-v2.csv).
+  // v3 tracker IDs may carry a trailing "*". An audit already seen (same Inspection ID, or loan + date + inspector) is skipped.
+  if (si || sa2) {
+    const seenAudit = {};
+    [si, sa2].forEach((grid, gi) => {
+      if (!grid || grid.length < 2) return;
+      const sc = buildColumnMap(grid[0]);
+      grid.slice(1).forEach(r => {
+        let id = str(r, sc, 'Drawdown ID'); const date = parseSheetDate(get(r, sc('Date'))); if (!id || !date) return;
+        if (!LOANS[id] && LOANS[id + '*']) id = id + '*';
+        if (!LOANS[id]) return;
+        const iid = str(r, sc, 'Inspection ID').toLowerCase(), who = normName(get(r, sc('Inspector')));
+        const key = iid ? 'i:' + iid : 'k:' + id.toLowerCase() + '|' + date.toISOString().slice(0, 10) + '|' + who.toLowerCase();
+        if (gi > 0 && seenAudit[key]) return;
+        seenAudit[key] = 1;
+        const e = { id, date, who, status: str(r, sc, 'Stock Inspection Status'), vs: str(r, sc, 'Vehicle Status - F') || str(r, sc, 'Vehicle Status - S'),
+          remarks: str(r, sc, 'Additional Remarks from SIO - F') || str(r, sc, 'Additional Remarks from SIO - S'), poc: str(r, sc, 'POC Name'), method: str(r, sc, 'Sales Method'), sold: parseSheetDate(get(r, sc('Date Vehicle Sold'))),
+          dealerId: LOANS[id].dealerId };
+        AUDITS.push(e); LOANS[id].audits.push(e);
+      });
     });
     AUDITS.sort((a, b) => b.date - a.date);
     LOANLIST.forEach(l => { l.audits.sort((a, b) => a.date - b.date); l.lastAudit = l.audits.length ? l.audits[l.audits.length - 1] : null;
