@@ -614,8 +614,8 @@ function rebuildHistory() {
 }
 
 /* ══════════════════════════════════════════════════
-   30 / 15 / 7 / 3 SCHEDULING RULE + PRIORITY
-   · first audit due 30 days after the drawdown credit date
+   15 / 15 / 7 / 3 SCHEDULING RULE + PRIORITY
+   · first audit due 15 days after the drawdown credit date
    · then 15 days after a Passed audit, 3 days after a Failed audit
    · while the account is on DPD, no longer than 7 days between audits
    Priority ranks by scheduled date first (overdue → due soon), then lifts accounts
@@ -625,8 +625,8 @@ function computeSchedule(d) {
   const h = d.hist, last = h.length ? h[h.length - 1] : null;
   let due, basis, interval = null;
   if (!last) {
-    due = d.credit ? addDays(d.credit, 30) : TODAY;
-    basis = d.credit ? '30 days after drawdown (first audit)' : 'No credit date on record';
+    due = d.credit ? addDays(d.credit, 15) : TODAY;
+    basis = d.credit ? '15 days after drawdown (first audit)' : 'No credit date on record';
   } else {
     const pass = /^pass/i.test(last.status);
     interval = pass ? 15 : 3;
@@ -896,7 +896,7 @@ function renderHome() {
   const pend = INSP.filter(e => e.pending && (L.officer === '*' || e.who === L.officer));
   if (pend.length) h += '<div class="card"><div class="b">Submitted — syncing</div><div class="small muted" style="margin:4px 0">Saved to the sheet. They already count here, and show in BigQuery and the shared dashboards within about 5 minutes.</div>' + pend.slice(-5).reverse().map(e => '<div class="small">' + esc(e.id) + ' · ' + esc(e.status) + ' · ' + fmtDs(e.date) + '</div>').join('') + '</div>';
   h += '<details class="card"><summary class="b" style="cursor:pointer">How audits are scheduled</summary><div class="small" style="margin-top:8px;line-height:1.6">' +
-    '<b>First audit:</b> 30 days after the drawdown is credited.<br><b>After a Passed audit:</b> next one within 15 days.<br><b>After a Failed audit:</b> re-audit within 3 days.<br><b>On DPD:</b> audit at least every 7 days.<br><br>' +
+    '<b>First audit:</b> 15 days after the drawdown is credited.<br><b>After a Passed audit:</b> next one within 15 days.<br><b>After a Failed audit:</b> re-audit within 3 days.<br><b>On DPD:</b> audit at least every 7 days.<br><br>' +
     '<b>Priority:</b> sorted by scheduled date first (overdue, then due today, then soon). Accounts on DPD and accounts that failed twice in a row are lifted above others in the same urgency band.</div></details>';
   h += '</div></div>';
   return h;
@@ -1228,7 +1228,7 @@ function renderAuditDone() {
 /* ══════════════════════════════════════════════════
    LEADERSHIP — week / MTD performance
    Loads the loan + repayment history on demand (only leaders open this tab) so the
-   30/15/7/3 schedule, adherence and on-time % are computed exactly like the KPI workbook.
+   15/15/7/3 schedule, adherence and on-time % are computed exactly like the KPI workbook.
 ══════════════════════════════════════════════════ */
 async function loadLeadData() { return LN; }
 function payDue(p, l) { return p.v === 3 ? p.due : ({ R1: l.r1, R2: l.r2, M: l.mat })[kindOf(p.type)]; }
@@ -1238,7 +1238,7 @@ function buildEvents() {
   Object.keys(LN.loans).forEach(id => {
     const l = LN.loans[id]; if (!l.credit) return;
     const ins = (by[id] || []).slice().sort(byTime);
-    let cur = COVERAGE_START && l.credit >= COVERAGE_START ? addDays(l.credit, 30) : null;
+    let cur = COVERAGE_START && l.credit >= COVERAGE_START ? addDays(l.credit, 15) : null;
     ins.forEach(a => {
       if (cur) ev.push({ id, due: cur, done: a });
       const base = /^pass/i.test(a.status) ? 15 : 3, onDpd = dpdAt(id, addDays(a.date, 1)) >= 1;
@@ -1288,7 +1288,7 @@ async function renderLead(host) {
   // per-day bars
   const days = []; for (let d = from; d <= to; d = addDays(d, 1)) days.push(d);
   const cnt = days.map(d => insp.filter(e => iso(e.date) === iso(d)).length), mx = Math.max(1, ...cnt);
-  let h = '<div class="h1">Leadership</div>' + leadTabs() + '<div class="sub">' + esc(per.label) + ' · ' + fmtD(from) + ' – ' + fmtD(to) + ' · adherence and on-time use the 30/15/7/3 schedule (current officer assignment)</div>';
+  let h = '<div class="h1">Leadership</div>' + leadTabs() + '<div class="sub">' + esc(per.label) + ' · ' + fmtD(from) + ' – ' + fmtD(to) + ' · adherence and on-time use the 15/15/7/3 schedule (current officer assignment)</div>';
   h += '<div class="chips" style="margin:12px 0;align-items:center">' + Object.keys(P).filter(k => !/^pm:/.test(k)).map(k => '<button class="chip' + (S.lper === k ? ' on' : '') + '" data-act="lper" data-v="' + k + '">' + esc(P[k].label) + '</button>').join('') + lMonthSel() + '</div>';
   h += '<div class="kpis"><button class="kpi blue" data-act="ldone"><div class="n">' + (T.tot || 0) + '</div><div class="l">Audits done</div><div class="s">' + (T.dealers || 0) + ' dealer-visits · tap to see them</div></button>' +
     '<div class="kpi ' + (T.tot && T.fail / T.tot > 0.4 ? 'red' : 'green') + '"><div class="n">' + pct(T.pass || 0, T.tot || 0) + '</div><div class="l">Pass rate</div><div class="s">' + (T.fail || 0) + ' failed</div></div>' +
