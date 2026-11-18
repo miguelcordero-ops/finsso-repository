@@ -357,11 +357,10 @@ body.ob-tab .wr-savebar{display:none!important}
 .obk.red .n{color:#B91C1C}.obk.amber .n{color:#B45309}
 table.wr.ob{table-layout:fixed}
 table.wr.ob tbody td{height:auto;vertical-align:top;padding:8px 10px;white-space:normal;font-size:12.5px;line-height:1.35;cursor:pointer}
-table.wr.ob tbody tr:hover td{background:var(--wr-wk2)}
 table.wr.ob td.fz{position:sticky;left:0;z-index:2;background:var(--wr-fz)}
 table.wr.ob thead th.fz{left:0}
 table.wr.ob td.name{font-weight:600}
-table.wr.ob .clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+table.wr.ob .clamp{max-height:3.9em;overflow:hidden;word-break:break-word}
 .obd{white-space:nowrap;font-variant-numeric:tabular-nums}
 .obd.late{color:#B91C1C;font-weight:700}.obd.past{color:#B45309}.obd.today{color:#047857;font-weight:700}
 .obm0{color:var(--text3)}
@@ -372,7 +371,7 @@ table.wr.ob .clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:v
 .ob-toast.show{opacity:1}.ob-toast.err{background:#B91C1C}
 .obm-back{position:fixed;inset:0;z-index:100000;background:rgba(10,12,20,.55);display:none;align-items:center;justify-content:center;padding:16px}
 .obm-back.show{display:flex}
-.obm{background:var(--surface-hi,#fff);color:var(--text);border:1px solid var(--border2);border-radius:14px;width:min(720px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.obm{background:#fff;color:var(--text);border:1px solid var(--border2);border-radius:14px;width:min(720px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.4)}
 .obm-h{display:flex;justify-content:space-between;gap:12px;padding:16px 20px 10px}
 .obm-t{font-size:17px;font-weight:700}.obm-s{font-size:12.5px;color:var(--text3);margin-top:2px}
 .obm-x{border:0;background:transparent;color:var(--text2);font-size:18px;cursor:pointer;height:30px;width:30px;border-radius:8px}
@@ -389,6 +388,14 @@ table.wr.ob .clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:v
 .obm-f .wr-msg{margin-right:auto}
 .obm-f .obb{font:inherit;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px;border:1px solid var(--border2);background:var(--surface-d);color:var(--text);cursor:pointer}
 .obm-f .obb.pri{background:var(--primary);border-color:var(--primary);color:#fff}
+[data-theme="dark"] .obm{background:#1a1d2a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .obm{background:#1a1d2a}}
+.obm-back{background:rgba(10,12,20,.72)}
+.obm input,.obm select,.obm textarea{background:#fff;color:#111}
+[data-theme="dark"] .obm input,[data-theme="dark"] .obm select,[data-theme="dark"] .obm textarea{background:#12151f;color:#eee}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .obm input,:root:not([data-theme="light"]) .obm select,:root:not([data-theme="light"]) .obm textarea{background:#12151f;color:#eee}}
+.obk,.ob-seg,.ob-bar select,.ob-bar input[type=search]{background:var(--wr-cell,#fff)}
+table.wr.ob tbody tr{content-visibility:auto;contain-intrinsic-size:auto 48px}
 @media(max-width:640px){.obm-g{grid-template-columns:1fr}}
 </style>
 <style>
@@ -1715,18 +1722,25 @@ function obPaint() {
   let h2 = '<tr class="sub">' + OB_COLS.slice(1).map(c => '<th class="l">' + hcell('ob:' + c.k, c.label) + '</th>').join('') + '</tr>';
   document.getElementById('ob-head').innerHTML = h1 + h2;
   // body
-  let b = '';
-  OB_VIEW.forEach((r, i) => {
-    b += '<tr data-i="' + i + '"><td class="fz fzend l name"><div class="clamp">' + esc(r.name) + '</div></td>' +
+  OB_SHOWN = 0; document.getElementById('ob-wrap').scrollTop = 0;
+  const tbd = document.getElementById('ob-body'); tbd.innerHTML = '';
+  if (!OB_VIEW.length) tbd.innerHTML = '<tr><td colspan="' + OB_COLS.length + '" class="ob-none">' + (OB.length ? 'No dealers match these filters.' : esc(OB_ERR || 'No dealers on the list yet.')) + '</td></tr>';
+  else obMore();
+}
+var OB_SHOWN = 0, OB_CHUNK = 40;
+function obRow(r, i) {
+  return '<tr data-i="' + i + '"><td class="fz fzend l name"><div class="clamp">' + esc(r.name) + '</div></td>' +
       '<td class="l">' + esc(r.so || '—') + '</td><td class="l">' + esc(r.sm || '—') + '</td><td class="l">' + obDate(r, 'applied') + '</td>' +
       '<td class="l">' + (r.type ? '<span class="obp ' + (/express/i.test(r.type) ? 'p' : 'n') + '">' + esc(r.type) + '</span>' : '<span class="obm0">—</span>') + '</td>' +
       '<td class="l">' + (r.status ? '<span class="obp ' + obPillCls(r.status) + '">' + esc(r.status) + '</span>' : '<span class="obm0">—</span>') + '</td>' +
       '<td class="l">' + obText(r.docs) + '</td><td class="l">' + obDate(r, 'target') + '</td><td class="l">' + obDate(r, 'fci') + '</td><td class="l">' + obDate(r, 'kyc') + '</td>' +
       '<td class="l">' + obText(r.ops) + '</td><td class="l">' + obText(r.credit) + '</td><td class="l">' + obText(r.salesr) + '</td>' +
-      '<td class="l">' + obDate(r, 'plan') + '</td><td class="l" title="' + esc(r.lastBy ? 'by ' + r.lastBy : '') + '">' + obDate(r, 'last') + '</td><td class="l">' + obText(r.ifr) + '</td></tr>';
-  });
-  if (!OB_VIEW.length) b = '<tr><td colspan="' + OB_COLS.length + '" class="ob-none">' + (OB.length ? 'No dealers match these filters.' : esc(OB_ERR || 'No dealers on the list yet.')) + '</td></tr>';
-  document.getElementById('ob-body').innerHTML = b;
+      '<td class="l">' + obDate(r, 'plan') + '</td><td class="l" title="' + esc(r.lastBy ? 'by ' + r.lastBy : '') + '">' + obDate(r, 'last') + '</td><td class="l">' + obText(r.ifr) + '</td></tr>';;
+}
+function obMore() {
+  const end = Math.min(OB_VIEW.length, OB_SHOWN + OB_CHUNK); let b = '';
+  for (let i = OB_SHOWN; i < end; i++) b += obRow(OB_VIEW[i], i);
+  document.getElementById('ob-body').insertAdjacentHTML('beforeend', b); OB_SHOWN = end;
 }
 function obRender() {
   if (!OB_LOADED) { document.getElementById('ob-body').innerHTML = '<tr><td class="ob-none">Loading the onboarding list…</td></tr>'; return; }
@@ -1824,6 +1838,7 @@ async function obSave(i) {
   } catch (e) { fail('Not saved: ' + (e.message || e)); btn.disabled = false; }
 }
 (function obWire() {
+  document.getElementById('ob-wrap').addEventListener('scroll', function () { if (OB_SHOWN < OB_VIEW.length && this.scrollTop + this.clientHeight > this.scrollHeight - 400) obMore(); }, { passive: true });
   document.querySelectorAll('.wr-tab[data-tab]').forEach(el => { el.onclick = () => setTab(el.dataset.tab); });
   document.getElementById('ob-head').addEventListener('click', e => { const b = e.target.closest('.fbtn'); if (!b) return; e.stopPropagation(); openFilterPanel(b.dataset.col, b); });
   document.getElementById('ob-stage').addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (!b) return; OBQ.stage = b.dataset.v; obPaint(); });
