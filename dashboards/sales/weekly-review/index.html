@@ -335,6 +335,61 @@ td.metric-label{color:var(--text);font-weight:500}
   th{padding:4px 6px;font-size:8px}
   td{padding:4px 6px;font-size:9px}
 }
+/* ── Onboarding List tab ── */
+.wr-tab[data-tab]{cursor:pointer}
+.wr-tab[data-tab]:not(.active):hover{border-color:var(--primary);color:var(--text)}
+body.ob-tab .wr-savebar{display:none!important}
+.ob-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-bottom:12px}
+.ob-bar select,.ob-bar input[type=search]{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--border2);border-radius:var(--rctrl);background:var(--surface-d);color:var(--text)}
+.ob-bar input[type=search]{width:230px}
+.ob-seg{display:inline-flex;border:1px solid var(--border2);border-radius:999px;overflow:hidden;background:var(--surface-d)}
+.ob-seg button{font:inherit;font-size:12.5px;font-weight:600;padding:6px 13px;border:0;background:transparent;color:var(--text2);cursor:pointer}
+.ob-seg button.on{background:var(--primary);color:#fff}
+.ob-bar .obb{font:inherit;font-size:13px;font-weight:600;padding:7px 14px;border-radius:8px;border:1px solid var(--border2);background:var(--surface-d);color:var(--text);cursor:pointer}
+.obb.pri{background:var(--primary);border-color:var(--primary);color:#fff}
+.obb:disabled{opacity:.5;cursor:default}
+#ob-add{display:inline-flex;align-items:center;gap:6px}
+#ob-add b{font-size:17px;line-height:1;font-weight:700}
+.ob-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:12px}
+.obk{text-align:left;font:inherit;padding:10px 14px;border:1px solid var(--border2);border-radius:12px;background:var(--surface-d);color:var(--text);cursor:pointer}
+.obk .n{font-size:24px;font-weight:700;line-height:1.1}.obk .l{font-size:12.5px;font-weight:600;margin-top:2px}.obk .s{font-size:11.5px;color:var(--text3)}
+.obk.on{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary) inset}
+.obk.red .n{color:#B91C1C}.obk.amber .n{color:#B45309}
+table.wr.ob{table-layout:fixed}
+table.wr.ob tbody td{height:auto;vertical-align:top;padding:8px 10px;white-space:normal;font-size:12.5px;line-height:1.35;cursor:pointer}
+table.wr.ob tbody tr:hover td{background:var(--wr-wk2)}
+table.wr.ob td.fz{position:sticky;left:0;z-index:2;background:var(--wr-fz)}
+table.wr.ob thead th.fz{left:0}
+table.wr.ob td.name{font-weight:600}
+table.wr.ob .clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.obd{white-space:nowrap;font-variant-numeric:tabular-nums}
+.obd.late{color:#B91C1C;font-weight:700}.obd.past{color:#B45309}.obd.today{color:#047857;font-weight:700}
+.obm0{color:var(--text3)}
+.obp{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:600;line-height:1.35;background:rgba(120,120,140,.16);color:var(--text2)}
+.obp.g{background:rgba(4,120,87,.15);color:#047857}.obp.r{background:rgba(185,28,28,.14);color:#B91C1C}.obp.a{background:rgba(180,83,9,.15);color:#B45309}.obp.b{background:rgba(37,99,235,.15);color:#2563EB}.obp.p{background:rgba(124,58,237,.15);color:#7C3AED}
+.ob-none{padding:36px;text-align:center;color:var(--text3);cursor:default}
+.ob-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#065F46;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:100001;opacity:0;pointer-events:none;transition:opacity .2s}
+.ob-toast.show{opacity:1}.ob-toast.err{background:#B91C1C}
+.obm-back{position:fixed;inset:0;z-index:100000;background:rgba(10,12,20,.55);display:none;align-items:center;justify-content:center;padding:16px}
+.obm-back.show{display:flex}
+.obm{background:var(--surface-hi,#fff);color:var(--text);border:1px solid var(--border2);border-radius:14px;width:min(720px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.obm-h{display:flex;justify-content:space-between;gap:12px;padding:16px 20px 10px}
+.obm-t{font-size:17px;font-weight:700}.obm-s{font-size:12.5px;color:var(--text3);margin-top:2px}
+.obm-x{border:0;background:transparent;color:var(--text2);font-size:18px;cursor:pointer;height:30px;width:30px;border-radius:8px}
+.obm-b{padding:0 20px 8px;overflow:auto}
+.obm-sec{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin:14px 0 6px}
+.obm-g{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.obf{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--text2)}
+.obf.wide{grid-column:1/-1}
+.obf input,.obf select,.obf textarea{font:inherit;font-size:13px;font-weight:400;padding:7px 10px;border:1px solid var(--border2);border-radius:8px;background:var(--surface-d);color:var(--text);width:100%;box-sizing:border-box}
+.obf textarea{resize:vertical;min-height:54px}
+.obf input:disabled,.obf select:disabled,.obf textarea:disabled{opacity:.65;cursor:not-allowed}
+.obm-more{margin-top:10px}.obm-more summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--primary);padding:6px 0}
+.obm-f{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid var(--border2)}
+.obm-f .wr-msg{margin-right:auto}
+.obm-f .obb{font:inherit;font-size:13px;font-weight:600;padding:8px 16px;border-radius:8px;border:1px solid var(--border2);background:var(--surface-d);color:var(--text);cursor:pointer}
+.obm-f .obb.pri{background:var(--primary);border-color:var(--primary);color:#fff}
+@media(max-width:640px){.obm-g{grid-template-columns:1fr}}
 </style>
 <style>
 .main{max-width:none}
@@ -491,15 +546,15 @@ table.wr td.ck input.ckb.dirty{outline:2px solid var(--primary);outline-offset:1
 
 <div class="main">
   <div class="wr-tabs">
-    <span class="wr-tab active">Dealer Weekly Plan</span>
-    <span class="wr-tab soon" title="Coming next">Tab 2</span>
-    <span class="wr-tab soon" title="Coming next">Tab 3</span>
+    <span class="wr-tab active" data-tab="wr">Dealer Weekly Plan</span>
+    <span class="wr-tab" data-tab="ob">Onboarding List</span>
   </div>
 
   <div class="filter-bar" id="filter-bar" style="position:static">
     <div class="filter-group" id="filter-team"><span class="filter-group-label">Team</span></div>
   </div>
 
+  <div id="wr-view">
   <div class="wr-bar">
     <label for="wr-month">Month</label><select id="wr-month"></select>
     <label for="wr-so">Officer</label><select id="wr-so"></select>
@@ -514,7 +569,25 @@ table.wr td.ck input.ckb.dirty{outline:2px solid var(--primary);outline-offset:1
     <table class="wr" id="wr-table"><thead id="wr-head"></thead><tbody id="wr-body"></tbody><tfoot id="wr-foot"></tfoot></table>
   </div>
   <div style="height:70px"></div>
+  </div>
+  <div id="ob-view" style="display:none">
+    <div class="ob-bar">
+      <span class="ob-seg" id="ob-stage"><button type="button" data-v="active">Active</button><button type="button" data-v="done">Onboarded</button><button type="button" data-v="closed">Rejected / On hold</button><button type="button" data-v="all">All</button></span>
+      <input id="ob-q" type="search" placeholder="Search dealership, officer, status…" autocomplete="off">
+      <select id="ob-so" aria-label="Sales Officer"></select>
+      <select id="ob-type" aria-label="Onboarding type"><option value="">Regular + Express</option><option value="regular">Regular</option><option value="express">Express</option></select>
+      <button type="button" class="obb" id="ob-clear" style="display:none">Clear filters</button>
+      <span class="wr-count" id="ob-count"></span>
+      <button type="button" class="obb pri" id="ob-add" style="display:none" title="Add a dealer to the list"><b>＋</b> Add dealer</button>
+    </div>
+    <div class="ob-kpis" id="ob-kpis"></div>
+    <div class="wr-msg" id="ob-banner" style="margin-bottom:8px"></div>
+    <div class="wr-wrap" id="ob-wrap"><table class="wr ob" id="ob-table"><thead id="ob-head"></thead><tbody id="ob-body"></tbody></table></div>
+    <div style="height:40px"></div>
+  </div>
 </div>
+<div class="obm-back" id="obm-back"><div class="obm" id="obm" role="dialog" aria-modal="true"></div></div>
+<div class="ob-toast" id="ob-toast"></div>
 
 <div class="wr-savebar" id="wr-savebar">
   <span id="wr-dirty">0 unsaved changes</span>
@@ -537,7 +610,7 @@ const DATA_BASE = 'https://raw.githubusercontent.com/miguelcordero-ops/finsso-re
 // ── BigQuery data API ── used when signed in; any failure falls back to the GitHub CSV below ──
 function _timedFetch(u, o, ms) { var c = new AbortController(), t = setTimeout(function () { c.abort(); }, ms || 15000); o.signal = c.signal; return fetch(u, o).finally(function () { clearTimeout(t); }); }
 var DATA_API = 'https://finsso-data-api.miguel-cordero.workers.dev/data/';
-var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv'];
+var BQ_FILES = ['drawdown.csv','disbursal.csv','dealer-checker.csv','stock-inspection.csv','repayment.csv','dealer-review-sheet.csv','drawdown-review-sheet.csv','repo-review-sheet.csv','repo-units.csv','ob-masterlist.csv','dd-masterlist.csv','visits.csv','mapping.csv','drawdownv3.csv','disbursalv3.csv','repaymentv3.csv','resinitialpayments.csv','dealeruniverse.csv','CFUniverse.csv','AuditMapping.csv','onboarding-list.csv'];
 var _idToken = null, DATA_SRC = {};
 // Some dashboards start loading data before sign-in finishes; wait briefly for the Google token so the BigQuery path can be used.
 var _tokenWait = new Promise(function (res) { window._resolveToken = res; });
@@ -598,6 +671,7 @@ async function loadData() {
       fetchCSV('mapping.csv', true),
       fetchCSV('visits.csv', true), // "[Raw] Visits" — latest IF visit
     ]);
+    _VISITS = siGrid; _obVisit = null;
 
     if (mapGrid) {
       const mCol = buildColumnMap(mapGrid[0]);
@@ -881,6 +955,7 @@ let sortSpec = null; // { id, dir: 1 | -1 }
 const FUNNEL = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M1.5 2.5h13l-5 6v4.6l-3 1.4V8.5z" fill="currentColor"/></svg>';
 const BLANK = '(blank)';
 function colDef(id) {
+  if (id.indexOf('ob:') === 0) return obColDef(id.slice(3));
   const p = id.split('|');
   const dstr = d => d ? fmtDate(d) : BLANK;
   const T = (label, get) => ({ type: 'text', label, get: d => { const s = String(get(d) == null ? '' : get(d)).trim(); return s || BLANK; } });
@@ -917,7 +992,7 @@ function colDef(id) {
 function filterActive(id) { const f = filters[id]; return !!f && (!!f.sel || !!f.op); }
 function activeFilterKeys() {
   const vis = {}; shown.forEach(b => { vis[b.w.n] = 1; });
-  return Object.keys(filters).filter(id => filterActive(id) && (id.indexOf('|') < 0 || vis[id.split('|')[0]]));
+  return Object.keys(filters).filter(id => filterActive(id) && ((id.indexOf('ob:') === 0) === (TAB === 'ob')) && (id.indexOf('|') < 0 || vis[id.split('|')[0]]));
 }
 const OPS_NUM = [['', 'None'], ['empty', 'Is empty'], ['any', 'Is not empty'], ['gt', 'Greater than'], ['ge', 'Greater than or equal to'], ['lt', 'Less than'], ['le', 'Less than or equal to'], ['eq', 'Is equal to'], ['ne', 'Is not equal to']];
 const OPS_TXT = [['', 'None'], ['empty', 'Is empty'], ['any', 'Is not empty'], ['contains', 'Text contains'], ['ncontains', 'Text does not contain'], ['eq', 'Text is exactly']];
@@ -962,7 +1037,7 @@ function wfKey(e) { if (e.key === 'Escape') closeFilterPanel(); }
 function openFilterPanel(id, anchor) {
   closeFilterPanel();
   const def = colDef(id); if (!def) return;
-  const base = dealersInScope();
+  const base = id.indexOf('ob:') === 0 ? obInScope().filter(obPass) : dealersInScope();
   const counts = {}; base.forEach(d => { const s = def.get(d); counts[s] = (counts[s] || 0) + 1; });
   let vals = Object.keys(counts);
   const ord = def.type === 'text'
@@ -1001,14 +1076,14 @@ function openFilterPanel(id, anchor) {
     const a = e.target.closest('a[data-all]');
     if (a) { (panel._shown || vals).forEach(v => { if (a.dataset.all === '1') tmp.add(v); else tmp.delete(v); }); draw(); return; }
     const s = e.target.closest('[data-sort]');
-    if (s) { sortSpec = { id, dir: +s.dataset.sort }; closeFilterPanel(); renderHead(); refreshBody(true); return; }
+    if (s) { sortSpec = { id, dir: +s.dataset.sort }; closeFilterPanel(); repaintTable(); return; }
     if (e.target.closest('.wf-cancel')) { closeFilterPanel(); return; }
     if (e.target.closest('.wf-ok')) {
       const nf = {};
       if (tmp.size < vals.length) nf.sel = new Set(tmp);
       if (opSel && opSel.value) { nf.op = opSel.value; nf.v = vIn.value; }
       if (nf.sel || nf.op) filters[id] = nf; else delete filters[id];
-      closeFilterPanel(); renderHead(); refreshBody(true);
+      closeFilterPanel(); repaintTable();
     }
   });
   // position under the button, kept inside the window
@@ -1022,7 +1097,8 @@ document.getElementById('wr-head').addEventListener('click', e => {
   const b = e.target.closest('.fbtn'); if (!b) return; e.stopPropagation(); openFilterPanel(b.dataset.col, b);
 });
 
-function render() {
+function render() { if (TAB === 'ob') obRender(); else renderWR(); }
+function renderWR() {
   weeks = buildWeeks(selectedMonth.y, selectedMonth.m);
   wrTodayStart = todayStart(); _dueCache = {};
   renderHead();
@@ -1294,7 +1370,7 @@ function parseSheetDate(v) {
   }
   const dm = s.match(/^(\d{1,2})-([A-Za-z]{3})[a-z]*-(\d{4})$/);   // 9-Oct-2026
   if (dm) { const mi = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(dm[2].toLowerCase()); if (mi >= 0) return new Date(+dm[3], mi, +dm[1]); }  // MON_IDX_
-  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T,]+\d{1,2}:\d{2}(?::\d{2})?\s*(?:[AP]M)?)?$/i);   // m/d/yyyy, optionally followed by a time
   if (m) return new Date(+m[3], +m[1]-1, +m[2]);
   const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
@@ -1494,6 +1570,276 @@ function _initGoogleAuth() {
   google.accounts.id.renderButton(document.getElementById('g-signin'), { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'signin_with', logo_alignment: 'center', width: 260 });
   google.accounts.id.prompt();
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ONBOARDING LIST TAB
+// Read: BigQuery table onboarding_list (via the data API) -> GitHub CSV -> live read of the sheet tab (Apps Script).
+// Write: the "+" button (full access only) and the row editor (full access = all fields; SM = own team's working fields).
+// ═══════════════════════════════════════════════════════════════════════════
+var TAB = 'wr', OB = [], OB_LOADED = false, OB_ERR = '', OB_SOS = null, OB_VIEW = [], _VISITS = null, _obVisit = null, _sortStash = { wr: null, ob: null };
+var OBQ = { stage: 'active', quick: '', so: '', type: '', q: '' };
+var OB_STATUSES = ['Applications Submitted for BAP/CMAP Checking', 'Pending BAP/CMAP Requirements', 'Pending BAP/CMAP Decision', 'Rejected due to BAP/CMAP', 'Eligible Applications - Pending Credit Line Documents',
+  'Eligible Applications - Pending Credit Decision by Carmudi', 'Eligible Applications - Pending Credit Decision by Netbank', 'Eligible Applications - Dealer Rejected', 'Eligible Applications - CLA Signature Pending',
+  'Eligible Applications - Dealer Onboarded', 'Application Paused/On Hold'];
+var OB_COLS = [
+  { k: 'name', h: 'Dealership Name', label: 'Dealership', w: 230, grp: '' },
+  { k: 'so', h: 'Sales Officer', label: 'Sales Officer', w: 130, grp: 'Application' },
+  { k: 'sm', h: 'Sales Manager', label: 'Sales Manager', w: 130, grp: 'Application' },
+  { k: 'applied', h: 'Date of Initial Application', label: 'Applied', w: 110, grp: 'Application', date: 1 },
+  { k: 'type', h: 'Onboarding (Regular / Express)', label: 'Onboarding', w: 100, grp: 'Application' },
+  { k: 'status', h: 'Application Status', label: 'Application Status', w: 250, grp: 'Application' },
+  { k: 'docs', h: 'Document Pending', label: 'Document Pending', w: 220, grp: 'Documents', long: 1 },
+  { k: 'target', h: 'Target Completion of Documents', label: 'Target Completion', w: 120, grp: 'Documents', date: 1 },
+  { k: 'fci', h: 'FCI Schedule as per the Sales Team', label: 'FCI Schedule', w: 115, grp: 'Schedules', date: 1 },
+  { k: 'kyc', h: 'KYC Schedule as per the Sales Team', label: 'KYC Schedule', w: 115, grp: 'Schedules', date: 1 },
+  { k: 'ops', h: 'Operation Review Remarks', label: 'Operations', w: 220, grp: 'Review remarks', long: 1 },
+  { k: 'credit', h: 'Credit Review Remarks', label: 'Credit', w: 220, grp: 'Review remarks', long: 1 },
+  { k: 'salesr', h: 'Sales Review Remarks', label: 'Sales', w: 220, grp: 'Review remarks', long: 1 },
+  { k: 'plan', h: 'Plan Visit Date', label: 'Plan Visit', w: 115, grp: 'IF review', date: 1 },
+  { k: 'last', h: 'Last IF Visit', label: 'Last IF Visit', w: 115, grp: 'IF review', date: 1 },
+  { k: 'ifr', h: 'IF Review Remarks', label: 'IF Review Remarks', w: 240, grp: 'IF review', long: 1 }];
+function obStage(s) { s = String(s || '').toLowerCase(); if (/dealer onboarded|^onboarded/.test(s)) return 'done'; if (/reject|paus|hold|cancel/.test(s)) return 'closed'; return 'active'; }
+function obPillCls(s) { s = String(s || '').toLowerCase(); return /onboarded/.test(s) ? 'g' : /reject/.test(s) ? 'r' : /paus|hold|cancel/.test(s) ? 'n' : /decision/.test(s) ? 'b' : 'a'; }
+function nk(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+function isoD(d) { return d ? d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') : ''; }
+function obVisitMap() {
+  if (_obVisit) return _obVisit;
+  const m = {}; _obVisit = m; const g = _VISITS; if (!g || g.length < 2) return m;
+  const vc = buildColumnMap(g[0]);
+  for (let i = 1; i < g.length; i++) {
+    const r = g[i]; if (get(r, vc('Visit Type')).trim().toLowerCase() !== 'if visit') continue;
+    const dt = parseSheetDate(get(r, vc('Visited Date'))); if (!dt) continue;
+    const by = normName(get(r, vc('Executive Name')));
+    [get(r, vc('Dealer Name')), get(r, vc('DealerShip Name')), get(r, vc('ID'))].forEach(n => { const k = nk(n); if (k && (!m[k] || dt > m[k].date)) m[k] = { date: dt, by }; });
+  }
+  return m;
+}
+function obParse(grid) {
+  if (!grid || grid.length < 2) return false;
+  const c = buildColumnMap(grid[0]);
+  if (c('Dealership Name') < 0 || c('Date of Initial Application') < 0) return false;     // not the onboarding list (e.g. a wrong table)
+  const vm = obVisitMap(), out = [];
+  for (let i = 1; i < grid.length; i++) {
+    const r = grid[i], o = { _raw: {} };
+    OB_COLS.forEach(col => { const raw = String(get(r, c(col.h)) || '').replace(/ /g, ' '); o._raw[col.k] = raw.trim(); o[col.k] = col.date ? parseSheetDate(raw) : (col.long ? raw.trim() : normName(raw)); });
+    if (!o.name) continue;
+    const v = vm[nk(o.name)]; if (v && (!o.last || v.date > o.last)) { o.last = v.date; o.lastBy = v.by; }
+    o.team = (o.sm ? o.sm.split(' ')[0] : '') || teamOf(o.so) || '';
+    out.push(o);
+  }
+  OB = out; return true;
+}
+async function obLoad(live) {
+  OB_ERR = '';
+  let ok = false;
+  if (!live) { try { ok = obParse(await fetchCSV('onboarding-list.csv', true)); } catch (e) { ok = false; } }
+  if (!ok && wrConfigured() && ID_TOKEN) {
+    try {
+      const r = await fetch(WR_API + '?action=load&what=onboarding&token=' + encodeURIComponent(ID_TOKEN) + '&_=' + Date.now());
+      const j = await r.json();
+      if (!j.ok) throw new Error(j.error || 'load failed');
+      OB_SOS = j.sos || null;
+      ok = obParse(j.grid);
+      if (!ok) OB_ERR = 'The sheet answered, but it has no "Dealership Name" / "Date of Initial Application" columns.';
+    } catch (e) { OB_ERR = 'Could not read the Onboarding List: ' + (e.message || e); }
+  }
+  if (!ok && !OB_ERR) OB_ERR = 'The Onboarding List is not available yet. Check that the tab is exported to BigQuery as "onboarding_list", or that the save endpoint is set.';
+  OB_LOADED = true;
+}
+function obInScope() {
+  const lowers = (!ACCESS || ACCESS.unrestricted) ? null : ACCESS.teams.map(t => t.toLowerCase());
+  return OB.filter(r => {
+    const t = (r.team || '').toLowerCase();
+    if (lowers && (!t || lowers.indexOf(t) < 0)) return false;
+    if (selectedTeam !== ALL_TEAMS && t !== String(selectedTeam).toLowerCase()) return false;
+    return true;
+  });
+}
+function obCanAdd() { return !!(ACCESS && ACCESS.unrestricted) && wrConfigured() && !!ID_TOKEN; }
+function obCanEdit(r) {
+  if (!wrConfigured() || !ID_TOKEN || !ACCESS) return false;
+  if (ACCESS.unrestricted) return true;
+  return !!r.team && ACCESS.teams.some(t => t.toLowerCase() === r.team.toLowerCase());
+}
+function obOverdue(r) { return obStage(r.status) === 'active' && r.target && r.target < todayStart(); }
+function obWeekRange() { const t = todayStart(), s = new Date(t.getFullYear(), t.getMonth(), t.getDate() - t.getDay()); return [s, new Date(s.getFullYear(), s.getMonth(), s.getDate() + 6)]; }
+function obThisWeek(r) { const w = obWeekRange(); return obStage(r.status) === 'active' && r.plan && r.plan >= w[0] && r.plan <= w[1]; }
+function obNoVisit(r) { return obStage(r.status) === 'active' && (!r.last || (todayStart() - r.last) / DAY_MS > 30); }
+function obPass(r) {
+  const st = obStage(r.status);
+  if (OBQ.stage !== 'all' && st !== OBQ.stage) return false;
+  if (OBQ.so && r.so !== OBQ.so) return false;
+  if (OBQ.type && String(r.type).toLowerCase() !== OBQ.type) return false;
+  if (OBQ.q && (r.name + ' ' + r.so + ' ' + r.status + ' ' + r.docs).toLowerCase().indexOf(OBQ.q) < 0) return false;
+  if (OBQ.quick === 'overdue' && !obOverdue(r)) return false;
+  if (OBQ.quick === 'week' && !obThisWeek(r)) return false;
+  if (OBQ.quick === 'novisit' && !obNoVisit(r)) return false;
+  return true;
+}
+function obColDef(k) {
+  const c = OB_COLS.find(x => x.k === k); if (!c) return null;
+  if (c.date) return { type: 'date', label: c.label, num: r => r[k] ? r[k].getTime() : null, get: r => r[k] ? fmtDate(r[k]) : (r._raw[k] || BLANK) };
+  return { type: 'text', label: c.label, get: r => { const s = String(r[k] == null ? '' : r[k]).trim(); return s || BLANK; } };
+}
+function repaintTable() { if (TAB === 'ob') obPaint(); else { renderHead(); refreshBody(true); } }
+function obDate(r, k) {
+  const d = r[k], raw = r._raw[k];
+  if (!d) return raw ? '<span class="obd">' + esc(raw) + '</span>' : '<span class="obm0">—</span>';
+  let cls = 'obd';
+  if (k === 'target' && obOverdue(r)) cls += ' late';
+  if ((k === 'fci' || k === 'kyc' || k === 'plan') && obStage(r.status) === 'active') { const t = todayStart(); if (d < t) cls += ' past'; else if (d.getTime() === t.getTime()) cls += ' today'; }
+  return '<span class="' + cls + '">' + fmtDate(d) + '</span>';
+}
+function obText(v) { return v ? '<div class="clamp" title="' + esc(v) + '">' + esc(v) + '</div>' : '<span class="obm0">—</span>'; }
+function obPaint() {
+  const scope = obInScope(), list0 = scope.filter(obPass);
+  const nA = scope.filter(r => obStage(r.status) === 'active').length, nD = scope.filter(r => obStage(r.status) === 'done').length, nC = scope.filter(r => obStage(r.status) === 'closed').length;
+  document.querySelectorAll('#ob-stage button').forEach(b => { const v = b.dataset.v, n = v === 'active' ? nA : v === 'done' ? nD : v === 'closed' ? nC : scope.length; b.textContent = ({ active: 'Active', done: 'Onboarded', closed: 'Rejected / On hold', all: 'All' })[v] + ' (' + n + ')'; b.classList.toggle('on', OBQ.stage === v); });
+  const act = scope.filter(r => obStage(r.status) === 'active');
+  const kp = [['', 'In the pipeline', act.length, 'active applications', ''], ['overdue', 'Documents overdue', act.filter(obOverdue).length, 'past target completion', act.filter(obOverdue).length ? 'red' : ''],
+    ['week', 'IF visits this week', act.filter(obThisWeek).length, 'planned Sun–Sat', ''], ['novisit', 'No IF visit in 30+ days', act.filter(obNoVisit).length, 'or never visited', act.filter(obNoVisit).length ? 'amber' : '']];
+  document.getElementById('ob-kpis').innerHTML = kp.map(k => '<button type="button" class="obk ' + k[4] + (k[0] && OBQ.quick === k[0] ? ' on' : '') + '" data-q="' + k[0] + '"><div class="n">' + k[2] + '</div><div class="l">' + k[1] + '</div><div class="s">' + k[3] + '</div></button>').join('');
+  const soSel = document.getElementById('ob-so'); const sos = Array.from(new Set(scope.map(r => r.so).filter(Boolean))).sort();
+  soSel.innerHTML = '<option value="">All officers</option>' + sos.map(s => '<option' + (s === OBQ.so ? ' selected' : '') + '>' + esc(s) + '</option>').join('');
+  document.getElementById('ob-add').style.display = obCanAdd() ? '' : 'none';
+  OB_VIEW = applySort(applyFilters(list0));
+  const nf = activeFilterKeys().length;
+  document.getElementById('ob-clear').style.display = (nf || sortSpec) ? '' : 'none';
+  document.getElementById('ob-count').textContent = OB_VIEW.length + ' of ' + scope.length + ' dealers';
+  // head
+  const groups = []; OB_COLS.slice(1).forEach(c => { const g = groups[groups.length - 1]; if (g && g.n === c.grp) g.c++; else groups.push({ n: c.grp, c: 1 }); });
+  let cg = '<colgroup>' + OB_COLS.map(c => '<col style="width:' + c.w + 'px">').join('') + '</colgroup>';
+  const tb = document.getElementById('ob-table'); const old = tb.querySelector('colgroup'); if (old) old.remove(); tb.insertAdjacentHTML('afterbegin', cg);
+  tb.style.width = OB_COLS.reduce((a, c) => a + c.w, 0) + 'px';
+  let h1 = '<tr><th class="fz fzend l" rowspan="2">' + hcell('ob:name', 'Dealership') + '</th>' + groups.map((g, i) => '<th class="wk' + (i ? ' wkstart' : '') + '" colspan="' + g.c + '">' + esc(g.n) + '</th>').join('') + '</tr>';
+  let h2 = '<tr class="sub">' + OB_COLS.slice(1).map(c => '<th class="l">' + hcell('ob:' + c.k, c.label) + '</th>').join('') + '</tr>';
+  document.getElementById('ob-head').innerHTML = h1 + h2;
+  // body
+  let b = '';
+  OB_VIEW.forEach((r, i) => {
+    b += '<tr data-i="' + i + '"><td class="fz fzend l name"><div class="clamp">' + esc(r.name) + '</div></td>' +
+      '<td class="l">' + esc(r.so || '—') + '</td><td class="l">' + esc(r.sm || '—') + '</td><td class="l">' + obDate(r, 'applied') + '</td>' +
+      '<td class="l">' + (r.type ? '<span class="obp ' + (/express/i.test(r.type) ? 'p' : 'n') + '">' + esc(r.type) + '</span>' : '<span class="obm0">—</span>') + '</td>' +
+      '<td class="l">' + (r.status ? '<span class="obp ' + obPillCls(r.status) + '">' + esc(r.status) + '</span>' : '<span class="obm0">—</span>') + '</td>' +
+      '<td class="l">' + obText(r.docs) + '</td><td class="l">' + obDate(r, 'target') + '</td><td class="l">' + obDate(r, 'fci') + '</td><td class="l">' + obDate(r, 'kyc') + '</td>' +
+      '<td class="l">' + obText(r.ops) + '</td><td class="l">' + obText(r.credit) + '</td><td class="l">' + obText(r.salesr) + '</td>' +
+      '<td class="l">' + obDate(r, 'plan') + '</td><td class="l" title="' + esc(r.lastBy ? 'by ' + r.lastBy : '') + '">' + obDate(r, 'last') + '</td><td class="l">' + obText(r.ifr) + '</td></tr>';
+  });
+  if (!OB_VIEW.length) b = '<tr><td colspan="' + OB_COLS.length + '" class="ob-none">' + (OB.length ? 'No dealers match these filters.' : esc(OB_ERR || 'No dealers on the list yet.')) + '</td></tr>';
+  document.getElementById('ob-body').innerHTML = b;
+}
+function obRender() {
+  if (!OB_LOADED) { document.getElementById('ob-body').innerHTML = '<tr><td class="ob-none">Loading the onboarding list…</td></tr>'; return; }
+  const ban = document.getElementById('ob-banner'); ban.textContent = OB.length ? '' : OB_ERR; ban.className = 'wr-msg' + (OB.length || !OB_ERR ? '' : ' err');
+  obPaint();
+}
+function obToast(t, err) { const e = document.getElementById('ob-toast'); e.textContent = t; e.className = 'ob-toast show' + (err ? ' err' : ''); clearTimeout(obToast._t); obToast._t = setTimeout(() => { e.className = 'ob-toast'; }, err ? 6000 : 3000); }
+
+// ── tabs
+function setTab(t) {
+  if (t === TAB) return;
+  closeFilterPanel(); _sortStash[TAB] = sortSpec; TAB = t; sortSpec = _sortStash[t];
+  document.body.classList.toggle('ob-tab', t === 'ob');
+  document.getElementById('wr-view').style.display = t === 'wr' ? '' : 'none';
+  document.getElementById('ob-view').style.display = t === 'ob' ? '' : 'none';
+  document.querySelectorAll('.wr-tab[data-tab]').forEach(el => el.classList.toggle('active', el.dataset.tab === t));
+  if (t === 'ob') { obRender(); if (!OB_LOADED) obLoad().then(obRender); } else render();
+}
+
+// ── add / edit popup
+function obSoOptions(cur) {
+  let sos = OB_SOS && OB_SOS.length ? OB_SOS.slice() : Object.keys(SO_TEAM_MAP).filter(so => !ACCESS || ACCESS.unrestricted || ACCESS.teams.some(t => t.toLowerCase() === String(SO_TEAM_MAP[so]).toLowerCase()));
+  if (cur && sos.indexOf(cur) < 0) sos.push(cur);
+  return sos.sort();
+}
+function obOpen(i) {
+  const add = i < 0, r = add ? null : OB_VIEW[i];
+  if (add && !obCanAdd()) return;
+  const edit = !add && obCanEdit(r), idOk = add || (ACCESS && ACCESS.unrestricted), dis = x => (edit || add) && x ? '' : ' disabled';
+  const V = (k, d) => add ? d : (r[k] == null ? '' : r[k]);
+  const dv = k => add ? '' : isoD(r[k]);
+  const stOpts = OB_STATUSES.slice(); const curSt = add ? '' : r.status; if (curSt && stOpts.indexOf(curSt) < 0) stOpts.push(curSt);
+  OB.forEach(x => { if (x.status && stOpts.indexOf(x.status) < 0) stOpts.push(x.status); });
+  const F = (id, label, inner, cls) => '<label class="obf ' + (cls || '') + '" for="f-' + id + '"><span>' + label + '</span>' + inner + '</label>';
+  const T = (id, label, k, o) => F(id, label, '<input id="f-' + id + '" type="text" value="' + esc(V(k, '')) + '"' + dis(o && o.idf ? idOk : 1) + ' maxlength="120">', o && o.cls);
+  const D = (id, label, k) => F(id, label, '<input id="f-' + id + '" type="date" value="' + dv(k) + '" min="2000-01-01" max="2100-12-31"' + dis(k === 'applied' ? idOk : 1) + '>');
+  const A = (id, label, k) => F(id, label, '<textarea id="f-' + id + '" rows="2" maxlength="2000"' + dis(1) + '>' + esc(V(k, '')) + '</textarea>', 'wide');
+  const soCur = add ? '' : r.so;
+  const html =
+    '<div class="obm-h"><div><div class="obm-t">' + (add ? 'Add a dealer to the onboarding list' : esc(r.name)) + '</div><div class="obm-s">' + (add ? 'Fields marked * are required. Everything else can be filled in later.' : (edit ? 'Edit the working details below.' : 'View only — you can’t edit this dealer.')) + '</div></div><button type="button" class="obm-x" data-x="1" aria-label="Close">✕</button></div>' +
+    '<div class="obm-b"><div class="obm-sec">Application</div><div class="obm-g">' +
+    T('name', 'Dealership name *', 'name', { idf: 1, cls: 'wide' }) +
+    F('so', 'Sales Officer *', '<select id="f-so"' + dis(idOk) + '><option value="">Select…</option>' + obSoOptions(soCur).map(s => '<option' + (s === soCur ? ' selected' : '') + '>' + esc(s) + '</option>').join('') + '</select>') +
+    F('sm', 'Sales Manager', '<input id="f-sm" type="text" value="' + esc(add ? '' : r.sm) + '" disabled placeholder="Set automatically from the officer">') +
+    D('applied', 'Date of initial application *', 'applied') +
+    F('type', 'Onboarding *', '<select id="f-type"' + dis(idOk) + '><option value="">Select…</option>' + ['Regular', 'Express'].map(s => '<option' + (!add && String(r.type).toLowerCase() === s.toLowerCase() ? ' selected' : '') + '>' + s + '</option>').join('') + '</select>') +
+    F('status', 'Application status *', '<select id="f-status"' + dis(1) + '><option value="">Select…</option>' + stOpts.map(s => '<option' + (s === curSt ? ' selected' : '') + '>' + esc(s) + '</option>').join('') + '</select>', 'wide') +
+    '</div>' +
+    (add ? '<details class="obm-more"><summary>More details (optional)</summary>' : '') +
+    '<div class="obm-sec">Documents</div><div class="obm-g">' + A('docs', 'Document pending', 'docs') + D('target', 'Target completion of documents', 'target') + '</div>' +
+    '<div class="obm-sec">Schedules</div><div class="obm-g">' + D('fci', 'FCI schedule (sales team)', 'fci') + D('kyc', 'KYC schedule (sales team)', 'kyc') + '</div>' +
+    '<div class="obm-sec">Review remarks</div><div class="obm-g">' + A('ops', 'Operation review remarks', 'ops') + A('credit', 'Credit review remarks', 'credit') + A('salesr', 'Sales review remarks', 'salesr') + '</div>' +
+    '<div class="obm-sec">IF review</div><div class="obm-g">' + D('plan', 'Plan visit date', 'plan') +
+    F('last', 'Last IF visit', '<input id="f-last" type="text" value="' + esc(!add && r.last ? fmtDate(r.last) + (r.lastBy ? ' · ' + r.lastBy : '') : '—') + '" disabled>') + A('ifr', 'IF review remarks', 'ifr') + '</div>' +
+    (add ? '</details>' : '') + '</div>' +
+    '<div class="obm-f"><span class="wr-msg" id="obm-msg"></span><button type="button" class="obb" data-x="1">' + (edit || add ? 'Cancel' : 'Close') + '</button>' + (edit || add ? '<button type="button" class="obb pri" id="obm-save">' + (add ? 'Add dealer' : 'Save changes') + '</button>' : '') + '</div>';
+  const back = document.getElementById('obm-back'); document.getElementById('obm').innerHTML = html; back.classList.add('show'); back._idx = i;
+  document.body.style.overflow = 'hidden';
+  const so = document.getElementById('f-so'), sm = document.getElementById('f-sm');
+  if (add && so) so.onchange = () => { const t = SO_TEAM_MAP[so.value]; sm.value = t ? 'Team ' + t : ''; };
+  const sv = document.getElementById('obm-save'); if (sv) sv.onclick = () => obSave(i);
+  const nm = document.getElementById('f-name'); if (add && nm) setTimeout(() => nm.focus(), 50);
+}
+function obClose() { document.getElementById('obm-back').classList.remove('show'); document.body.style.overflow = ''; }
+async function obSave(i) {
+  const add = i < 0, r = add ? null : OB_VIEW[i], msg = document.getElementById('obm-msg'), btn = document.getElementById('obm-save');
+  const val = id => { const e = document.getElementById('f-' + id); return e ? String(e.value).trim() : ''; };
+  const idOk = add || (ACCESS && ACCESS.unrestricted);
+  const cur = {};
+  OB_COLS.forEach(c => { if (c.k === 'sm' || c.k === 'last') return; cur[c.h] = c.k === 'name' ? val('name') : val(c.k); });
+  const fail = t => { msg.className = 'wr-msg err'; msg.textContent = t; };
+  if (cur['Dealership Name'].length < 2) return fail('Enter the dealership name.');
+  if (idOk) { if (!cur['Sales Officer']) return fail('Pick a Sales Officer.'); if (!cur['Date of Initial Application']) return fail('Enter the date of initial application.'); if (!cur['Onboarding (Regular / Express)']) return fail('Choose Regular or Express.'); }
+  if (!cur['Application Status']) return fail('Choose an application status.');
+  const ap = cur['Date of Initial Application'] || isoD(r && r.applied);
+  if (add && ap > isoD(todayStart())) return fail('The application date cannot be in the future.');
+  if (cur['Target Completion of Documents'] && ap && cur['Target Completion of Documents'] < ap) return fail('Target completion cannot be before the application date.');
+  if (!ID_TOKEN) return fail('Sign-in expired — refresh the page.');
+  let body;
+  if (add) body = { action: 'ob_add', idToken: ID_TOKEN, row: cur };
+  else {
+    const fields = {};
+    OB_COLS.forEach(c => { if (c.k === 'sm' || c.k === 'last') return; if (!idOk && ['name', 'so', 'applied', 'type'].indexOf(c.k) >= 0) return;
+      const now = cur[c.h], was = c.date ? isoD(r[c.k]) : String(r[c.k] == null ? '' : r[c.k]).trim(); if (now !== was) fields[c.h] = now; });
+    if (!Object.keys(fields).length) return fail('Nothing was changed.');
+    body = { action: 'ob_update', idToken: ID_TOKEN, key: { name: r.name, applied: isoD(r.applied), appliedRaw: r._raw.applied }, fields };
+  }
+  btn.disabled = true; msg.className = 'wr-msg'; msg.textContent = 'Saving…';
+  try {
+    const resp = await fetch(WR_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
+    const j = await resp.json();
+    if (!j.ok) { if (j.code === 'auth' && window.google && google.accounts && google.accounts.id) google.accounts.id.prompt(); fail(j.code === 'auth' ? 'Sign-in expired — try again in a few seconds.' : (j.error || 'Not saved')); btn.disabled = false; return; }
+    obClose(); obToast(add ? 'Dealer added to the onboarding list ✓' : 'Changes saved ✓');
+    await obLoad(true); obRender();
+  } catch (e) { fail('Not saved: ' + (e.message || e)); btn.disabled = false; }
+}
+(function obWire() {
+  document.querySelectorAll('.wr-tab[data-tab]').forEach(el => { el.onclick = () => setTab(el.dataset.tab); });
+  document.getElementById('ob-head').addEventListener('click', e => { const b = e.target.closest('.fbtn'); if (!b) return; e.stopPropagation(); openFilterPanel(b.dataset.col, b); });
+  document.getElementById('ob-stage').addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (!b) return; OBQ.stage = b.dataset.v; obPaint(); });
+  document.getElementById('ob-kpis').addEventListener('click', e => { const b = e.target.closest('.obk'); if (!b) return; OBQ.quick = OBQ.quick === b.dataset.q ? '' : b.dataset.q; if (b.dataset.q === 'overdue' || b.dataset.q === 'week' || b.dataset.q === 'novisit') OBQ.stage = 'active'; obPaint(); });
+  document.getElementById('ob-so').onchange = function () { OBQ.so = this.value; obPaint(); };
+  document.getElementById('ob-type').onchange = function () { OBQ.type = this.value; obPaint(); };
+  let t = null; document.getElementById('ob-q').oninput = function () { OBQ.q = this.value.trim().toLowerCase(); clearTimeout(t); t = setTimeout(obPaint, 150); };
+  document.getElementById('ob-clear').onclick = () => { Object.keys(filters).forEach(k => { if (k.indexOf('ob:') === 0) delete filters[k]; }); sortSpec = null; OBQ.quick = ''; obPaint(); };
+  document.getElementById('ob-add').onclick = () => obOpen(-1);
+  document.getElementById('ob-body').addEventListener('click', e => { const tr = e.target.closest('tr[data-i]'); if (tr) obOpen(+tr.dataset.i); });
+  const back = document.getElementById('obm-back');
+  back.addEventListener('mousedown', e => { if (e.target === back) obClose(); });
+  back.addEventListener('click', e => { if (e.target.closest('[data-x]')) obClose(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && back.classList.contains('show')) obClose(); });
+})();
+
 _loadAllowlist();
 if (document.readyState !== 'loading') _initGoogleAuth();
 else document.addEventListener('DOMContentLoaded', _initGoogleAuth);
