@@ -89,6 +89,8 @@ input,select,textarea{font:inherit;color:inherit}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{border:1px solid var(--border);background:var(--card);border-radius:99px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--text2);min-height:34px}
 .chip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.hm{border-collapse:collapse;width:100%;font-size:12.5px}.hm th,.hm td{padding:6px 8px;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap}.hm th{font-size:11.5px;color:var(--text2);font-weight:700}.hm th:first-child,.hm td:first-child{text-align:left;position:sticky;left:0;background:var(--card);font-weight:600}
+.stk{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--grey-bg)}.stk i{display:block;height:100%}.lg{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--text2)}.lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}.scr{overflow-x:auto}
 .seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card)}
 .seg button{border:0;background:none;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--text2)}
 .seg button.on{background:var(--primary);color:#fff}
@@ -498,7 +500,7 @@ function buildCore(texts, quiet) {
       out: parseNum(get(r, c2('Total Outstanding Principal'))) || parseNum(get(r, c2('Restructure Outstanding Balance'))),
       r1: parseSheetDate(get(r, c2('Renewal 1 Due Date'))), r2: parseSheetDate(get(r, c2('Renewal 2 Due Date'))), mat: parseSheetDate(get(r, c2('Final Maturity Date'))),
       year: String(get(r, c2('Year Model'))).trim(), model: normName(get(r, c2('Make Model Variant'))), plate: normName(get(r, c2('Plate Number (as on ORCR)'))),
-      soldFlag: /sold/i.test(get(r, c2('Sold Flagging'))), repo: /^yes/i.test(String(get(r, c2('Repossessed Unit?'))).trim()), so: '', co: '', dpdSheet: 0 };
+      soldFlag: /sold/i.test(get(r, c2('Sold Flagging'))), repo: /^yes/i.test(String(get(r, c2('Repossessed Unit?'))).trim()), repoDate: parseSheetDate(get(r, c2('Date of Repossession'))), so: '', co: '', dpdSheet: 0 };
   });
   if (d3) {
     const c3 = buildColumnMap(d3[0]);
@@ -1267,6 +1269,8 @@ document.addEventListener('change', e => { const t = e.target; if (t && t.datase
 async function renderLead(host) {
   host.innerHTML = '<div class="loading"><span class="spin"></span>Loading loan and repayment history…<div class="small">This tab loads a few extra files, so the first open takes a moment.</div></div>';
   try { await loadLeadData(); } catch (e) { host.innerHTML = '<div class="card empty">Could not load the history files: ' + esc(e.message) + '</div>'; return; }
+  S.ltab = S.ltab || 'sa';
+  if (S.ltab === 'co') { renderLeadCO(host); return; }
   const P = periodsDef(), per = P[S.lper], from = per.from, to = per.to;
   const ev = buildEvents().filter(e => e.due >= from && e.due <= to && e.due <= TODAY && outAt(e.id, e.due) > 0.5 && DD[e.id] && DD[e.id].so);
   const insp = INSP.filter(e => e.date >= from && e.date <= to);
@@ -1284,7 +1288,7 @@ async function renderLead(host) {
   // per-day bars
   const days = []; for (let d = from; d <= to; d = addDays(d, 1)) days.push(d);
   const cnt = days.map(d => insp.filter(e => iso(e.date) === iso(d)).length), mx = Math.max(1, ...cnt);
-  let h = '<div class="h1">Leadership</div><div class="sub">' + esc(per.label) + ' · ' + fmtD(from) + ' – ' + fmtD(to) + ' · adherence and on-time use the 30/15/7/3 schedule (current officer assignment)</div>';
+  let h = '<div class="h1">Leadership</div>' + leadTabs() + '<div class="sub">' + esc(per.label) + ' · ' + fmtD(from) + ' – ' + fmtD(to) + ' · adherence and on-time use the 30/15/7/3 schedule (current officer assignment)</div>';
   h += '<div class="chips" style="margin:12px 0;align-items:center">' + Object.keys(P).filter(k => !/^pm:/.test(k)).map(k => '<button class="chip' + (S.lper === k ? ' on' : '') + '" data-act="lper" data-v="' + k + '">' + esc(P[k].label) + '</button>').join('') + lMonthSel() + '</div>';
   h += '<div class="kpis"><button class="kpi blue" data-act="ldone"><div class="n">' + (T.tot || 0) + '</div><div class="l">Audits done</div><div class="s">' + (T.dealers || 0) + ' dealer-visits · tap to see them</div></button>' +
     '<div class="kpi ' + (T.tot && T.fail / T.tot > 0.4 ? 'red' : 'green') + '"><div class="n">' + pct(T.pass || 0, T.tot || 0) + '</div><div class="l">Pass rate</div><div class="s">' + (T.fail || 0) + ' failed</div></div>' +
@@ -1294,7 +1298,6 @@ async function renderLead(host) {
     '<div class="kpi red"><div class="n">' + OPEN.filter(d => d.multiFail).length + '</div><div class="l">Repeat failures</div><div class="s">' + OPEN.filter(d => d.dpdOn).length + ' on DPD</div></div></div>';
   h += '<div class="card sec"><div class="b" style="margin-bottom:8px">Audits per day</div><div style="display:flex;align-items:flex-end;gap:3px;height:90px">' + days.map((d, i) => '<div title="' + fmtDs(d) + ': ' + cnt[i] + '" style="flex:1;min-width:3px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:2px"><span class="small muted" style="font-size:9px">' + (cnt[i] || '') + '</span><div style="width:100%;border-radius:4px 4px 0 0;background:' + (d.getDay() === 0 || d.getDay() === 6 ? 'var(--border)' : 'linear-gradient(var(--accent),var(--primary))') + ';height:' + Math.max(2, cnt[i] / mx * 64) + 'px"></div></div>').join('') + '</div><div style="display:flex;justify-content:space-between" class="small muted"><span>' + fmtDs(from) + '</span><span>' + fmtDs(to) + '</span></div></div>';
   h += '<div class="sec"><div class="sec-h"><h2>Audit performance by officer</h2><span class="sub">Inspector = who did the audit · Scheduled / Adherence / On time = drawdowns assigned to the officer</span></div><div id="lt1"></div></div>';
-  h += '<div class="sec"><div class="sec-h"><h2>Collections — recovered at DPD 5+</h2><span class="sub" id="lt2sub"></span></div><div id="lt2"></div></div>';
   host.innerHTML = h;
   const cols = [
     { id: 'n', label: 'Officer', fz: true, val: r => r.n, html: r => '<b>' + esc(r.n) + '</b>' },
@@ -1307,10 +1310,9 @@ async function renderLead(host) {
     { id: 'openN', label: 'Open assigned', type: 'num', val: r => r.openN }, { id: 'over', label: 'Overdue now', type: 'num', val: r => r.over, html: r => r.over ? '<span class="pill t-red">' + r.over + '</span>' : '0' },
     { id: 'multi', label: 'Repeat failures', type: 'num', val: r => r.multi }, { id: 'dpd', label: 'On DPD', type: 'num', val: r => r.dpd }];
   makeTable(document.getElementById('lt1'), cols, rows, { csv: 'stock-audit-officers', maxH: '60vh' });
-  paintCollections(P);
 }
-function paintCollections(P) {
-  const per = P[S.lper], mEnd = per.to, mStart = new Date(mEnd.getFullYear(), mEnd.getMonth(), 1), E = addDays(mEnd, 1);
+function paintCollections(per) {
+  const mEnd = per.to, mStart = new Date(mEnd.getFullYear(), mEnd.getMonth(), 1), E = addDays(mEnd, 1);
   const sub = document.getElementById('lt2sub'); if (sub) sub.textContent = MONTH_ABBR[mEnd.getMonth()] + ' ' + mEnd.getFullYear() + ' (month of the period) · Repayment % = principal recovered ÷ (month-end principal still 5+ DPD + recovered) · Audits done and Dealers visited cover the selected period';
   const by = {};
   const row = n => by[n] = by[n] || { n, rec: 0, sumDpd: 0, cnt: 0, end: 0, accts: 0 };
@@ -1330,6 +1332,220 @@ function paintCollections(P) {
     { id: 'ac', label: 'Accounts still 5+ DPD', type: 'num', val: r => r.accts },
     { id: 'aud', label: 'Audits done', type: 'num', val: r => r.aud }, { id: 'dlv', label: 'Dealers visited', type: 'num', val: r => r.dlv }];
   makeTable(document.getElementById('lt2'), cols, rows, { csv: 'stock-audit-collections', maxH: '50vh' });
+}
+
+/* ══════════════════════════════════════════════════
+   LEADERSHIP › COLLECTIONS OFFICERS — portfolio movement, cure and roll rates (month-end view)
+   Each account is rebuilt month by month from the loan + payment history: DPD at the start of the month,
+   the highest DPD reached in the month, DPD at month end, and whether it was paid off or repossessed.
+   Accounts are credited to the officer CURRENTLY assigned to the dealer (AuditMapping.csv).
+══════════════════════════════════════════════════ */
+function leadTabs() {
+  const t = S.ltab || 'sa';
+  return '<div class="seg" style="margin:10px 0 4px"><button data-act="ltab" data-v="sa" class="' + (t === 'sa' ? 'on' : '') + '">Stock auditors</button><button data-act="ltab" data-v="co" class="' + (t === 'co' ? 'on' : '') + '">Collections officers</button></div>';
+}
+var BK = ['Current', '1-15', '16-30', '31-60', '61-90', '90+'];
+function bkOf(d) { return d <= 0 ? 0 : d <= 15 ? 1 : d <= 30 ? 2 : d <= 60 ? 3 : d <= 90 ? 4 : 5; }
+function eodDpd(id, X) { return Math.max(0, dpdAt(id, addDays(X, 1)) - 1); }   /* DPD at the end of day X (dpdAt looks at the morning of the date given) */
+function loanMonth(id, y, m) {
+  const l = LN.loans[id]; if (!l || !l.credit || /^cancel/i.test(l.status)) return null;
+  const mS = new Date(y, m, 1), mE = new Date(y, m + 1, 0), end = mE > TODAY ? TODAY : mE;
+  if (l.credit > end) return null;
+  if (l.repo && (!l.repoDate || l.repoDate < mS)) return null;           // repossessed before this month: out of the book
+  const o0 = outAt(id, mS), newly = o0 <= 0.5;
+  if (newly && l.credit < mS) return null;                               // already settled before the month
+  const o1 = outAt(id, addDays(end, 1));
+  const d0 = newly ? 0 : eodDpd(id, addDays(mS, -1)), d1 = o1 > 0.5 ? eodDpd(id, end) : 0;
+  let mx = Math.max(d0, d1);
+  (LN.pb[id] || []).forEach(p => { if (p.date >= mS && p.date <= end) { const v = dpdAt(id, p.date); if (v > mx) mx = v; } });   // worst day = the day a late payment landed
+  const repo = !!(l.repo && l.repoDate >= mS && l.repoDate <= end);
+  return { id, o0, o1, orig: l.orig, d0, d1, mx, b0: bkOf(d0), b1: bkOf(d1), bm: bkOf(mx), newly, repo, settled: !repo && o1 <= 0.5 };
+}
+var COM = { ln: null, m: {} };
+function comSnaps(y, m) {
+  if (COM.ln !== LN) COM = { ln: LN, m: {} };
+  const k = y + '-' + m; if (COM.m[k]) return COM.m[k];
+  const out = [];
+  Object.keys(LN.loans).forEach(id => { const d = DD[id]; if (!d) return; const s = loanMonth(id, y, m); if (!s) return; s.co = d.co || '(Unassigned)'; s.dealer = d.dealer; out.push(s); });
+  return (COM.m[k] = out);
+}
+function outcomeOf(s) { return s.repo ? 'repo' : (s.settled || s.b1 === 0) ? 'cured' : s.b1 > s.b0 ? 'worse' : s.b1 < s.b0 ? 'impr' : 'same'; }
+function newAgg(co) { return { co, acct: 0, prin: 0, par1: 0, par30: 0, dEnd: 0, uni: 0, newU: 0, carU: 0, cured: 0, impr: 0, same: 0, worse: 0, repo: 0, paid: 0, cur0: 0, slip: 0, del0: 0, roll: 0, exU: 0, exC: 0, hm: [0, 0, 0, 0, 0, 0], eb: [0, 0, 0, 0, 0, 0, 0, 0] }; }
+function aggSnaps(snaps) {
+  const by = {};
+  snaps.forEach(s => {
+    const a = by[s.co] || (by[s.co] = newAgg(s.co)), open0 = s.o0 > 0.5;
+    if (!s.repo && !s.settled) { a.acct++; a.prin += s.o1; if (s.d1 >= 1) { a.dEnd++; a.par1 += s.o1; } if (s.d1 > 30) a.par30 += s.o1; }
+    if (open0 && s.d0 === 0) { a.cur0++; if (s.mx >= 1) a.slip++; }
+    if (open0 && s.d0 >= 1) a.del0++;
+    if (s.mx < 1) return;
+    const oc = outcomeOf(s);
+    a.uni++; if (open0 && s.d0 >= 1) a.carU++; else a.newU++;
+    a[oc]++; if (oc === 'worse' && open0 && s.d0 >= 1) a.roll++;
+    if (s.settled) a.paid++;
+    const ex = open0 ? s.o0 : s.orig; a.exU += ex; if (oc === 'cured') a.exC += ex;
+    a.hm[s.bm]++; a.eb[s.repo ? 7 : s.settled ? 6 : s.b1]++;
+  });
+  return by;
+}
+function sumAgg(list) {
+  const t = newAgg('All officers');
+  list.forEach(a => Object.keys(t).forEach(k => { if (typeof t[k] === 'number') t[k] += a[k]; else if (Array.isArray(t[k])) a[k].forEach((v, i) => t[k][i] += v); }));
+  return t;
+}
+function rate(a, b) { return b > 0 ? a / b * 100 : null; }
+function p0(v) { return v == null ? '—' : Math.round(v) + '%'; }
+function p1(v) { return v == null ? '—' : v.toFixed(1) + '%'; }
+function heatBg(v, good, lo, hi) {
+  if (v == null) return '';
+  let t = Math.max(0, Math.min(1, (v - lo) / ((hi - lo) || 1))); if (!good) t = 1 - t;
+  return 'background:rgba(' + (t >= 0.5 ? '46,160,90' : '224,80,70') + ',' + (Math.abs(t - 0.5) * 2 * 0.4).toFixed(2) + ')';
+}
+function dlt(c, p, goodUp, suf) {
+  if (c == null || p == null) return '';
+  const d = c - p; if (Math.abs(d) < 0.05) return '● no change';
+  return '<span style="color:var(' + ((d > 0) === goodUp ? '--green' : '--red') + ')">' + (d > 0 ? '▲ ' : '▼ ') + Math.abs(d).toFixed(1) + (suf || ' pts') + '</span>';
+}
+function stPill(t) {
+  if (t === '—') return '<span class="muted">—</span>';
+  const c = t === 'Current' ? 't-green' : t === 'Paid' ? 't-grey' : t === 'Repo' ? 't-purple' : ({ '1-15': 't-amber', '16-30': 't-orange' })[t] || 't-red';
+  return '<span class="pill ' + c + '">' + t + '</span>';
+}
+function comSel() {
+  const n = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1), k = S.cmon || 'prev'; let y, m;
+  if (k === 'cur') { y = n.getFullYear(); m = n.getMonth(); }
+  else if (/^\d{4}-\d{1,2}$/.test(k)) { const a = k.split('-').map(Number); y = a[0]; m = a[1] - 1; }
+  else { const p = new Date(n.getFullYear(), n.getMonth() - 1, 1); y = p.getFullYear(); m = p.getMonth(); }
+  return { y, m, isCur: y === n.getFullYear() && m === n.getMonth() };
+}
+document.addEventListener('change', e => {
+  const t = e.target; if (!t || !t.dataset) return;
+  if ((t.dataset.csel && t.value) || t.dataset.coff) { if (t.dataset.csel) S.cmon = t.value; else S.cco = t.value; const y = window.scrollY; render(); setTimeout(() => window.scrollTo(0, y), 60); }
+});
+var CO_MET = {
+  cure: { l: 'Cure rate', good: true, lo: 30, hi: 90, f: a => rate(a.cured, a.uni), n: a => a.uni + ' delinq.', fmt: p0 },
+  roll: { l: 'Roll rate', good: false, lo: 0, hi: 60, f: a => rate(a.roll, a.del0), n: a => a.del0 + ' carried', fmt: p0 },
+  slip: { l: 'Slip rate', good: false, lo: 0, hi: 30, f: a => rate(a.slip, a.cur0), n: a => a.cur0 + ' current', fmt: p0 },
+  par30: { l: 'PAR 30+', good: false, lo: 0, hi: 30, f: a => rate(a.par30, a.prin), n: a => a.acct + ' accts', fmt: p1 },
+  uni: { l: 'Delinquent accounts', good: false, lo: 0, hi: 0, f: a => a.uni, n: a => a.acct + ' accts', fmt: v => String(v) }
+};
+function renderLeadCO(host) {
+  const sel = comSel(), mon = (y, m) => MONTH_ABBR[new Date(y, m, 1).getMonth()];
+  const win = []; for (let i = 5; i >= 0; i--) { const d = new Date(sel.y, sel.m - i, 1); win.push({ y: d.getFullYear(), m: d.getMonth(), lbl: MONTH_ABBR[d.getMonth()] + (d.getFullYear() !== sel.y ? ' ' + String(d.getFullYear()).slice(2) : '') }); }
+  const snaps = win.map(w => comSnaps(w.y, w.m)), aggs = snaps.map(aggSnaps), tots = aggs.map(a => sumAgg(Object.values(a)));
+  const cur = aggs[5], tc = tots[5], tp = tots[4], pl = win[4].lbl, mlabel = MONTH_ABBR[sel.m] + ' ' + sel.y + (sel.isCur ? ' (month to date)' : '');
+  const offs = Array.from(new Set([].concat.apply([], aggs.map(a => Object.keys(a))))).filter(n => aggs.some(a => a[n] && (a[n].uni || a[n].acct)));
+  offs.sort((a, b) => ((cur[b] ? cur[b].uni : 0) - (cur[a] ? cur[a].uni : 0)) || a.localeCompare(b));
+  const mEnd = new Date(sel.y, sel.m + 1, 0), per = { from: new Date(sel.y, sel.m, 1), to: mEnd > TODAY ? TODAY : mEnd };
+  if (!S.cco || (S.cco !== '*' && offs.indexOf(S.cco) < 0)) S.cco = '*';
+  if (!S.cmet || !CO_MET[S.cmet]) S.cmet = 'cure';
+  const opts = []; for (let d = new Date(TODAY.getFullYear(), TODAY.getMonth() - 2, 1), i = 0; i < 12; d = new Date(d.getFullYear(), d.getMonth() - 1, 1), i++) { const k = d.getFullYear() + '-' + (d.getMonth() + 1); opts.push('<option value="' + k + '"' + (S.cmon === k ? ' selected' : '') + '>' + MONTH_ABBR[d.getMonth()] + ' ' + d.getFullYear() + '</option>'); }
+  const k0 = S.cmon || 'prev', isPick = /^\d/.test(k0);
+  let h = '<div class="h1">Leadership</div>' + leadTabs() + '<div class="sub">Collections officers · ' + esc(mlabel) + ' · each account is credited to the officer now assigned to its dealer · ' + (tc.uni ? tc.uni + ' accounts went delinquent in the month' : 'no delinquent accounts in the month') + '</div>';
+  h += '<div class="chips" style="margin:12px 0;align-items:center"><button class="chip' + (k0 === 'cur' ? ' on' : '') + '" data-act="cmon" data-v="cur">This month (MTD)</button><button class="chip' + (k0 === 'prev' ? ' on' : '') + '" data-act="cmon" data-v="prev">Last month</button><select class="chip' + (isPick ? ' on' : '') + '" data-csel="1"><option value="">Pick a month…</option>' + opts.join('') + '</select></div>';
+  const cr = rate(tc.cured, tc.uni), crp = rate(tp.cured, tp.uni), rr = rate(tc.roll, tc.del0), rrp = rate(tp.roll, tp.del0), sr = rate(tc.slip, tc.cur0), srp = rate(tp.slip, tp.cur0), pr = rate(tc.par30, tc.prin), prp = rate(tp.par30, tp.prin);
+  h += '<div class="kpis">' +
+    '<div class="kpi blue"><div class="n">' + tc.uni + '</div><div class="l">Delinquent in the month</div><div class="s">' + tc.newU + ' new · ' + tc.carU + ' carried in from last month</div></div>' +
+    '<div class="kpi ' + (cr == null ? '' : cr >= 70 ? 'green' : cr >= 50 ? 'amber' : 'red') + '"><div class="n">' + p0(cr) + '</div><div class="l">Cure rate</div><div class="s">' + tc.cured + ' ended current or paid off · ' + dlt(cr, crp, true) + ' vs ' + pl + '</div></div>' +
+    '<div class="kpi ' + (rr == null ? '' : rr <= 15 ? 'green' : rr <= 30 ? 'amber' : 'red') + '"><div class="n">' + p0(rr) + '</div><div class="l">Roll rate (moved to a worse bucket)</div><div class="s">' + tc.roll + ' of ' + tc.del0 + ' carried in · ' + dlt(rr, rrp, false) + ' vs ' + pl + '</div></div>' +
+    '<div class="kpi ' + (sr == null ? '' : sr <= 10 ? 'green' : sr <= 20 ? 'amber' : 'red') + '"><div class="n">' + p0(sr) + '</div><div class="l">Slip rate (current → late)</div><div class="s">' + tc.slip + ' of ' + tc.cur0 + ' current accounts · ' + dlt(sr, srp, false) + ' vs ' + pl + '</div></div>' +
+    '<div class="kpi ' + (pr == null ? '' : pr <= 8 ? 'green' : pr <= 15 ? 'amber' : 'red') + '"><div class="n">' + p1(pr) + '</div><div class="l">PAR 30+ at month end</div><div class="s">' + peso(tc.par30) + ' of ' + peso(tc.prin) + ' · ' + dlt(pr, prp, false) + ' vs ' + pl + '</div></div>' +
+    '<div class="kpi red"><div class="n">' + tc.repo + '</div><div class="l">Repossessed</div><div class="s">' + p0(rate(tc.repo, tc.uni)) + ' of delinquent accounts</div></div></div>';
+
+  /* A. how delinquent accounts ended each month (all officers) */
+  const OC = [['cured', 'Cured or paid off', '--green'], ['impr', 'Improved', '--blue'], ['same', 'No change', '--amber'], ['worse', 'Rolled worse / newly late', '--orange'], ['repo', 'Repossessed', '--red']];
+  h += '<div class="card sec"><div class="b" style="margin-bottom:2px">How accounts that went delinquent ended each month</div><div class="small muted" style="margin-bottom:10px">All officers · the share of the month’s delinquent accounts that ended up cured, better, the same, worse or repossessed</div>';
+  h += '<div class="lg" style="margin-bottom:10px">' + OC.map(o => '<span><i style="background:var(' + o[2] + ')"></i>' + o[1] + '</span>').join('') + '</div>';
+  win.forEach((w, i) => { const t = tots[i];
+    h += '<div style="display:flex;align-items:center;gap:10px;margin:6px 0"><span class="small" style="width:46px;font-weight:600">' + esc(w.lbl) + '</span><div class="stk" style="flex:1">' +
+      (t.uni ? OC.map(o => t[o[0]] ? '<i title="' + o[1] + ': ' + t[o[0]] + ' (' + Math.round(t[o[0]] / t.uni * 100) + '%)" style="width:' + (t[o[0]] / t.uni * 100) + '%;background:var(' + o[2] + ')"></i>' : '').join('') : '') +
+      '</div><span class="small" style="width:150px;text-align:right"><b>' + p0(rate(t.cured, t.uni)) + '</b> cured · ' + t.uni + ' delinq.</span></div>'; });
+  h += '</div>';
+
+  /* B. scorecard */
+  h += '<div class="sec"><div class="sec-h"><h2>Officer scorecard — ' + esc(mlabel) + '</h2><span class="sub">Cure = went delinquent and ended current / paid off · Roll = carried in late and ended in a worse bucket · Slip = started current and went late</span></div><div id="co1"></div></div>';
+  /* C. trend heatmap */
+  h += '<div class="sec"><div class="sec-h"><h2>How each officer’s accounts progress month on month</h2><span class="sub">Last 6 months to ' + esc(mlabel) + '</span></div><div class="chips" style="margin-bottom:10px">' + Object.keys(CO_MET).map(k => '<button class="chip' + (S.cmet === k ? ' on' : '') + '" data-act="cmet" data-v="' + k + '">' + CO_MET[k].l + '</button>').join('') + '</div><div class="card scr" id="co2"></div></div>';
+  /* D. roll matrix */
+  h += '<div class="sec"><div class="sec-h"><h2>Roll-rate matrix — ' + esc(mlabel) + '</h2><select class="inp" data-coff="1" style="width:auto;min-height:34px;padding:4px 8px;font-size:12.5px"><option value="*">All officers</option>' + offs.map(n => '<option' + (n === S.cco ? ' selected' : '') + '>' + esc(n) + '</option>').join('') + '</select></div><div class="card scr" id="co3"></div></div>';
+  /* E. account movement */
+  h += '<div class="sec"><div class="sec-h"><h2>Account movement — ' + esc(mlabel) + '</h2><span class="sub">Accounts that went delinquent in the month · month-end bucket for the last 6 months · ' + (S.cco === '*' ? 'all officers' : esc(S.cco)) + '</span></div><div id="co4"></div></div>';
+  /* F. bucket view */
+  h += '<div class="sec"><div class="sec-h"><h2>Month-end bucket view by officer</h2><span class="sub">Highest bucket reached in the month vs the bucket at month end (accounts that went delinquent)</span></div><div id="co5"></div></div>';
+  /* G. what we already had */
+  h += '<div class="sec"><div class="sec-h"><h2>Collections — recovered at DPD 5+</h2><span class="sub" id="lt2sub"></span></div><div id="lt2"></div></div>';
+  h += '<details class="card sec"><summary class="b" style="cursor:pointer">How to read this page</summary><div class="small" style="margin-top:8px;line-height:1.6">' +
+    '<b>Delinquent in the month</b> — accounts that were 1+ days past due on any day of the month (the same idea as “highest bucket in the month”).<br>' +
+    '<b>Cure rate</b> — of those, the share that ended the month current or fully paid off. Peso cure % does the same using principal.<br>' +
+    '<b>Roll rate</b> — of accounts already late on the last day of the previous month, the share that ended in a worse bucket. Lower is better.<br>' +
+    '<b>Slip rate</b> — of accounts that started the month current, the share that went late at some point.<br>' +
+    '<b>PAR 1+ / PAR 30+</b> — principal outstanding on accounts that are 1+ / 31+ days past due at month end, as a share of all outstanding principal.<br>' +
+    '<b>Buckets</b> — 1-15, 16-30, 31-60, 61-90 and 90+ days past due, measured at the end of the month.<br>' +
+    '<b>Credit</b> — every account is credited to the officer currently assigned to its dealer in AuditMapping, including months before they took over. The current month is month to date.</div></details>';
+  host.innerHTML = h;
+
+  const rowsB = offs.filter(n => cur[n] && (cur[n].uni || cur[n].acct)).map(n => ({ a: cur[n], p: aggs[4][n] || newAgg(n) }));
+  const cureV = a => rate(a.cured, a.uni);
+  const colsB = [
+    { id: 'n', label: 'Collections officer', fz: true, val: r => r.a.co, html: r => '<b>' + esc(r.a.co) + '</b>' },
+    { id: 'acct', label: 'Open accounts', type: 'num', val: r => r.a.acct }, { id: 'prin', label: 'Principal', type: 'num', val: r => Math.round(r.a.prin), txt: r => peso(r.a.prin) },
+    { id: 'uni', label: 'Delinquent in month', type: 'num', val: r => r.a.uni }, { id: 'nw', label: 'New', type: 'num', val: r => r.a.newU }, { id: 'cr', label: 'Carried in', type: 'num', val: r => r.a.carU },
+    { id: 'cured', label: 'Cured', type: 'num', val: r => r.a.cured },
+    { id: 'cure', label: 'Cure %', type: 'num', val: r => cureV(r.a) == null ? '' : Math.round(cureV(r.a)), txt: r => p0(cureV(r.a)), html: r => cureV(r.a) == null ? '—' : '<b style="padding:2px 8px;border-radius:6px;' + heatBg(cureV(r.a), true, 30, 90) + '">' + p0(cureV(r.a)) + '</b>' },
+    { id: 'dc', label: 'Cure % vs last month', type: 'num', val: r => cureV(r.a) == null || cureV(r.p) == null ? '' : Math.round((cureV(r.a) - cureV(r.p)) * 10) / 10, txt: r => cureV(r.a) == null || cureV(r.p) == null ? '—' : (cureV(r.a) - cureV(r.p) >= 0 ? '+' : '') + (cureV(r.a) - cureV(r.p)).toFixed(1) + ' pts' },
+    { id: 'pc', label: 'Peso cure %', type: 'num', val: r => r.a.exU ? Math.round(r.a.exC / r.a.exU * 100) : '', txt: r => p0(rate(r.a.exC, r.a.exU)) },
+    { id: 'roll', label: 'Roll rate', type: 'num', val: r => rate(r.a.roll, r.a.del0) == null ? '' : Math.round(rate(r.a.roll, r.a.del0)), txt: r => p0(rate(r.a.roll, r.a.del0)), html: r => rate(r.a.roll, r.a.del0) == null ? '—' : '<b style="padding:2px 8px;border-radius:6px;' + heatBg(rate(r.a.roll, r.a.del0), false, 0, 60) + '">' + p0(rate(r.a.roll, r.a.del0)) + '</b>' },
+    { id: 'slip', label: 'Slip rate', type: 'num', val: r => rate(r.a.slip, r.a.cur0) == null ? '' : Math.round(rate(r.a.slip, r.a.cur0)), txt: r => p0(rate(r.a.slip, r.a.cur0)) },
+    { id: 'repo', label: 'Repo', type: 'num', val: r => r.a.repo },
+    { id: 'dend', label: 'Still late at month end', type: 'num', val: r => r.a.dEnd },
+    { id: 'par1', label: 'PAR 1+', type: 'num', val: r => rate(r.a.par1, r.a.prin) == null ? '' : Math.round(rate(r.a.par1, r.a.prin) * 10) / 10, txt: r => p1(rate(r.a.par1, r.a.prin)) },
+    { id: 'par30', label: 'PAR 30+', type: 'num', val: r => rate(r.a.par30, r.a.prin) == null ? '' : Math.round(rate(r.a.par30, r.a.prin) * 10) / 10, txt: r => p1(rate(r.a.par30, r.a.prin)), html: r => rate(r.a.par30, r.a.prin) == null ? '—' : '<b style="padding:2px 8px;border-radius:6px;' + heatBg(rate(r.a.par30, r.a.prin), false, 0, 30) + '">' + p1(rate(r.a.par30, r.a.prin)) + '</b>' }];
+  makeTable(document.getElementById('co1'), colsB, rowsB, { csv: 'collections-officer-scorecard', maxH: '55vh', sort: { id: 'uni', dir: -1 } });
+
+  /* heatmap */
+  const M = CO_MET[S.cmet]; let hm = '<table class="hm"><thead><tr><th>Officer</th>' + win.map(w => '<th>' + esc(w.lbl) + '</th>').join('') + '</tr></thead><tbody>';
+  const all = [{ n: 'All officers', g: tots }].concat(offs.map(n => ({ n, g: aggs.map(a => a[n] || newAgg(n)) })));
+  const mxU = Math.max(1, ...all.slice(1).map(r => Math.max(...r.g.map(a => a.uni))));
+  all.forEach((r, ri) => { hm += '<tr' + (ri === 0 ? ' style="font-weight:700"' : '') + '><td>' + esc(r.n) + '</td>' + r.g.map(a => { const v = M.f(a), has = (S.cmet === 'uni') ? a.acct > 0 : (M.n(a).split(' ')[0] | 0) > 0;
+    const bg = v == null || !has ? '' : S.cmet === 'uni' ? 'background:rgba(60,120,220,' + (0.08 + 0.4 * v / (ri === 0 ? Math.max(1, ...tots.map(x => x.uni)) : mxU)).toFixed(2) + ')' : heatBg(v, M.good, M.lo, M.hi);
+    return '<td style="' + bg + '">' + (v == null || !has ? '<span class="muted">—</span>' : M.fmt(v) + '<div class="small muted" style="font-size:10px;font-weight:400">' + M.n(a) + '</div>') + '</td>'; }).join('') + '</tr>'; });
+  document.getElementById('co2').innerHTML = hm + '</tbody></table>';
+
+  /* roll matrix */
+  const RM = []; for (let i = 0; i < 7; i++) RM.push([0, 0, 0, 0, 0, 0, 0, 0]);
+  snaps[5].forEach(s => { if (S.cco !== '*' && s.co !== S.cco) return; RM[s.o0 > 0.5 ? s.b0 : 6][s.repo ? 7 : s.settled ? 6 : s.b1]++; });
+  const CH = BK.concat(['Paid off', 'Repo']), RH = BK.map(b => b + ' at start').concat(['New this month']);
+  let mt = '<table class="hm"><thead><tr><th>Started the month</th><th>Accounts</th>' + CH.map(c => '<th>' + c + '</th>').join('') + '</tr></thead><tbody>';
+  RM.forEach((row, ri) => { const tot = row.reduce((a, b) => a + b, 0); if (!tot) return;
+    mt += '<tr><td>' + RH[ri] + '</td><td><b>' + tot + '</b></td>' + row.map((v, ci) => { const pc = v / tot, endRank = ci === 6 ? 0 : ci === 7 ? 9 : ci, startRank = ri === 6 ? 0 : ri;
+      const bg = !v ? '' : ci === 7 ? 'background:rgba(124,92,230,' + (0.1 + pc * 0.5).toFixed(2) + ')' : endRank === startRank ? 'background:rgba(140,140,140,' + (0.08 + pc * 0.3).toFixed(2) + ')' : endRank < startRank ? 'background:rgba(46,160,90,' + (0.1 + pc * 0.5).toFixed(2) + ')' : 'background:rgba(224,80,70,' + (0.1 + pc * 0.5).toFixed(2) + ')';
+      return '<td style="' + bg + '">' + (v ? v + '<div class="small muted" style="font-size:10px">' + Math.round(pc * 100) + '%</div>' : '<span class="muted">·</span>') + '</td>'; }).join('') + '</tr>'; });
+  const del0 = RM.slice(1, 6).reduce((a, r) => a + r.reduce((x, y) => x + y, 0), 0), cured0 = RM.slice(1, 6).reduce((a, r) => a + r[0] + r[6], 0);
+  mt += '</tbody></table><div class="small muted" style="margin-top:8px">Green = improved, grey = same bucket, red = rolled worse, purple = repossessed. ' + (del0 ? 'Of ' + del0 + ' accounts already late at the start, ' + Math.round(cured0 / del0 * 100) + '% ended current or paid off.' : 'No accounts were late at the start of this month.') + '</div>';
+  document.getElementById('co3').innerHTML = mt;
+
+  /* account movement */
+  const idx = snaps.map(sn => { const o = {}; sn.forEach(s => o[s.id] = s); return o; });
+  const stOf = s => !s ? '—' : s.repo ? 'Repo' : s.settled ? 'Paid' : BK[s.b1];
+  const mvLbl = s => { const oc = outcomeOf(s); return oc === 'cured' ? 'Cured' : oc === 'impr' ? 'Improved' : oc === 'same' ? 'No change' : oc === 'repo' ? 'Repossessed' : (s.o0 > 0.5 && s.d0 >= 1 ? 'Rolled worse' : 'Newly late'); };
+  const rowsA = snaps[5].filter(s => s.mx >= 1 && (S.cco === '*' || s.co === S.cco)).map(s => ({ s, mv: mvLbl(s), tr: idx.map(o => stOf(o[s.id])) }));
+  const colsA = [
+    { id: 'id', label: 'Drawdown', fz: true, val: r => r.s.id, html: r => '<b>' + esc(r.s.id) + '</b>' }, { id: 'dl', label: 'Dealer', val: r => r.s.dealer }, { id: 'co', label: 'Officer', val: r => r.s.co },
+    { id: 'pr', label: 'Principal', type: 'num', val: r => Math.round(r.s.o1 > 0.5 ? r.s.o1 : r.s.o0), txt: r => peso(r.s.o1 > 0.5 ? r.s.o1 : r.s.o0) },
+    { id: 'mx', label: 'Worst DPD in month', type: 'num', val: r => r.s.mx }, { id: 'ed', label: 'DPD at month end', type: 'num', val: r => r.s.d1 }]
+    .concat(win.map((w, i) => ({ id: 't' + i, label: w.lbl, val: r => r.tr[i], html: r => stPill(r.tr[i]) })))
+    .concat([{ id: 'mv', label: 'Movement', val: r => r.mv, html: r => '<span class="pill ' + ({ 'Cured': 't-green', 'Improved': 't-blue', 'No change': 't-amber', 'Rolled worse': 't-red', 'Newly late': 't-orange', 'Repossessed': 't-purple' })[r.mv] + '">' + r.mv + '</span>' }]);
+  makeTable(document.getElementById('co4'), colsA, rowsA, { csv: 'collections-account-movement', maxH: '60vh', sort: { id: 'mx', dir: -1 } });
+
+  /* bucket view (Month × officer) */
+  const rowsE = []; win.forEach((w, i) => Object.keys(aggs[i]).forEach(n => { const a = aggs[i][n]; if (a.uni) rowsE.push({ mk: w.y * 100 + w.m, mo: MONTH_ABBR[w.m] + ' ' + w.y, a }); }));
+  const hmc = i => ({ id: 'h' + i, label: 'Highest ' + BK[i], type: 'num', val: r => r.a.hm[i] }), ebc = i => ({ id: 'e' + i, label: 'End ' + BK[i], type: 'num', val: r => r.a.eb[i] });
+  const colsE = [{ id: 'mo', label: 'Month', fz: true, val: r => r.mk, txt: r => r.mo }, { id: 'co', label: 'Officer', val: r => r.a.co, html: r => '<b>' + esc(r.a.co) + '</b>' }, { id: 'u', label: 'Delinquent in month', type: 'num', val: r => r.a.uni }]
+    .concat([1, 2, 3, 4, 5].map(hmc)).concat([ebc(0), { id: 'e6', label: 'End Paid off', type: 'num', val: r => r.a.eb[6] }], [1, 2, 3, 4, 5].map(ebc),
+      [{ id: 'e7', label: 'Repo', type: 'num', val: r => r.a.eb[7] }, { id: 'res', label: 'Resolved (current + paid off)', type: 'num', val: r => r.a.eb[0] + r.a.eb[6] }, { id: 'sl', label: 'Still delinquent', type: 'num', val: r => r.a.eb[1] + r.a.eb[2] + r.a.eb[3] + r.a.eb[4] + r.a.eb[5] },
+        { id: 'cu', label: 'Cure %', type: 'num', val: r => Math.round(rate(r.a.cured, r.a.uni)), txt: r => p0(rate(r.a.cured, r.a.uni)) }]);
+  makeTable(document.getElementById('co5'), colsE, rowsE, { csv: 'collections-bucket-view', maxH: '55vh', sort: { id: 'mo', dir: -1 } });
+  paintCollections(per);
 }
 
 /* ══════════════════════════════════════════════════
@@ -1430,6 +1646,9 @@ document.addEventListener('click', function (e) {
   else if (a === 'role') { S.lens.role = v; render(); }
   else if (a === 'dpd1') { S.dpd1 = !S.dpd1; render(); }
   else if (a === 'lper') { S.lper = v; render(); }
+  else if (a === 'ltab') { S.ltab = v; render(); }
+  else if (a === 'cmon') { S.cmon = v; render(); }
+  else if (a === 'cmet') { S.cmet = v; render(); }
   else if (a === 'res') { readForm(); A.status = v; const ok = v === 'Passed' ? VS_PASS : VS_FAIL; if (!ok.includes(A.vs)) A.vs = ''; paintAudit(); }
   else if (a === 'rmph') { A.photos[k].splice(+t.dataset.i, 1); readForm(); paintAudit(); }
   else if (a === 'chg') { readForm(); A.ddId = ''; paintAudit(); }
