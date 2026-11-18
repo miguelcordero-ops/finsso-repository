@@ -215,8 +215,7 @@ td.metric-label{color:var(--text);font-weight:500}
 .loading-overlay{
   position:fixed;inset:0;
   background:var(--overlay-tint);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:none;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   z-index:999;gap:14px;
 }
@@ -289,8 +288,7 @@ td.metric-label{color:var(--text);font-weight:500}
 .lock-overlay{
   position:fixed;inset:0;
   background:var(--lock-tint);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:none;
   display:flex;align-items:center;justify-content:center;
   z-index:9999;
   transition:opacity 0.35s ease;
@@ -396,7 +394,8 @@ table.wr.ob .clamp{max-height:3.9em;overflow:hidden;word-break:break-word}
 [data-theme="dark"] .obm input,[data-theme="dark"] .obm select,[data-theme="dark"] .obm textarea{background:#12151f;color:#eee}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .obm input,:root:not([data-theme="light"]) .obm select,:root:not([data-theme="light"]) .obm textarea{background:#12151f;color:#eee}}
 .obk,.ob-seg,.ob-bar select,.ob-bar input[type=search]{background:var(--wr-cell,#fff)}
-table.wr.ob tbody tr{content-visibility:auto;contain-intrinsic-size:auto 48px}
+#ob-wrap{will-change:scroll-position;transform:translateZ(0)}
+table.wr.ob th,table.wr.ob td{transition:none}
 @media(max-width:640px){.obm-g{grid-template-columns:1fr}}
 </style>
 <style>
@@ -679,7 +678,7 @@ async function loadData() {
       fetchCSV('mapping.csv', true),
       fetchCSV('visits.csv', true), // "[Raw] Visits" — latest IF visit
     ]);
-    _VISITS = siGrid; _obVisit = null; _obOnb = null;
+    _VISITS = siGrid; _OBM = obGrid; _obVisit = null; _obOnb = null; _obMm = null;
 
     if (mapGrid) {
       const mCol = buildColumnMap(mapGrid[0]);
@@ -1584,6 +1583,7 @@ function _initGoogleAuth() {
 // Read: BigQuery table onboarding_list (via the data API) -> GitHub CSV -> live read of the sheet tab (Apps Script).
 // Write: the "+" button (full access only) and the row editor (full access = all fields; SM = own team's working fields).
 // ═══════════════════════════════════════════════════════════════════════════
+var _OBM = null, _obMm = null;
 var TAB = 'wr', OB = [], OB_LOADED = false, OB_ERR = '', OB_SOS = null, OB_VIEW = [], _VISITS = null, _obVisit = null, _sortStash = { wr: null, ob: null };
 var OBQ = { stage: 'active', quick: '', so: '', type: '', q: '' };
 var OB_STATUSES = ['Applications Submitted for BAP/CMAP Checking', 'Pending BAP/CMAP Requirements', 'Pending BAP/CMAP Decision', 'Rejected due to BAP/CMAP', 'Eligible Applications - Pending Credit Line Documents',
@@ -1592,8 +1592,8 @@ var OB_STATUSES = ['Applications Submitted for BAP/CMAP Checking', 'Pending BAP/
 var OB_COLS = [
   { k: 'name', h: 'Dealership Name', label: 'Dealership', w: 230, grp: '' },
   { k: 'code', h: 'Code', label: 'Code', w: 100, grp: 'Application' },
-  { k: 'so', h: 'Sales Officer', label: 'Sales Officer', w: 130, grp: 'Application' },
-  { k: 'sm', h: 'Sales Manager', label: 'Sales Manager', w: 130, grp: 'Application' },
+  { k: 'so', h: 'Sales Officer', alt: 'Proposed SO', label: 'Sales Officer', w: 130, grp: 'Application' },
+  { k: 'sm', h: 'Sales Manager', alt: 'Proposed SM', label: 'Sales Manager', w: 130, grp: 'Application' },
   { k: 'applied', h: 'Date of Initial Application', label: 'Applied', w: 110, grp: 'Application', date: 1 },
   { k: 'type', h: 'Onboarding (Regular / Express)', label: 'Onboarding', w: 100, grp: 'Application' },
   { k: 'status', h: 'Application Status', label: 'Application Status (auto)', w: 250, grp: 'Application' },
@@ -1604,6 +1604,11 @@ var OB_COLS = [
   { k: 'ops', h: 'Operation Review Remarks', label: 'Operations', w: 220, grp: 'Review remarks', long: 1 },
   { k: 'credit', h: 'Credit Review Remarks', label: 'Credit', w: 220, grp: 'Review remarks', long: 1 },
   { k: 'salesr', h: 'Sales Review Remarks', label: 'Sales', w: 220, grp: 'Review remarks', long: 1 },
+  { k: 'cdocs', h: '', xh: 'Complete Docs', label: 'Complete Docs', w: 100, grp: 'From OB Masterlist', ext: 1 },
+  { k: 'cdate', h: '', xh: 'Date of Completion of Onboarding Documents by Sales', label: 'Docs Completed (Sales)', w: 125, grp: 'From OB Masterlist', ext: 1, date: 1 },
+  { k: 'bap', h: '', xh: 'BAP Status', label: 'BAP Status', w: 120, grp: 'From OB Masterlist', ext: 1 },
+  { k: 'cmap', h: '', xh: 'CMAP Status', label: 'CMAP Status', w: 120, grp: 'From OB Masterlist', ext: 1 },
+  { k: 'aremarks', h: '', xh: 'Application Remarks', label: 'Application Remarks', w: 240, grp: 'From OB Masterlist', ext: 1, long: 1 },
   { k: 'plan', h: 'Plan Visit Date', label: 'Plan Visit', w: 115, grp: 'IF review', date: 1 },
   { k: 'last', h: 'Last IF Visit', label: 'Last IF Visit', w: 115, grp: 'IF review', date: 1 },
   { k: 'ifr', h: 'IF Review Remarks', label: 'IF Review Remarks', w: 240, grp: 'IF review', long: 1 }];
@@ -1619,13 +1624,28 @@ function obVisitMap() {
     const r = g[i]; if (get(r, vc('Visit Type')).trim().toLowerCase() !== 'if visit') continue;
     const dt = parseSheetDate(get(r, vc('Visited Date'))); if (!dt) continue;
     const by = normName(get(r, vc('Executive Name')));
-    [get(r, vc('Dealer Name')), get(r, vc('DealerShip Name')), get(r, vc('ID'))].forEach(n => { const k = nk(n); if (k && (!m[k] || dt > m[k].date)) m[k] = { date: dt, by }; });
+    [get(r, vc('Clean GCD')), get(r, vc('GCD')), get(r, vc('Dealer GCD')), get(r, vc('Dealer Name')), get(r, vc('DealerShip Name')), get(r, vc('ID'))].forEach(n => { const k = nk(n); if (k && (!m[k] || dt > m[k].date)) m[k] = { date: dt, by }; });
   }
   return m;
 }
 var _obOnb = null;
 function obOnboardedSet() { if (_obOnb) return _obOnb; const m = {}; (dealerRows || []).forEach(d => { if (d.gcd) m[String(d.gcd).trim().toUpperCase()] = 1; }); _obOnb = m; return m; }
+function obMasterMap() {
+  if (_obMm) return _obMm;
+  const m = { code: {}, name: {} }; _obMm = m; const g = _OBM; if (!g || g.length < 2) return m;
+  const c = buildColumnMap(g[0]), ci = c('GCD Code'), ni = c('Dealership Name'), hs = {};
+  OB_COLS.forEach(col => { if (col.ext) hs[col.k] = c(col.xh); }); hs.docs = c('Document Pending');
+  for (let i = 1; i < g.length; i++) {
+    const r = g[i], o = {};
+    Object.keys(hs).forEach(k => { const col = OB_COLS.find(x => x.k === k); const raw = String(get(r, hs[k]) || '').replace(/\u00a0/g, ' ').trim(); o[k] = col && col.date ? parseSheetDate(raw) : raw; o['_' + k] = raw; });
+    const gk = nk(get(r, ci)), nm = nk(get(r, ni));
+    if (gk && !m.code[gk]) m.code[gk] = o;
+    if (nm && !m.name[nm]) m.name[nm] = o;
+  }
+  return m;
+}
 function obParse(grid) {
+  _obMm = null;
   _obOnb = null;
   if (!grid || grid.length < 2) return false;
   const c = buildColumnMap(grid[0]);
@@ -1633,10 +1653,12 @@ function obParse(grid) {
   const vm = obVisitMap(), out = [];
   for (let i = 1; i < grid.length; i++) {
     const r = grid[i], o = { _raw: {} };
-    OB_COLS.forEach(col => { const raw = String(get(r, c(col.h)) || '').replace(/ /g, ' '); o._raw[col.k] = raw.trim(); o[col.k] = col.date ? parseSheetDate(raw) : (col.long ? raw.trim() : normName(raw)); });
+    OB_COLS.forEach(col => { if (col.ext) { o[col.k] = col.date ? null : ''; o._raw[col.k] = ''; return; } const ci = c(col.h) >= 0 ? c(col.h) : (col.alt ? c(col.alt) : -1); const raw = String(get(r, ci) || '').replace(/ /g, ' '); o._raw[col.k] = raw.trim(); o[col.k] = col.date ? parseSheetDate(raw) : (col.long ? raw.trim() : normName(raw)); });
     if (!o.name) continue;
-    const v = vm[nk(o.name)]; if (v && (!o.last || v.date > o.last)) { o.last = v.date; o.lastBy = v.by; }
+    const v = (o._raw.code && vm[nk(o._raw.code)]) || vm[nk(o.name)]; if (v && (!o.last || v.date > o.last)) { o.last = v.date; o.lastBy = v.by; }
     o.code = String(o._raw.code || '').toUpperCase(); o.statusSheet = o.status;
+    const mm = obMasterMap(), mr = (o.code && mm.code[nk(o.code)]) || mm.name[nk(o.name)];
+    if (mr) { OB_COLS.forEach(col => { if (col.ext) { o[col.k] = mr[col.k]; o._raw[col.k] = mr['_' + col.k]; } }); o.docs = mr.docs; o._raw.docs = mr._docs; o.fromOBM = 1; }
     if (o.code && obOnboardedSet()[o.code]) { o.status = 'Eligible Applications - Dealer Onboarded'; o.auto = 1; }
     o.team = (o.sm ? o.sm.split(' ')[0] : '') || teamOf(o.so) || '';
     out.push(o);
@@ -1734,7 +1756,7 @@ function obPaint() {
   if (!OB_VIEW.length) tbd.innerHTML = '<tr><td colspan="' + OB_COLS.length + '" class="ob-none">' + (OB.length ? 'No dealers match these filters.' : esc(OB_ERR || 'No dealers on the list yet.')) + '</td></tr>';
   else obMore();
 }
-var OB_SHOWN = 0, OB_CHUNK = 40;
+var OB_SHOWN = 0, OB_CHUNK = 50, _obRaf = 0;
 function obRow(r, i) {
   return '<tr data-i="' + i + '"><td class="fz fzend l name"><div class="clamp">' + esc(r.name) + '</div></td>' +
       '<td class="l obcode">' + (r.code ? esc(r.code) : '<span class="obm0">—</span>') + '</td><td class="l">' + esc(r.so || '—') + '</td><td class="l">' + esc(r.sm || '—') + '</td><td class="l">' + obDate(r, 'applied') + '</td>' +
@@ -1742,6 +1764,7 @@ function obRow(r, i) {
       '<td class="l">' + (r.status ? '<span class="obp ' + obPillCls(r.status) + '">' + esc(r.status) + '</span>' : '<span class="obm0">—</span>') + '</td>' +
       '<td class="l">' + obText(r.docs) + '</td><td class="l">' + obDate(r, 'target') + '</td><td class="l">' + obDate(r, 'fci') + '</td><td class="l">' + obDate(r, 'kyc') + '</td>' +
       '<td class="l">' + obText(r.ops) + '</td><td class="l">' + obText(r.credit) + '</td><td class="l">' + obText(r.salesr) + '</td>' +
+      '<td class="l">' + (r.cdocs ? esc(r.cdocs) : '<span class="obm0">—</span>') + '</td><td class="l">' + obDate(r, 'cdate') + '</td><td class="l">' + (r.bap ? esc(r.bap) : '<span class="obm0">—</span>') + '</td><td class="l">' + (r.cmap ? esc(r.cmap) : '<span class="obm0">—</span>') + '</td><td class="l">' + obText(r.aremarks) + '</td>' +
       '<td class="l">' + obDate(r, 'plan') + '</td><td class="l" title="' + esc(r.lastBy ? 'by ' + r.lastBy : '') + '">' + obDate(r, 'last') + '</td><td class="l">' + obText(r.ifr) + '</td></tr>';;
 }
 function obMore() {
@@ -1801,6 +1824,10 @@ function obOpen(i) {
     '<div class="obm-sec">Documents</div><div class="obm-g">' + F('docs', 'Document pending (read-only)', '<textarea id="f-docs" rows="2" disabled>' + esc(V('docs', '')) + '</textarea>', 'wide') + D('target', 'Target completion of documents', 'target') + '</div>' +
     '<div class="obm-sec">Schedules</div><div class="obm-g">' + D('fci', 'FCI schedule (sales team)', 'fci') + D('kyc', 'KYC schedule (sales team)', 'kyc') + '</div>' +
     '<div class="obm-sec">Review remarks</div><div class="obm-g">' + A('ops', 'Operation review remarks', 'ops') + A('credit', 'Credit review remarks', 'credit') + A('salesr', 'Sales review remarks', 'salesr') + '</div>' +
+    (add ? '' : '<div class="obm-sec">From OB Masterlist (read-only' + (r.fromOBM ? '' : ' — no match on this Code / dealership name yet') + ')</div><div class="obm-g">' +
+      F('x1', 'Complete docs', '<input type="text" disabled value="' + esc(r.cdocs || '—') + '">') + F('x2', 'Docs completed by Sales', '<input type="text" disabled value="' + esc(r.cdate ? fmtDate(r.cdate) : '—') + '">') +
+      F('x3', 'BAP status', '<input type="text" disabled value="' + esc(r.bap || '—') + '">') + F('x4', 'CMAP status', '<input type="text" disabled value="' + esc(r.cmap || '—') + '">') +
+      F('x5', 'Application remarks', '<textarea disabled rows="2">' + esc(r.aremarks || '') + '</textarea>', 'wide') + '</div>') +
     '<div class="obm-sec">IF review</div><div class="obm-g">' + D('plan', 'Plan visit date', 'plan') +
     F('last', 'Last IF visit', '<input id="f-last" type="text" value="' + esc(!add && r.last ? fmtDate(r.last) + (r.lastBy ? ' · ' + r.lastBy : '') : '—') + '" disabled>') + A('ifr', 'IF review remarks', 'ifr') + '</div>' +
     (add ? '</details>' : '') + '</div>' +
@@ -1818,7 +1845,7 @@ async function obSave(i) {
   const val = id => { const e = document.getElementById('f-' + id); return e ? String(e.value).trim() : ''; };
   const idOk = add || (ACCESS && ACCESS.unrestricted);
   const cur = {};
-  OB_COLS.forEach(c => { if (c.k === 'sm' || c.k === 'last' || c.k === 'status' || c.k === 'docs') return; cur[c.h] = c.k === 'name' ? val('name') : val(c.k); });
+  OB_COLS.forEach(c => { if (c.k === 'sm' || c.k === 'last' || c.k === 'status' || c.k === 'docs' || c.ext) return; cur[c.h] = c.k === 'name' ? val('name') : val(c.k); });
   const fail = t => { msg.className = 'wr-msg err'; msg.textContent = t; };
   if (cur['Dealership Name'].length < 2) return fail('Enter the dealership name.');
   if (idOk) { if (!cur['Sales Officer']) return fail('Pick a Sales Officer.'); if (!cur['Date of Initial Application']) return fail('Enter the date of initial application.'); if (!cur['Onboarding (Regular / Express)']) return fail('Choose Regular or Express.'); }
@@ -1830,7 +1857,7 @@ async function obSave(i) {
   if (add) body = { action: 'ob_add', idToken: ID_TOKEN, row: cur };
   else {
     const fields = {};
-    OB_COLS.forEach(c => { if (c.k === 'sm' || c.k === 'last' || c.k === 'status' || c.k === 'docs') return; if (!idOk && ['name', 'code', 'so', 'applied', 'type'].indexOf(c.k) >= 0) return;
+    OB_COLS.forEach(c => { if (c.k === 'sm' || c.k === 'last' || c.k === 'status' || c.k === 'docs' || c.ext) return; if (!idOk && ['name', 'code', 'so', 'applied', 'type'].indexOf(c.k) >= 0) return;
       const now = cur[c.h], was = c.date ? isoD(r[c.k]) : String(r[c.k] == null ? '' : r[c.k]).trim(); if (now !== was) fields[c.h] = now; });
     if (!Object.keys(fields).length) return fail('Nothing was changed.');
     body = { action: 'ob_update', idToken: ID_TOKEN, key: { name: r.name, applied: isoD(r.applied), appliedRaw: r._raw.applied }, fields };
@@ -1845,7 +1872,7 @@ async function obSave(i) {
   } catch (e) { fail('Not saved: ' + (e.message || e)); btn.disabled = false; }
 }
 (function obWire() {
-  document.getElementById('ob-wrap').addEventListener('scroll', function () { if (OB_SHOWN < OB_VIEW.length && this.scrollTop + this.clientHeight > this.scrollHeight - 400) obMore(); }, { passive: true });
+  document.getElementById('ob-wrap').addEventListener('scroll', function () { if (_obRaf || OB_SHOWN >= OB_VIEW.length) return; const w = this; _obRaf = requestAnimationFrame(function () { _obRaf = 0; if (OB_SHOWN < OB_VIEW.length && w.scrollTop + w.clientHeight > w.scrollHeight - 1200) obMore(); }); }, { passive: true });
   document.querySelectorAll('.wr-tab[data-tab]').forEach(el => { el.onclick = () => setTab(el.dataset.tab); });
   document.getElementById('ob-head').addEventListener('click', e => { const b = e.target.closest('.fbtn'); if (!b) return; e.stopPropagation(); openFilterPanel(b.dataset.col, b); });
   document.getElementById('ob-stage').addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (!b) return; OBQ.stage = b.dataset.v; obPaint(); });
