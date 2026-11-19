@@ -337,6 +337,23 @@ td.metric-label{color:var(--text);font-weight:500}
 .wr-tab[data-tab]{cursor:pointer}
 .wr-tab[data-tab]:not(.active):hover{border-color:var(--primary);color:var(--text)}
 body.ob-tab .wr-savebar{display:none!important}
+.up-note{font-size:12px;color:var(--text2);margin:2px 0 8px}
+.up-calh{display:flex;align-items:center;gap:10px;margin:10px 0 6px}.up-mon{font-weight:700;font-size:15px;min-width:150px;text-align:center}
+.up-calh .obb{font:inherit;font-size:16px;line-height:1;padding:5px 12px;border-radius:8px;border:1px solid var(--border2);background:var(--surface-d);cursor:pointer}.up-calh .obb:disabled{opacity:.35;cursor:default}
+.up-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.up-dow{font-size:11px;font-weight:700;color:var(--text3);text-align:center;padding:2px 0}
+.upd{font:inherit;position:relative;min-height:66px;border:1px solid var(--border2);border-radius:8px;background:var(--surface-hi);color:var(--text);padding:4px 6px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.upd.blank{border:0;background:none;cursor:default}.upd.dim{opacity:.4;cursor:default}.upd:disabled{cursor:default}
+.upd .dn{font-size:12px;font-weight:600;color:var(--text2)}.upd .dc{align-self:flex-start;background:var(--primary);color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:0 8px;line-height:18px}.upd .da{font-size:10px;color:var(--text2)}
+.upd.has:not(.dim):hover{border-color:var(--primary)}.upd.today{border-color:var(--primary);border-width:2px}.upd.sel{background:rgba(232,70,30,.10);border-color:var(--primary)}
+.up-ovb{font:inherit;display:block;width:100%;text-align:left;margin:6px 0 0;padding:10px 14px;border-radius:10px;border:1px solid #FCA5A5;background:#FEF2F2;color:#991B1B;cursor:pointer;font-size:13px}.up-ovb span{color:#B91C1C;margin-left:6px}.up-ovb.on{border-color:#DC2626;background:#FEE2E2}
+.up-panel{margin-top:14px;background:var(--surface-hi);border:1px solid var(--border2);border-radius:12px;padding:12px}.up-ph{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}.up-sub{font-size:12px;color:var(--text2);margin-left:6px}
+.up-tw{overflow-x:auto;background:var(--surface-hi);border-radius:8px}table.wr.up{width:100%;table-layout:auto;border-collapse:collapse}
+table.wr.up th,table.wr.up td{padding:7px 10px;font-size:13px;border-bottom:1px solid var(--tbl-bdr);white-space:nowrap;text-align:left}table.wr.up th{background:var(--surface-d);position:static}
+table.wr.up td.num{text-align:right;font-variant-numeric:tabular-nums}table.wr.up tr.late td:first-child{box-shadow:inset 3px 0 0 #DC2626}table.wr.up tr.clk{cursor:pointer}table.wr.up tr.clk:hover td{background:rgba(232,70,30,.05)}
+.upw{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;background:#EEF2FF;color:#3730A3}.upw.late{background:#FEE2E2;color:#991B1B}.upw.today{background:#FEF3C7;color:#92400E}
+.upt{font-size:12px;font-weight:600;padding:1px 8px;border-radius:6px;background:#F3F4F6}.upt.M{background:#FFEDD5;color:#9A3412}
+.up-none{padding:24px;text-align:center;color:var(--text2);font-size:13px}.up-more{text-align:center;padding:10px}
+@media(max-width:640px){.upd{min-height:52px;padding:3px}.upd .da{display:none}}
 .ob-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-bottom:12px}
 .ob-bar select,.ob-bar input[type=search]{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--border2);border-radius:var(--rctrl);background:var(--surface-d);color:var(--text)}
 .ob-bar input[type=search]{width:230px}
@@ -555,6 +572,7 @@ table.wr td.ck input.ckb.dirty{outline:2px solid var(--primary);outline-offset:1
   <div class="wr-tabs">
     <span class="wr-tab active" data-tab="wr">Dealer Weekly Plan</span>
     <span class="wr-tab" data-tab="ob">Onboarding List</span>
+    <span class="wr-tab" data-tab="up">Upcoming Payments</span>
   </div>
 
   <div class="filter-bar" id="filter-bar" style="position:static">
@@ -593,6 +611,19 @@ table.wr td.ck input.ckb.dirty{outline:2px solid var(--primary);outline-offset:1
     <div style="height:40px"></div>
   </div>
 </div>
+<div id="up-view" style="display:none">
+    <div class="ob-bar">
+      <span class="ob-seg" id="up-views"><button type="button" data-v="cal" class="on">Calendar</button><button type="button" data-v="list">List</button><button type="button" data-v="dealer">Dealer summary</button></span>
+      <input id="up-q" type="search" placeholder="Search dealer, officer, loan, plate…" autocomplete="off">
+      <select id="up-so" aria-label="Sales Officer"></select>
+      <button type="button" class="obb" id="up-clear" style="display:none">Clear filters</button>
+      <span class="wr-count" id="up-count"></span>
+    </div>
+    <div class="up-note">View only. Renewals and maturities of open loans: overdue plus the next 30 days. The amount shown is the loan's principal outstanding, not the amount due.</div>
+    <div class="ob-kpis" id="up-kpis"></div>
+    <div id="up-body"></div>
+    <div style="height:40px"></div>
+  </div>
 <div class="obm-back" id="obm-back"><div class="obm" id="obm" role="dialog" aria-modal="true"></div></div>
 <div class="ob-toast" id="ob-toast"></div>
 
@@ -648,7 +679,7 @@ var WR_API = 'https://script.google.com/a/macros/finsso.com/s/AKfycbznI2kQ8a0ApT
 function wrConfigured() { return /^https:\/\/script\.google\.com\/.+\/exec/.test(WR_API); }
 
 let SO_TEAM_MAP = {}, TEAMS = [];
-let dealerRows = [], loansByDealer = {};
+let dealerRows = [], loansByDealer = {}, payList = [];
 let dataLoadedAt = null;
 let ACCESS = null, ID_TOKEN = '', USER_EMAIL = '', _dataReady = false, _rendered = false;
 let selectedTeam = ALL_TEAMS, selectedSO = '', selectedMonth = null, searchQ = '';
@@ -698,7 +729,7 @@ async function loadData() {
     // Loans (credited drawdowns) per dealer: v2 + v3 (180-day), header-name lookups.
     loansByDealer = {}; loanDealer = {};
     const names = {};
-    duesByDealer = {};
+    duesByDealer = {}; payList = [];
     const isPending = (st, re) => { st = String(st || '').trim().toLowerCase(); return !!st && re.test(st); };
     function addLoans(grid, isV3) {
       if (!grid || grid.length < 2) return;
@@ -716,16 +747,19 @@ async function loadData() {
         // Dues of OPEN loans only: renewals (R) and maturity (M) that are still unpaid
         const lst = get(r, c('Loan Status')).trim().toLowerCase();
         if (lst && lst !== 'closed' && lst !== 'cancelled') {
-          const add = (type, dateCol, ok) => { const dt = parseSheetDate(get(r, c(dateCol))); if (dt && ok) (duesByDealer[dealerId] = duesByDealer[dealerId] || []).push({ id, type, date: dt }); };
+          const prinTxt = (get(r, c('Total Outstanding Principal')) || get(r, c('Outstanding Principal')) || '').trim();
+          const prin = prinTxt === '' ? null : parseNum(prinTxt);
+          const unit = (get(r, c('Make Model Variant')) || '').trim(), plate = (get(r, c('Plate Number (as on ORCR)')) || get(r, c('Plate Number')) || '').trim();
+          const add = (type, dateCol, ok, label) => { const dt = parseSheetDate(get(r, c(dateCol))); if (dt && ok) { (duesByDealer[dealerId] = duesByDealer[dealerId] || []).push({ id, type, date: dt }); payList.push({ dealerId, loanId: id, type, label: label || (type === 'M' ? 'Maturity' : 'Renewal'), date: dt, principal: prin != null && isFinite(prin) ? prin : null, unit, plate }); } };
           if (!isV3) {
-            add('R', 'Renewal 1 Due Date', isPending(get(r, c('Renewal 1 Payment Status')), /^(renewal not yet due|renewal overdue|not renewed)$/));
-            add('R', 'Renewal 2 Due Date', isPending(get(r, c('Renewal 2 Payment Status')), /^(renewal not yet due|renewal overdue|not renewed)$/));
-            add('M', 'Final Maturity Date', isPending(get(r, c('Full Payment Status')), /^(maturity not yet due|maturity overdue|pending maturity)$/));
+            add('R', 'Renewal 1 Due Date', isPending(get(r, c('Renewal 1 Payment Status')), /^(renewal not yet due|renewal overdue|not renewed)$/), 'Renewal 1');
+            add('R', 'Renewal 2 Due Date', isPending(get(r, c('Renewal 2 Payment Status')), /^(renewal not yet due|renewal overdue|not renewed)$/), 'Renewal 2');
+            add('M', 'Final Maturity Date', isPending(get(r, c('Full Payment Status')), /^(maturity not yet due|maturity overdue|pending maturity)$/), 'Maturity');
           } else {
             const open = st => isPending(st, /^(?!.*(paid|closed|n\/a|not applicable)).+$/);
             [['R1 Due Date', 'R1 Payment Status'], ['R2 Due Date', 'R2 Payment Status'], ['R3P1 Due Date', 'R3 Payment Status'], ['R4P2 Due Date', 'R4 Payment Status'], ['R5P3 Due Date', 'R5 Payment Status']]
-              .forEach(p => add('R', p[0], open(get(r, c(p[1])))));
-            add('M', c('Maturity Due Date') >= 0 ? 'Maturity Due Date' : 'Maturity Date', open(get(r, c('Maturity Payment Status'))));
+              .forEach((p, i) => add('R', p[0], open(get(r, c(p[1]))), 'Renewal ' + (i + 1)));
+            add('M', c('Maturity Due Date') >= 0 ? 'Maturity Due Date' : 'Maturity Date', open(get(r, c('Maturity Payment Status'))), 'Maturity');
           }
         }
       }
@@ -964,6 +998,8 @@ const FUNNEL = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="tru
 const BLANK = '(blank)';
 function colDef(id) {
   if (id.indexOf('ob:') === 0) return obColDef(id.slice(3));
+  if (id.indexOf('up:') === 0) return upColDef(id.slice(3));
+  if (id.indexOf('ud:') === 0) return udColDef(id.slice(3));
   const p = id.split('|');
   const dstr = d => d ? fmtDate(d) : BLANK;
   const T = (label, get) => ({ type: 'text', label, get: d => { const s = String(get(d) == null ? '' : get(d)).trim(); return s || BLANK; } });
@@ -1000,7 +1036,7 @@ function colDef(id) {
 function filterActive(id) { const f = filters[id]; return !!f && (!!f.sel || !!f.op); }
 function activeFilterKeys() {
   const vis = {}; shown.forEach(b => { vis[b.w.n] = 1; });
-  return Object.keys(filters).filter(id => filterActive(id) && ((id.indexOf('ob:') === 0) === (TAB === 'ob')) && (id.indexOf('|') < 0 || vis[id.split('|')[0]]));
+  return Object.keys(filters).filter(id => filterActive(id) && (TAB === 'up' ? /^(up|ud):/.test(id) : ((id.indexOf('ob:') === 0) === (TAB === 'ob') && !/^(up|ud):/.test(id))) && (id.indexOf('|') < 0 || vis[id.split('|')[0]]));
 }
 const OPS_NUM = [['', 'None'], ['empty', 'Is empty'], ['any', 'Is not empty'], ['gt', 'Greater than'], ['ge', 'Greater than or equal to'], ['lt', 'Less than'], ['le', 'Less than or equal to'], ['eq', 'Is equal to'], ['ne', 'Is not equal to']];
 const OPS_TXT = [['', 'None'], ['empty', 'Is empty'], ['any', 'Is not empty'], ['contains', 'Text contains'], ['ncontains', 'Text does not contain'], ['eq', 'Text is exactly']];
@@ -1045,7 +1081,7 @@ function wfKey(e) { if (e.key === 'Escape') closeFilterPanel(); }
 function openFilterPanel(id, anchor) {
   closeFilterPanel();
   const def = colDef(id); if (!def) return;
-  const base = id.indexOf('ob:') === 0 ? obInScope().filter(obPass) : dealersInScope();
+  const base = id.indexOf('ob:') === 0 ? obInScope().filter(obPass) : id.indexOf('up:') === 0 ? UP_BASE : id.indexOf('ud:') === 0 ? UD_BASE : dealersInScope();
   const counts = {}; base.forEach(d => { const s = def.get(d); counts[s] = (counts[s] || 0) + 1; });
   let vals = Object.keys(counts);
   const ord = def.type === 'text'
@@ -1105,7 +1141,7 @@ document.getElementById('wr-head').addEventListener('click', e => {
   const b = e.target.closest('.fbtn'); if (!b) return; e.stopPropagation(); openFilterPanel(b.dataset.col, b);
 });
 
-function render() { if (TAB === 'ob') obRender(); else renderWR(); }
+function render() { if (TAB === 'ob') obRender(); else if (TAB === 'up') upPaint(); else renderWR(); }
 function renderWR() {
   weeks = buildWeeks(selectedMonth.y, selectedMonth.m);
   wrTodayStart = todayStart(); _dueCache = {};
@@ -1586,7 +1622,7 @@ function _initGoogleAuth() {
 // Write: the "+" button (full access only) and the row editor (full access = all fields; SM = own team's working fields).
 // ═══════════════════════════════════════════════════════════════════════════
 var _OBM = null, _obMm = null;
-var TAB = 'wr', OB = [], OB_LOADED = false, OB_ERR = '', OB_SOS = null, OB_VIEW = [], _VISITS = null, _obVisit = null, _sortStash = { wr: null, ob: null };
+var TAB = 'wr', OB = [], OB_LOADED = false, OB_ERR = '', OB_SOS = null, OB_VIEW = [], _VISITS = null, _obVisit = null, _sortStash = { wr: null, ob: null, up: null };
 var OBQ = { stage: 'active', quick: '', so: '', type: '', q: '' };
 var OB_STATUSES = ['Applications Submitted for BAP/CMAP Checking', 'Pending BAP/CMAP Requirements', 'Pending BAP/CMAP Decision', 'Rejected due to BAP/CMAP', 'Eligible Applications - Pending Credit Line Documents',
   'Eligible Applications - Pending Credit Decision by Carmudi', 'Eligible Applications - Pending Credit Decision by Netbank', 'Eligible Applications - Dealer Rejected', 'Eligible Applications - CLA Signature Pending',
@@ -1719,7 +1755,7 @@ function obColDef(k) {
   if (c.date) return { type: 'date', label: c.label, num: r => r[k] ? r[k].getTime() : null, get: r => r[k] ? fmtDate(r[k]) : (r._raw[k] || BLANK) };
   return { type: 'text', label: c.label, get: r => { const s = String(r[k] == null ? '' : r[k]).trim(); return s || BLANK; } };
 }
-function repaintTable() { if (TAB === 'ob') obPaint(); else { renderHead(); refreshBody(true); } }
+function repaintTable() { if (TAB === 'ob') obPaint(); else if (TAB === 'up') upPaint(); else { renderHead(); refreshBody(true); } }
 function obDate(r, k) {
   const d = r[k], raw = r._raw[k];
   if (!d) return raw ? '<span class="obd">' + esc(raw) + '</span>' : '<span class="obm0">—</span>';
@@ -1782,14 +1818,186 @@ function obRender() {
 function obToast(t, err) { const e = document.getElementById('ob-toast'); e.textContent = t; e.className = 'ob-toast show' + (err ? ' err' : ''); clearTimeout(obToast._t); obToast._t = setTimeout(() => { e.className = 'ob-toast'; }, err ? 6000 : 3000); }
 
 // ── tabs
+// ═══════════════════════════════════════════════════════════════════════════
+// UPCOMING PAYMENTS TAB (view only): renewals / maturities of open loans, overdue + next 30 days.
+// Scope = same as the weekly plan: dealer's assigned SO (Dealer Checker) -> team (Mapping tab).
+// ═══════════════════════════════════════════════════════════════════════════
+var UPV = 'cal', UPQ = { q: '', so: '', quick: '' }, UPSEL = 'today', UPP = 'pay', UPM = null, UP_ALL = null, UP_SRC = null, UP_BASE = [], UD_BASE = [], UP_LIMIT = 150, UP_WIN = 30;
+const UP_DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+function dkey(d) { return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+function pm(n) { n = n || 0; return n >= 1e6 ? '₱' + (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + 'M' : n >= 1e4 ? '₱' + Math.round(n / 1e3) + 'K' : peso(n); }
+function upBuild() {
+  if (UP_ALL && UP_SRC === dealerRows) return UP_ALL;
+  const dm = {}; dealerRows.forEach(d => { dm[d.dealerId] = d; });
+  const t = todayStart().getTime(), lim = t + UP_WIN * DAY_MS, out = [];
+  (payList || []).forEach(p => {
+    const d = dm[p.dealerId]; if (!d) return;
+    const ms = p.date.getTime(); if (ms > lim) return;
+    const diff = Math.round((ms - t) / DAY_MS);
+    out.push({ dealerId: p.dealerId, name: d.name, so: d.so, team: teamOf(d.so) || '', loanId: p.loanId, type: p.type, label: p.label, date: p.date, diff,
+      when: diff < 0 ? 'Overdue' : diff === 0 ? 'Due today' : 'Upcoming', unit: p.unit, plate: p.plate, principal: p.principal });
+  });
+  out.sort((a, b) => a.date - b.date || a.name.localeCompare(b.name));
+  UP_SRC = dealerRows; UP_ALL = out; return out;
+}
+function upScope() {
+  const lowers = (!ACCESS || ACCESS.unrestricted) ? null : ACCESS.teams.map(t => t.toLowerCase());
+  const q = UPQ.q.trim().toLowerCase();
+  return upBuild().filter(r => {
+    if (lowers && (!r.team || lowers.indexOf(r.team.toLowerCase()) < 0)) return false;
+    if (selectedTeam !== ALL_TEAMS && r.team !== selectedTeam) return false;
+    if (UPQ.so && r.so !== UPQ.so) return false;
+    if (q && (r.name + ' ' + r.so + ' ' + r.loanId + ' ' + r.plate + ' ' + r.unit + ' ' + r.dealerId).toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  });
+}
+function upQuick(r) { const k = UPQ.quick; return !k || (k === 'overdue' ? r.diff < 0 : k === 'today' ? r.diff === 0 : k === 'week' ? r.diff >= 0 && r.diff <= 7 : r.diff >= 0); }
+function sumPrin(rows) { const s = {}; let n = 0; rows.forEach(r => { if (!s[r.loanId]) { s[r.loanId] = 1; n += r.principal || 0; } }); return n; }
+function upColDef(k) {
+  const T = (label, get) => ({ type: 'text', label, get: r => { const s = String(get(r) == null ? '' : get(r)).trim(); return s || BLANK; } });
+  switch (k) {
+    case 'name': return T('Dealer', r => r.name);
+    case 'so': return T('Assigned Officer', r => r.so);
+    case 'label': return T('Payment', r => r.label);
+    case 'date': return { type: 'date', label: 'Due Date', num: r => r.date.getTime(), get: r => fmtDate(r.date) };
+    case 'when': return T('Status', r => r.when);
+    case 'loan': return T('Drawdown ID', r => r.loanId);
+    case 'unit': return T('Unit', r => r.unit);
+    case 'plate': return T('Plate No.', r => r.plate);
+    case 'prin': return { type: 'num', label: 'Principal Outstanding', num: r => r.principal == null ? null : r.principal, get: r => r.principal == null ? BLANK : peso(r.principal) };
+  }
+  return null;
+}
+function udColDef(k) {
+  const N = (label, key, fmt) => ({ type: 'num', label, num: d => d[key] == null ? null : d[key], get: d => d[key] == null ? BLANK : (fmt ? fmt(d[key]) : String(d[key])) });
+  switch (k) {
+    case 'name': return { type: 'text', label: 'Dealer', get: d => d.name || BLANK };
+    case 'so': return { type: 'text', label: 'Assigned Officer', get: d => d.so || BLANK };
+    case 'ov': return N('Overdue', 'ov'); case 'w7': return N('Next 7 days', 'w7'); case 'w30': return N('Next 30 days', 'w30'); case 'n': return N('Payments', 'n');
+    case 'next': return { type: 'date', label: 'Next Due', num: d => d.next ? d.next.getTime() : null, get: d => d.next ? fmtDate(d.next) : BLANK };
+    case 'prin': return N('Principal Outstanding', 'prin', peso);
+  }
+  return null;
+}
+function udRows(rows) {
+  const m = {}, out = [];
+  rows.forEach(r => {
+    let d = m[r.dealerId]; if (!d) { d = m[r.dealerId] = { dealerId: r.dealerId, name: r.name, so: r.so, ov: 0, w7: 0, w30: 0, n: 0, next: null, _r: [] }; out.push(d); }
+    d.n++; d._r.push(r);
+    if (r.diff < 0) d.ov++; else { d.w30++; if (r.diff <= 7) d.w7++; if (!d.next || r.date < d.next) d.next = r.date; }
+  });
+  out.forEach(d => { d.prin = sumPrin(d._r); });
+  out.sort((a, b) => b.ov - a.ov || (a.next ? a.next.getTime() : 9e15) - (b.next ? b.next.getTime() : 9e15) || a.name.localeCompare(b.name));
+  return out;
+}
+function upWhen(r) { return r.diff < 0 ? '<span class="upw late">' + (-r.diff) + 'd overdue</span>' : r.diff === 0 ? '<span class="upw today">Today</span>' : '<span class="upw">in ' + r.diff + 'd</span>'; }
+const UP_PCOLS = [['name', 'Dealer', r => '<b>' + esc(r.name) + '</b>'], ['so', 'Assigned Officer', r => esc(r.so) || '<span class="obm0">—</span>'], ['label', 'Payment', r => '<span class="upt ' + r.type + '">' + esc(r.label) + '</span>'],
+  ['date', 'Due Date', r => fmtDate(r.date)], ['when', 'Status', r => upWhen(r)], ['loan', 'Drawdown ID', r => esc(r.loanId)], ['unit', 'Unit', r => esc(r.unit) || '<span class="obm0">—</span>'],
+  ['plate', 'Plate No.', r => esc(r.plate) || '<span class="obm0">—</span>'], ['prin', 'Principal Outstanding', r => r.principal == null ? '<span class="obm0">—</span>' : peso(r.principal)]];
+const UP_DCOLS = { full: [['name', 'Dealer'], ['so', 'Assigned Officer'], ['ov', 'Overdue'], ['w7', 'Next 7 days'], ['w30', 'Next 30 days'], ['n', 'Payments'], ['next', 'Next Due'], ['prin', 'Principal Outstanding']],
+  mini: [['name', 'Dealer'], ['so', 'Assigned Officer'], ['n', 'Payments'], ['prin', 'Principal Outstanding']] };
+function upPTable(rows) {
+  if (!rows.length) return '<div class="up-none">No payments match.</div>';
+  const shown = rows.slice(0, UP_LIMIT);
+  let h = '<div class="up-tw"><table class="wr up"><thead><tr>' + UP_PCOLS.map(c => '<th class="l">' + hcell('up:' + c[0], c[1]) + '</th>').join('') + '</tr></thead><tbody>';
+  shown.forEach(r => { h += '<tr' + (r.diff < 0 ? ' class="late"' : '') + '>' + UP_PCOLS.map(c => '<td class="l' + (c[0] === 'prin' ? ' num' : '') + '">' + c[2](r) + '</td>').join('') + '</tr>'; });
+  h += '</tbody></table></div>';
+  if (rows.length > shown.length) h += '<div class="up-more"><button type="button" class="obb" data-more="1">Show ' + Math.min(UP_LIMIT, rows.length - shown.length) + ' more (' + (rows.length - shown.length) + ' hidden)</button></div>';
+  return h;
+}
+function upDTable(drows, kind) {
+  if (!drows.length) return '<div class="up-none">No dealers match.</div>';
+  const cols = UP_DCOLS[kind], shown = drows.slice(0, UP_LIMIT);
+  let h = '<div class="up-tw"><table class="wr up"><thead><tr>' + cols.map(c => '<th class="l">' + hcell('ud:' + c[0], c[1]) + '</th>').join('') + '</tr></thead><tbody>';
+  shown.forEach(d => {
+    h += '<tr class="clk" data-dn="' + esc(d.dealerId) + '">' + cols.map(c => {
+      const k = c[0]; let v;
+      if (k === 'name') v = '<b>' + esc(d.name) + '</b>'; else if (k === 'so') v = esc(d.so) || '<span class="obm0">—</span>';
+      else if (k === 'ov') v = d.ov ? '<span class="upw late">' + d.ov + '</span>' : '<span class="obm0">0</span>';
+      else if (k === 'next') v = d.next ? fmtDate(d.next) : '<span class="obm0">—</span>';
+      else if (k === 'prin') v = peso(d.prin); else v = String(d[k]);
+      return '<td class="l' + (k === 'prin' || k === 'n' || k === 'ov' || k === 'w7' || k === 'w30' ? ' num' : '') + '">' + v + '</td>';
+    }).join('') + '</tr>';
+  });
+  h += '</tbody></table></div>';
+  if (drows.length > shown.length) h += '<div class="up-more"><button type="button" class="obb" data-more="1">Show more (' + (drows.length - shown.length) + ' hidden)</button></div>';
+  return h;
+}
+function upCalendar(rows) {
+  const t = todayStart(), last = new Date(t.getTime() + UP_WIN * DAY_MS);
+  if (UPSEL === 'today') UPSEL = dkey(t);
+  const minM = t.getFullYear() * 12 + t.getMonth(), maxM = last.getFullYear() * 12 + last.getMonth();
+  if (!UPM) UPM = { y: t.getFullYear(), m: t.getMonth() };
+  let cur = UPM.y * 12 + UPM.m; if (cur < minM) cur = minM; if (cur > maxM) cur = maxM; UPM = { y: Math.floor(cur / 12), m: cur % 12 };
+  const byDay = {}; let ov = [];
+  rows.forEach(r => { if (r.diff < 0) { ov.push(r); return; } const k = dkey(r.date); (byDay[k] = byDay[k] || []).push(r); });
+  const first = new Date(UPM.y, UPM.m, 1), nDays = new Date(UPM.y, UPM.m + 1, 0).getDate();
+  let h = '';
+  if (ov.length) h += '<button type="button" class="up-ovb' + (UPSEL === 'overdue' ? ' on' : '') + '" data-d="overdue"><b>' + ov.length + '</b> overdue payment' + (ov.length > 1 ? 's' : '') + ' <span>' + pm(sumPrin(ov)) + ' principal · click to view</span></button>';
+  h += '<div class="up-calh"><button type="button" class="obb" data-nav="-1"' + (cur <= minM ? ' disabled' : '') + '>‹</button><div class="up-mon">' + ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][UPM.m] + ' ' + UPM.y + '</div><button type="button" class="obb" data-nav="1"' + (cur >= maxM ? ' disabled' : '') + '>›</button></div>';
+  h += '<div class="up-cal">' + UP_DOW.map(d => '<div class="up-dow">' + d + '</div>').join('');
+  for (let i = 0; i < first.getDay(); i++) h += '<div class="upd blank"></div>';
+  for (let d = 1; d <= nDays; d++) {
+    const dt = new Date(UPM.y, UPM.m, d), k = dkey(dt), inWin = dt >= t && dt <= last, items = byDay[k] || [];
+    const cls = 'upd' + (dt.getTime() === t.getTime() ? ' today' : '') + (UPSEL === k ? ' sel' : '') + (items.length ? ' has' : '') + (inWin ? '' : ' dim');
+    h += '<button type="button" class="' + cls + '"' + (inWin ? ' data-d="' + k + '"' : ' disabled') + '><span class="dn">' + d + '</span>' + (items.length ? '<span class="dc">' + items.length + '</span><span class="da">' + pm(sumPrin(items)) + '</span>' : '') + '</button>';
+  }
+  h += '</div>';
+  // selected day panel
+  let sel = UPSEL === 'overdue' ? ov : (byDay[UPSEL] || []);
+  const title = UPSEL === 'overdue' ? 'Overdue payments' : (function () { const d = UPSEL === 'today' ? t : new Date(UPSEL + 'T00:00:00'); return UP_DOW[d.getDay()] + ', ' + fmtDate(d); })();
+  h += '<div class="up-panel"><div class="up-ph"><div><b>' + esc(title) + '</b> <span class="up-sub">' + sel.length + ' payment' + (sel.length === 1 ? '' : 's') + ' · ' + peso(sumPrin(sel)) + ' principal outstanding</span></div>' +
+    '<span class="ob-seg" id="up-pm"><button type="button" data-pm="pay" class="' + (UPP === 'pay' ? 'on' : '') + '">By payment</button><button type="button" data-pm="dealer" class="' + (UPP === 'dealer' ? 'on' : '') + '">By dealer</button></span></div>';
+  if (UPP === 'dealer') { UD_BASE = udRows(sel); h += upDTable(applySort(applyFilters(UD_BASE)), 'mini'); }
+  else { UP_BASE = sel; h += upPTable(applySort(applyFilters(sel))); }
+  return h + '</div>';
+}
+function upPaint() {
+  const scope = upScope(), base = scope.filter(upQuick);
+  const k = (q, l, n, sub, c) => '<button type="button" class="obk ' + c + (UPQ.quick === q ? ' on' : '') + '" data-q="' + q + '"><div class="n">' + n + '</div><div class="l">' + l + '</div><div class="s">' + sub + '</div></button>';
+  const ov = scope.filter(r => r.diff < 0), td = scope.filter(r => r.diff === 0), wk = scope.filter(r => r.diff >= 0 && r.diff <= 7), up = scope.filter(r => r.diff >= 0);
+  document.getElementById('up-kpis').innerHTML = k('overdue', 'Overdue', ov.length, pm(sumPrin(ov)) + ' principal', ov.length ? 'red' : '') + k('today', 'Due today', td.length, pm(sumPrin(td)) + ' principal', td.length ? 'amber' : '') +
+    k('week', 'Next 7 days', wk.length, pm(sumPrin(wk)) + ' principal', '') + k('upcoming', 'Next 30 days', up.length, pm(sumPrin(up)) + ' principal', '');
+  document.querySelectorAll('#up-views button').forEach(b => b.classList.toggle('on', b.dataset.v === UPV));
+  const so = document.getElementById('up-so'), sos = Array.from(new Set(upBuild().map(r => r.so).filter(Boolean))).sort();
+  so.innerHTML = '<option value="">All officers</option>' + sos.map(s => '<option' + (s === UPQ.so ? ' selected' : '') + '>' + esc(s) + '</option>').join('');
+  const nf = activeFilterKeys().length;
+  document.getElementById('up-clear').style.display = (nf || sortSpec || UPQ.quick) ? '' : 'none';
+  let h, n;
+  if (UPV === 'cal') { h = upCalendar(base); n = base.length; }
+  else if (UPV === 'list') { UP_BASE = base; const v = applySort(applyFilters(base)); n = v.length; h = upPTable(v); }
+  else { UD_BASE = udRows(base); const v = applySort(applyFilters(UD_BASE)); n = v.length; h = upDTable(v, 'full'); }
+  document.getElementById('up-count').textContent = n + (UPV === 'dealer' ? ' dealers' : ' payments');
+  document.getElementById('up-body').innerHTML = h;
+}
+function upReset() { Object.keys(filters).forEach(k => { if (/^(up|ud):/.test(k)) delete filters[k]; }); sortSpec = null; }
+function upWire() {
+  const v = document.getElementById('up-view');
+  v.addEventListener('click', e => {
+    const t = e.target, f = t.closest('.fbtn'); if (f) { e.stopPropagation(); openFilterPanel(f.dataset.col, f); return; }
+    let b;
+    if ((b = t.closest('#up-views button'))) { UPV = b.dataset.v; upReset(); UP_LIMIT = 150; upPaint(); }
+    else if ((b = t.closest('.obk[data-q]'))) { UPQ.quick = UPQ.quick === b.dataset.q ? '' : b.dataset.q; UP_LIMIT = 150; upPaint(); }
+    else if ((b = t.closest('[data-d]'))) { UPSEL = b.dataset.d; UPP = 'pay'; upReset(); UP_LIMIT = 150; upPaint(); }
+    else if ((b = t.closest('[data-nav]'))) { const c = UPM.y * 12 + UPM.m + (+b.dataset.nav); UPM = { y: Math.floor(c / 12), m: c % 12 }; upPaint(); }
+    else if ((b = t.closest('[data-pm]'))) { UPP = b.dataset.pm; upReset(); UP_LIMIT = 150; upPaint(); }
+    else if ((b = t.closest('[data-more]'))) { UP_LIMIT += 150; upPaint(); }
+    else if ((b = t.closest('tr[data-dn]'))) { const d = dealerRows.find(x => x.dealerId === b.dataset.dn); UPQ.q = d ? d.name : ''; document.getElementById('up-q').value = UPQ.q; UPV = 'list'; upReset(); UP_LIMIT = 150; upPaint(); }
+  });
+  document.getElementById('up-q').addEventListener('input', e => { UPQ.q = e.target.value; clearTimeout(upWire._t); upWire._t = setTimeout(upPaint, 160); });
+  document.getElementById('up-so').addEventListener('change', e => { UPQ.so = e.target.value; upPaint(); });
+  document.getElementById('up-clear').onclick = () => { upReset(); UPQ.quick = ''; upPaint(); };
+}
+
 function setTab(t) {
   if (t === TAB) return;
   closeFilterPanel(); _sortStash[TAB] = sortSpec; TAB = t; sortSpec = _sortStash[t];
-  document.body.classList.toggle('ob-tab', t === 'ob');
+  document.body.classList.toggle('ob-tab', t !== 'wr');
   document.getElementById('wr-view').style.display = t === 'wr' ? '' : 'none';
   document.getElementById('ob-view').style.display = t === 'ob' ? '' : 'none';
+  document.getElementById('up-view').style.display = t === 'up' ? '' : 'none';
   document.querySelectorAll('.wr-tab[data-tab]').forEach(el => el.classList.toggle('active', el.dataset.tab === t));
-  if (t === 'ob') { obRender(); if (!OB_LOADED) obLoad().then(obRender); } else render();
+  if (t === 'ob') { obRender(); if (!OB_LOADED) obLoad().then(obRender); } else if (t === 'up') upPaint(); else render();
 }
 
 // ── add / edit popup
@@ -1876,6 +2084,7 @@ async function obSave(i) {
 (function obWire() {
   document.getElementById('ob-wrap').addEventListener('scroll', function () { if (_obRaf || OB_SHOWN >= OB_VIEW.length) return; const w = this; _obRaf = requestAnimationFrame(function () { _obRaf = 0; if (OB_SHOWN < OB_VIEW.length && w.scrollTop + w.clientHeight > w.scrollHeight - 1200) obMore(); }); }, { passive: true });
   document.querySelectorAll('.wr-tab[data-tab]').forEach(el => { el.onclick = () => setTab(el.dataset.tab); });
+  upWire();
   document.getElementById('ob-head').addEventListener('click', e => { const b = e.target.closest('.fbtn'); if (!b) return; e.stopPropagation(); openFilterPanel(b.dataset.col, b); });
   document.getElementById('ob-stage').addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (!b) return; OBQ.stage = b.dataset.v; obPaint(); });
   document.getElementById('ob-kpis').addEventListener('click', e => { const b = e.target.closest('.obk'); if (!b) return; OBQ.quick = OBQ.quick === b.dataset.q ? '' : b.dataset.q; if (b.dataset.q === 'overdue' || b.dataset.q === 'week' || b.dataset.q === 'novisit') OBQ.stage = 'active'; obPaint(); });
