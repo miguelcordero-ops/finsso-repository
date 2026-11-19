@@ -1370,18 +1370,18 @@ function comSnaps(y, m) {
   return (COM.m[k] = out);
 }
 function outcomeOf(s) { return s.repo ? 'repo' : (s.settled || s.b1 === 0) ? 'cured' : s.b1 > s.b0 ? 'worse' : s.b1 < s.b0 ? 'impr' : 'same'; }
-function newAgg(co) { return { co, acct: 0, prin: 0, par1: 0, par30: 0, par60: 0, par90: 0, dEnd: 0, uni: 0, newU: 0, carU: 0, cured: 0, impr: 0, same: 0, worse: 0, repo: 0, paid: 0, cur0: 0, slip: 0, del0: 0, roll: 0, exU: 0, exC: 0, hm: [0, 0, 0, 0, 0, 0], eb: [0, 0, 0, 0, 0, 0, 0, 0] }; }
+function newAgg(co) { return { co, acct: 0, prin: 0, par1: 0, par30: 0, par60: 0, par90: 0, dEnd: 0, uni: 0, newU: 0, carU: 0, cured: 0, impr: 0, same: 0, worse: 0, repo: 0, paid: 0, cur0: 0, slip: 0, del0: 0, roll: 0, del0P: 0, rollP: 0, exU: 0, exC: 0, hm: [0, 0, 0, 0, 0, 0], eb: [0, 0, 0, 0, 0, 0, 0, 0] }; }
 function aggSnaps(snaps) {
   const by = {};
   snaps.forEach(s => {
     const a = by[s.co] || (by[s.co] = newAgg(s.co)), open0 = s.o0 > 0.5;
     if (!s.repo && !s.settled) { a.acct++; a.prin += s.o1; if (s.d1 >= 1) { a.dEnd++; a.par1 += s.o1; } if (s.d1 > 30) a.par30 += s.o1; if (s.d1 > 60) a.par60 += s.o1; if (s.d1 > 90) a.par90 += s.o1; }
     if (open0 && s.d0 === 0) { a.cur0++; if (s.mx >= 1) a.slip++; }
-    if (open0 && s.d0 >= 1) a.del0++;
+    if (open0 && s.d0 >= 1) { a.del0++; a.del0P += s.o0; if (!s.repo && !s.settled && s.b1 >= 1) { a.roll++; a.rollP += s.o0; } }   // month-on-month roll: late at the start of the month and still late at month end
     if (s.mx < 1) return;
     const oc = outcomeOf(s);
     a.uni++; if (open0 && s.d0 >= 1) a.carU++; else a.newU++;
-    a[oc]++; if (oc === 'worse' && open0 && s.d0 >= 1) a.roll++;
+    a[oc]++;
     if (s.settled) a.paid++;
     const ex = open0 ? s.o0 : s.orig; a.exU += ex; if (oc === 'cured') a.exC += ex;
     a.hm[s.bm]++; a.eb[s.repo ? 7 : s.settled ? 6 : s.b1]++;
@@ -1425,7 +1425,7 @@ document.addEventListener('change', e => {
 });
 var CO_MET = {
   cure: { l: 'Cure rate', good: true, lo: 30, hi: 90, f: a => cureP(a), n: a => a.uni + ' delinq.', fmt: p0 },
-  roll: { l: 'Roll rate', good: false, lo: 0, hi: 60, f: a => rate(a.roll, a.del0), n: a => a.del0 + ' carried', fmt: p0 },
+  roll: { l: 'Roll rate', good: false, lo: 0, hi: 60, f: a => rate(a.rollP, a.del0P), n: a => a.del0 + ' carried', fmt: p0 },
   par30: { get l() { return 'PAR ' + (S.cpar || 30) + '+'; }, good: false, lo: 0, get hi() { return ({ 30: 30, 60: 20, 90: 15 })[S.cpar || 30]; }, f: a => rate(a['par' + (S.cpar || 30)], a.prin), n: a => a.acct + ' accts', fmt: p1 },
   uni: { l: 'Delinquent accounts', good: false, lo: 0, hi: 0, f: a => a.uni, n: a => a.acct + ' accts', fmt: v => String(v) }
 };
@@ -1443,11 +1443,11 @@ function renderLeadCO(host) {
   const k0 = S.cmon || 'cur', isPick = /^\d/.test(k0);
   let h = '<div class="h1">Leadership</div>' + leadTabs() + '<div class="sub">Collections officers · ' + esc(mlabel) + ' · each account is credited to the officer now assigned to its dealer · ' + (tc.uni ? tc.uni + ' accounts went delinquent in the month' : 'no delinquent accounts in the month') + '</div>';
   h += '<div class="chips" style="margin:12px 0;align-items:center"><button class="chip' + (k0 === 'cur' ? ' on' : '') + '" data-act="cmon" data-v="cur">This month (MTD)</button><button class="chip' + (k0 === 'prev' ? ' on' : '') + '" data-act="cmon" data-v="prev">Last month</button><select class="chip' + (isPick ? ' on' : '') + '" data-csel="1"><option value="">Pick a month…</option>' + opts.join('') + '</select></div>';
-  const cr = cureP(tc), crp = cureP(tp), rr = rate(tc.roll, tc.del0), rrp = rate(tp.roll, tp.del0), pr = rate(tc.par30, tc.prin), prp = rate(tp.par30, tp.prin);
+  const cr = cureP(tc), crp = cureP(tp), rr = rate(tc.rollP, tc.del0P), rrp = rate(tp.rollP, tp.del0P), pr = rate(tc.par30, tc.prin), prp = rate(tp.par30, tp.prin);
   h += '<div class="kpis">' +
     '<div class="kpi blue"><div class="n">' + tc.uni + '</div><div class="l">Delinquent in the month</div><div class="s">' + tc.newU + ' new · ' + tc.carU + ' carried in from last month</div></div>' +
     '<div class="kpi ' + (cr == null ? '' : cr >= 70 ? 'green' : cr >= 50 ? 'amber' : 'red') + '"><div class="n">' + p0(cr) + '</div><div class="l">Cure rate (₱ recovered)</div><div class="s">' + peso(tc.exC) + ' of ' + peso(tc.exU) + ' that went on DPD · ' + dlt(cr, crp, true) + ' vs ' + pl + '</div></div>' +
-    '<div class="kpi ' + (rr == null ? '' : rr <= 15 ? 'green' : rr <= 30 ? 'amber' : 'red') + '"><div class="n">' + p0(rr) + '</div><div class="l">Roll rate (moved to a worse bucket)</div><div class="s">' + tc.roll + ' of ' + tc.del0 + ' carried in · ' + dlt(rr, rrp, false) + ' vs ' + pl + '</div></div>' +
+    '<div class="kpi ' + (rr == null ? '' : rr <= 15 ? 'green' : rr <= 30 ? 'amber' : 'red') + '"><div class="n">' + p0(rr) + '</div><div class="l">Roll rate (still late at month end)</div><div class="s">' + peso(tc.rollP) + ' of ' + peso(tc.del0P) + ' late at the start · ' + dlt(rr, rrp, false) + ' vs ' + pl + '</div></div>' +
     '<div class="kpi ' + (pr == null ? '' : pr <= 8 ? 'green' : pr <= 15 ? 'amber' : 'red') + '"><div class="n">' + p1(pr) + '</div><div class="l">PAR 30+ at month end</div><div class="s">' + peso(tc.par30) + ' of ' + peso(tc.prin) + ' · ' + dlt(pr, prp, false) + ' vs ' + pl + '</div></div>' +
     '<div class="kpi red"><div class="n">' + tc.repo + '</div><div class="l">Repossessed</div><div class="s">' + p0(rate(tc.repo, tc.uni)) + ' of delinquent accounts</div></div></div>';
 
@@ -1462,11 +1462,11 @@ function renderLeadCO(host) {
   h += '</div>';
 
   /* B. scorecard */
-  h += '<div class="sec"><div class="sec-h"><h2>Officer scorecard — ' + esc(mlabel) + '</h2><span class="sub">Cure = went delinquent and ended current / paid off · Roll = carried in late and ended in a worse bucket</span></div><div id="co1"></div></div>';
+  h += '<div class="sec"><div class="sec-h"><h2>Officer scorecard — ' + esc(mlabel) + '</h2><span class="sub">Cure = went delinquent and ended current / paid off · Roll = late at the start and still late at month end</span></div><div id="co1"></div></div>';
   /* C. trend heatmap */
   h += '<div class="sec"><div class="sec-h"><h2>How each officer’s accounts progress month on month</h2><span class="sub">Last 6 months to ' + esc(mlabel) + '</span></div><div class="chips" style="margin-bottom:10px">' + Object.keys(CO_MET).map(k => '<button class="chip' + (S.cmet === k ? ' on' : '') + '" data-act="cmet" data-v="' + k + '">' + CO_MET[k].l + '</button>').join('') + '</div>' + (S.cmet === 'par30' ? '<div class="chips" style="margin:-2px 0 10px;align-items:center"><span class="small muted" style="margin-right:4px">Days past due:</span>' + [30, 60, 90].map(n => '<button class="chip' + ((S.cpar || 30) === n ? ' on' : '') + '" data-act="cpar" data-v="' + n + '">PAR ' + n + '+</button>').join('') + '</div>' : '') + '<div class="card scr" id="co2"></div></div>';
   /* D. roll matrix */
-  h += '<div class="sec"><div class="sec-h"><h2>Roll-rate matrix — ' + esc(mlabel) + '</h2><select class="inp" data-coff="1" style="width:auto;min-height:34px;padding:4px 8px;font-size:12.5px"><option value="*">All officers</option>' + offs.map(n => '<option' + (n === S.cco ? ' selected' : '') + '>' + esc(n) + '</option>').join('') + '</select></div><div class="card scr" id="co3"></div></div>';
+  h += '<div class="sec"><div class="sec-h"><h2>Bucket movement matrix — ' + esc(mlabel) + '</h2><select class="inp" data-coff="1" style="width:auto;min-height:34px;padding:4px 8px;font-size:12.5px"><option value="*">All officers</option>' + offs.map(n => '<option' + (n === S.cco ? ' selected' : '') + '>' + esc(n) + '</option>').join('') + '</select></div><div class="card scr" id="co3"></div></div>';
   /* E. account movement */
   h += '<div class="sec"><div class="sec-h"><h2>Account movement — ' + esc(mlabel) + '</h2><span class="sub">Accounts that went delinquent in the month · month-end bucket for the last 6 months · ' + (S.cco === '*' ? 'all officers' : esc(S.cco)) + '</span></div><div id="co4"></div></div>';
   /* F. bucket view */
@@ -1476,7 +1476,7 @@ function renderLeadCO(host) {
   h += '<details class="card sec"><summary class="b" style="cursor:pointer">How to read this page</summary><div class="small" style="margin-top:8px;line-height:1.6">' +
     '<b>Delinquent in the month</b> — accounts that were 1+ days past due on any day of the month (the same idea as “highest bucket in the month”).<br>' +
     '<b>Cure rate</b> — measured in pesos. The pool is the principal of every account that went on DPD during the month (not all principal). Recovered = the principal of those accounts that ended the month current or fully paid off. Cure % = recovered ÷ pool. “Accounts cured %” is the same by account count.<br>' +
-    '<b>Roll rate</b> — of accounts already late on the last day of the previous month, the share that ended in a worse bucket. Lower is better.<br>' +
+    '<b>Roll rate</b> — month on month, in pesos. Pool = principal of accounts that were already late at the start of the month. Rolled = the part of it that is still late at month end (any bucket; paid off, cured or repossessed accounts are not counted). Lower is better. It does not depend on buckets, so accounts already in 90+ are counted when they stay late. The matrix below shows bucket-by-bucket detail.<br>' +
     '<b>PAR 1+ / PAR 30+</b> — principal outstanding on accounts that are 1+ / 31+ days past due at month end, as a share of all outstanding principal.<br>' +
     '<b>Buckets</b> — 1-15, 16-30, 31-60, 61-90 and 90+ days past due, measured at the end of the month.<br>' +
     '<b>Credit</b> — every account is credited to the officer currently assigned to its dealer in AuditMapping, including months before they took over. The current month is month to date.</div></details>';
@@ -1494,7 +1494,7 @@ function renderLeadCO(host) {
     { id: 'cure', label: 'Cure % (₱)', type: 'num', val: r => cureV(r.a) == null ? '' : Math.round(cureV(r.a)), txt: r => p0(cureV(r.a)), html: r => cureV(r.a) == null ? '—' : '<b style="padding:2px 8px;border-radius:6px;' + heatBg(cureV(r.a), true, 30, 90) + '">' + p0(cureV(r.a)) + '</b>' },
     { id: 'dc', label: 'Cure % (₱) vs last month', type: 'num', val: r => cureV(r.a) == null || cureV(r.p) == null ? '' : Math.round((cureV(r.a) - cureV(r.p)) * 10) / 10, txt: r => cureV(r.a) == null || cureV(r.p) == null ? '—' : (cureV(r.a) - cureV(r.p) >= 0 ? '+' : '') + (cureV(r.a) - cureV(r.p)).toFixed(1) + ' pts' },
     { id: 'pc', label: 'Accounts cured %', type: 'num', val: r => r.a.uni ? Math.round(r.a.cured / r.a.uni * 100) : '', txt: r => p0(rate(r.a.cured, r.a.uni)) },
-    { id: 'roll', label: 'Roll rate', type: 'num', val: r => rate(r.a.roll, r.a.del0) == null ? '' : Math.round(rate(r.a.roll, r.a.del0)), txt: r => p0(rate(r.a.roll, r.a.del0)), html: r => rate(r.a.roll, r.a.del0) == null ? '—' : '<b style="padding:2px 8px;border-radius:6px;' + heatBg(rate(r.a.roll, r.a.del0), false, 0, 60) + '">' + p0(rate(r.a.roll, r.a.del0)) + '</b>' },
+    { id: 'roll', label: 'Roll rate', type: 'num', val: r => rate(r.a.rollP, r.a.del0P) == null ? '' : Math.round(rate(r.a.rollP, r.a.del0P)), txt: r => p0(rate(r.a.rollP, r.a.del0P)), html: r => rate(r.a.rollP, r.a.del0P) == null ? '—' : '<b style="padding:2px 8px;border-radius:6px;' + heatBg(rate(r.a.rollP, r.a.del0P), false, 0, 60) + '">' + p0(rate(r.a.rollP, r.a.del0P)) + '</b>' },
     { id: 'repo', label: 'Repo', type: 'num', val: r => r.a.repo },
     { id: 'dend', label: 'Still late at month end', type: 'num', val: r => r.a.dEnd },
     { id: 'par1', label: 'PAR 1+', type: 'num', val: r => rate(r.a.par1, r.a.prin) == null ? '' : Math.round(rate(r.a.par1, r.a.prin) * 10) / 10, txt: r => p1(rate(r.a.par1, r.a.prin)) },
