@@ -745,6 +745,7 @@ async function loadData() {
     dealerRows = [];
     const dc = buildColumnMap(dcGrid[0]);
     const g = (r, n) => get(r, dc(n)).trim();
+    const clIdx = nthHeaderIdx(dcGrid[0], 'Credit Line Status', 3);
     for (let i = 1; i < dcGrid.length; i++) {
       const r = dcGrid[i];
       const dealerId = g(r, 'Dealer ID');
@@ -763,7 +764,7 @@ async function loadData() {
         so: normName(g(r, 'Assigned Sales Officer')),
         onboardingDate, first, last,
         availCredit: parseNum(g(r, 'Total Available Credit Limit')),
-        clStatus: g(r, 'Credit Line Status'), gcd: g(r, 'GCD Code'), drawPower: parseNum(g(r, 'Total Available Drawing Power')),
+        clStatus: get(r, clIdx).trim(), gcd: g(r, 'GCD Code'), drawPower: parseNum(g(r, 'Total Available Drawing Power')),
       });
     }
     dealerRows.sort((a, b) => a.name.localeCompare(b.name));
@@ -1446,6 +1447,7 @@ function parseCSV(text) {
 // on both sides (some headers carry doubled spaces, NBSPs or embedded
 // newlines, e.g. "R2  Payment Status", "Plate Number\n(as on ORCR)").
 function normHeader(h) { return String(h == null ? '' : h).replace(/[\s\u00a0]+/g, ' ').trim(); }
+function nthHeaderIdx(hdrs, name, n) { const k = normHeader(name); let c = 0, last = -1; for (let i = 0; i < hdrs.length; i++) if (normHeader(hdrs[i]) === k) { last = i; if (++c === n) return i; } return last; }   // Dealer Checker has 3 'Credit Line Status' columns (Netbank, Finsso, overall = AX): take the 3rd, else the last
 function buildColumnMap(headerRow) {
   const idx = {};
   headerRow.forEach((h, i) => { const key = normHeader(h); if (key && !(key in idx)) idx[key] = i; });
