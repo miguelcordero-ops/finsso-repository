@@ -715,8 +715,16 @@ function buildModel(du) {
         for (let i = iR - 1; i >= 0; i--) if (normHeader(ck[0][i]) === normHeader('Credit Line Status')) { iS = i; break; }   // the overall status sits just before the reason (AX / AY)
         if (iS >= 0) { d.ck.allStatus = String(get(r, iS) || '').trim(); d.ck.clStatus = d.ck.allStatus; }
         const ov = d.ck.allStatus, rs = d.ck.blkReason;
-        d.ck.dealerStatus = /blacklist/i.test(ov) ? 'Blacklisted' : /hold/i.test(ov) ? 'Hold'
-          : /15 ?dpd|timestamp|manual|blacklist/i.test(rs) ? 'Blacklisted' : /multiple failure|dpd|hold/i.test(rs) ? 'Hold' : ''; }
+        // Dealer Checker's overall "Credit Line Status" (column AX) is the ONE source: the dealer and both lender lines take its value
+        // (Open / Hold / Blacklisted). The per-lender status columns and the reason text are not used for the status.
+        // Only when AX is blank does the old fallback (lender lines / reason text) apply.
+        if (ov) {
+          const axv = /blacklist/i.test(ov) ? 'Blacklisted' : /hold/i.test(ov) ? 'Hold' : ov;
+          d.ck.lines.forEach(x => { x.sheetStatus = x.status; x.status = axv; });
+          d.ck.dealerStatus = axv === 'Blacklisted' || axv === 'Hold' ? axv : '';
+        } else {
+          d.ck.dealerStatus = /15 ?dpd|timestamp|manual|blacklist/i.test(rs) ? 'Blacklisted' : /multiple failure|dpd|hold/i.test(rs) ? 'Hold' : '';
+        } }
     });
   }
   // onboarding / credit evaluation (matched by Dealer ID; rows without an ID are applicants, keyed by name)
