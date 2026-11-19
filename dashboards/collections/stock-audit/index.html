@@ -1370,12 +1370,12 @@ function comSnaps(y, m) {
   return (COM.m[k] = out);
 }
 function outcomeOf(s) { return s.repo ? 'repo' : (s.settled || s.b1 === 0) ? 'cured' : s.b1 > s.b0 ? 'worse' : s.b1 < s.b0 ? 'impr' : 'same'; }
-function newAgg(co) { return { co, acct: 0, prin: 0, par1: 0, par30: 0, dEnd: 0, uni: 0, newU: 0, carU: 0, cured: 0, impr: 0, same: 0, worse: 0, repo: 0, paid: 0, cur0: 0, slip: 0, del0: 0, roll: 0, exU: 0, exC: 0, hm: [0, 0, 0, 0, 0, 0], eb: [0, 0, 0, 0, 0, 0, 0, 0] }; }
+function newAgg(co) { return { co, acct: 0, prin: 0, par1: 0, par30: 0, par60: 0, par90: 0, dEnd: 0, uni: 0, newU: 0, carU: 0, cured: 0, impr: 0, same: 0, worse: 0, repo: 0, paid: 0, cur0: 0, slip: 0, del0: 0, roll: 0, exU: 0, exC: 0, hm: [0, 0, 0, 0, 0, 0], eb: [0, 0, 0, 0, 0, 0, 0, 0] }; }
 function aggSnaps(snaps) {
   const by = {};
   snaps.forEach(s => {
     const a = by[s.co] || (by[s.co] = newAgg(s.co)), open0 = s.o0 > 0.5;
-    if (!s.repo && !s.settled) { a.acct++; a.prin += s.o1; if (s.d1 >= 1) { a.dEnd++; a.par1 += s.o1; } if (s.d1 > 30) a.par30 += s.o1; }
+    if (!s.repo && !s.settled) { a.acct++; a.prin += s.o1; if (s.d1 >= 1) { a.dEnd++; a.par1 += s.o1; } if (s.d1 > 30) a.par30 += s.o1; if (s.d1 > 60) a.par60 += s.o1; if (s.d1 > 90) a.par90 += s.o1; }
     if (open0 && s.d0 === 0) { a.cur0++; if (s.mx >= 1) a.slip++; }
     if (open0 && s.d0 >= 1) a.del0++;
     if (s.mx < 1) return;
@@ -1393,6 +1393,7 @@ function sumAgg(list) {
   list.forEach(a => Object.keys(t).forEach(k => { if (typeof t[k] === 'number') t[k] += a[k]; else if (Array.isArray(t[k])) a[k].forEach((v, i) => t[k][i] += v); }));
   return t;
 }
+function cureP(a) { return a.exU > 0 ? a.exC / a.exU * 100 : null; }   // peso cure: principal of delinquent accounts that ended current / paid off ÷ principal of all accounts that went on DPD
 function rate(a, b) { return b > 0 ? a / b * 100 : null; }
 function p0(v) { return v == null ? '—' : Math.round(v) + '%'; }
 function p1(v) { return v == null ? '—' : v.toFixed(1) + '%'; }
@@ -1412,7 +1413,7 @@ function stPill(t) {
   return '<span class="pill ' + c + '">' + t + '</span>';
 }
 function comSel() {
-  const n = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1), k = S.cmon || 'prev'; let y, m;
+  const n = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1), k = S.cmon || 'cur'; let y, m;
   if (k === 'cur') { y = n.getFullYear(); m = n.getMonth(); }
   else if (/^\d{4}-\d{1,2}$/.test(k)) { const a = k.split('-').map(Number); y = a[0]; m = a[1] - 1; }
   else { const p = new Date(n.getFullYear(), n.getMonth() - 1, 1); y = p.getFullYear(); m = p.getMonth(); }
@@ -1423,32 +1424,30 @@ document.addEventListener('change', e => {
   if ((t.dataset.csel && t.value) || t.dataset.coff) { if (t.dataset.csel) S.cmon = t.value; else S.cco = t.value; const y = window.scrollY; render(); setTimeout(() => window.scrollTo(0, y), 60); }
 });
 var CO_MET = {
-  cure: { l: 'Cure rate', good: true, lo: 30, hi: 90, f: a => rate(a.cured, a.uni), n: a => a.uni + ' delinq.', fmt: p0 },
+  cure: { l: 'Cure rate', good: true, lo: 30, hi: 90, f: a => cureP(a), n: a => a.uni + ' delinq.', fmt: p0 },
   roll: { l: 'Roll rate', good: false, lo: 0, hi: 60, f: a => rate(a.roll, a.del0), n: a => a.del0 + ' carried', fmt: p0 },
-  slip: { l: 'Slip rate', good: false, lo: 0, hi: 30, f: a => rate(a.slip, a.cur0), n: a => a.cur0 + ' current', fmt: p0 },
-  par30: { l: 'PAR 30+', good: false, lo: 0, hi: 30, f: a => rate(a.par30, a.prin), n: a => a.acct + ' accts', fmt: p1 },
+  par30: { get l() { return 'PAR ' + (S.cpar || 30) + '+'; }, good: false, lo: 0, get hi() { return ({ 30: 30, 60: 20, 90: 15 })[S.cpar || 30]; }, f: a => rate(a['par' + (S.cpar || 30)], a.prin), n: a => a.acct + ' accts', fmt: p1 },
   uni: { l: 'Delinquent accounts', good: false, lo: 0, hi: 0, f: a => a.uni, n: a => a.acct + ' accts', fmt: v => String(v) }
 };
 function renderLeadCO(host) {
   const sel = comSel(), mon = (y, m) => MONTH_ABBR[new Date(y, m, 1).getMonth()];
-  const win = []; for (let i = 5; i >= 0; i--) { const d = new Date(sel.y, sel.m - i, 1); win.push({ y: d.getFullYear(), m: d.getMonth(), lbl: MONTH_ABBR[d.getMonth()] + (d.getFullYear() !== sel.y ? ' ' + String(d.getFullYear()).slice(2) : '') }); }
+  const win = []; for (let i = 0; i <= 5; i++) { const d = new Date(sel.y, sel.m - i, 1); win.push({ y: d.getFullYear(), m: d.getMonth(), lbl: MONTH_ABBR[d.getMonth()] + (d.getFullYear() !== sel.y ? ' ' + String(d.getFullYear()).slice(2) : '') }); }
   const snaps = win.map(w => comSnaps(w.y, w.m)), aggs = snaps.map(aggSnaps), tots = aggs.map(a => sumAgg(Object.values(a)));
-  const cur = aggs[5], tc = tots[5], tp = tots[4], pl = win[4].lbl, mlabel = MONTH_ABBR[sel.m] + ' ' + sel.y + (sel.isCur ? ' (month to date)' : '');
+  const cur = aggs[0], tc = tots[0], tp = tots[1], pl = win[1].lbl, mlabel = MONTH_ABBR[sel.m] + ' ' + sel.y + (sel.isCur ? ' (month to date)' : '');
   const offs = Array.from(new Set([].concat.apply([], aggs.map(a => Object.keys(a))))).filter(n => aggs.some(a => a[n] && (a[n].uni || a[n].acct)));
   offs.sort((a, b) => ((cur[b] ? cur[b].uni : 0) - (cur[a] ? cur[a].uni : 0)) || a.localeCompare(b));
   const mEnd = new Date(sel.y, sel.m + 1, 0), per = { from: new Date(sel.y, sel.m, 1), to: mEnd > TODAY ? TODAY : mEnd };
   if (!S.cco || (S.cco !== '*' && offs.indexOf(S.cco) < 0)) S.cco = '*';
   if (!S.cmet || !CO_MET[S.cmet]) S.cmet = 'cure';
   const opts = []; for (let d = new Date(TODAY.getFullYear(), TODAY.getMonth() - 2, 1), i = 0; i < 12; d = new Date(d.getFullYear(), d.getMonth() - 1, 1), i++) { const k = d.getFullYear() + '-' + (d.getMonth() + 1); opts.push('<option value="' + k + '"' + (S.cmon === k ? ' selected' : '') + '>' + MONTH_ABBR[d.getMonth()] + ' ' + d.getFullYear() + '</option>'); }
-  const k0 = S.cmon || 'prev', isPick = /^\d/.test(k0);
+  const k0 = S.cmon || 'cur', isPick = /^\d/.test(k0);
   let h = '<div class="h1">Leadership</div>' + leadTabs() + '<div class="sub">Collections officers · ' + esc(mlabel) + ' · each account is credited to the officer now assigned to its dealer · ' + (tc.uni ? tc.uni + ' accounts went delinquent in the month' : 'no delinquent accounts in the month') + '</div>';
   h += '<div class="chips" style="margin:12px 0;align-items:center"><button class="chip' + (k0 === 'cur' ? ' on' : '') + '" data-act="cmon" data-v="cur">This month (MTD)</button><button class="chip' + (k0 === 'prev' ? ' on' : '') + '" data-act="cmon" data-v="prev">Last month</button><select class="chip' + (isPick ? ' on' : '') + '" data-csel="1"><option value="">Pick a month…</option>' + opts.join('') + '</select></div>';
-  const cr = rate(tc.cured, tc.uni), crp = rate(tp.cured, tp.uni), rr = rate(tc.roll, tc.del0), rrp = rate(tp.roll, tp.del0), sr = rate(tc.slip, tc.cur0), srp = rate(tp.slip, tp.cur0), pr = rate(tc.par30, tc.prin), prp = rate(tp.par30, tp.prin);
+  const cr = cureP(tc), crp = cureP(tp), rr = rate(tc.roll, tc.del0), rrp = rate(tp.roll, tp.del0), pr = rate(tc.par30, tc.prin), prp = rate(tp.par30, tp.prin);
   h += '<div class="kpis">' +
     '<div class="kpi blue"><div class="n">' + tc.uni + '</div><div class="l">Delinquent in the month</div><div class="s">' + tc.newU + ' new · ' + tc.carU + ' carried in from last month</div></div>' +
-    '<div class="kpi ' + (cr == null ? '' : cr >= 70 ? 'green' : cr >= 50 ? 'amber' : 'red') + '"><div class="n">' + p0(cr) + '</div><div class="l">Cure rate</div><div class="s">' + tc.cured + ' ended current or paid off · ' + dlt(cr, crp, true) + ' vs ' + pl + '</div></div>' +
+    '<div class="kpi ' + (cr == null ? '' : cr >= 70 ? 'green' : cr >= 50 ? 'amber' : 'red') + '"><div class="n">' + p0(cr) + '</div><div class="l">Cure rate (₱ recovered)</div><div class="s">' + peso(tc.exC) + ' of ' + peso(tc.exU) + ' that went on DPD · ' + dlt(cr, crp, true) + ' vs ' + pl + '</div></div>' +
     '<div class="kpi ' + (rr == null ? '' : rr <= 15 ? 'green' : rr <= 30 ? 'amber' : 'red') + '"><div class="n">' + p0(rr) + '</div><div class="l">Roll rate (moved to a worse bucket)</div><div class="s">' + tc.roll + ' of ' + tc.del0 + ' carried in · ' + dlt(rr, rrp, false) + ' vs ' + pl + '</div></div>' +
-    '<div class="kpi ' + (sr == null ? '' : sr <= 10 ? 'green' : sr <= 20 ? 'amber' : 'red') + '"><div class="n">' + p0(sr) + '</div><div class="l">Slip rate (current → late)</div><div class="s">' + tc.slip + ' of ' + tc.cur0 + ' current accounts · ' + dlt(sr, srp, false) + ' vs ' + pl + '</div></div>' +
     '<div class="kpi ' + (pr == null ? '' : pr <= 8 ? 'green' : pr <= 15 ? 'amber' : 'red') + '"><div class="n">' + p1(pr) + '</div><div class="l">PAR 30+ at month end</div><div class="s">' + peso(tc.par30) + ' of ' + peso(tc.prin) + ' · ' + dlt(pr, prp, false) + ' vs ' + pl + '</div></div>' +
     '<div class="kpi red"><div class="n">' + tc.repo + '</div><div class="l">Repossessed</div><div class="s">' + p0(rate(tc.repo, tc.uni)) + ' of delinquent accounts</div></div></div>';
 
@@ -1459,13 +1458,13 @@ function renderLeadCO(host) {
   win.forEach((w, i) => { const t = tots[i];
     h += '<div style="display:flex;align-items:center;gap:10px;margin:6px 0"><span class="small" style="width:46px;font-weight:600">' + esc(w.lbl) + '</span><div class="stk" style="flex:1">' +
       (t.uni ? OC.map(o => t[o[0]] ? '<i title="' + o[1] + ': ' + t[o[0]] + ' (' + Math.round(t[o[0]] / t.uni * 100) + '%)" style="width:' + (t[o[0]] / t.uni * 100) + '%;background:var(' + o[2] + ')"></i>' : '').join('') : '') +
-      '</div><span class="small" style="width:150px;text-align:right"><b>' + p0(rate(t.cured, t.uni)) + '</b> cured · ' + t.uni + ' delinq.</span></div>'; });
+      '</div><span class="small" style="width:150px;text-align:right"><b>' + p0(cureP(t)) + '</b> of ₱ cured · ' + t.uni + ' delinq.</span></div>'; });
   h += '</div>';
 
   /* B. scorecard */
-  h += '<div class="sec"><div class="sec-h"><h2>Officer scorecard — ' + esc(mlabel) + '</h2><span class="sub">Cure = went delinquent and ended current / paid off · Roll = carried in late and ended in a worse bucket · Slip = started current and went late</span></div><div id="co1"></div></div>';
+  h += '<div class="sec"><div class="sec-h"><h2>Officer scorecard — ' + esc(mlabel) + '</h2><span class="sub">Cure = went delinquent and ended current / paid off · Roll = carried in late and ended in a worse bucket</span></div><div id="co1"></div></div>';
   /* C. trend heatmap */
-  h += '<div class="sec"><div class="sec-h"><h2>How each officer’s accounts progress month on month</h2><span class="sub">Last 6 months to ' + esc(mlabel) + '</span></div><div class="chips" style="margin-bottom:10px">' + Object.keys(CO_MET).map(k => '<button class="chip' + (S.cmet === k ? ' on' : '') + '" data-act="cmet" data-v="' + k + '">' + CO_MET[k].l + '</button>').join('') + '</div><div class="card scr" id="co2"></div></div>';
+  h += '<div class="sec"><div class="sec-h"><h2>How each officer’s accounts progress month on month</h2><span class="sub">Last 6 months to ' + esc(mlabel) + '</span></div><div class="chips" style="margin-bottom:10px">' + Object.keys(CO_MET).map(k => '<button class="chip' + (S.cmet === k ? ' on' : '') + '" data-act="cmet" data-v="' + k + '">' + CO_MET[k].l + '</button>').join('') + '</div>' + (S.cmet === 'par30' ? '<div class="chips" style="margin:-2px 0 10px;align-items:center"><span class="small muted" style="margin-right:4px">Days past due:</span>' + [30, 60, 90].map(n => '<button class="chip' + ((S.cpar || 30) === n ? ' on' : '') + '" data-act="cpar" data-v="' + n + '">PAR ' + n + '+</button>').join('') + '</div>' : '') + '<div class="card scr" id="co2"></div></div>';
   /* D. roll matrix */
   h += '<div class="sec"><div class="sec-h"><h2>Roll-rate matrix — ' + esc(mlabel) + '</h2><select class="inp" data-coff="1" style="width:auto;min-height:34px;padding:4px 8px;font-size:12.5px"><option value="*">All officers</option>' + offs.map(n => '<option' + (n === S.cco ? ' selected' : '') + '>' + esc(n) + '</option>').join('') + '</select></div><div class="card scr" id="co3"></div></div>';
   /* E. account movement */
@@ -1476,30 +1475,32 @@ function renderLeadCO(host) {
   h += '<div class="sec"><div class="sec-h"><h2>Collections — recovered at DPD 5+</h2><span class="sub" id="lt2sub"></span></div><div id="lt2"></div></div>';
   h += '<details class="card sec"><summary class="b" style="cursor:pointer">How to read this page</summary><div class="small" style="margin-top:8px;line-height:1.6">' +
     '<b>Delinquent in the month</b> — accounts that were 1+ days past due on any day of the month (the same idea as “highest bucket in the month”).<br>' +
-    '<b>Cure rate</b> — of those, the share that ended the month current or fully paid off. Peso cure % does the same using principal.<br>' +
+    '<b>Cure rate</b> — measured in pesos. The pool is the principal of every account that went on DPD during the month (not all principal). Recovered = the principal of those accounts that ended the month current or fully paid off. Cure % = recovered ÷ pool. “Accounts cured %” is the same by account count.<br>' +
     '<b>Roll rate</b> — of accounts already late on the last day of the previous month, the share that ended in a worse bucket. Lower is better.<br>' +
-    '<b>Slip rate</b> — of accounts that started the month current, the share that went late at some point.<br>' +
     '<b>PAR 1+ / PAR 30+</b> — principal outstanding on accounts that are 1+ / 31+ days past due at month end, as a share of all outstanding principal.<br>' +
     '<b>Buckets</b> — 1-15, 16-30, 31-60, 61-90 and 90+ days past due, measured at the end of the month.<br>' +
     '<b>Credit</b> — every account is credited to the officer currently assigned to its dealer in AuditMapping, including months before they took over. The current month is month to date.</div></details>';
   host.innerHTML = h;
 
-  const rowsB = offs.filter(n => cur[n] && (cur[n].uni || cur[n].acct)).map(n => ({ a: cur[n], p: aggs[4][n] || newAgg(n) }));
-  const cureV = a => rate(a.cured, a.uni);
+  const rowsB = offs.filter(n => cur[n] && (cur[n].uni || cur[n].acct)).map(n => ({ a: cur[n], p: aggs[1][n] || newAgg(n) }));
+  const cureV = a => cureP(a);
   const colsB = [
     { id: 'n', label: 'Collections officer', fz: true, val: r => r.a.co, html: r => '<b>' + esc(r.a.co) + '</b>' },
     { id: 'acct', label: 'Open accounts', type: 'num', val: r => r.a.acct }, { id: 'prin', label: 'Principal', type: 'num', val: r => Math.round(r.a.prin), txt: r => peso(r.a.prin) },
     { id: 'uni', label: 'Delinquent in month', type: 'num', val: r => r.a.uni }, { id: 'nw', label: 'New', type: 'num', val: r => r.a.newU }, { id: 'cr', label: 'Carried in', type: 'num', val: r => r.a.carU },
     { id: 'cured', label: 'Cured', type: 'num', val: r => r.a.cured },
-    { id: 'cure', label: 'Cure %', type: 'num', val: r => cureV(r.a) == null ? '' : Math.round(cureV(r.a)), txt: r => p0(cureV(r.a)), html: r => cureV(r.a) == null ? '—' : '<b style="padding:2px 8px;border-radius:6px;' + heatBg(cureV(r.a), true, 30, 90) + '">' + p0(cureV(r.a)) + '</b>' },
-    { id: 'dc', label: 'Cure % vs last month', type: 'num', val: r => cureV(r.a) == null || cureV(r.p) == null ? '' : Math.round((cureV(r.a) - cureV(r.p)) * 10) / 10, txt: r => cureV(r.a) == null || cureV(r.p) == null ? '—' : (cureV(r.a) - cureV(r.p) >= 0 ? '+' : '') + (cureV(r.a) - cureV(r.p)).toFixed(1) + ' pts' },
-    { id: 'pc', label: 'Peso cure %', type: 'num', val: r => r.a.exU ? Math.round(r.a.exC / r.a.exU * 100) : '', txt: r => p0(rate(r.a.exC, r.a.exU)) },
+    { id: 'pool', label: '₱ went on DPD (pool)', type: 'num', val: r => Math.round(r.a.exU), txt: r => peso(r.a.exU) },
+    { id: 'rec', label: '₱ recovered (cured)', type: 'num', val: r => Math.round(r.a.exC), txt: r => peso(r.a.exC) },
+    { id: 'cure', label: 'Cure % (₱)', type: 'num', val: r => cureV(r.a) == null ? '' : Math.round(cureV(r.a)), txt: r => p0(cureV(r.a)), html: r => cureV(r.a) == null ? '—' : '<b style="padding:2px 8px;border-radius:6px;' + heatBg(cureV(r.a), true, 30, 90) + '">' + p0(cureV(r.a)) + '</b>' },
+    { id: 'dc', label: 'Cure % (₱) vs last month', type: 'num', val: r => cureV(r.a) == null || cureV(r.p) == null ? '' : Math.round((cureV(r.a) - cureV(r.p)) * 10) / 10, txt: r => cureV(r.a) == null || cureV(r.p) == null ? '—' : (cureV(r.a) - cureV(r.p) >= 0 ? '+' : '') + (cureV(r.a) - cureV(r.p)).toFixed(1) + ' pts' },
+    { id: 'pc', label: 'Accounts cured %', type: 'num', val: r => r.a.uni ? Math.round(r.a.cured / r.a.uni * 100) : '', txt: r => p0(rate(r.a.cured, r.a.uni)) },
     { id: 'roll', label: 'Roll rate', type: 'num', val: r => rate(r.a.roll, r.a.del0) == null ? '' : Math.round(rate(r.a.roll, r.a.del0)), txt: r => p0(rate(r.a.roll, r.a.del0)), html: r => rate(r.a.roll, r.a.del0) == null ? '—' : '<b style="padding:2px 8px;border-radius:6px;' + heatBg(rate(r.a.roll, r.a.del0), false, 0, 60) + '">' + p0(rate(r.a.roll, r.a.del0)) + '</b>' },
-    { id: 'slip', label: 'Slip rate', type: 'num', val: r => rate(r.a.slip, r.a.cur0) == null ? '' : Math.round(rate(r.a.slip, r.a.cur0)), txt: r => p0(rate(r.a.slip, r.a.cur0)) },
     { id: 'repo', label: 'Repo', type: 'num', val: r => r.a.repo },
     { id: 'dend', label: 'Still late at month end', type: 'num', val: r => r.a.dEnd },
     { id: 'par1', label: 'PAR 1+', type: 'num', val: r => rate(r.a.par1, r.a.prin) == null ? '' : Math.round(rate(r.a.par1, r.a.prin) * 10) / 10, txt: r => p1(rate(r.a.par1, r.a.prin)) },
-    { id: 'par30', label: 'PAR 30+', type: 'num', val: r => rate(r.a.par30, r.a.prin) == null ? '' : Math.round(rate(r.a.par30, r.a.prin) * 10) / 10, txt: r => p1(rate(r.a.par30, r.a.prin)), html: r => rate(r.a.par30, r.a.prin) == null ? '—' : '<b style="padding:2px 8px;border-radius:6px;' + heatBg(rate(r.a.par30, r.a.prin), false, 0, 30) + '">' + p1(rate(r.a.par30, r.a.prin)) + '</b>' }];
+    { id: 'par30', label: 'PAR 30+', type: 'num', val: r => rate(r.a.par30, r.a.prin) == null ? '' : Math.round(rate(r.a.par30, r.a.prin) * 10) / 10, txt: r => p1(rate(r.a.par30, r.a.prin)), html: r => rate(r.a.par30, r.a.prin) == null ? '—' : '<b style="padding:2px 8px;border-radius:6px;' + heatBg(rate(r.a.par30, r.a.prin), false, 0, 30) + '">' + p1(rate(r.a.par30, r.a.prin)) + '</b>' },
+    { id: 'par60', label: 'PAR 60+', type: 'num', val: r => rate(r.a.par60, r.a.prin) == null ? '' : Math.round(rate(r.a.par60, r.a.prin) * 10) / 10, txt: r => p1(rate(r.a.par60, r.a.prin)) },
+    { id: 'par90', label: 'PAR 90+', type: 'num', val: r => rate(r.a.par90, r.a.prin) == null ? '' : Math.round(rate(r.a.par90, r.a.prin) * 10) / 10, txt: r => p1(rate(r.a.par90, r.a.prin)) }];
   makeTable(document.getElementById('co1'), colsB, rowsB, { csv: 'collections-officer-scorecard', maxH: '55vh', sort: { id: 'uni', dir: -1 } });
 
   /* heatmap */
@@ -1513,7 +1514,7 @@ function renderLeadCO(host) {
 
   /* roll matrix */
   const RM = []; for (let i = 0; i < 7; i++) RM.push([0, 0, 0, 0, 0, 0, 0, 0]);
-  snaps[5].forEach(s => { if (S.cco !== '*' && s.co !== S.cco) return; RM[s.o0 > 0.5 ? s.b0 : 6][s.repo ? 7 : s.settled ? 6 : s.b1]++; });
+  snaps[0].forEach(s => { if (S.cco !== '*' && s.co !== S.cco) return; RM[s.o0 > 0.5 ? s.b0 : 6][s.repo ? 7 : s.settled ? 6 : s.b1]++; });
   const CH = BK.concat(['Paid off', 'Repo']), RH = BK.map(b => b + ' at start').concat(['New this month']);
   let mt = '<table class="hm"><thead><tr><th>Started the month</th><th>Accounts</th>' + CH.map(c => '<th>' + c + '</th>').join('') + '</tr></thead><tbody>';
   RM.forEach((row, ri) => { const tot = row.reduce((a, b) => a + b, 0); if (!tot) return;
@@ -1528,7 +1529,7 @@ function renderLeadCO(host) {
   const idx = snaps.map(sn => { const o = {}; sn.forEach(s => o[s.id] = s); return o; });
   const stOf = s => !s ? '—' : s.repo ? 'Repo' : s.settled ? 'Paid' : BK[s.b1];
   const mvLbl = s => { const oc = outcomeOf(s); return oc === 'cured' ? 'Cured' : oc === 'impr' ? 'Improved' : oc === 'same' ? 'No change' : oc === 'repo' ? 'Repossessed' : (s.o0 > 0.5 && s.d0 >= 1 ? 'Rolled worse' : 'Newly late'); };
-  const rowsA = snaps[5].filter(s => s.mx >= 1 && (S.cco === '*' || s.co === S.cco)).map(s => ({ s, mv: mvLbl(s), tr: idx.map(o => stOf(o[s.id])) }));
+  const rowsA = snaps[0].filter(s => s.mx >= 1 && (S.cco === '*' || s.co === S.cco)).map(s => ({ s, mv: mvLbl(s), tr: idx.map(o => stOf(o[s.id])) }));
   const colsA = [
     { id: 'id', label: 'Drawdown', fz: true, val: r => r.s.id, html: r => '<b>' + esc(r.s.id) + '</b>' }, { id: 'dl', label: 'Dealer', val: r => r.s.dealer }, { id: 'co', label: 'Officer', val: r => r.s.co },
     { id: 'pr', label: 'Principal', type: 'num', val: r => Math.round(r.s.o1 > 0.5 ? r.s.o1 : r.s.o0), txt: r => peso(r.s.o1 > 0.5 ? r.s.o1 : r.s.o0) },
@@ -1543,7 +1544,7 @@ function renderLeadCO(host) {
   const colsE = [{ id: 'mo', label: 'Month', fz: true, val: r => r.mk, txt: r => r.mo }, { id: 'co', label: 'Officer', val: r => r.a.co, html: r => '<b>' + esc(r.a.co) + '</b>' }, { id: 'u', label: 'Delinquent in month', type: 'num', val: r => r.a.uni }]
     .concat([1, 2, 3, 4, 5].map(hmc)).concat([ebc(0), { id: 'e6', label: 'End Paid off', type: 'num', val: r => r.a.eb[6] }], [1, 2, 3, 4, 5].map(ebc),
       [{ id: 'e7', label: 'Repo', type: 'num', val: r => r.a.eb[7] }, { id: 'res', label: 'Resolved (current + paid off)', type: 'num', val: r => r.a.eb[0] + r.a.eb[6] }, { id: 'sl', label: 'Still delinquent', type: 'num', val: r => r.a.eb[1] + r.a.eb[2] + r.a.eb[3] + r.a.eb[4] + r.a.eb[5] },
-        { id: 'cu', label: 'Cure %', type: 'num', val: r => Math.round(rate(r.a.cured, r.a.uni)), txt: r => p0(rate(r.a.cured, r.a.uni)) }]);
+        { id: 'cu', label: 'Cure % (₱)', type: 'num', val: r => cureP(r.a) == null ? '' : Math.round(cureP(r.a)), txt: r => p0(cureP(r.a)) }]);
   makeTable(document.getElementById('co5'), colsE, rowsE, { csv: 'collections-bucket-view', maxH: '55vh', sort: { id: 'mo', dir: -1 } });
   paintCollections(per);
 }
@@ -1649,6 +1650,7 @@ document.addEventListener('click', function (e) {
   else if (a === 'ltab') { S.ltab = v; render(); }
   else if (a === 'cmon') { S.cmon = v; render(); }
   else if (a === 'cmet') { S.cmet = v; render(); }
+  else if (a === 'cpar') { S.cpar = +v; render(); }
   else if (a === 'res') { readForm(); A.status = v; const ok = v === 'Passed' ? VS_PASS : VS_FAIL; if (!ok.includes(A.vs)) A.vs = ''; paintAudit(); }
   else if (a === 'rmph') { A.photos[k].splice(+t.dataset.i, 1); readForm(); paintAudit(); }
   else if (a === 'chg') { readForm(); A.ddId = ''; paintAudit(); }
