@@ -287,7 +287,7 @@ td.od{color:var(--red);font-weight:700}
 .wd-cell.filled{border-color:var(--text3);animation:wdpop .1s}
 .wd-cell.g,.wd-cell.y,.wd-cell.x{color:#fff;border-color:transparent}
 .wd-cell.g{background:#16A34A}.wd-cell.y{background:#CA8A04}.wd-cell.x{background:#6B7280}
-.wd-cell.flip{animation:wdflip .5s ease both}
+.wd-cell.flip{animation:wdflip .35s ease both}
 @keyframes wdflip{0%{transform:rotateX(0);background:var(--card);color:var(--text)}49%{transform:rotateX(90deg);background:var(--card);color:var(--text)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
 @keyframes wdpop{50%{transform:scale(1.08)}}
 .wd-row.shake{animation:wdshake .4s}
@@ -421,7 +421,7 @@ function parseSheetDate(v) {
   }
   const dm = s.match(/^(\d{1,2})-([A-Za-z]{3})[a-z]*-(\d{4})$/);   // 9-Oct-2026
   if (dm) { const mi = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(dm[2].toLowerCase()); if (mi >= 0) return new Date(+dm[3], mi, +dm[1]); }  // MON_IDX_
-  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T,]+\d{1,2}:\d{2}(?::\d{2})?\s*(?:[AP]M)?)?$/i);   // m/d/yyyy, optionally followed by a time
   if (m) return new Date(+m[3], +m[1]-1, +m[2]);
   const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
@@ -726,7 +726,7 @@ async function submitGuess() {
   if (done) { W.done = true; W.won = won; W.ans = extra.word || W.ans; W.points = extra.points == null ? null : extra.points; setStreaks(extra); }
   if (extra.hint) W.hint = extra.hint;
   if (W.guesses.length >= HINT_AFTER) W.hintShown = true;
-  paintBoard(idx); setTimeout(() => { W.busy = false; paintAll(); }, W.len * 220 + 450);
+  paintBoard(idx); setTimeout(() => { W.busy = false; paintAll(); }, W.len * 130 + 350);
 }
 function typeKey(k) {
   if (W.done || W.busy || !W.len) return;
@@ -751,7 +751,7 @@ function boardHtml(reveal) {
     h += '<div class="wd-row' + (isCur ? ' cur' : '') + '">';
     for (let i = 0; i < n; i++) {
       const ch = g ? g[i] : (isCur ? (W.cur[i] || '') : '');
-      h += '<div class="wd-cell' + (g ? ' ' + W.res[r][i] + (r === reveal ? ' flip' : '') : (ch ? ' filled' : '')) + '"' + (r === reveal ? ' style="animation-delay:' + (i * 220) + 'ms"' : '') + '>' + ch + '</div>';
+      h += '<div class="wd-cell' + (g ? ' ' + W.res[r][i] + (r === reveal ? ' flip' : '') : (ch ? ' filled' : '')) + '"' + (r === reveal ? ' style="animation-delay:' + (i * 130) + 'ms"' : '') + '>' + ch + '</div>';
     }
     h += '</div>';
   }
