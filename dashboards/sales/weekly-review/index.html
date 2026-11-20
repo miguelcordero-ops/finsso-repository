@@ -817,7 +817,7 @@ async function loadData() {
         const gcd = (get(r, vc('Clean GCD')).trim() || get(r, vc('GCD')).trim() || get(r, vc('Dealer GCD')).trim()).toUpperCase();
         const did = (gcd && byGcd[gcd]) || byName[normName(get(r, vc('Dealer Name')) || get(r, vc('DealerShip Name')) || get(r, vc('ID'))).toLowerCase()];
         if (!did) continue;
-        const by = normName(get(r, vc('Executive Name')));
+        const by = normName((get(r, vc('Name Convention')) || get(r, vc('Executive Name'))));
         if (!latestVisit[did] || dt > latestVisit[did].date) latestVisit[did] = { date: dt, by, remarks: get(r, vc('Remarks')).replace(/\s+/g, ' ').trim() };
       }
     }
@@ -1659,7 +1659,7 @@ function obVisitMap() {
   for (let i = 1; i < g.length; i++) {
     const r = g[i]; if (get(r, vc('Visit Type')).trim().toLowerCase() !== 'if visit') continue;
     const dt = parseSheetDate(get(r, vc('Visited Date'))); if (!dt) continue;
-    const by = normName(get(r, vc('Executive Name')));
+    const by = normName((get(r, vc('Name Convention')) || get(r, vc('Executive Name'))));
     [get(r, vc('Clean GCD')), get(r, vc('GCD')), get(r, vc('Dealer GCD')), get(r, vc('Dealer Name')), get(r, vc('DealerShip Name')), get(r, vc('ID'))].forEach(n => { const k = nk(n); if (k && (!m[k] || dt > m[k].date)) m[k] = { date: dt, by }; });
   }
   return m;
