@@ -611,7 +611,7 @@ function parseSheetDate(v) {
   }
   const dm = s.match(/^(\d{1,2})-([A-Za-z]{3})[a-z]*-(\d{4})$/);   // 9-Oct-2026
   if (dm) { const mi = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].indexOf(dm[2].toLowerCase()); if (mi >= 0) return new Date(+dm[3], mi, +dm[1]); }  // MON_IDX_
-  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T,]+\d{1,2}:\d{2}(?::\d{2})?\s*(?:[AP]M)?)?$/i);   // m/d/yyyy, optionally followed by a time
   if (m) return new Date(+m[3], +m[1]-1, +m[2]);
   const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
@@ -724,7 +724,9 @@ function get(row, i) { return i >= 0 && i < row.length ? row[i] : ''; }
 // those two strings don't compare equal and the SO silently falls out of
 // every team total. Collapses any run of whitespace (regular or NBSP) to a
 // single regular space, so the two representations always match.
-function normName(s) { return String(s || '').replace(/[\s ]+/g, ' ').trim(); }
+// Same person spelled two ways: map the variant (lower case) to the one spelling the dashboard uses.
+var NAME_ALIASES = { 'may cosip': 'Mae Cosip' };
+function normName(s) { const n = String(s || '').replace(/[\s ]+/g, ' ').trim(); return NAME_ALIASES[n.toLowerCase()] || n; }
 
 async function fetchCSV(name, optional) {
   { const _b = await bqFetch(name); if (_b !== null) return _b; }
@@ -932,7 +934,7 @@ async function loadData() {
         const r = visitGrid[i];
         const visitType = get(r, vCol('Visit Type')).trim().toLowerCase();
         if (visitType !== 'if visit') continue;
-        const so = resolveVisitAlias(normName(get(r, vCol('Executive Name'))));
+        const so = resolveVisitAlias(normName((get(r, vCol('Name Convention')) || get(r, vCol('Executive Name')))));
         const date = parseSheetDate(get(r, vCol('Visited Date')));
         if (!so || !date) continue;
         const purposeRaw = get(r, vCol('Purpose')).trim();
