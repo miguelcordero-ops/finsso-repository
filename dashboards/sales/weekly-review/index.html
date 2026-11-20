@@ -1721,7 +1721,7 @@ function obParse(grid) {
   OB = out; return true;
 }
 // Working fields (plan visit, remarks, target) are saved in the "[Input] Onboarding" tab, like the Weekly Review inputs, and merged on top of the list here.
-var OB_INPUTS = [], OB_INPUTS_OK = false;
+var OB_INPUTS = [], OB_INPUTS_OK = false, OB_IN_ERR = '';
 function obOverlay(rows) {
   if (!OB_INPUTS.length) return;
   const byC = {}, byN = {};
@@ -1734,7 +1734,7 @@ var OB_LIVE_OK = false, OB_FROM_LIVE = false;
 async function obLoad(live) {
   OB_ERR = '';
   let ok = false;
-  if (wrConfigured() && ID_TOKEN) { try { const ri = await fetch(WR_API + '?action=load&what=obinputs&token=' + encodeURIComponent(ID_TOKEN) + '&_=' + Date.now()); const ji = await ri.json(); if (ji.ok) { OB_INPUTS = ji.rows || []; OB_INPUTS_OK = true; } } catch (e) {} }
+  if (wrConfigured() && ID_TOKEN) { try { const ri = await fetch(WR_API + '?action=load&what=obinputs&token=' + encodeURIComponent(ID_TOKEN) + '&_=' + Date.now()); const ji = await ri.json(); if (ji.ok) { OB_INPUTS = ji.rows || []; OB_INPUTS_OK = true; OB_IN_ERR = ''; } else OB_IN_ERR = 'Saved onboarding inputs could not be loaded (' + (ji.error || 'unknown') + ') - redeploy the Apps Script as a new version.'; } catch (e) { OB_IN_ERR = 'Saved onboarding inputs could not be loaded: ' + (e.message || e); } }
   // Signed-in users read the sheet live, so a saved Plan Visit Date (or any edit) shows at once; BigQuery is only refreshed by the hourly export.
   const askedLive = live; if (!live && wrConfigured() && ID_TOKEN) { live = true; }
   if (!live) { try { ok = obParse(await fetchCSV('onboarding-list.csv', true)); } catch (e) { ok = false; } }
@@ -1845,7 +1845,7 @@ function obMore() {
 }
 function obRender() {
   if (!OB_LOADED) { document.getElementById('ob-body').innerHTML = '<tr><td class="ob-none">Loading the onboarding list…</td></tr>'; return; }
-  const ban = document.getElementById('ob-banner'); ban.textContent = OB.length ? '' : OB_ERR; ban.className = 'wr-msg' + (OB.length || !OB_ERR ? '' : ' err');
+  const ban = document.getElementById('ob-banner'); ban.textContent = OB.length ? OB_IN_ERR : OB_ERR; ban.className = 'wr-msg' + ((OB.length ? !OB_IN_ERR : !OB_ERR) ? '' : ' err');
   obPaint();
 }
 function obToast(t, err) { const e = document.getElementById('ob-toast'); e.textContent = t; e.className = 'ob-toast show' + (err ? ' err' : ''); clearTimeout(obToast._t); obToast._t = setTimeout(() => { e.className = 'ob-toast'; }, err ? 6000 : 3000); }
