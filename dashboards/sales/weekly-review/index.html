@@ -1665,7 +1665,7 @@ function obVisitMap() {
   return m;
 }
 var _obOnb = null;
-function obOnboardedSet() { if (_obOnb) return _obOnb; const m = {}; (dealerRows || []).forEach(d => { if (d.gcd) m[String(d.gcd).trim().toUpperCase()] = 1; }); _obOnb = m; return m; }
+function obOnboardedSet() { if (_obOnb) return _obOnb; const m = {}; (dealerRows || []).forEach(d => { if (d.gcd) m[String(d.gcd).trim().toUpperCase()] = 1; if (d.name) m['n:' + nk(d.name)] = 1; }); _obOnb = m; return m; }
 function obMasterMap() {
   if (_obMm) return _obMm;
   const m = { code: {}, name: {} }; _obMm = m; const g = _OBM; if (!g || g.length < 2) return m;
@@ -1698,10 +1698,25 @@ function obParse(grid) {
     if (!o.applied && c('Application Date') >= 0) { const ad = parseSheetDate(String(get(r, c('Application Date')) || '').trim()); if (ad) o.applied = ad; }
     o.appliedSheet = o.applied;   // what the sheet itself holds (used to find the row when saving)
     if (mr) { if (!o.applied && mr.appliedM) { const ad = parseSheetDate(mr.appliedM); if (ad) { o.applied = ad; o.appliedFrom = 'OB Masterlist'; } } if (!o.type && mr.typeM) { o.type = mr.typeM; o.typeFrom = 'OB Masterlist'; } }
-    if (o.code && obOnboardedSet()[o.code]) { o.status = 'Eligible Applications - Dealer Onboarded'; o.auto = 1; }
+    if ((o.code && obOnboardedSet()[o.code]) || obOnboardedSet()['n:' + nk(o.name)]) { o.status = 'Eligible Applications - Dealer Onboarded'; o.auto = 1; }
     o.team = (o.sm ? o.sm.split(' ')[0] : '') || teamOf(o.so) || '';
     out.push(o);
   }
+  // Dealers onboarded in Dealer Checker that are not on the list yet (matched on GCD, then on name) are added automatically, read-only.
+  const haveCode = {}, haveName = {}; out.forEach(o => { if (o.code) haveCode[nk(o.code)] = 1; haveName[nk(o.name)] = 1; });
+  const mm2 = obMasterMap();
+  (dealerRows || []).forEach(d => {
+    const gk = d.gcd ? nk(d.gcd) : '', nn = nk(d.name);
+    if ((gk && haveCode[gk]) || haveName[nn]) return;
+    const o = { _raw: {}, virtual: 1, auto: 1 };
+    OB_COLS.forEach(col => { o[col.k] = col.date ? null : ''; o._raw[col.k] = ''; });
+    o.name = d.name; o.code = String(d.gcd || '').toUpperCase(); o._raw.code = o.code; o.so = d.so || ''; o.status = 'Eligible Applications - Dealer Onboarded'; o.statusSheet = ''; o.appliedSheet = null;
+    const mr = (gk && mm2.code[gk]) || mm2.name[nn];
+    if (mr) { OB_COLS.forEach(col => { if (col.ext) { o[col.k] = mr[col.k]; o._raw[col.k] = mr['_' + col.k]; } }); o.docs = mr.docs; o._raw.docs = mr._docs; o.fromOBM = 1; const ad = parseSheetDate(mr.appliedM); if (ad) { o.applied = ad; o.appliedFrom = 'OB Masterlist'; } if (mr.typeM) o.type = mr.typeM; }
+    const v = (gk && vm[gk]) || vm[nn]; if (v) { o.last = v.date; o.lastBy = v.by; }
+    o.team = teamOf(o.so) || '';
+    out.push(o);
+  });
   OB = out; return true;
 }
 async function obLoad(live) {
@@ -1732,6 +1747,7 @@ function obInScope() {
 }
 function obCanAdd() { return !!(ACCESS && ACCESS.unrestricted) && wrConfigured() && !!ID_TOKEN; }
 function obCanEdit(r) {
+  if (r.virtual) return false;   // added automatically from Dealer Checker, not a row on the sheet
   if (!wrConfigured() || !ID_TOKEN || !ACCESS) return false;
   if (ACCESS.unrestricted) return true;
   return !!r.team && ACCESS.teams.some(t => t.toLowerCase() === r.team.toLowerCase());
