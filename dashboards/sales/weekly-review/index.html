@@ -597,7 +597,7 @@ table.wr td.ck input.ckb.dirty{outline:2px solid var(--primary);outline-offset:1
   </div>
   <div id="ob-view" style="display:none">
     <div class="ob-bar">
-      <span class="ob-seg" id="ob-stage"><button type="button" data-v="active" title="Applications still being worked on: not onboarded yet, not rejected, not on hold">In progress</button><button type="button" data-v="notdone" title="Everything not yet onboarded, including rejected and on hold">Not onboarded</button><button type="button" data-v="done">Onboarded</button><button type="button" data-v="closed">Rejected / On hold</button><button type="button" data-v="all">All</button></span>
+      <span class="ob-seg" id="ob-stage"><button type="button" data-v="all">All</button><button type="button" data-v="none" title="Dealers with no application status yet">No application</button><button type="button" data-v="active" title="Applications still being worked on: not onboarded yet, not rejected, not on hold">Application in progress</button><button type="button" data-v="done">Onboarded</button><button type="button" data-v="closed">Rejected / On hold</button></span>
       <input id="ob-q" type="search" placeholder="Search dealership, officer, status…" autocomplete="off">
       <select id="ob-so" aria-label="Sales Officer"></select>
       <select id="ob-type" aria-label="Onboarding type"><option value="">Regular + Express</option><option value="regular">Regular</option><option value="express">Express</option></select>
@@ -1648,7 +1648,7 @@ var OB_COLS = [
   { k: 'plan', h: 'Plan Visit Date', label: 'Plan Visit', w: 115, grp: 'IF review', date: 1 },
   { k: 'last', h: 'Last IF Visit', label: 'Last IF Visit', w: 115, grp: 'IF review', date: 1 },
   { k: 'ifr', h: 'IF Review Remarks', label: 'IF Review Remarks', w: 240, grp: 'IF review', long: 1 }];
-function obStage(s) { s = String(s || '').toLowerCase(); if (/dealer onboarded|^onboarded/.test(s)) return 'done'; if (/reject|paus|hold|cancel/.test(s)) return 'closed'; return 'active'; }
+function obStage(s) { s = String(s || '').trim().toLowerCase(); if (!s) return 'none'; if (/dealer onboarded|^onboarded/.test(s)) return 'done'; if (/reject|paus|hold|cancel/.test(s)) return 'closed'; return 'active'; }
 function obPillCls(s) { s = String(s || '').toLowerCase(); return /onboarded/.test(s) ? 'g' : /reject/.test(s) ? 'r' : /paus|hold|cancel/.test(s) ? 'n' : /decision/.test(s) ? 'b' : 'a'; }
 function nk(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
 function isoD(d) { return d ? d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') : ''; }
@@ -1742,7 +1742,7 @@ function obThisWeek(r) { const w = obWeekRange(); return obStage(r.status) === '
 function obNoVisit(r) { return obStage(r.status) === 'active' && (!r.last || (todayStart() - r.last) / DAY_MS > 30); }
 function obPass(r) {
   const st = obStage(r.status);
-  if (OBQ.stage === 'notdone') { if (st === 'done') return false; } else if (OBQ.stage !== 'all' && st !== OBQ.stage) return false;
+  if (OBQ.stage !== 'all' && st !== OBQ.stage) return false;
   if (OBQ.so && r.so !== OBQ.so) return false;
   if (OBQ.type && String(r.type).toLowerCase() !== OBQ.type) return false;
   if (OBQ.q && (r.name + ' ' + r.so + ' ' + r.status + ' ' + r.docs).toLowerCase().indexOf(OBQ.q) < 0) return false;
@@ -1768,10 +1768,10 @@ function obDate(r, k) {
 function obText(v) { return v ? '<div class="clamp" title="' + esc(v) + '">' + esc(v) + '</div>' : '<span class="obm0">—</span>'; }
 function obPaint() {
   const scope = obInScope(), list0 = scope.filter(obPass);
-  const nA = scope.filter(r => obStage(r.status) === 'active').length, nD = scope.filter(r => obStage(r.status) === 'done').length, nC = scope.filter(r => obStage(r.status) === 'closed').length;
-  document.querySelectorAll('#ob-stage button').forEach(b => { const v = b.dataset.v, n = v === 'active' ? nA : v === 'done' ? nD : v === 'closed' ? nC : v === 'notdone' ? nA + nC : scope.length; b.textContent = ({ active: 'In progress', notdone: 'Not onboarded', done: 'Onboarded', closed: 'Rejected / On hold', all: 'All' })[v] + ' (' + n + ')'; b.classList.toggle('on', OBQ.stage === v); });
+  const nA = scope.filter(r => obStage(r.status) === 'active').length, nD = scope.filter(r => obStage(r.status) === 'done').length, nC = scope.filter(r => obStage(r.status) === 'closed').length, nN = scope.filter(r => obStage(r.status) === 'none').length;
+  document.querySelectorAll('#ob-stage button').forEach(b => { const v = b.dataset.v, n = v === 'active' ? nA : v === 'done' ? nD : v === 'closed' ? nC : v === 'none' ? nN : scope.length; b.textContent = ({ all: 'All', none: 'No application', active: 'Application in progress', done: 'Onboarded', closed: 'Rejected / On hold' })[v] + ' (' + n + ')'; b.classList.toggle('on', OBQ.stage === v); });
   const act = scope.filter(r => obStage(r.status) === 'active');
-  const kp = [['', 'In progress', act.length, 'applications being worked on', ''], ['overdue', 'Documents overdue', act.filter(obOverdue).length, 'past target completion', act.filter(obOverdue).length ? 'red' : ''],
+  const kp = [['', 'Application in progress', act.length, 'being worked on', ''], ['overdue', 'Documents overdue', act.filter(obOverdue).length, 'past target completion', act.filter(obOverdue).length ? 'red' : ''],
     ['week', 'IF visits this week', act.filter(obThisWeek).length, 'planned Sun–Sat', ''], ['novisit', 'No IF visit in 30+ days', act.filter(obNoVisit).length, 'or never visited', act.filter(obNoVisit).length ? 'amber' : '']];
   document.getElementById('ob-kpis').innerHTML = kp.map(k => '<button type="button" class="obk ' + k[4] + (k[0] && OBQ.quick === k[0] ? ' on' : '') + '" data-q="' + k[0] + '"><div class="n">' + k[2] + '</div><div class="l">' + k[1] + '</div><div class="s">' + k[3] + '</div></button>').join('');
   const soSel = document.getElementById('ob-so'); const sos = Array.from(new Set(scope.map(r => r.so).filter(Boolean))).sort();
