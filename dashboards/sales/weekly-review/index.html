@@ -597,7 +597,7 @@ table.wr td.ck input.ckb.dirty{outline:2px solid var(--primary);outline-offset:1
   </div>
   <div id="ob-view" style="display:none">
     <div class="ob-bar">
-      <span class="ob-seg" id="ob-stage"><button type="button" data-v="active" title="Still in progress: not onboarded, not rejected, not on hold">Active</button><button type="button" data-v="notdone" title="Everything not yet onboarded, including rejected and on hold">Not onboarded</button><button type="button" data-v="done">Onboarded</button><button type="button" data-v="closed">Rejected / On hold</button><button type="button" data-v="all">All</button></span>
+      <span class="ob-seg" id="ob-stage"><button type="button" data-v="active" title="Applications still being worked on: not onboarded yet, not rejected, not on hold">In progress</button><button type="button" data-v="notdone" title="Everything not yet onboarded, including rejected and on hold">Not onboarded</button><button type="button" data-v="done">Onboarded</button><button type="button" data-v="closed">Rejected / On hold</button><button type="button" data-v="all">All</button></span>
       <input id="ob-q" type="search" placeholder="Search dealership, officer, status…" autocomplete="off">
       <select id="ob-so" aria-label="Sales Officer"></select>
       <select id="ob-type" aria-label="Onboarding type"><option value="">Regular + Express</option><option value="regular">Regular</option><option value="express">Express</option></select>
@@ -1632,13 +1632,11 @@ var OB_COLS = [
   { k: 'code', h: 'Code', label: 'Code', w: 100, grp: 'Application' },
   { k: 'so', h: 'Sales Officer', alt: 'Proposed SO', label: 'Sales Officer', w: 130, grp: 'Application' },
   { k: 'sm', h: 'Sales Manager', alt: 'Proposed SM', label: 'Sales Manager', w: 130, grp: 'Application' },
-  { k: 'applied', h: 'Date of Initial Application', label: 'Applied', w: 110, grp: 'Application', date: 1 },
-  { k: 'type', h: 'Onboarding (Regular / Express)', label: 'Onboarding', w: 100, grp: 'Application' },
+  { k: 'applied', h: 'Date of Initial Application', alt: 'Application Date', label: 'Application Date', w: 110, grp: 'Application', date: 1 },
+  { k: 'type', h: 'Onboarding (Regular / Express)', label: 'Onboarding Type', w: 100, grp: 'Application' },
   { k: 'status', h: 'Application Status', label: 'Application Status (auto)', w: 250, grp: 'Application' },
   { k: 'docs', h: 'Document Pending', label: 'Document Pending (auto)', w: 220, grp: 'Documents', long: 1 },
   { k: 'target', h: 'Target Completion of Documents', label: 'Target Completion', w: 120, grp: 'Documents', date: 1 },
-  { k: 'fci', h: 'FCI Schedule as per the Sales Team', label: 'FCI Schedule', w: 115, grp: 'Schedules', date: 1 },
-  { k: 'kyc', h: 'KYC Schedule as per the Sales Team', label: 'KYC Schedule', w: 115, grp: 'Schedules', date: 1 },
   { k: 'ops', h: 'Operation Review Remarks', label: 'Operations', w: 220, grp: 'Review remarks', long: 1 },
   { k: 'credit', h: 'Credit Review Remarks', label: 'Credit', w: 220, grp: 'Review remarks', long: 1 },
   { k: 'salesr', h: 'Sales Review Remarks', label: 'Sales', w: 220, grp: 'Review remarks', long: 1 },
@@ -1672,7 +1670,7 @@ function obMasterMap() {
   if (_obMm) return _obMm;
   const m = { code: {}, name: {} }; _obMm = m; const g = _OBM; if (!g || g.length < 2) return m;
   const c = buildColumnMap(g[0]), ci = c('GCD Code'), ni = c('Dealership Name'), hs = {};
-  OB_COLS.forEach(col => { if (col.ext) hs[col.k] = c(col.xh); }); hs.docs = c('Document Pending');
+  OB_COLS.forEach(col => { if (col.ext) hs[col.k] = c(col.xh); }); hs.docs = c('Document Pending'); hs.appliedM = c('Date of Initial Application'); hs.typeM = c('Onboarding (Regular / Express)');
   for (let i = 1; i < g.length; i++) {
     const r = g[i], o = {};
     Object.keys(hs).forEach(k => { const col = OB_COLS.find(x => x.k === k); const raw = String(get(r, hs[k]) || '').replace(/\u00a0/g, ' ').trim(); o[k] = col && col.date ? parseSheetDate(raw) : raw; o['_' + k] = raw; });
@@ -1687,7 +1685,7 @@ function obParse(grid) {
   _obOnb = null;
   if (!grid || grid.length < 2) return false;
   const c = buildColumnMap(grid[0]);
-  if (c('Dealership Name') < 0 || c('Date of Initial Application') < 0) return false;     // not the onboarding list (e.g. a wrong table)
+  if (c('Dealership Name') < 0 || (c('Date of Initial Application') < 0 && c('Application Date') < 0)) return false;     // not the onboarding list (e.g. a wrong table)
   const vm = obVisitMap(), out = [];
   for (let i = 1; i < grid.length; i++) {
     const r = grid[i], o = { _raw: {} };
@@ -1697,6 +1695,9 @@ function obParse(grid) {
     o.code = String(o._raw.code || '').toUpperCase(); o.statusSheet = o.status;
     const mm = obMasterMap(), mr = (o.code && mm.code[nk(o.code)]) || mm.name[nk(o.name)];
     if (mr) { OB_COLS.forEach(col => { if (col.ext) { o[col.k] = mr[col.k]; o._raw[col.k] = mr['_' + col.k]; } }); o.docs = mr.docs; o._raw.docs = mr._docs; o.fromOBM = 1; }
+    if (!o.applied && c('Application Date') >= 0) { const ad = parseSheetDate(String(get(r, c('Application Date')) || '').trim()); if (ad) o.applied = ad; }
+    o.appliedSheet = o.applied;   // what the sheet itself holds (used to find the row when saving)
+    if (mr) { if (!o.applied && mr.appliedM) { const ad = parseSheetDate(mr.appliedM); if (ad) { o.applied = ad; o.appliedFrom = 'OB Masterlist'; } } if (!o.type && mr.typeM) { o.type = mr.typeM; o.typeFrom = 'OB Masterlist'; } }
     if (o.code && obOnboardedSet()[o.code]) { o.status = 'Eligible Applications - Dealer Onboarded'; o.auto = 1; }
     o.team = (o.sm ? o.sm.split(' ')[0] : '') || teamOf(o.so) || '';
     out.push(o);
@@ -1761,16 +1762,16 @@ function obDate(r, k) {
   if (!d) return raw ? '<span class="obd">' + esc(raw) + '</span>' : '<span class="obm0">—</span>';
   let cls = 'obd';
   if (k === 'target' && obOverdue(r)) cls += ' late';
-  if ((k === 'fci' || k === 'kyc' || k === 'plan') && obStage(r.status) === 'active') { const t = todayStart(); if (d < t) cls += ' past'; else if (d.getTime() === t.getTime()) cls += ' today'; }
+  if ((k === 'plan') && obStage(r.status) === 'active') { const t = todayStart(); if (d < t) cls += ' past'; else if (d.getTime() === t.getTime()) cls += ' today'; }
   return '<span class="' + cls + '">' + fmtDate(d) + '</span>';
 }
 function obText(v) { return v ? '<div class="clamp" title="' + esc(v) + '">' + esc(v) + '</div>' : '<span class="obm0">—</span>'; }
 function obPaint() {
   const scope = obInScope(), list0 = scope.filter(obPass);
   const nA = scope.filter(r => obStage(r.status) === 'active').length, nD = scope.filter(r => obStage(r.status) === 'done').length, nC = scope.filter(r => obStage(r.status) === 'closed').length;
-  document.querySelectorAll('#ob-stage button').forEach(b => { const v = b.dataset.v, n = v === 'active' ? nA : v === 'done' ? nD : v === 'closed' ? nC : v === 'notdone' ? nA + nC : scope.length; b.textContent = ({ active: 'Active', notdone: 'Not onboarded', done: 'Onboarded', closed: 'Rejected / On hold', all: 'All' })[v] + ' (' + n + ')'; b.classList.toggle('on', OBQ.stage === v); });
+  document.querySelectorAll('#ob-stage button').forEach(b => { const v = b.dataset.v, n = v === 'active' ? nA : v === 'done' ? nD : v === 'closed' ? nC : v === 'notdone' ? nA + nC : scope.length; b.textContent = ({ active: 'In progress', notdone: 'Not onboarded', done: 'Onboarded', closed: 'Rejected / On hold', all: 'All' })[v] + ' (' + n + ')'; b.classList.toggle('on', OBQ.stage === v); });
   const act = scope.filter(r => obStage(r.status) === 'active');
-  const kp = [['', 'In the pipeline', act.length, 'active applications', ''], ['overdue', 'Documents overdue', act.filter(obOverdue).length, 'past target completion', act.filter(obOverdue).length ? 'red' : ''],
+  const kp = [['', 'In progress', act.length, 'applications being worked on', ''], ['overdue', 'Documents overdue', act.filter(obOverdue).length, 'past target completion', act.filter(obOverdue).length ? 'red' : ''],
     ['week', 'IF visits this week', act.filter(obThisWeek).length, 'planned Sun–Sat', ''], ['novisit', 'No IF visit in 30+ days', act.filter(obNoVisit).length, 'or never visited', act.filter(obNoVisit).length ? 'amber' : '']];
   document.getElementById('ob-kpis').innerHTML = kp.map(k => '<button type="button" class="obk ' + k[4] + (k[0] && OBQ.quick === k[0] ? ' on' : '') + '" data-q="' + k[0] + '"><div class="n">' + k[2] + '</div><div class="l">' + k[1] + '</div><div class="s">' + k[3] + '</div></button>').join('');
   const soSel = document.getElementById('ob-so'); const sos = Array.from(new Set(scope.map(r => r.so).filter(Boolean))).sort();
@@ -1800,7 +1801,7 @@ function obRow(r, i) {
       '<td class="l obcode">' + (r.code ? esc(r.code) : '<span class="obm0">—</span>') + '</td><td class="l">' + esc(r.so || '—') + '</td><td class="l">' + esc(r.sm || '—') + '</td><td class="l">' + obDate(r, 'applied') + '</td>' +
       '<td class="l">' + (r.type ? '<span class="obp ' + (/express/i.test(r.type) ? 'p' : 'n') + '">' + esc(r.type) + '</span>' : '<span class="obm0">—</span>') + '</td>' +
       '<td class="l">' + (r.status ? '<span class="obp ' + obPillCls(r.status) + '">' + esc(r.status) + '</span>' : '<span class="obm0">—</span>') + '</td>' +
-      '<td class="l">' + obText(r.docs) + '</td><td class="l">' + obDate(r, 'target') + '</td><td class="l">' + obDate(r, 'fci') + '</td><td class="l">' + obDate(r, 'kyc') + '</td>' +
+      '<td class="l">' + obText(r.docs) + '</td><td class="l">' + obDate(r, 'target') + '</td>' +
       '<td class="l">' + obText(r.ops) + '</td><td class="l">' + obText(r.credit) + '</td><td class="l">' + obText(r.salesr) + '</td>' +
       '<td class="l">' + (r.cdocs ? esc(r.cdocs) : '<span class="obm0">—</span>') + '</td><td class="l">' + obDate(r, 'cdate') + '</td><td class="l">' + (r.bap ? esc(r.bap) : '<span class="obm0">—</span>') + '</td><td class="l">' + (r.cmap ? esc(r.cmap) : '<span class="obm0">—</span>') + '</td><td class="l">' + obText(r.aremarks) + '</td>' +
       '<td class="l">' + obDate(r, 'plan') + '</td><td class="l" title="' + esc(r.lastBy ? 'by ' + r.lastBy : '') + '">' + obDate(r, 'last') + '</td><td class="l">' + obText(r.ifr) + '</td></tr>';;
@@ -2016,7 +2017,7 @@ function obOpen(i) {
   OB.forEach(x => { if (x.status && stOpts.indexOf(x.status) < 0) stOpts.push(x.status); });
   const F = (id, label, inner, cls) => '<label class="obf ' + (cls || '') + '" for="f-' + id + '"><span>' + label + '</span>' + inner + '</label>';
   const T = (id, label, k, o) => F(id, label, '<input id="f-' + id + '" type="text" value="' + esc(V(k, '')) + '"' + dis(o && o.idf ? idOk : 1) + ' maxlength="120">', o && o.cls);
-  const D = (id, label, k) => F(id, label, '<input id="f-' + id + '" type="date" value="' + dv(k) + '" min="2000-01-01" max="2100-12-31"' + dis(k === 'applied' ? idOk : 1) + '>');
+  const D = (id, label, k) => F(id, label, '<input id="f-' + id + '" type="date" value="' + dv(k) + '" min="2000-01-01" max="2100-12-31"' + dis(k === 'applied' ? add : 1) + '>');
   const A = (id, label, k) => F(id, label, '<textarea id="f-' + id + '" rows="2" maxlength="2000"' + dis(1) + '>' + esc(V(k, '')) + '</textarea>', 'wide');
   const soCur = add ? '' : r.so;
   const html =
@@ -2025,14 +2026,13 @@ function obOpen(i) {
     T('name', 'Dealership name *', 'name', { idf: 1, cls: 'wide' }) +
     F('so', 'Sales Officer *', '<select id="f-so"' + dis(idOk) + '><option value="">Select…</option>' + obSoOptions(soCur).map(s => '<option' + (s === soCur ? ' selected' : '') + '>' + esc(s) + '</option>').join('') + '</select>') +
     F('sm', 'Sales Manager', '<input id="f-sm" type="text" value="' + esc(add ? '' : r.sm) + '" disabled placeholder="Set automatically from the officer">') +
-    D('applied', 'Date of initial application *', 'applied') +
-    F('type', 'Onboarding *', '<select id="f-type"' + dis(idOk) + '><option value="">Select…</option>' + ['Regular', 'Express'].map(s => '<option' + (!add && String(r.type).toLowerCase() === s.toLowerCase() ? ' selected' : '') + '>' + s + '</option>').join('') + '</select>') +
+    D('applied', add ? 'Date of initial application *' : 'Date of initial application (read-only)', 'applied') +
+    F('type', add ? 'Onboarding *' : 'Onboarding (read-only)', '<select id="f-type"' + dis(add) + '><option value="">Select…</option>' + ['Regular', 'Express'].map(s => '<option' + (!add && String(r.type).toLowerCase() === s.toLowerCase() ? ' selected' : '') + '>' + s + '</option>').join('') + '</select>') +
     F('status', 'Application status (automatic)', '<input id="f-status" type="text" value="' + esc(add ? OB_STATUSES[0] + ' (starting status)' : (r.status || '—')) + '" disabled>', 'wide') +
     T('code', 'Code (GCD)', 'code', { idf: 1 }) +
     '</div>' +
     (add ? '<details class="obm-more"><summary>More details (optional)</summary>' : '') +
     '<div class="obm-sec">Documents</div><div class="obm-g">' + F('docs', 'Document pending (read-only)', '<textarea id="f-docs" rows="2" disabled>' + esc(V('docs', '')) + '</textarea>', 'wide') + D('target', 'Target completion of documents', 'target') + '</div>' +
-    '<div class="obm-sec">Schedules</div><div class="obm-g">' + D('fci', 'FCI schedule (sales team)', 'fci') + D('kyc', 'KYC schedule (sales team)', 'kyc') + '</div>' +
     '<div class="obm-sec">Review remarks</div><div class="obm-g">' + A('ops', 'Operation review remarks', 'ops') + A('credit', 'Credit review remarks', 'credit') + A('salesr', 'Sales review remarks', 'salesr') + '</div>' +
     (add ? '' : '<div class="obm-sec">From OB Masterlist (read-only' + (r.fromOBM ? '' : ' — no match on this Code / dealership name yet') + ')</div><div class="obm-g">' +
       F('x1', 'Complete docs', '<input type="text" disabled value="' + esc(r.cdocs || '—') + '">') + F('x2', 'Docs completed by Sales', '<input type="text" disabled value="' + esc(r.cdate ? fmtDate(r.cdate) : '—') + '">') +
@@ -2058,7 +2058,7 @@ async function obSave(i) {
   OB_COLS.forEach(c => { if (c.k === 'sm' || c.k === 'last' || c.k === 'status' || c.k === 'docs' || c.ext) return; cur[c.h] = c.k === 'name' ? val('name') : val(c.k); });
   const fail = t => { msg.className = 'wr-msg err'; msg.textContent = t; };
   if (cur['Dealership Name'].length < 2) return fail('Enter the dealership name.');
-  if (idOk) { if (!cur['Sales Officer']) return fail('Pick a Sales Officer.'); if (!cur['Date of Initial Application']) return fail('Enter the date of initial application.'); if (!cur['Onboarding (Regular / Express)']) return fail('Choose Regular or Express.'); }
+  if (idOk) { if (!cur['Sales Officer']) return fail('Pick a Sales Officer.'); if (add && !cur['Date of Initial Application']) return fail('Enter the date of initial application.'); if (add && !cur['Onboarding (Regular / Express)']) return fail('Choose Regular or Express.'); }
   const ap = cur['Date of Initial Application'] || isoD(r && r.applied);
   if (add && ap > isoD(todayStart())) return fail('The application date cannot be in the future.');
   if (cur['Target Completion of Documents'] && ap && cur['Target Completion of Documents'] < ap) return fail('Target completion cannot be before the application date.');
@@ -2067,10 +2067,10 @@ async function obSave(i) {
   if (add) body = { action: 'ob_add', idToken: ID_TOKEN, row: cur };
   else {
     const fields = {};
-    OB_COLS.forEach(c => { if (c.k === 'sm' || c.k === 'last' || c.k === 'status' || c.k === 'docs' || c.ext) return; if (!idOk && ['name', 'code', 'so', 'applied', 'type'].indexOf(c.k) >= 0) return;
+    OB_COLS.forEach(c => { if (c.k === 'sm' || c.k === 'last' || c.k === 'status' || c.k === 'docs' || c.ext) return; if ((!idOk && ['name', 'code', 'so'].indexOf(c.k) >= 0) || c.k === 'applied' || c.k === 'type') return;
       const now = cur[c.h], was = c.date ? isoD(r[c.k]) : String(r[c.k] == null ? '' : r[c.k]).trim(); if (now !== was) fields[c.h] = now; });
     if (!Object.keys(fields).length) return fail('Nothing was changed.');
-    body = { action: 'ob_update', idToken: ID_TOKEN, key: { name: r.name, applied: isoD(r.applied), appliedRaw: r._raw.applied }, fields };
+    body = { action: 'ob_update', idToken: ID_TOKEN, key: { name: r.name, applied: isoD(r.appliedSheet), appliedRaw: r._raw.applied }, fields };
   }
   btn.disabled = true; msg.className = 'wr-msg'; msg.textContent = 'Saving…';
   try {
