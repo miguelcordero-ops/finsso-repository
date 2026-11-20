@@ -1722,6 +1722,8 @@ function obParse(grid) {
 async function obLoad(live) {
   OB_ERR = '';
   let ok = false;
+  // Signed-in users read the sheet live, so a saved Plan Visit Date (or any edit) shows at once; BigQuery is only refreshed by the hourly export.
+  const askedLive = live; if (!live && wrConfigured() && ID_TOKEN) { live = true; }
   if (!live) { try { ok = obParse(await fetchCSV('onboarding-list.csv', true)); } catch (e) { ok = false; } }
   if (!ok && wrConfigured() && ID_TOKEN) {
     try {
@@ -1732,6 +1734,7 @@ async function obLoad(live) {
       ok = obParse(j.grid);
       if (!ok) OB_ERR = 'The sheet answered, but it has no "Dealership Name" / "Date of Initial Application" columns.';
     } catch (e) { OB_ERR = 'Could not read the Onboarding List: ' + (e.message || e); }
+    if (!ok && !askedLive) { try { ok = obParse(await fetchCSV('onboarding-list.csv', true)); if (ok) OB_ERR = ''; } catch (e) {} }
   }
   if (!ok && !OB_ERR) OB_ERR = 'The Onboarding List is not available yet. Check that the tab is exported to BigQuery as "onboarding_list", or that the save endpoint is set.';
   OB_LOADED = true;
