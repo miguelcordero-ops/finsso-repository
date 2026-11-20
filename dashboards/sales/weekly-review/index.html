@@ -1717,11 +1717,24 @@ function obParse(grid) {
     o.team = teamOf(o.so) || '';
     out.push(o);
   });
+  obOverlay(out);
   OB = out; return true;
 }
+// Working fields (plan visit, remarks, target) are saved in the "[Input] Onboarding" tab, like the Weekly Review inputs, and merged on top of the list here.
+var OB_INPUTS = [], OB_INPUTS_OK = false;
+function obOverlay(rows) {
+  if (!OB_INPUTS.length) return;
+  const byC = {}, byN = {};
+  OB_INPUTS.forEach(i => { const col = OB_COLS.find(x => x.h === i.field); if (!col || col.ext) return; const e = { col, v: i.value }, c = String(i.code || '').toUpperCase(), n = nk(i.name); if (c) (byC[c] = byC[c] || []).push(e); (byN[n] = byN[n] || []).push(e); });
+  rows.forEach(o => { const list = (o.code && byC[String(o.code).toUpperCase()]) || byN[nk(o.name)]; if (!list) return;
+    list.forEach(e => { const c = e.col, v = e.v;
+      if (c.date) { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); o[c.k] = m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; o._raw[c.k] = v || ''; } else { o[c.k] = v; o._raw[c.k] = v; } }); });
+}
+var OB_LIVE_OK = false, OB_FROM_LIVE = false;
 async function obLoad(live) {
   OB_ERR = '';
   let ok = false;
+  if (wrConfigured() && ID_TOKEN) { try { const ri = await fetch(WR_API + '?action=load&what=obinputs&token=' + encodeURIComponent(ID_TOKEN) + '&_=' + Date.now()); const ji = await ri.json(); if (ji.ok) { OB_INPUTS = ji.rows || []; OB_INPUTS_OK = true; } } catch (e) {} }
   // Signed-in users read the sheet live, so a saved Plan Visit Date (or any edit) shows at once; BigQuery is only refreshed by the hourly export.
   const askedLive = live; if (!live && wrConfigured() && ID_TOKEN) { live = true; }
   if (!live) { try { ok = obParse(await fetchCSV('onboarding-list.csv', true)); } catch (e) { ok = false; } }
@@ -1731,7 +1744,7 @@ async function obLoad(live) {
       const j = await r.json();
       if (!j.ok) throw new Error(j.error || 'load failed');
       OB_SOS = j.sos || null;
-      ok = obParse(j.grid);
+      OB_LIVE_OK = true; ok = obParse(j.grid); OB_LIVE_OK = false; if (ok) OB_FROM_LIVE = true;
       if (!ok) OB_ERR = 'The sheet answered, but it has no "Dealership Name" / "Date of Initial Application" columns.';
     } catch (e) { OB_ERR = 'Could not read the Onboarding List: ' + (e.message || e); }
     if (!ok && !askedLive) { try { ok = obParse(await fetchCSV('onboarding-list.csv', true)); if (ok) OB_ERR = ''; } catch (e) {} }
@@ -2017,7 +2030,7 @@ function setTab(t) {
   document.getElementById('ob-view').style.display = t === 'ob' ? '' : 'none';
   document.getElementById('up-view').style.display = t === 'up' ? '' : 'none';
   document.querySelectorAll('.wr-tab[data-tab]').forEach(el => el.classList.toggle('active', el.dataset.tab === t));
-  if (t === 'ob') { obRender(); if (!OB_LOADED) obLoad().then(obRender); } else if (t === 'up') upPaint(); else render();
+  if (t === 'ob') { obRender(); if (!OB_LOADED) obLoad().then(obRender); else if (!OB_INPUTS_OK && ID_TOKEN && wrConfigured()) obLoad().then(obRender); } else if (t === 'up') upPaint(); else render();
 }
 
 // ── add / edit popup
