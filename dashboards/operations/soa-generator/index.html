@@ -242,6 +242,16 @@ td.od{color:var(--red);font-weight:700}
 @media(max-width:900px){.sf-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.sf-grid{grid-template-columns:1fr}}
 .sf-act{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.sf-waive{margin:0 0 12px}
+.sf-waive h4{margin:0 0 2px;font-size:13px}
+.sf-waive .wl{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.sf-waive label.wi{display:grid;grid-template-columns:22px minmax(90px,auto) 1fr auto;gap:4px 10px;align-items:center;padding:7px 8px;border-radius:10px;cursor:pointer;font-size:13px}
+.sf-waive label.wi:hover{background:var(--card2)}
+.sf-waive label.wi input{width:17px;height:17px;accent-color:var(--primary)}
+.sf-waive label.wi .wm{font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+.sf-waive label.wi.on .wm{text-decoration:line-through;color:var(--text3)}
+.sf-waive .wfoot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px;font-size:12px}
+@media(max-width:560px){.sf-waive label.wi{grid-template-columns:22px 1fr auto}.sf-waive label.wi .wid{display:none}}
 .soa-paper{padding:22px 24px;overflow-x:auto}
 .soa-doc{max-width:900px;margin:0 auto;font-size:12.5px;color:var(--text)}
 .soa-doc .sd-co{font-size:20px;font-weight:800;color:#1F3864}
@@ -556,14 +566,20 @@ function closeSheet() { document.getElementById('overlay-root').innerHTML = ''; 
 </script>
 <script>
 /* ══════════════════════════════════════════════════════════════════════
-   SOA CORE — statement logic, ported 1:1 from the SOA generator Apps Script
-   (CFG, buildStatement_, computeLoan_ and the pure helpers). Only the Sheets,
+   SOA CORE — statement logic, ported 1:1 from the SOA generator Apps Script (SOA_Generator.gs)
+   (CFG, buildStatement_, computeLoan_, waiverKey_ and the pure helpers). Only the Sheets,
    Drive and menu code is left out; two small browser adaptations are marked
    "BROWSER:" (numeric-string dates from CSV, and date formatting).
+   Rules kept in step with the sheet:
+    - the 2-business-day grace (+ Extra Grace) covers ONLY the late fee and the penalty fee;
+      interest runs every day from the due date to payment (or the as-of date), grace or not
+    - waivers: a Set of waiverKey_(drawdown, checkpoint, charge) values passed to buildStatement_
+      zeroes those charges on this statement only (principal can never be waived)
    ══════════════════════════════════════════════════════════════════════ */
 const CFG = {
   LATE_FEE_PER_DAY: 350,
   PENALTY_PER_DAY: 500,
+  LATE_RENEWAL_RATE: 0.015,       // late maturity: 1.5% of original principal per 30 days past maturity
   GRACE_BUSINESS_DAYS: 2,
   RENEWAL_DAYS_AFTER_CREDIT: 29,  // R1 = Credit Date + 29 (Day 30, crediting date = Day 1); Rk = Credit Date + 30k - 1
   UPFRONT_INTEREST_DAYS: 30,      // interest deducted upfront at disbursal
@@ -603,7 +619,9 @@ function toTenure_(v) {
 }
 
 // ---------------------------------------------------------------- statement builder (pure)
-function buildStatement_(data, dealer, onlyId, A) {
+/** waivers: optional Set of waiverKey_() values for charges to waive on this statement. */
+function buildStatement_(data, dealer, onlyId, A, waivers) {
+  const W = waivers || new Set();
   const { dis, drw, rep } = data;
   const key = s => String(s || '').trim();
   const drwById = {};
@@ -617,9 +635,9 @@ function buildStatement_(data, dealer, onlyId, A) {
     if (onlyId && id !== onlyId) return;
     if (key(dis.get(r, 'Transaction Router')).toLowerCase() === 'cancelled') return;
     const credit = toDay_(dis.get(r, 'Credit Date to Dealer Bank Account'));
-    const pncm = toDay_(dis.get(r, 'PNCM Date'));
-    if (credit == null || pncm == null) return;      // not yet disbursed
-    if (pncm > A) return;                             // booked after the as-of date
+    const pncm = toDay_(dis.get(r, 'PNCM Date'));     // informational only; every date runs off the credit date
+    if (credit == null) return;                       // not yet disbursed
+    if (credit > A) return;                           // credited after the as-of date
     const d = drwById[id];
     // Loan Tenure: Disbursal col E mirrors Drawdown col G; fall back to the Drawdown tab
     const rawTen = dis.get(r, 'Loan Tenure') !== '' ? dis.get(r, 'Loan Tenure') : (d ? drw.get(d, 'Loan Tenure') : '');
@@ -630,7 +648,7 @@ function buildStatement_(data, dealer, onlyId, A) {
       pncm,
       credit,
       tenure: toTenure_(rawTen),
-      // due dates exactly as the Drawdown Tracker has them (fallback: Credit Date + 29/59/..., maturity PNCM + tenure)
+      // due dates exactly as the Drawdown Tracker has them (fallback: Credit Date + 29/59/..., maturity Credit Date + tenure)
       dues: d ? {
         r1: toDay_(drw.get(d, 'R1 Due Date')), r2: toDay_(drw.get(d, 'R2 Due Date')),
         r3: toDay_(pick_(drw, d, ['R3P1 Due Date', 'R3 Due Date'])), r4: toDay_(pick_(drw, d, ['R4P2 Due Date', 'R4 Due Date'])),
@@ -665,7 +683,7 @@ function buildStatement_(data, dealer, onlyId, A) {
     .sort((a, b) => (a.date == null ? -Infinity : a.date) - (b.date == null ? -Infinity : b.date));
 
   // blank Drawdown ID = all OPEN drawdowns of the dealer (closed ones dropped); a chosen ID is always shown
-  const all = loans.map(l => computeLoan_(l, pays.filter(p => p.id === l.id), A));
+  const all = loans.map(l => computeLoan_(l, pays.filter(p => p.id === l.id), A, W));
   const results = onlyId ? all : all.filter(x => x.status !== 'Closed');
   const keep = new Set(results.map(x => x.loan.id));
   // placeholder = row set up before payment (grace and/or collection fee), nothing received or applied yet
@@ -688,6 +706,7 @@ function buildStatement_(data, dealer, onlyId, A) {
       dueNow: sum(x => x.dueNow),
       pastDue: sum(x => x.pastDue),
       payoff: sum(x => x.payoff),
+      waived: Math.round(sum(x => x.waived) * 100) / 100,
       received: shownPays.reduce((s, p) => s + p.received, 0),
     },
   };
@@ -695,20 +714,22 @@ function buildStatement_(data, dealer, onlyId, A) {
 
 /**
  * Pure: one loan as of day A. Mirrors the tracker formulas, with TODAY() replaced by A and
- * only Repayment rows dated on/before A.
+ * only Repayment rows dated on/before A. W = Set of waiverKey_() values to waive on this statement.
  *
  * Checkpoints are numbered k = 1..N, where N is maturity (N = 3 for 90-day, 6 for 180-day).
  * The crediting date C is Day 1.
  * D(k)   = Credit Date + 30k - 1 = last day of interest period k (Day 30k).
  *          Renewals are due on D(k): R1 = C + 29 (Day 30), R2 = C + 59 (Day 60) ...
- * matDue = PNCM + 30N, moved off Sat/Sun to Monday (maturity due date).
+ * matDue = Credit Date + 30N, moved off Sat/Sun to Monday (maturity due date).
  * Interest for a period = P x rate x days / 30, where days run from the end of the previous
- * period to this period's due date (or the actual payment date if later). Days 1-30 are the
- * upfront interest, so over the life of the loan this equals P x rate x (tenor days + 1) / 30.
+ * period to this period's due date (or the actual payment date if later — grace does not stop it).
+ * Days 1-30 are the upfront interest, so over the life of the loan this equals
+ * P x rate x (tenor days + 1) / 30.
  */
-function computeLoan_(L, P, A) {
+function computeLoan_(L, P, A, W) {
   P = P.slice();
-  const K = L.principal, r = L.rate, p = L.pncm, G = CFG.GRACE_BUSINESS_DAYS;
+  W = W || new Set();
+  const K = L.principal, r = L.rate, p = L.credit, G = CFG.GRACE_BUSINESS_DAYS;   // p = credit date (Day 1)
   const C = L.credit != null ? L.credit : p;      // crediting date = Day 1
   const is90 = L.tenure === 90;
   const N = is90 ? 3 : 6;
@@ -733,6 +754,8 @@ function computeLoan_(L, P, A) {
   // Extra grace: on the row that cleared the period (old rule) OR on any row tagged with that
   // period, e.g. a "Renewal 2" row with nothing applied (grace granted before payment)
   const extTag = f => (f ? Math.max(0, ...P.filter(f).map(x => x.extra)) : 0);
+  // Grace end. Used ONLY for the late fee, the penalty fee, the on-time renewal rate and the
+  // "In grace" / "Past due" status. It does NOT stop interest.
   const graceEnd = (due, d, f) => workday_(due, G + Math.max(waive(d), extTag(f)));
   const r2 = x => Math.round(x * 100) / 100;
 
@@ -768,18 +791,15 @@ function computeLoan_(L, P, A) {
     return payoffDate != null && payoffDate < due ? payoffDate : null;
   };
   const intBefore = k => { let t = 0; for (let j = 1; j < k; j++) t += amt['int' + j] || 0; return t; };
-  // start of interest period k = end of period k-1 (its due date, or its payment date if paid late).
+  // start of interest period k = end of period k-1 (its due date, or its payment date if paid after it).
   // Period 1 starts at Day 30: Days 1-30 are covered by the upfront interest.
-  // Grace applies to interest too: a period paid within its grace (2 business days + Extra Grace) is
-  // treated as paid on its due date (no extra-day interest); after grace, interest counts every day
-  // from the due date. effEnd(k) = the date period k's interest runs to.
-  const fk = k => (k === N ? (x => x.tag === 'final repayment') : tg(k));
+  // Grace does NOT cover interest: interest counts every day from the due date until the period is
+  // paid (or until the As-of date while it is unpaid). effEnd(k) = the date period k's interest runs to.
   const effEnd = k => {
     const due = END(k), pd = paid['R' + k];
-    if (pd != null) return pd <= graceEnd(due, pd, fk(k)) ? due : pd;
-    return A <= graceEnd(due, null, fk(k)) ? due : A;
+    return Math.max(due, pd != null ? pd : A);
   };
-  const effDay = (k, d) => (d <= graceEnd(END(k), d, fk(k)) ? END(k) : d);   // for a payment on day d
+  const effDay = (k, d) => Math.max(END(k), d);     // interest end for a payment on day d
   const start = k => k === 1 ? D(1) : Math.max(END(k - 1), effEnd(k - 1));
   const intBase = k => r * Math.max(0, K - prinLE(start(k)));
   // 90-day minimum principal for R1/R2 (never more than what is still outstanding at that cycle)
@@ -798,7 +818,12 @@ function computeLoan_(L, P, A) {
     const d = t <= 0.005 ? null : cover(tg(k), x => x.ren + x.int + x.prin, t);
     const prior = k === 4 ? [paid.P1] : k === 5 ? [paid.P1, paid.P2] : [];
     const net = prior.every(v => v != null) && (d == null ? A <= graceEnd(due, null, tg(k)) : d <= graceEnd(due, d, tg(k)));
-    return r2(rate * (g - (net ? o : 0)));
+    // Renewal rule (90- and 180-day loans):
+    //  - paid on time or within grace: rate x REDUCED principal, i.e. after this period's principal
+    //    (90-day R1/R2: the 10% minimum or more; 180-day R1/R2: any P0 paid within grace; R3-R5: the 20% step)
+    //  - paid late (after grace): rate x ORIGINAL principal
+    //  rate: 1% at Day 30 and Day 60, 1.5% from Day 90 onward
+    return r2(net ? rate * (g - om) : rate * K);
   };
   // period in which an early payoff happened: its interest (actual days) is settled with the final payment
   const kPay = payoffDate == null ? null : Array.from({ length: N - 1 }, (_, i) => i + 2).find(k => END(k) > payoffDate);
@@ -816,6 +841,7 @@ function computeLoan_(L, P, A) {
     idays[k] = Math.max(0, e - s);
     return r2(r * Math.max(0, K - prinLE(s)) * idays[k] / 30);
   };
+  // Late / penalty fee: nothing within grace; after grace, counted from the due date.
   const fee = (due, pd, perDay, f) => {
     if (A < due) return 0;
     const e = pd != null ? pd : A;
@@ -830,7 +856,7 @@ function computeLoan_(L, P, A) {
     // R period closes only when its renewal AND all interest accrued up to that payment date are paid
     // (plus the 10% minimum principal on 90-day loans). Until then interest and the late fee keep running.
     const sK = start(k), balK = Math.max(0, K - prinLE(sK));
-    const intTo = d => r * balK * Math.max(0, Math.max(END(k), effDay(k, d)) - sK) / 30;
+    const intTo = d => r * balK * Math.max(0, effDay(k, d) - sK) / 30;
     paid['R' + k] = closeWhen(DUE(k), tg(k), x => x.ren + (withPrin ? x.prin : 0),
       amt['ren' + k] + amt['min' + k], intBefore(k), intTo);
     if (!is90 && k >= 3) {
@@ -845,9 +871,20 @@ function computeLoan_(L, P, A) {
   const p0 = sumP(x => x.tag === T(1) || x.tag === T(2), x => x.prin);
   amt.prinM = r2(Math.max(0, (is90 ? 1 : CFG.MATURITY_SHARE_180) * K - p0));
   const sM = start(N), balM = Math.max(0, K - prinLE(sM));
-  paid.M = closeWhen(matDue, isMat, x => x.prin, amt.prinM, intBefore(N),
-    d => r * balM * Math.max(0, Math.max(matDue, effDay(N, d)) - sM) / 30);
   paid.MP = covered(matDue, isMat, x => x.prin, amt.prinM);        // penalty stops when principal is paid
+  // Late maturity: 1.5% renewal on the ORIGINAL principal (same late rule as every renewal). The first
+  // charge applies once the maturity grace has passed; a further charge falls on every 30th day after
+  // maturity (maturity + 30, + 60, ...) with no grace period for those.
+  amt.extBase = r2(K);
+  amt.extCount = (() => {
+    if (A < matDue) return 0;
+    const e = paid.MP != null ? paid.MP : A;
+    // first charge once the maturity grace has passed; another one on every 30th day after maturity (no grace)
+    return e > graceEnd(matDue, paid.MP, x => x.tag === 'final repayment') ? 1 + Math.floor((e - matDue) / 30) : 0;
+  })();
+  amt.renM = r2(CFG.LATE_RENEWAL_RATE * amt.extBase * amt.extCount);
+  paid.M = closeWhen(matDue, isMat, x => x.prin + x.ren, amt.prinM + amt.renM, intBefore(N),
+    d => r * balM * Math.max(0, effDay(N, d) - sM) / 30);
   paid['R' + N] = paid.M;
   amt.intM = interest(N);
 
@@ -877,6 +914,7 @@ function computeLoan_(L, P, A) {
     item('Principal (balance)', amt.prinM, ap(isMat, x => x.prin), 'prin'),
     // maturity gets the same 2-business-day grace (+ Extra Grace) as every other due date
     item('Penalty fee', fee(matDue, paid.MP, CFG.PENALTY_PER_DAY, finTag), ap(finTag, x => x.pen), 'fee'),
+    ...(amt.renM > 0.005 || ap(isMat, x => x.ren) > 0.005 ? [item(`Renewal fee (late maturity, 1.5% x ${amt.extCount})`, amt.renM, ap(isMat, x => x.ren), 'fee')] : []),
   ]});
 
   // ---- collection fees: billed via "Expected Collection Fee" on a row tagged with the period
@@ -905,12 +943,12 @@ function computeLoan_(L, P, A) {
   intItems.forEach(it => { const use = Math.min(it.amount, Math.max(0, poolInt)); it.applied = r2(use); poolInt -= use; });
   if (poolInt > 0.005 && intItems.length) intItems[intItems.length - 1].applied = r2(intItems[intItems.length - 1].applied + poolInt);
 
-  // ---- balances as of A (only checkpoints already due)
+  // ---- balances as of A (only checkpoints already due); ticked charges are waived for this statement
   const totalPrinPaid = sumP(() => true, x => x.prin);
   const outstanding = r2(Math.max(0, K - totalPrinPaid));
   let prinRoom = outstanding;                       // principal due can never exceed what's outstanding
   const dueLines = [];
-  let dueNow = 0, pastDue = 0, feesDue = 0;
+  let dueNow = 0, pastDue = 0, feesDue = 0, waived = 0;
   cps.forEach(c => {
     const isDue = A >= c.due;
     const ext = extTag(c.f);
@@ -920,12 +958,16 @@ function computeLoan_(L, P, A) {
       const itemDue = isDue || it.charged;
       let bal = Math.max(0, it.amount - it.applied);
       if (it.kind === 'prin') { bal = Math.min(bal, prinRoom); if (isDue) prinRoom -= bal; }
-      it.balance = r2(itemDue ? bal : 0);
-      if (itemDue && it.balance > 0.005) {
+      bal = r2(itemDue ? bal : 0);
+      const key = waiverKey_(L.id, c.cp, it.name);
+      it.waived = it.kind === 'fee' && bal > 0.005 && W.has(key) ? bal : 0;   // principal is never waived
+      it.balance = r2(bal - it.waived);
+      if (bal > 0.005) {
         const late = isDue && A > gEnd;
-        dueLines.push({ cp: c.cp, due: c.due, name: it.name, amount: it.amount, applied: it.applied,
-          balance: it.balance, dpd: Math.max(0, A - c.due),
-          status: !isDue ? 'Due' : late ? 'Past due' : ext > 0 ? `In grace (extended to ${fmtDate_(gEnd, 'd-MMM')})` : 'In grace' });
+        dueLines.push({ cp: c.cp, due: c.due, name: it.name, kind: it.kind, key, amount: it.amount, applied: it.applied,
+          balance: it.balance, waived: it.waived, dpd: Math.max(0, A - c.due),
+          status: it.waived ? 'Waived' : !isDue ? 'Due' : late ? 'Past due' : ext > 0 ? `In grace (extended to ${fmtDate_(gEnd, 'd-MMM')})` : 'In grace' });
+        if (it.waived) { waived += it.waived; return; }
         dueNow += it.balance;
         if (late) pastDue += it.balance;
         if (it.kind !== 'prin') feesDue += it.balance;
@@ -955,7 +997,7 @@ function computeLoan_(L, P, A) {
     prev = { cp: cpLabel(prevK), text: owed <= 0.005 && (c.paidR != null || c.paidP != null)
       ? `${cpLabel(prevK)} settled ${fmtDate_(pd, 'd-MMM-yyyy')}`
       : owed <= 0.005 ? `${cpLabel(prevK)} settled`
-      : `${cpLabel(prevK)} unpaid (PHP ${owed.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}) - see Amounts Due` };
+      : `${cpLabel(prevK)} unpaid (PHP ${money_(owed)}) - see Amounts Due` };
   }
 
   // ---- next due: first upcoming checkpoint not already settled in advance, itemised
@@ -1003,24 +1045,31 @@ function computeLoan_(L, P, A) {
   else status = 'Current';
 
   return {
-    loan: L, maturity: matDue, outstanding, dueNow: r2(dueNow), pastDue: r2(pastDue),
+    loan: L, maturity: matDue, outstanding, dueNow: r2(dueNow), pastDue: r2(pastDue), waived: r2(waived),
     payoff: r2(outstanding + feesDue + accrued), accrued, dueLines, next, prev, status, checkpoints: cps, paid,
   };
 }
 
 /** Pure: statement notes for the tenures shown on this SOA. */
-function scheduleNotes_(tenures) {
+function scheduleNotes_(tenures, hasWaivers) {
   const t = tenures && tenures.length ? tenures : [CFG.DEFAULT_TENURE];
   const both = t.length > 1;
   const notes = [];
   if (t.includes(90)) notes.push((both ? '90-day loans: ' : '') +
-    'A renewal fee of 1% and a minimum principal payment of 10% of the original principal are due 29 and 59 days after the crediting date (Day 30 and Day 60, counting the crediting date as Day 1), with interest due on Day 60. The remaining principal and final interest are due at maturity, 90 days from the PNCM date.');
+    'A renewal fee of 1% and a minimum principal payment of 10% of the original principal are due 29 and 59 days after the crediting date (Day 30 and Day 60, counting the crediting date as Day 1), with interest due on Day 60. The remaining principal and final interest are due at maturity, 90 days from the crediting date.');
   notes.push('A maturity date that falls on a Saturday or Sunday moves to the following Monday.');
-  notes.push(`A grace period of ${CFG.GRACE_BUSINESS_DAYS} business days applies to every due date, including the maturity date. Beyond it, a late fee of PHP ${CFG.LATE_FEE_PER_DAY}/day applies to unpaid renewal fees, interest and minimum principal, and a penalty of PHP ${CFG.PENALTY_PER_DAY}/day to unpaid scheduled principal, counted from the due date.`);
+  notes.push(`A grace period of ${CFG.GRACE_BUSINESS_DAYS} business days applies to every due date, including the maturity date. The grace period covers only the late fee and the penalty fee: interest accrues daily from the due date until payment, including during the grace period. Beyond the grace period, a late fee of PHP ${CFG.LATE_FEE_PER_DAY}/day applies to unpaid renewal fees, interest and minimum principal, and a penalty of PHP ${CFG.PENALTY_PER_DAY}/day to unpaid scheduled principal, counted from the due date.`);
   notes.push('Collection fees, where charged, are listed under the billing period they relate to and are payable together with it.');
   notes.push('A billing period is settled only when its renewal fee and interest are fully paid; until then, interest and the late fee continue to accrue. Penalty fees stop once the expected principal for that period is paid. This applies even if the loan principal is paid off later.');
+  if (hasWaivers) notes.push('Charges marked "Waived" have been waived for this statement only. Charges that continue to accrue after the statement date are not covered by the waiver.');
   notes.push('Payoff amount includes outstanding principal, unpaid charges and interest accrued to the statement date. Payments made after the statement date are not reflected.');
   return notes;
+}
+
+/** Pure: key matching one charge line across a reload (drawdown + checkpoint + kind of charge). */
+function waiverKey_(id, cp, name) {
+  const type = String(name || '').replace(/\s*\(.*$/, '').trim().toLowerCase();   // "Interest (3 days ...)" -> "interest"
+  return `${id}|${cp}|${type}`;
 }
 
 // ---------------------------------------------------------------- helpers (pure)
@@ -1053,6 +1102,7 @@ function fmtDate_(d, pattern) {
   if (pattern === 'd-MMM') return dd + '-' + MON3_[mm];
   return dd + '-' + MON3_[mm] + '-' + yy;
 }
+function money_(n) { return Number(n || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 function toNum_(v) {
   if (typeof v === 'number') return v;
   const n = parseFloat(String(v || '').replace(/[^0-9.\-]/g, ''));
@@ -1080,7 +1130,7 @@ function pick_(tbl, row, names) {
   for (const n of names) if (tbl.has(n) && tbl.get(row, n) !== '') return tbl.get(row, n);
   return '';
 }
-if (typeof module !== 'undefined') module.exports = { CFG, makeTable_, buildStatement_, computeLoan_, scheduleNotes_, toDay_, fmtDate_, toNum_, toRate_, toTenure_ };
+if (typeof module !== 'undefined') module.exports = { CFG, makeTable_, buildStatement_, computeLoan_, scheduleNotes_, waiverKey_, toDay_, fmtDate_, toNum_, toRate_, toTenure_ };
 
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1095,7 +1145,7 @@ var SOA_API = 'https://script.google.com/macros/s/AKfycbyhDt6CG98tC4YuFh3RLOIi5p
 
 var DATA = null;                       // { dis, drw, rep } tables
 var DEALERS = [];                      // [{ name, loans:[{id, unit}] }]
-var G = { dealer: '', loan: '', asOf: '', prepared: '', note: '', busy: false };
+var G = { dealer: '', loan: '', asOf: '', prepared: '', note: '', busy: false, waive: new Set(), waiveSel: '' };   // waive = waiverKey_ values ticked for this selection
 var REPO = { rows: null, folderUrl: '', err: '', loading: false, table: null };
 
 /* ── formatting ── */
@@ -1145,7 +1195,7 @@ function buildDoc_(st, info) {
     ['Original principal', t.principal], ['Outstanding principal', t.outstanding],
     ['Total amount due as of statement date', t.dueNow, true], ['   of which past due (beyond grace)', t.pastDue],
     ['Payoff amount if fully settled on statement date', t.payoff], ['Total payments received to date', t.received],
-  ] });
+  ].concat(t.waived > 0.005 ? [['Charges waived on this statement', t.waived]] : []) });
   B.push({ t: 'section', title: 'LOANS' });
   B.push({ t: 'table', headers: ['Drawdown ID', 'Unit / Plate', 'Credit Date (Day 1)', 'Maturity (Tenure)', 'Original Principal', 'Outstanding Principal', 'Amount Due', 'Status'],
     money: [4, 5, 6], rows: st.loans.map(x => [x.loan.id, [x.loan.unit, x.loan.plate].filter(Boolean).join(' / '), dtx(x.loan.credit),
@@ -1153,11 +1203,19 @@ function buildDoc_(st, info) {
 
   B.push({ t: 'section', title: 'AMOUNTS DUE AS OF ' + dtx(st.asOf).toUpperCase() });
   const dl = [];
-  st.loans.forEach(x => x.dueLines.forEach(l => dl.push([x.loan.id, l.cp, dtx(l.due), l.name, l.amount, l.applied, l.balance, l.status + (l.dpd ? ' (' + l.dpd + ' DPD)' : '')])));
+  st.loans.forEach(x => x.dueLines.forEach(l => dl.push([x.loan.id, l.cp, dtx(l.due), l.name, l.amount, l.applied, l.balance, l.status + (l.dpd && !l.waived ? ' (' + l.dpd + ' DPD)' : '')])));
   if (dl.length) {
     dl.push(['', '', '', 'TOTAL AMOUNT DUE', '', '', t.dueNow, '']);
     B.push({ t: 'table', headers: ['Drawdown ID', 'Checkpoint', 'Due Date', 'Particulars', 'Amount', 'Paid', 'Balance', 'Status'], money: [4, 5, 6], rows: dl, boldRows: [dl.length - 1] });
   } else B.push({ t: 'note', text: 'No amounts due as of the statement date.', italic: true });
+
+  const wl = [];
+  st.loans.forEach(x => x.dueLines.filter(l => l.waived > 0.005).forEach(l => wl.push([x.loan.id, l.cp, dtx(l.due), l.name, l.waived])));
+  if (wl.length) {
+    wl.push(['', '', '', 'TOTAL WAIVED', t.waived]);
+    B.push({ t: 'section', title: 'CHARGES WAIVED ON THIS STATEMENT' });
+    B.push({ t: 'table', headers: ['Drawdown ID', 'Checkpoint', 'Due Date', 'Particulars', 'Waived'], money: [4], rows: wl, boldRows: [wl.length - 1] });
+  }
 
   const nd = st.loans.filter(x => x.next || x.prev);
   if (nd.length) {
@@ -1183,7 +1241,7 @@ function buildDoc_(st, info) {
   }
 
   B.push({ t: 'section', title: 'NOTES' });
-  scheduleNotes_(st.tenures).forEach(n => B.push({ t: 'note', text: n }));
+  scheduleNotes_(st.tenures, t.waived > 0.005).forEach(n => B.push({ t: 'note', text: n }));
   B.push({ t: 'pay', title: CFG.PAYMENT_TITLE, rows: CFG.PAYMENT_DETAILS });
   B.push({ t: 'note', text: 'Please indicate the Drawdown ID(s) and SOA Reference No. when remitting, and send proof of payment to your account officer.', italic: true });
   if (info.payInstr) B.push({ t: 'note', text: String(info.payInstr), bold: true });
@@ -1300,11 +1358,15 @@ async function soaApi(action, payload) {
 }
 
 /* ══════════════ UI ══════════════ */
+function selKey() { return G.dealer.toUpperCase() + '|' + G.loan + '|' + G.asOf; }
+/** Ticks only apply to the dealer / drawdown / date they were made for; any change clears them. */
+function syncWaiveSel() { const k = selKey(); if (G.waiveSel !== k) { G.waiveSel = k; G.waive = new Set(); } }
 function currentStatement() {
   if (!DATA || !G.dealer) return null;
   const asOf = toDay_(G.asOf);
   if (asOf == null) return { err: 'Enter a valid as-of date.' };
-  const st = buildStatement_(DATA, G.dealer, G.loan, asOf);
+  syncWaiveSel();
+  const st = buildStatement_(DATA, G.dealer, G.loan, asOf, G.waive);
   if (!st.loans.length) return { err: G.loan ? 'That drawdown is not disbursed, is cancelled, or was booked after the as-of date.' : 'No open drawdowns for ' + G.dealer + ' as of the selected date' + (st.closedExcluded ? ' (' + st.closedExcluded + ' closed).' : '.') };
   return { st };
 }
@@ -1322,14 +1384,37 @@ function genTabHtml() {
     '<label class="wide">Additional payment note (optional, printed in bold)<input id="sf-note" type="text" value="' + esc(G.note) + '"></label></div>' +
     '<div class="sf-act"><button class="btn" id="sf-dl" disabled>Download PDF</button><button class="btn pri" id="sf-save" disabled>Generate PDF &amp; save to Drive</button>' +
     '<span class="small muted" id="sf-hint">' + (SOA_API ? 'Saving gives the SOA a reference number, stores the PDF in the shared Drive folder and logs it in the Repository tab.' : 'Drive saving is not connected yet — Download PDF still works (the reference will read DRAFT).') + '</span></div></div>' +
-    '<div id="sf-prev"></div>';
+    '<div id="sf-waive"></div><div id="sf-prev"></div>';
+}
+/** Waive card: one checkbox per charge the selected drawdown(s) actually owe as of the date (principal excluded). */
+function paintWaive(st) {
+  const host = document.getElementById('sf-waive'); if (!host) return;
+  if (!st) { host.innerHTML = ''; return; }
+  const items = [];
+  st.loans.forEach(x => x.dueLines.forEach(l => {
+    if (l.kind !== 'fee') return;
+    const amt = l.waived > 0.005 ? l.waived : l.balance;
+    if (amt <= 0.005) return;
+    items.push({ key: l.key, id: x.loan.id, cp: l.cp, name: l.name, amt, on: G.waive.has(l.key),
+      status: l.waived > 0.005 ? '' : l.status + (l.dpd ? ' · ' + l.dpd + ' DPD' : '') });
+  }));
+  if (!items.length) { host.innerHTML = '<div class="card sf-waive"><h4>Waive charges</h4><div class="small muted">No charges are due on the selected drawdown(s) as of this date.</div></div>'; return; }
+  const multi = st.loans.length > 1, tot = items.filter(i => i.on).reduce((s, i) => s + i.amt, 0);
+  host.innerHTML = '<div class="card sf-waive"><h4>Waive charges</h4><div class="small muted">Tick a charge to waive it on this SOA only. It is not written back to the tracker; principal can’t be waived.</div><div class="wl">' +
+    items.map(i => '<label class="wi' + (i.on ? ' on' : '') + '"><input type="checkbox" data-wk="' + esc(i.key) + '"' + (i.on ? ' checked' : '') + (G.busy ? ' disabled' : '') + '>' +
+      '<span class="wid small muted">' + esc((multi ? i.id + ' · ' : '') + i.cp) + '</span>' +
+      '<span>' + esc(i.name) + (i.status ? ' <span class="small muted">' + esc(i.status) + '</span>' : '') + '</span>' +
+      '<span class="wm">' + mny(i.amt) + '</span></label>').join('') + '</div>' +
+    '<div class="wfoot">' + (tot > 0.005 ? '<b>Waived on this SOA: ₱' + mny(tot) + '</b><button class="btn sm ghost" data-act="waive-clear">Clear</button>' : '<span class="muted">Nothing waived.</span>') +
+    (items.length > 1 ? '<button class="btn sm ghost" data-act="waive-all">Waive all</button>' : '') + '</div></div>';
 }
 function paintPreview() {
   const host = document.getElementById('sf-prev'); if (!host) return;
   const r = currentStatement();
   const dlb = document.getElementById('sf-dl'), sv = document.getElementById('sf-save');
-  if (!r) { host.innerHTML = '<div class="card empty">Pick a dealer to preview its Statement of Account.</div>'; dlb.disabled = sv.disabled = true; return; }
-  if (r.err) { host.innerHTML = '<div class="card empty">' + esc(r.err) + '</div>'; dlb.disabled = sv.disabled = true; return; }
+  if (!r) { paintWaive(null); host.innerHTML = '<div class="card empty">Pick a dealer to preview its Statement of Account.</div>'; dlb.disabled = sv.disabled = true; return; }
+  if (r.err) { paintWaive(null); host.innerHTML = '<div class="card empty">' + esc(r.err) + '</div>'; dlb.disabled = sv.disabled = true; return; }
+  paintWaive(r.st);
   host.innerHTML = '<div class="card soa-paper">' + docHtml_(buildDoc_(r.st, infoFor('DRAFT - not saved'))) + '</div>';
   dlb.disabled = G.busy; sv.disabled = G.busy || !SOA_API;
 }
@@ -1351,6 +1436,11 @@ function wireGen() {
     catch (e) { toast('Could not build the PDF: ' + e.message, true); }
   });
   q('sf-save').addEventListener('click', saveToDrive);
+  q('sf-waive').addEventListener('change', e => {
+    const k = e.target && e.target.dataset && e.target.dataset.wk; if (!k || G.busy) return;
+    if (e.target.checked) G.waive.add(k); else G.waive.delete(k);
+    paintPreview();
+  });
   paintPreview();
 }
 async function saveToDrive() {
@@ -1360,7 +1450,7 @@ async function saveToDrive() {
   try {
     const t = st.totals, ids = st.onlyId || st.loans.map(x => x.loan.id).join(', ');
     const rs = await soaApi('reserve', { dealer: st.dealer, dealerId: st.head.dealerId || '', ids, asOf: fmtDate_(st.asOf, 'yyyy-MM-dd'), loans: st.loans.length,
-      outstanding: t.outstanding, dueNow: t.dueNow, pastDue: t.pastDue, payoff: t.payoff });
+      outstanding: t.outstanding, dueNow: t.dueNow, pastDue: t.pastDue, payoff: t.payoff, waived: t.waived || 0 });
     btn.textContent = 'Building PDF…';
     st.generated = new Date();
     const name = pdfName_(rs.ref, st), pdf = docPdf_(buildDoc_(st, infoFor(rs.ref)), rs.ref);
@@ -1369,7 +1459,7 @@ async function saveToDrive() {
     const sv = await soaApi('save', { ref: rs.ref, name, pdf: b64 });
     REPO.rows = null;
     openSheet('<h3>' + esc(rs.ref) + ' saved</h3><div class="sub">' + esc(st.dealer) + (st.onlyId ? ' · ' + esc(st.onlyId) : '') + ' · as of ' + dtx(st.asOf) + '</div>' +
-      '<p style="margin:12px 0">The PDF is in the shared Drive folder and logged in the Repository tab.</p>' +
+      '<p style="margin:12px 0">The PDF is in the shared Drive folder and logged in the Repository tab.' + (t.waived > 0.005 ? ' Charges waived on this SOA: ₱' + esc(mny(t.waived)) + '.' : '') + '</p>' +
       '<div class="stickyact" style="position:static;display:flex;gap:8px;flex-wrap:wrap"><a class="btn pri" href="' + esc(sv.url) + '" target="_blank" rel="noopener">Open PDF</a>' +
       '<button class="btn" data-act="repo">View repository</button><button class="btn ghost" data-act="closesheet">Close</button></div>');
     toast(rs.ref + ' saved to Drive');
@@ -1415,6 +1505,7 @@ function paintRepo() {
     { id: 'du', label: 'Amount due', val: r => r.dueNow, type: 'num', txt: r => mny(r.dueNow) },
     { id: 'pd', label: 'Past due', val: r => r.pastDue, type: 'num', txt: r => mny(r.pastDue) },
     { id: 'po', label: 'Payoff', val: r => r.payoff, type: 'num', txt: r => mny(r.payoff) },
+    { id: 'wv', label: 'Waived', val: r => (r.waived === '' || r.waived == null ? 0 : Number(r.waived) || 0), type: 'num', txt: r => (Number(r.waived) > 0 ? mny(r.waived) : '') },
     { id: 'pdf', label: 'PDF', val: r => r.url ? 'Saved' : 'Pending', html: r => r.url ? '<a href="' + esc(r.url) + '" target="_blank" rel="noopener" style="color:var(--primary);font-weight:700">Open PDF</a>' : '<span class="pill t-amber">Pending</span>' },
   ], REPO.rows, { sort: { id: 'at', dir: -1 }, csv: 'soa-repository', maxH: 'calc(100vh - 260px)' });
 }
@@ -1435,6 +1526,8 @@ document.addEventListener('click', e => {
   else if (a === 'closesheet') closeSheet();
   else if (a === 'repo') { closeSheet(); S.tab = 'repo'; REPO.rows = null; render(); }
   else if (a === 'repo-refresh') loadRepo(true);
+  else if (a === 'waive-clear') { G.waive = new Set(); paintPreview(); }
+  else if (a === 'waive-all') { document.querySelectorAll('#sf-waive input[data-wk]').forEach(i => G.waive.add(i.dataset.wk)); paintPreview(); }
 });
 
 document.getElementById('theme-btn').addEventListener('click', () => { const r = document.documentElement; const cur = r.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); r.dataset.theme = cur === 'dark' ? 'light' : 'dark'; });
