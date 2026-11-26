@@ -252,7 +252,7 @@
 ,IF0251,TREV AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,8,1,0,314550,314550,314550,0,54.77777778,,5,,Hold,Multiple Failure Audits,,46316.97592,46316.97592,11,5,6,0.001887270105,0,0,46315,2,0,2,1,Yes
 ,IF0252,PITCH AUTO TRADING,Malou Alfonso,Rose Batacan,0,1,0,0,0,0,0,0,11,,,,Hold,Finsso: Expired CL | Netbank: Pending CLA Signature,,46287,,0,0,0,0,0,0,,0,0,0,0,No
 ,IF0253,BUM-AUTODEAL AUTO TRADING,Marah Luriely A. Villaruz,Elvira Ladea,1,11,0,0,0,0,0,0,45.09090909,,7,,Open,Finsso: Expired CL | Netbank: Open,,46287,,8,4,4,0,0,0,,0,0,0,1,No
-,IF0254,JUSTRADE USED QUALITY CAR TRADING,Albert Dalupang,Ricmar Magboo,0,14,2,0,773100,773100,773100,0,87.4375,,9.615384615,,Hold,Finsso: Pending CLA Signature | Netbank: Expired CL,,46331,,19,12,7,0.004638526525,0,0,46309,2,2,0,4,No,,,46035.59861
+,IF0254,JUSTRADE USED QUALITY CAR TRADING,Albert Dalupang,Ricmar Magboo,0,14,2,0,773100,773100,773100,0,87.4375,,9.615384615,,Open,Finsso: Open | Netbank: Expired CL,,46331,,19,12,7,0.004638526525,0,0,46309,2,2,0,4,No,,,46035.59861
 ,IF0255,FULL STOP CAR TRADING,Marah Luriely A. Villaruz,Elvira Ladea,0,2,0,0,0,0,0,0,87,,,,Hold,Expired CL,,46331,,1,1,0,0,0,0,,0,0,0,0,No
 ,IF0256,KRAUSEVILLECARS ATCARCITY CAR TRADING,Albert Dalupang,Albert Dalupang,0,34,2,0,948118.5,948118.5,948118.5,0,42.88888889,,,,Open,,,,,54,42,12,0.005688620892,0,0,46301,3,3,0,0,No
 ,IF0257,G.G. AUTO TRADING,Malou Alfonso,Rose Batacan,0,10,0,0,0,0,0,0,24.2,,,,Open,,,,,1,1,0,0,0,0,,0,0,0,0,No
@@ -522,7 +522,7 @@
 ,IF0521,WASARICH CARZ AUTO TRADING,Marah Luriely A. Villaruz,Rhoyland Alagon,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0522,JS8 CAR TRADING,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Hold,Finsso: Pending CLA Signature | Netbank: Pending CL,,46349.67083,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0523,PHIL KALYX-GARAGE AUTO TRADING,Virgilio Landicho,Virgilio Landicho,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
-,IF0524,EASYSELL CAR TRADING,,,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
+,IF0524,EASYSELL CAR TRADING,Marah Luriely A. Villaruz,Herbert Capistrano,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0525,CRIS CAR CARE SERVICES,Malou Alfonso,Rose Batacan,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0526,MANALO AUTO CARE SERVICES,Albert Dalupang,Albert Dalupang,0,0,0,0,0,0,0,0,,,,,Open,Finsso: Open | Netbank: Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
 ,IF0527,ALDAY AUTO SHOP,Albert Dalupang,Ricmar Magboo,0,0,0,0,0,0,0,0,,,,,Hold,Pending CL,,,,0,0,0,,0,0,,0,0,0,0,No
